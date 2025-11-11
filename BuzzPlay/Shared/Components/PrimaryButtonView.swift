@@ -8,11 +8,33 @@
 import SwiftUI
 
 struct PrimaryButtonView: View {
+    let title: String
+    let action: () -> Void
+    let style: Style
+    let fontSize: Font
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Button {
+            action()
+        } label: {
+            Text(title)
+                .primaryButtonTextStyle(style, fontSize: fontSize)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background {
+                    RoundedRectangle.backgroundPrimaryButton(style: style)
+                }
+                
+        }
+
     }
 }
 
 #Preview {
-    PrimaryButtonView()
+    VStack {
+        PrimaryButtonView(title: "Valider", action: {}, style: .filled, fontSize: .body)
+        PrimaryButtonView(title: "Annuler", action: {}, style: .outlined, fontSize: .body)
+    }
 }
+
+
