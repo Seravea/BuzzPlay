@@ -12,7 +12,7 @@ struct TeamChooserView: View {
         NavigationStack {
             VStack {
                 
-                Text("Commencement du jeu")
+                Text("Zik'jeu")
                     .font(.poppins(.largeTitle, weight: .bold))
                 
                   Spacer()
