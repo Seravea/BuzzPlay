@@ -12,9 +12,9 @@ import SwiftUI
 
 
 @MainActor
-final class Router {
-    var path = NavigationPath()
-    var modal: Bool = false
+final class Router: ObservableObject {
+    @Published var path = NavigationPath()
+    @Published var modal: Bool = false
     
     func push(_ route: Route) { path.append(route) }
     func popToRoot() { path = NavigationPath() }

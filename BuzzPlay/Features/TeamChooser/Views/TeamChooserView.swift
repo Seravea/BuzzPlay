@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct TeamChooserView: View {
+    @EnvironmentObject private var router: Router
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             VStack {
                 
                 Text("Zik'jeu")
@@ -19,11 +20,35 @@ struct TeamChooserView: View {
                 
                 HStack {
                     //MARK: Destination to PlayerView
-                    PrimaryButtonView(title: "Joueurs", action: {}, style: .filled, fontSize: .largeTitle)
+                    PrimaryButtonView(title: "Joueurs", action: {router.push(.playerView)}, style: .filled, fontSize: .largeTitle)
                      
                     //MARK: Destination to MasterView
-                    PrimaryButtonView(title: "Maître", action: {}, style: .outlined, fontSize: .largeTitle)
+                    PrimaryButtonView(title: "Maître", action: {
+                        router.push(.masterView)
+                    }, style: .outlined, fontSize: .largeTitle)
                   
+                }
+                .navigationDestination(for: Route.self) { route in
+                    switch route {
+                    case .homeView:
+                        TeamChooserView()
+                    case .masterView:
+                        //TODO: view
+                        //MasterView()
+                        EmptyView()
+                    case .playerView:
+                        //TODO: view
+                        //PlayerView()
+                        EmptyView()
+                    case .quizView:
+                        //TODO: view
+                        //QuizView
+                        EmptyView()
+                    case .settingsView:
+                        //TODO: view
+                        //SettingsView
+                        EmptyView()
+                    }
                 }
                 
                 Spacer()

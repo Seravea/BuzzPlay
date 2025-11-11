@@ -9,8 +9,10 @@ import Foundation
 
 
 enum Route: Hashable, Codable {
-    case home
-    case quiz(id: UUID)
-    case player(teamID: String)
-    case settings
+    case homeView
+    case quizView
+    case playerView
+    case masterView
+    case settingsView
+    
 }
