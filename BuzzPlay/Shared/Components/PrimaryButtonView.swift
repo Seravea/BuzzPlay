@@ -18,7 +18,7 @@ struct PrimaryButtonView: View {
             action()
         } label: {
             Text(title)
-                .primaryButtonTextStyle(style, fontSize: fontSize)
+                .primaryButtonTextStyle(style, fontSize: Typography.title)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background {
@@ -26,7 +26,7 @@ struct PrimaryButtonView: View {
                 }
                 
         }
-
+        .appDefaultTextStyle(Typography.body)
     }
 }
 

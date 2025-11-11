@@ -20,19 +20,19 @@ enum Style {
 //MARK: Text Extension
 
 extension Text {
-    func primaryButtonTextStyle(_ style: Style, fontSize: Font) -> some View {
+    func primaryButtonTextStyle(_ style: Style, fontSize: Typography.Token) -> some View {
         switch style {
         case .filled:
             return self
                 .foregroundStyle(.white)
-                .font(fontSize)
+                .textStyle(fontSize)
         case .outlined:
             return self
                 .foregroundStyle(Color.darkPurple)
-                .font(fontSize)
+                .textStyle(fontSize)
         case .default:
             return self
-                .font(fontSize)
+                .textStyle(fontSize)
         }
     }
 }
@@ -113,9 +113,9 @@ struct Typography {
 
     // Main set (adapte si besoin)
     static let largeTitle = Token(.largeTitle, weight: .bold, tracking: 0.2)
-    static let title = Token(.title,      weight: .semiBold)
-    static let title2 = Token(.title2,     weight: .semiBold)
-    static let title3 = Token(.title3,     weight: .semiBold)
+    static let title = Token(.title,      weight: .regular)
+    static let title2 = Token(.title2,     weight: .regular)
+    static let title3 = Token(.title3,     weight: .regular)
 
     static let headline = Token(.headline,   weight: .medium)
     static let body = Token(.body,       weight: .regular)
