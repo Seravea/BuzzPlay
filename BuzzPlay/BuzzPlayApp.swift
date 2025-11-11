@@ -12,7 +12,7 @@ struct BuzzPlayApp: App {
     @StateObject private var router = Router()
     var body: some Scene {
         WindowGroup {
-            TeamChooserView()
+            HomeView()
                 .environmentObject(router)
         }
     }

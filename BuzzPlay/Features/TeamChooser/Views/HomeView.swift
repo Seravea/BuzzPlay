@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TeamChooserView: View {
+struct HomeView: View {
     @EnvironmentObject private var router: Router
     var body: some View {
         NavigationStack(path: $router.path) {
@@ -20,7 +20,9 @@ struct TeamChooserView: View {
                 
                 HStack {
                     //MARK: Destination to PlayerView
-                    PrimaryButtonView(title: "Joueurs", action: {router.push(.playerView)}, style: .filled, fontSize: .largeTitle)
+                    PrimaryButtonView(title: "Joueurs", action: {
+                        router.push(.playerView)
+                    }, style: .filled, fontSize: .largeTitle)
                      
                     //MARK: Destination to MasterView
                     PrimaryButtonView(title: "Maître", action: {
@@ -31,7 +33,7 @@ struct TeamChooserView: View {
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .homeView:
-                        TeamChooserView()
+                        HomeView()
                     case .masterView:
                         //TODO: view
                         //MasterView()
@@ -59,5 +61,5 @@ struct TeamChooserView: View {
 }
 
 #Preview {
-    TeamChooserView()
+    HomeView()
 }
