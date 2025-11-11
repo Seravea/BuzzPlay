@@ -10,9 +10,22 @@
 		71C40BDC2EC224D700EE9976 /* BuzzPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuzzPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		71C411F42EC3797700EE9976 /* Exceptions for "BuzzPlay" folder in "BuzzPlay" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 71C40BDB2EC224D700EE9976 /* BuzzPlay */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		71C40BDE2EC224D700EE9976 /* BuzzPlay */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				71C411F42EC3797700EE9976 /* Exceptions for "BuzzPlay" folder in "BuzzPlay" target */,
+			);
 			path = BuzzPlay;
 			sourceTree = "<group>";
 		};
