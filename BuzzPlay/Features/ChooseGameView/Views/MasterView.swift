@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MasterView: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject private var router: Router
     var body: some View {
         GeometryReader { geo in
             VStack {
@@ -40,6 +40,7 @@ struct MasterView: View {
                 Spacer()
                 
             }
+            
         }
         
     }
@@ -58,7 +59,7 @@ struct ButtonChooseGameView: View {
             action()
         } label: {
             Text(title)
-                .font(.poppins(.largeTitle, weight: .bold))
+                .font(.poppins(.headline, weight: .black))
                 .foregroundStyle(.white)
                 .frame(width: geo.size.width / 6, height: geo.size.height / 2)
                 .background {
@@ -66,5 +67,6 @@ struct ButtonChooseGameView: View {
                         .foregroundStyle(Color.darkestPurple)
                 }
         }
+        .appDefaultTextStyle(Typography.body)
     }
 }
