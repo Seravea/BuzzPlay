@@ -36,11 +36,11 @@ struct HomeView: View {
                         HomeView()
                     case .masterView:
                         //TODO: view
-                        //MasterView()
+                        MasterView()
                         EmptyView()
                     case .playerView:
                         //TODO: view
-                        //PlayerView()
+                        PlayerView()
                         EmptyView()
                     case .quizView:
                         //TODO: view
