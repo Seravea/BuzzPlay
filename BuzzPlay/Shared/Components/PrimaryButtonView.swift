@@ -26,6 +26,7 @@ struct PrimaryButtonView: View {
                 }
                 
         }
+        //MARK: TO DELET a enlever et mettre qu'une seul fois dans le @main App project
         .appDefaultTextStyle(Typography.body)
     }
 }
