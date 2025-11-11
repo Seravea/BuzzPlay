@@ -8,21 +8,37 @@
 import SwiftUI
 
 struct MasterView: View {
+    @EnvironmentObject var router: Router
     var body: some View {
         GeometryReader { geo in
             VStack {
-                HStack {
+                
+                Spacer()
+                
+                HStack(spacing: 12) {
                     
-                    Spacer()
+//                    Spacer()
                     
-                    ButtonChooseGameView(geo: geo, action: {})
-                    ButtonChooseGameView(geo: geo, action: {})
-                    ButtonChooseGameView(geo: geo, action: {})
-                    ButtonChooseGameView(geo: geo, action: {})
+                    ButtonChooseGameView(geo: geo, action: {
+                        //ROUTER destination BuzzGame
+                    }, title: "Buzz")
+                    ButtonChooseGameView(geo: geo, action: {
+                        //ROUTER destination BlindTest
+                    }, title: "Blind Test")
+                    ButtonChooseGameView(geo: geo, action: {
+                        //ROUTER destination Quiz
+                    }, title: "Quiz")
+                    ButtonChooseGameView(geo: geo, action: {
+                        //ROUTER destination Kara OKÉ
+                    }, title: "Kara OKÉ")
 
-                    Spacer()
+//                    Spacer()
                     
                 }
+                .frame(maxWidth: .infinity)
+                
+                Spacer()
+                
             }
         }
         
@@ -36,13 +52,19 @@ struct MasterView: View {
 struct ButtonChooseGameView: View {
     var geo: GeometryProxy
     let action: () -> Void
+    let title: String
     var body: some View {
         Button {
             action()
         } label: {
-            RoundedRectangle(cornerRadius: 8)
-                .frame(width: geo.size.width / 6, height: geo.size.height / 3)
-                .foregroundStyle(Color.darkestPurple)
+            Text(title)
+                .font(.poppins(.largeTitle, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: geo.size.width / 6, height: geo.size.height / 2)
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .foregroundStyle(Color.darkestPurple)
+                }
         }
     }
 }
