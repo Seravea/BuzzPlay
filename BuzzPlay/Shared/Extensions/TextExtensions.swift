@@ -113,18 +113,18 @@ struct Typography {
 
     // Main set (adapte si besoin)
     static let largeTitle = Token(.largeTitle, weight: .bold, tracking: 0.2)
-    static let title = Token(.title,      weight: .regular)
-    static let title2 = Token(.title2,     weight: .regular)
-    static let title3 = Token(.title3,     weight: .regular)
+    static let title = Token(.title, weight: .regular)
+    static let title2 = Token(.title2, weight: .regular)
+    static let title3 = Token(.title3, weight: .regular)
 
-    static let headline = Token(.headline,   weight: .medium)
-    static let body = Token(.body,       weight: .regular)
-    static let callout = Token(.callout,    weight: .regular)
-    static let subheadline = Token(.subheadline,weight: .regular)
+    static let headline = Token(.headline, weight: .medium)
+    static let body = Token(.body, weight: .regular)
+    static let callout = Token(.callout, weight: .regular)
+    static let subheadline = Token(.subheadline, weight: .regular)
 
-    static let footnote = Token(.footnote,   weight: .regular, tracking: 0.1)
-    static let caption = Token(.caption,    weight: .medium,  tracking: 0.1)
-    static let caption2 = Token(.caption2,   weight: .medium,  tracking: 0.1)
+    static let footnote = Token(.footnote, weight: .regular, tracking: 0.1)
+    static let caption = Token(.caption, weight: .medium, tracking: 0.1)
+    static let caption2 = Token(.caption2, weight: .medium, tracking: 0.1)
 }
 
 // MARK: - View modifier
