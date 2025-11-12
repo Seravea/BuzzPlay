@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MasterView: View {
+struct MasterChooseGameView: View {
     @EnvironmentObject private var router: Router
     var body: some View {
         GeometryReader { geo in
@@ -47,26 +47,7 @@ struct MasterView: View {
 }
 
 #Preview {
-    MasterView()
+    MasterChooseGameView()
 }
 
-struct ButtonChooseGameView: View {
-    var geo: GeometryProxy
-    let action: () -> Void
-    let title: String
-    var body: some View {
-        Button {
-            action()
-        } label: {
-            Text(title)
-                .font(.poppins(.headline, weight: .black))
-                .foregroundStyle(.white)
-                .frame(width: geo.size.width / 6, height: geo.size.height / 2)
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .foregroundStyle(Color.darkestPurple)
-                }
-        }
-        .appDefaultTextStyle(Typography.body)
-    }
-}
+
