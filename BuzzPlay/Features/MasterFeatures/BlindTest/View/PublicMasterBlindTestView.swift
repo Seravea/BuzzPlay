@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PublicMasterBlindTestView: View {
+    @State var isPlayingSong: Bool = false
     var body: some View {
         VStack {
             Text("Question 1 / 20")
@@ -17,9 +18,17 @@ struct PublicMasterBlindTestView: View {
                 .progressViewStyle(.linear)
             
             
-            VStack {
-                Image(systemName: "stop")
-            }
+           
+                
+                Image(systemName: isPlayingSong == true ? "play.circle.fill" : "stop.circle.fill")
+                    .font(.system(size: 150))
+                    .padding(.leading)
+                    .foregroundStyle(Color.darkPink)
+                    .symbolEffectsRemoved(!isPlayingSong)
+                    .symbolEffect(.bounce)
+                    
+            
+            
                 
         }
         .frame(maxWidth: .infinity)
