@@ -19,8 +19,9 @@ struct PrimaryButtonView: View {
         } label: {
             Text(title)
                 .primaryButtonTextStyle(style, fontSize: Typography.title)
-                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
+            
                 .background {
                     RoundedRectangle.backgroundPrimaryButton(style: style)
                 }
@@ -33,8 +34,8 @@ struct PrimaryButtonView: View {
 
 #Preview {
     VStack {
-        PrimaryButtonView(title: "Valider", action: {}, style: .filled, fontSize: .body)
-        PrimaryButtonView(title: "Annuler", action: {}, style: .outlined, fontSize: .body)
+        PrimaryButtonView(title: "Valider", action: {}, style: .filled(color: .darkestPurple), fontSize: .body)
+        PrimaryButtonView(title: "Annuler", action: {}, style: .outlined(color: .darkestPurple), fontSize: .body)
     }
 }
 

@@ -10,9 +10,19 @@ import SwiftUI
 struct PublicMasterBlindTestView: View {
     var body: some View {
         VStack {
-            Text("Hello, World PUBLIC VIEW!")
+            Text("Question 1 / 20")
                 .font(.poppins(.largeTitle))
+            
+            ProgressView(value: 0.1)
+                .progressViewStyle(.linear)
+            
+            
+            VStack {
+                Image(systemName: "stop")
+            }
+                
         }
+        .frame(maxWidth: .infinity)
         .appDefaultTextStyle(Typography.body)
         
     }
