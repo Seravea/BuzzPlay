@@ -8,36 +8,64 @@
 import SwiftUI
 
 struct PublicMasterBlindTestView: View {
-    @State var isPlayingSong: Bool = false
+    @ObservedObject var blindTestVM: BlindTestViewModel
+    
+    
     var body: some View {
         VStack {
-            Text("Question 1 / 20")
+            Text(blindTestVM.progressText)
                 .font(.poppins(.largeTitle))
             
-            ProgressView(value: 0.1)
+            ProgressView(value: blindTestVM.progressValue)
                 .progressViewStyle(.linear)
             
-            
+            Text(blindTestVM.nowPlayingSongIndex.description)
+                .font(.largeTitle)
            
                 
-                Image(systemName: isPlayingSong == true ? "play.circle.fill" : "stop.circle.fill")
+            Image(systemName: blindTestVM.isPlaying == true ? "play.circle.fill" : "stop.circle.fill")
                     .font(.system(size: 150))
                     .padding(.leading)
                     .foregroundStyle(Color.darkPink)
-                    .symbolEffectsRemoved(!isPlayingSong)
+                    .symbolEffectsRemoved(!blindTestVM.isPlaying)
                     .symbolEffect(.bounce)
                     
+            Spacer()
             
-            
+            ZStack(alignment: .bottom) {
+                
+                VStack {
+                    Text("Nom de l'équipe")
+                       
+                    Text("Temps de réponse : 00:10")
+                        
+                  
+                }
+                .padding()
+                .frame(minHeight: 400)
+                .background {
+                    Rectangle()
+                    //MARK: Couleur de l'équipe qui a buzzé
+                        .foregroundStyle(Color.darkestPurple)
+                }
+                
+                //MARK: Affiché si le master valide la réponse
+                Text("Bonne Réponse !")
+                    .padding(.bottom)
+            }
+            .font(.poppins(.largeTitle, weight: .bold))
+            .foregroundStyle(.white)
+            Spacer()
                 
         }
         .frame(maxWidth: .infinity)
         .appDefaultTextStyle(Typography.body)
+        .padding()
         
     }
 }
 
 #Preview {
-    PublicMasterBlindTestView()
+    PublicMasterBlindTestView(blindTestVM: BlindTestViewModel())
       
 }

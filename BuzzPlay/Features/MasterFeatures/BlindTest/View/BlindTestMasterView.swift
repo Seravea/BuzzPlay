@@ -8,24 +8,29 @@
 import SwiftUI
 
 struct BlindTestMasterView: View {
+    @StateObject var blindTestViewModel = BlindTestViewModel()
+    
     var body: some View {
         GeometryReader { geo in
-            HStack(spacing: 0) {
+            HStack {
                 
                 //MARK: View for the Master ONLY (PRIVATE)
-                PrivateMasterBlindTestView()
+                PrivateMasterBlindTestView(blindTestVM: blindTestViewModel)
                     .frame(width: geo.size.width/2)
                     .padding()
                 Rectangle()
                     .frame(width: geo.size.width/200)
-                    .ignoresSafeArea()
+//                    .ignoresSafeArea()
                 
                 //MARK: View for shareScreen PUBLIC
-                PublicMasterBlindTestView()
-                    .frame(width: geo.size.width/2)
+                PublicMasterBlindTestView(blindTestVM: blindTestViewModel)
+//                    .frame(width: geo.size.width/2)
                     .padding()
+//                    .padding(.trailing, -0)
             }
+            
         }
+//        .padding(10)
     }
 }
 
