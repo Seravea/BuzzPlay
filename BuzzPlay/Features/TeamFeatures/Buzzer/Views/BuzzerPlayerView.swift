@@ -22,8 +22,7 @@ struct BuzzerPlayerView: View {
                     .resizable()
                     .scaledToFill()
                     .frame(width: 320, height: 230)
-                    .padding(.bottom, isTapped ? 10 : 100)
-//
+                    .padding(.bottom, isTapped ? 10 : 100)  
             }
             .onTapGesture {
                 isTapped.toggle()
