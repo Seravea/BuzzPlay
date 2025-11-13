@@ -9,7 +9,8 @@ import Foundation
 import Observation
 
 
-@MainActor
+
+
 @Observable
 final class TeamGameViewModel: ObservableObject {
     
@@ -20,13 +21,18 @@ final class TeamGameViewModel: ObservableObject {
     
     var receivedMessage: String = ""
     
+    var routePath: [Route] = []
+    
     
     init(team: Team, mpc: MPCService) {
         self.team = team
         self.mpc = mpc
-        //setupMPC()
+//        setupMPC()
     }
    
-    
+
+//        func makeBuzzViewModel() -> BuzzViewModel {
+//            BuzzViewModel(team: team, parent: self)
+//        }
     
 }

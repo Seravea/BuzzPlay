@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct CreateTeamView: View {
-    @State var createTeamVM = CreateTeamViewModel()
+    @StateObject var createTeamVM: CreateTeamViewModel
+    @EnvironmentObject private var router: Router
     
     var body: some View {
         GeometryReader { geo in
@@ -60,7 +61,7 @@ struct CreateTeamView: View {
                 Spacer()
                 
                 PrimaryButtonView(title: "Valider la team", action: {
-                    createTeamVM.verifyEmptyPlayerName()
+                    createTeamVM.validate()
                 }, style: .filled(color: .green), fontSize: Typography.largeTitle)
                 
             }
@@ -70,7 +71,7 @@ struct CreateTeamView: View {
                 }
                 
                 Button("Continuer", role: .cancel) {
-                    createTeamVM.isAlertOn = false
+                    router.push(.playerChooseGameView)
                 }
                 
             }
@@ -82,5 +83,5 @@ struct CreateTeamView: View {
 }
 
 #Preview {
-    CreateTeamView()
+    CreateTeamView(createTeamVM: CreateTeamViewModel())
 }

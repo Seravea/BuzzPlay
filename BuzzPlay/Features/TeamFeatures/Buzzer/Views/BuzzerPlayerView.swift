@@ -9,10 +9,11 @@ import SwiftUI
 
 struct BuzzerPlayerView: View {
     @State var isTapped: Bool = false
-    var teamPlaying: Team?
+    var buzzerVM: BuzzerViewModel
+    @State var textTEST: String = ""
     var body: some View {
         VStack {
-            
+            Text(textTEST)
             ZStack {
                 
                 Image(.buttonFloor)
@@ -26,6 +27,8 @@ struct BuzzerPlayerView: View {
                     .padding(.bottom, isTapped ? 10 : 100)  
             }
             .onTapGesture {
+                buzzerVM.buzz()
+                textTEST = buzzerVM.team.name
                 isTapped.toggle()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                     isTapped.toggle()
@@ -40,5 +43,5 @@ struct BuzzerPlayerView: View {
 }
 
 #Preview {
-    BuzzerPlayerView(teamPlaying: Team(name: "La team", colorIndex: 1))
+    BuzzerPlayerView(buzzerVM: BuzzerViewModel(team: Team(name: "L'équipe 1", colorIndex: 0), mode: .blindTest))
 }
