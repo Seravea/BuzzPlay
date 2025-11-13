@@ -19,12 +19,64 @@ class BlindTestViewModel: ObservableObject {
     var nowPlayingSongIndex: Int = 0
     var isCorrect: Bool = false
     
+    var teamWining: Team? = nil
+    var buzzTime: Double? = nil
+    
+    var gameTimer: String = "00:00"
+    
+    //MARK: données de jeu
+    
+    
+    
+    var gameAudioPlayer: AVAudioPlayer = AVAudioPlayer()
+    
+    
+    
+    
+    //MARK: Player functions
+    func playSound() {
+       
+        guard let soundURL = Bundle.main.url(forResource: songs[nowPlayingSongIndex].id, withExtension: "mp3") else { return }
+        do {
+            gameAudioPlayer.pause() // stop() is not throwing
+            gameAudioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+            isPlaying = gameAudioPlayer.play()
+        } catch {
+            print("Error playing sound: \(error)")
+            isPlaying = false
+        }
+    
+    }
+    
+    func pauseSong() {
+       gameAudioPlayer.pause()
+        isPlaying = false
+    }
+
+  private func nextSong() {
+      if nowPlayingSongIndex < songs.count - 1 {
+            nowPlayingSongIndex += 1
+        } else {
+            nowPlayingSongIndex = 0
+        }
+        
+    }
+}
+
+
+//MARK: func and data use in the View
+extension BlindTestViewModel {
+    
+    
+    var songNowPlaying: Song {
+        songs[nowPlayingSongIndex]
+    }
     
     var questionNumber: Int {
         nowPlayingSongIndex + 1
     }
     
-    //MARK: données de jeu
+    
     var totalNumberOfSongs: Int {
         songs.count
     }
@@ -38,37 +90,14 @@ class BlindTestViewModel: ObservableObject {
     }
     
     
-    var gameAudioPlayer: AVAudioPlayer = AVAudioPlayer()
-    
-    
-    
-    
-    //MARK: Player functions
-   func playSound() {
-       
-        guard let soundURL = Bundle.main.url(forResource: songs[nowPlayingSongIndex].id, withExtension: "mp3") else { return }
-        do {
-            gameAudioPlayer.stop() // stop() is not throwing
-            gameAudioPlayer = try AVAudioPlayer(contentsOf: soundURL)
-            isPlaying = gameAudioPlayer.play()
-        } catch {
-            print("Error playing sound: \(error)")
-            isPlaying = false
-        }
-    
+    func isCorrectAnswer() {
+        isCorrect = true
+        nextSong()
     }
     
-   func pauseSong() {
-       gameAudioPlayer.pause()
-        isPlaying = false
+    func isWrongAnswer() {
+        isCorrect = false
+        playSound()
     }
-
-  func nextSong() {
-      if nowPlayingSongIndex < songs.count - 1 {
-            nowPlayingSongIndex += 1
-        } else {
-            nowPlayingSongIndex = 0
-        }
-        
-    }
+    
 }

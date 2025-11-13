@@ -18,11 +18,7 @@ struct PublicMasterBlindTestView: View {
             
             ProgressView(value: blindTestVM.progressValue)
                 .progressViewStyle(.linear)
-            
-            Text(blindTestVM.nowPlayingSongIndex.description)
-                .font(.largeTitle)
            
-                
             Image(systemName: blindTestVM.isPlaying == true ? "play.circle.fill" : "stop.circle.fill")
                     .font(.system(size: 150))
                     .padding(.leading)
@@ -31,30 +27,15 @@ struct PublicMasterBlindTestView: View {
                     .symbolEffect(.bounce)
                     
             Spacer()
-            
-            ZStack(alignment: .bottom) {
+            if let teamWining = blindTestVM.teamWining, let buzzTime = blindTestVM.buzzTime {
                 
-                VStack {
-                    Text("Nom de l'équipe")
-                       
-                    Text("Temps de réponse : 00:10")
-                        
-                  
-                }
-                .padding()
-                .frame(minHeight: 400)
-                .background {
-                    Rectangle()
-                    //MARK: Couleur de l'équipe qui a buzzé
-                        .foregroundStyle(Color.darkestPurple)
-                }
+                TeamCardView(teamWining: teamWining, buzzTime: buzzTime)
                 
-                //MARK: Affiché si le master valide la réponse
-                Text("Bonne Réponse !")
-                    .padding(.bottom)
+            } else {
+                
+                TimerCardView(timer: $blindTestVM.gameTimer)
+                
             }
-            .font(.poppins(.largeTitle, weight: .bold))
-            .foregroundStyle(.white)
             Spacer()
                 
         }
