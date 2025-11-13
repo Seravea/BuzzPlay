@@ -9,10 +9,22 @@ import Foundation
 import SwiftUI
 
 
-enum Style {
-    case filled
-    case outlined
+enum Style: Equatable {
+    case filled(color: Color)
+    case outlined(color: Color)
     case `default`
+    
+    var color: Color {
+        switch self {
+        case .filled(color: let color):
+            return color
+        case .outlined(color: let color):
+            return color
+        case .default:
+            //IF SEE ORANGE, THERE IS AN ERROR
+            return .orange
+        }
+    }
 }
 
 

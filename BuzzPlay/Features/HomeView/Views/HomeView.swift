@@ -22,12 +22,12 @@ struct HomeView: View {
                     //MARK: Destination to PlayerView
                     PrimaryButtonView(title: "Joueurs", action: {
                         router.push(.playerView)
-                    }, style: .filled, fontSize: .largeTitle)
+                    }, style: .filled(color: .darkestPurple), fontSize: .largeTitle)
                      
                     //MARK: Destination to MasterView
                     PrimaryButtonView(title: "Maître", action: {
                         router.push(.masterView)
-                    }, style: .outlined, fontSize: .largeTitle)
+                    }, style: .outlined(color: .darkestPurple), fontSize: .largeTitle)
                   
                 }
                 .navigationDestination(for: Route.self) { route in
