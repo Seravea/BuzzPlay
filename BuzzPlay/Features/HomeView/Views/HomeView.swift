@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject private var router: Router
+    @State var flowVM = TeamFlowViewModel()
     var body: some View {
         NavigationStack(path: $router.path) {
             VStack {
@@ -42,16 +43,18 @@ struct HomeView: View {
                         EmptyView()
                     case .playerChooseGameView:
                         //TODO: view
-                        
-                        EmptyView()
-                    case .buzzerView:
+                        if let vm = flowVM.teamGameVM {
+                            PlayerChooseGameView(teamGameVM: vm)
+                        } else {
+                            Text("Pas de team Gros Bug sa reum")
+                        }
+                    case .blindTest:
                         //TODO: view
-                        //QuizView
-                        BuzzerPlayerView(teamPlaying: nil)
+                        BuzzerPlayerView(buzzerVM: flowVM.makeBuzzerViewModel(for: .blindTest))
                     case .createTeamView:
                         //TODO: view
-                        CreateTeamView()
-                        EmptyView()
+                        CreateTeamView(createTeamVM: flowVM.makeCreateTeamViewModel())
+                 
                     }
                 }
                 
