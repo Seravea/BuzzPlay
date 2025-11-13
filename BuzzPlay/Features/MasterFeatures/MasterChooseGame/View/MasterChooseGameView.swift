@@ -28,11 +28,11 @@ struct MasterChooseGameView: View {
                             
                             PrimaryButtonView(title: "Ouvrir", action: {
                                 //MARK: ouvrir la game
-                            }, style: .outlined, fontSize: .title)
+                            }, style: .outlined(color: .darkestPurple), fontSize: Typography.title)
                            
                             PrimaryButtonView(title: "Fermer", action: {
                                 //MARK: fermer la game
-                            }, style: .filled, fontSize: .title)
+                            }, style: .filled(color: .darkestPurple), fontSize: Typography.title)
                             
                         }
                         
@@ -47,11 +47,11 @@ struct MasterChooseGameView: View {
                             
                             PrimaryButtonView(title: "Ouvrir", action: {
                                 //MARK: ouvrir la game
-                            }, style: .outlined, fontSize: .title)
+                            }, style: .outlined(color: .darkestPurple), fontSize: Typography.title)
                            
                             PrimaryButtonView(title: "Fermer", action: {
                                 //MARK: fermer la game
-                            }, style: .filled, fontSize: .title)
+                            }, style: .filled(color: .darkestPurple), fontSize: Typography.title)
                             
                         }
                     }
@@ -66,11 +66,11 @@ struct MasterChooseGameView: View {
                             
                             PrimaryButtonView(title: "Ouvrir", action: {
                                 //MARK: ouvrir la game
-                            }, style: .outlined, fontSize: .title)
+                            }, style: .outlined(color: .darkestPurple), fontSize: Typography.title)
                            
                             PrimaryButtonView(title: "Fermer", action: {
                                 //MARK: fermer la game
-                            }, style: .filled, fontSize: .title)
+                            }, style: .filled(color: .darkestPurple), fontSize: Typography.title)
                             
                         }
                     }
@@ -85,7 +85,7 @@ struct MasterChooseGameView: View {
             }
             
         }
-        
+        .appDefaultTextStyle(Typography.body)
     }
 }
 

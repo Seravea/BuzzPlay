@@ -21,34 +21,36 @@ struct HomeView: View {
                 HStack {
                     //MARK: Destination to PlayerView
                     PrimaryButtonView(title: "Joueurs", action: {
-                        router.push(.playerView)
-                    }, style: .filled, fontSize: .largeTitle)
+                        router.push(.createTeamView)
+                    }, style: .filled(color: .darkestPurple), fontSize: Typography.largeTitle)
                      
                     //MARK: Destination to MasterView
                     PrimaryButtonView(title: "Maître", action: {
-                        router.push(.masterView)
-                    }, style: .outlined, fontSize: .largeTitle)
+                        router.push(.masterLobbyView)
+                    }, style: .outlined(color: .darkestPurple), fontSize: Typography.largeTitle)
                   
                 }
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .homeView:
                         HomeView()
-                    case .masterView:
+                    case .masterChooseGameView:
+                       EmptyView()
+                    case .masterLobbyView:
                         //TODO: view
                         //MasterView()
                         EmptyView()
-                    case .playerView:
+                    case .playerChooseGameView:
                         //TODO: view
-                        PlayerView()
-                       // EmptyView()
-                    case .quizView:
+                        
+                        EmptyView()
+                    case .buzzerView:
                         //TODO: view
                         //QuizView
-                        EmptyView()
-                    case .settingsView:
+                        BuzzerPlayerView(teamPlaying: nil)
+                    case .createTeamView:
                         //TODO: view
-                        //SettingsView
+                        CreateTeamView()
                         EmptyView()
                     }
                 }
@@ -56,6 +58,7 @@ struct HomeView: View {
                 Spacer()
                 
             }
+            .appDefaultTextStyle(Typography.body)
         }
     }
 }
