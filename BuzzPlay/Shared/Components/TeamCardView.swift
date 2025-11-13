@@ -10,7 +10,7 @@ import SwiftUI
 
 struct TeamCardView: View {
     var teamWining: Team
-    var buzzTime: Double
+    var buzzTime: String
     var body: some View {
       
             
@@ -22,7 +22,7 @@ struct TeamCardView: View {
                     Text("\(buzzTime)")
                 }
                 .padding()
-                .frame(minHeight: 400, alignment: .top)
+                .frame(minWidth: 400, minHeight: 400, alignment: .top)
                 .background {
                     Rectangle()
                     //MARK: Couleur de l'équipe qui a buzzé
@@ -41,5 +41,5 @@ struct TeamCardView: View {
 }
 
 #Preview {
-    TeamCardView(teamWining: Team(name: "La Team", colorIndex: 1), buzzTime: 0.1)
+    TeamCardView(teamWining: Team(name: "La Team", colorIndex: 1), buzzTime: "00:01")
 }
