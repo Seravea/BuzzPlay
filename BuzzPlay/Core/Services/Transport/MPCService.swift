@@ -112,7 +112,7 @@ extension MPCService: MCNearbyServiceAdvertiserDelegate {
 }
 
 
-//MARK: Browser Delegate 
+//MARK: Browser Delegate
 extension MPCService: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser,
                  foundPeer peerID: MCPeerID,
