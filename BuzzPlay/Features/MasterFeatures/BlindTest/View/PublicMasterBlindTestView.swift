@@ -10,7 +10,6 @@ import SwiftUI
 struct PublicMasterBlindTestView: View {
     @ObservedObject var blindTestVM: BlindTestViewModel
     
-    
     var body: some View {
         VStack {
             Text(blindTestVM.progressText)
