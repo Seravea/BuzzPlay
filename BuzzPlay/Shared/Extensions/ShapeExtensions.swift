@@ -18,12 +18,12 @@ extension RoundedRectangle {
     static func backgroundPrimaryButton(style: Style) -> some View {
         let shape = RoundedRectangle(cornerRadius: 8, style: .circular)
         
-        if style == .filled {
+        if style == .filled(color: style.color) {
             shape
-                .fill(Color.darkPurple)
-        } else if style == .outlined {
+                .fill(style.color)
+        } else if style == .outlined(color: style.color) {
             shape
-                .strokeBorder(Color.darkPurple, style: StrokeStyle(lineWidth: 2, lineJoin: .round))
+                .strokeBorder(style.color, style: StrokeStyle(lineWidth: 2, lineJoin: .round))
         } else {
             shape
         }
