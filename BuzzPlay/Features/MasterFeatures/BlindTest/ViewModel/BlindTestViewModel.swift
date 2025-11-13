@@ -20,7 +20,8 @@ class BlindTestViewModel: ObservableObject {
     var isCorrect: Bool = false
     
     var teamWining: Team? = nil
-    var buzzTime: Double? = nil
+    
+    var buzzTime: String? = nil
     
     var gameTimer: String = "00:00"
     
@@ -67,7 +68,7 @@ class BlindTestViewModel: ObservableObject {
 //MARK: func and data use in the View
 extension BlindTestViewModel {
     
-    
+    //MARK: Questions Datas and Functions
     var songNowPlaying: Song {
         songs[nowPlayingSongIndex]
     }
@@ -99,5 +100,9 @@ extension BlindTestViewModel {
         isCorrect = false
         playSound()
     }
+    
+    
+    
+    //MARK: Team Datas dans Funtions
     
 }
