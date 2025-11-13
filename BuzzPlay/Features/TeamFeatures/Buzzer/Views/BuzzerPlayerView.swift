@@ -9,6 +9,7 @@ import SwiftUI
 
 struct BuzzerPlayerView: View {
     @State var isTapped: Bool = false
+    var teamPlaying: Team
     var body: some View {
         VStack {
             
@@ -39,5 +40,5 @@ struct BuzzerPlayerView: View {
 }
 
 #Preview {
-    BuzzerPlayerView()
+    BuzzerPlayerView(teamPlaying: Team(name: "La team", colorIndex: 1))
 }
