@@ -9,7 +9,7 @@ import SwiftUI
 
 struct BuzzerPlayerView: View {
     @State var isTapped: Bool = false
-    var teamPlaying: Team
+    var teamPlaying: Team?
     var body: some View {
         VStack {
             

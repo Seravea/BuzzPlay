@@ -29,11 +29,11 @@ struct PrivateMasterBlindTestView: View {
                 VStack {
                     PrimaryButtonView(title: "Play", action: {
                         blindTestVM.playSound()
-                    }, style: .filled(color: .darkestPurple), fontSize: .largeTitle)
+                    }, style: .filled(color: .darkestPurple), fontSize: Typography.largeTitle)
                    // .disabled(ambiantaudioPlayerVM.isPlaying)
                     PrimaryButtonView(title: "Pause", action: {
                         blindTestVM.pauseSong()
-                    }, style: .outlined(color: .darkestPurple), fontSize: .largeTitle)
+                    }, style: .outlined(color: .darkestPurple), fontSize: Typography.largeTitle)
                 }
 //                .frame(width: 120)
             }
@@ -43,12 +43,12 @@ struct PrivateMasterBlindTestView: View {
             HStack {
                 PrimaryButtonView(title: "Valider", action: {
                     blindTestVM.isCorrectAnswer()
-                }, style: .filled(color: .green), fontSize: .largeTitle)
+                }, style: .filled(color: .green), fontSize: Typography.largeTitle)
                 
                 
                 PrimaryButtonView(title: "Refuser", action: {
                     blindTestVM.isWrongAnswer()
-                }, style: .filled(color: .red), fontSize: .largeTitle)
+                }, style: .filled(color: .red), fontSize: Typography.largeTitle)
                 
             }
            
