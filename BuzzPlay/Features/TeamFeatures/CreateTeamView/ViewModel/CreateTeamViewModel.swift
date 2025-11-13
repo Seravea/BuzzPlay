@@ -10,12 +10,8 @@ import Observation
 
 @Observable
 class CreateTeamViewModel: ObservableObject {
-    var team: Team
+    var team: Team = Team(name: "", colorIndex: 0, players: [])
     var isAlertOn: Bool = false
-    
-    init(team: Team) {
-        self.team = team
-    }
     
     
     
