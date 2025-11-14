@@ -15,6 +15,7 @@ class MasterLobbyViewModel {
     
     init(gameVM: MasterFlowViewModel) {
         self.gameVM = gameVM
+        gameVM.setupMPC()
     }
     
     var teams: [Team] {

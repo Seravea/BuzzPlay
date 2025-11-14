@@ -37,7 +37,7 @@ struct HomeView: View {
                     case .homeView:
                         HomeView()
                     case .masterChooseGameView:
-                       EmptyView()
+                        MasterChooseGameView(masterChooseGameVM: masterFlowVM.makeChooseGameVM())
                     case .masterLobbyView:
                         //TODO: view
                         LobbyMasterView(masterGameVM: masterFlowVM.makeLobbyViewModel())

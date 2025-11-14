@@ -15,7 +15,7 @@ struct LobbyMasterView: View {
             Text("Lobby Master")
             
             Spacer()
-            if masterGameVM.teams.isEmpty {
+            if masterGameVM.connectedPeers.isEmpty {
                 ProgressView {
                     Text("Aucune équipe n'a rejoint pour l'instant")
                 }

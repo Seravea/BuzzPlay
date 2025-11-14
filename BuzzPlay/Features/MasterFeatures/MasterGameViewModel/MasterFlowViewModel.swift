@@ -22,9 +22,6 @@ final class MasterFlowViewModel: ObservableObject {
     
     var mpcService: MPCService = MPCService()
     
-    init() {
-        setupMPC()
-    }
     
 
     
@@ -71,7 +68,7 @@ final class MasterFlowViewModel: ObservableObject {
 //MARK: MPC Service for MasterFlow
 extension MasterFlowViewModel {
     
-    private func setupMPC() {
+    func setupMPC() {
             mpcService.onPeerConnected = { [weak self] peer in
                 guard let self else { return }
                 self.connectedPeers.append(peer)
