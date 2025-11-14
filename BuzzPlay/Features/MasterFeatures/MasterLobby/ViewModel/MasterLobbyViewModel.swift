@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MultipeerConnectivity
 
 
 @Observable
@@ -18,6 +19,10 @@ class MasterLobbyViewModel {
     
     var teams: [Team] {
         gameVM.teams
+    }
+    
+    var connectedPeers: [MCPeerID] {
+        gameVM.connectedPeers
     }
     
     
