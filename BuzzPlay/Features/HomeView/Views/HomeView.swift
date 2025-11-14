@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject private var router: Router
+    @State var flowVM = TeamFlowViewModel()
     var body: some View {
         NavigationStack(path: $router.path) {
             VStack {
@@ -21,41 +22,46 @@ struct HomeView: View {
                 HStack {
                     //MARK: Destination to PlayerView
                     PrimaryButtonView(title: "Joueurs", action: {
-                        router.push(.playerView)
-                    }, style: .filled(color: .darkestPurple), fontSize: .largeTitle)
+                        router.push(.createTeamView)
+                    }, style: .filled(color: .darkestPurple), fontSize: Typography.largeTitle)
                      
                     //MARK: Destination to MasterView
                     PrimaryButtonView(title: "Maître", action: {
-                        router.push(.masterView)
-                    }, style: .outlined(color: .darkestPurple), fontSize: .largeTitle)
+                        router.push(.masterLobbyView)
+                    }, style: .outlined(color: .darkestPurple), fontSize: Typography.largeTitle)
                   
                 }
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .homeView:
                         HomeView()
-                    case .masterView:
+                    case .masterChooseGameView:
+                       EmptyView()
+                    case .masterLobbyView:
                         //TODO: view
                         //MasterView()
                         EmptyView()
-                    case .playerView:
+                    case .playerChooseGameView:
                         //TODO: view
-                        PlayerView()
-                       // EmptyView()
-                    case .quizView:
+                        if let vm = flowVM.teamGameVM {
+                            PlayerChooseGameView(teamGameVM: vm)
+                        } else {
+                            Text("Pas de team Gros Bug sa reum")
+                        }
+                    case .blindTest:
                         //TODO: view
-                        //QuizView
-                        EmptyView()
-                    case .settingsView:
+                        BuzzerPlayerView(buzzerVM: flowVM.makeBuzzerViewModel(for: .blindTest))
+                    case .createTeamView:
                         //TODO: view
-                        //SettingsView
-                        EmptyView()
+                        CreateTeamView(createTeamVM: flowVM.makeCreateTeamViewModel())
+                 
                     }
                 }
                 
                 Spacer()
                 
             }
+            .appDefaultTextStyle(Typography.body)
         }
     }
 }
