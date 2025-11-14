@@ -40,7 +40,7 @@ struct HomeView: View {
                        EmptyView()
                     case .masterLobbyView:
                         //TODO: view
-                        LobbyMasterViewModel(masterGameVM: masterFlowVM.makeLobbyViewModel())
+                        LobbyMasterView(masterGameVM: masterFlowVM.makeLobbyViewModel())
                     case .playerChooseGameView:
                         //TODO: view
                         if let vm = teamFlowVM.teamGameVM {

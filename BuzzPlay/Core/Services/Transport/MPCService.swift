@@ -36,6 +36,10 @@ final class MPCService: NSObject {
         session.delegate = self
     }
     
+}
+
+//MARK: Advertiser Master
+extension MPCService {
     //MARK: Master send present call
     func startHosting() {
         advertiser = MCNearbyServiceAdvertiser(
@@ -44,10 +48,27 @@ final class MPCService: NSObject {
             serviceType: serviceType
         )
         advertiser?.delegate = self
+        advertiser?.startAdvertisingPeer()
+        print("OK MPC: hosting(MASTER) started as \(myPeerID.displayName)")
+    }
+    
+    //MARK: Master stop advertise
+    func stopHosting() {
+        advertiser?.stopAdvertisingPeer()
+        advertiser = nil
+        session.disconnect()
     }
 }
 
-
+//MARK: Browser Player/Team
+extension MPCService {
+    func startBrowsing() {
+        browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
+        browser?.delegate = self
+        browser?.startBrowsingForPeers()
+        print("OK MPC: browsing(TEAM) started as \(myPeerID.displayName)")
+    }
+}
 
 
 
@@ -64,7 +85,7 @@ extension MPCService: MCSessionDelegate {
                 self.onPeerConnected?(peerID)
             case .notConnected:
                 print("PAS OK MPC: disconnected from \(peerID.displayName)")
-                self.onPeerConnected?(peerID)
+                self.onPeerDisconnected?(peerID)
             case .connecting:
                 print("LOAD MPC: is connecting to \(peerID.displayName)")
             @unknown default:

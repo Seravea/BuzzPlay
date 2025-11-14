@@ -14,12 +14,17 @@ import MultipeerConnectivity
 final class MasterFlowViewModel: ObservableObject {
     
     var gameState: GameState = .lobby
+    var connectedPeers: [MCPeerID] = []
     
     var teams: [Team] = []
     
     var isHost: Bool = false
     
-    var mpc: MPCService = MPCService()
+    var mpcService: MPCService = MPCService()
+    
+    init() {
+        setupMPC()
+    }
     
 
     
@@ -63,3 +68,20 @@ final class MasterFlowViewModel: ObservableObject {
 
 
 
+//MARK: MPC Service for MasterFlow
+extension MasterFlowViewModel {
+    
+    private func setupMPC() {
+            mpcService.onPeerConnected = { [weak self] peer in
+                guard let self else { return }
+                self.connectedPeers.append(peer)
+            }
+
+            mpcService.onPeerDisconnected = { [weak self] peer in
+                guard let self else { return }
+                self.connectedPeers.removeAll { $0 == peer }
+            }
+
+            mpcService.startHosting()
+        }
+}

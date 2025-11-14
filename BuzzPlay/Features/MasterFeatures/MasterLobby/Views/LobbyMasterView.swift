@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct LobbyMasterViewModel: View {
+struct LobbyMasterView: View {
     @EnvironmentObject var router: Router
     @State var masterGameVM: MasterLobbyViewModel
     var body: some View {
@@ -23,14 +23,14 @@ struct LobbyMasterViewModel: View {
                 VStack {
                     HStack {
                         ScrollView(.horizontal) {
-                            ForEach(masterGameVM.teams) { team in
+                            ForEach(masterGameVM.connectedPeers, id: \.self) { team in
                                 VStack {
-                                    Text(team.name)
+                                    Text(team.displayName)
                                         .font(.poppins(.largeTitle))
-                                    ForEach(team.players) { player in
-                                        Text(player.name)
-                                            .font(.poppins(.title3))
-                                    }
+//                                    ForEach(team.players) { player in
+//                                        Text(player.name)
+//                                            .font(.poppins(.title3))
+//                                    }
                                 }
                             }
                         }
@@ -47,5 +47,5 @@ struct LobbyMasterViewModel: View {
 }
 
 #Preview {
-    LobbyMasterViewModel(masterGameVM: MasterLobbyViewModel(gameVM: MasterFlowViewModel()))
+    LobbyMasterView(masterGameVM: MasterLobbyViewModel(gameVM: MasterFlowViewModel()))
 }
