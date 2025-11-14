@@ -19,13 +19,17 @@ final class MasterFlowViewModel: ObservableObject {
     
     var isHost: Bool = false
     
-    var gamesOpen: [Game] = []
-    
     var mpc: MPCService = MPCService()
+    
+
     
     //MARK: Master's makeVM
     func makeLobbyViewModel() -> MasterLobbyViewModel {
         MasterLobbyViewModel(gameVM: self)
+    }
+    
+    func makeChooseGameVM() -> MasterChooseGameViewModel {
+        MasterChooseGameViewModel(gameVM: self)
     }
     
     
@@ -42,8 +46,10 @@ final class MasterFlowViewModel: ObservableObject {
     
     //MARK: Master's functions for gameSelection
     
-    func openGame(_ game: Game) {
-        gamesOpen.append(game)
+    var gamesOpen: [GameType] = []
+    
+    func selectGame(_ game: GameType) {
+        gameState = .inGame(game)
     }
     
     

@@ -48,13 +48,25 @@ struct HomeView: View {
                         } else {
                             Text("Pas de team Gros Bug sa reum")
                         }
-                    case .blindTest:
+                    case .blindTestMaster:
+                        BlindTestMasterView()
+                    case .blindTestPlayer:
                         //TODO: view
                         BuzzerPlayerView(buzzerVM: teamFlowVM.makeBuzzerViewModel(for: .blindTest))
                     case .createTeamView:
                         //TODO: view
                         CreateTeamView(createTeamVM: teamFlowVM.makeCreateTeamViewModel())
                  
+                    case .quizMaster:
+                        //TODO: View
+                        EmptyView()
+                    case .quizPlayer:
+                        if let vm = teamFlowVM.teamGameVM {
+                            BuzzerPlayerView(buzzerVM: BuzzerViewModel(team: vm.team, mode: .quiz))
+                        }
+                       
+                    case .karaoke:
+                        EmptyView()
                     }
                 }
                 

@@ -10,14 +10,8 @@ import Foundation
 
 enum GameState {
     case lobby
-    case inGame
+    case inGame(GameType)
     case gameOver
 }
 
 
-
-enum Game: String, CaseIterable, Codable {
-    case blindTest
-    case quiz
-    case karaoke
-}

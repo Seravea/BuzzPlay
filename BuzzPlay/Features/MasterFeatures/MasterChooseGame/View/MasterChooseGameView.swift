@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct MasterChooseGameView: View {
+    @State var masterChooseGameVM: MasterChooseGameViewModel
     @EnvironmentObject private var router: Router
     @State var isOpen: Bool = false
+    
+    
+    
     var body: some View {
         GeometryReader { geo in
             VStack {
@@ -90,7 +94,7 @@ struct MasterChooseGameView: View {
 }
 
 #Preview {
-    MasterChooseGameView()
+    MasterChooseGameView(masterChooseGameVM: MasterChooseGameViewModel(gameVM: MasterFlowViewModel()))
 }
 
 
