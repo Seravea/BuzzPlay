@@ -12,6 +12,8 @@ import Observation
 class TeamFlowViewModel {
     var teamGameVM: TeamGameViewModel?
     let mpc = MPCService()
+    
+    var team: Team?
 
     func makeCreateTeamViewModel() -> CreateTeamViewModel {
         let vm = CreateTeamViewModel()
@@ -24,11 +26,16 @@ class TeamFlowViewModel {
                     newPlayers.append(player)
                 }
             }
+            
             let newTeam = Team(name: team.name, colorIndex: 0, players: newPlayers)
             
+            self.team = newTeam
+            // Créer le moteur principal pour CE joueur
+            self.teamGameVM = TeamGameViewModel(gameVM: self)
             
-            // 1️⃣ Créer le moteur principal pour CE joueur
-            self.teamGameVM = TeamGameViewModel(team: newTeam, mpc: self.mpc)
+           
+        
+            
         }
 
         return vm

@@ -16,9 +16,13 @@ struct PlayerChooseGameView: View {
                 Spacer()
                 HStack {
                    Spacer()
-                    ButtonGameCardView(gameTitle: "Blind Test") {
+                    
+                    ButtonChooseGameView(isOpen: true, geo: geo, action: {
                         router.push(.blindTestPlayer)
-                    }
+                    }, title: GameType.blindTest.gameTitle)
+//                    ButtonGameCardView(gameTitle: "Blind Test") {
+//                        router.push(.blindTestPlayer)
+//                    }
                     
                     ButtonGameCardView(gameTitle: "Quiz") {
                         
@@ -40,5 +44,5 @@ struct PlayerChooseGameView: View {
 }
 
 #Preview {
-    PlayerChooseGameView(teamGameVM: TeamGameViewModel(team: Team(name: "la team", colorIndex: 0), mpc: MPCService()))
+    PlayerChooseGameView(teamGameVM: TeamGameViewModel(gameVM: TeamFlowViewModel()))
 }
