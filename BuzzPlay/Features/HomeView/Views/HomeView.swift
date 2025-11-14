@@ -49,7 +49,7 @@ struct HomeView: View {
                             Text("Pas de team Gros Bug sa reum")
                         }
                     case .blindTestMaster:
-                        BlindTestMasterView()
+                        BlindTestMasterView(blindTestViewModel: masterFlowVM.makeBlindTestMasterVM())
                     case .blindTestPlayer:
                         //TODO: view
                         BuzzerPlayerView(buzzerVM: teamFlowVM.makeBuzzerViewModel(for: .blindTest))

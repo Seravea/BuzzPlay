@@ -32,6 +32,10 @@ final class MasterFlowViewModel: ObservableObject {
         MasterChooseGameViewModel(gameVM: self)
     }
     
+    func makeBlindTestMasterVM() -> BlindTestViewModel {
+        BlindTestViewModel(gameVM: self)
+    }
+    
     
     //MARK: Master's functions for Team
     

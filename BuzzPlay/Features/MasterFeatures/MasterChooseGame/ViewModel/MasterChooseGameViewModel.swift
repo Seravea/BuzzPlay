@@ -16,11 +16,23 @@ class MasterChooseGameViewModel {
         self.gameVM = gameVM
     }
     
-    var availableGames: [GameType] {
+    var availableGames: [GameType] = []
+    
+    
+    //MARK: Datas en functions for views
+    var allGames: [GameType] {
         [.quiz, .blindTest]
     }
     
-    func chooseGame(_ game: GameType) {
-        gameVM.selectGame(game)
+    func addGame(_ game: GameType) {
+        availableGames.append(game)
+    }
+    
+    func removeGame(_ game: GameType) {
+        availableGames.removeAll { $0 == game }
+    }
+    
+    func gameIsAvailable(_ game: GameType) -> Bool {
+        availableGames.contains(game)
     }
 }

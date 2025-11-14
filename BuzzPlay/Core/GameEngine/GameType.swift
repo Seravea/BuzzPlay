@@ -24,4 +24,15 @@ enum GameType: String, CaseIterable, Codable {
             return .karaoke
         }
     }
+    
+    var gameTitle: String {
+        switch self {
+        case .blindTest:
+            return "Blind Test"
+        case .quiz:
+            return "Quiz"
+        case .karaoke:
+            return "Karaoke"
+        }
+    }
 }
