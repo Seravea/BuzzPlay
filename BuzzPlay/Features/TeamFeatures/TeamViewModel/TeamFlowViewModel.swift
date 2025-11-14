@@ -11,31 +11,39 @@ import Observation
 @Observable
 class TeamFlowViewModel {
     var teamGameVM: TeamGameViewModel?
-    let mpc = MPCService()
+    var mpc: MPCService?
     
     var team: Team?
 
     func makeCreateTeamViewModel() -> CreateTeamViewModel {
         let vm = CreateTeamViewModel()
 
-        vm.onTeamCreated = { [weak self] team in
+        vm.onTeamCreated = { [weak self] rawTeam in
             guard let self else { return }
-            var newPlayers: [Player] = []
-            for player in team.players {
-                if !player.name.isEmpty {
-                    newPlayers.append(player)
-                }
-            }
-            
-            let newTeam = Team(name: team.name, colorIndex: 0, players: newPlayers)
-            
+
+            // Nettoyage des joueurs
+            let cleanedPlayers = rawTeam.players
+                .filter { !$0.name.isEmpty }
+
+            // La team finale, unique source de vérité
+            let newTeam = Team(
+                name: rawTeam.name.trimmingCharacters(in: .whitespaces),
+                colorIndex: 0,
+                players: cleanedPlayers
+            )
+
             self.team = newTeam
-            // Créer le moteur principal pour CE joueur
-            self.teamGameVM = TeamGameViewModel(gameVM: self)
-            
-           
-        
-            
+
+            // MPCService unique pour l’iPad joueur
+            let mpc = MPCService(peerName: newTeam.name, role: .team)
+            self.mpc = mpc
+
+            // Le TeamGameVM doit recevoir LA MÊME TEAM
+            let gameVM = TeamGameViewModel(team: newTeam, mpc: mpc)
+            self.teamGameVM = gameVM
+
+            // On lance le browsing après que tout soit en place
+            gameVM.startBrowsing()
         }
 
         return vm

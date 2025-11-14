@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CreateTeamView: View {
-    @StateObject var createTeamVM: CreateTeamViewModel
+    @Bindable var createTeamVM: CreateTeamViewModel
     @EnvironmentObject private var router: Router
     
     var body: some View {
@@ -61,7 +61,7 @@ struct CreateTeamView: View {
                 Spacer()
                 
                 PrimaryButtonView(title: "Valider la team", action: {
-                    createTeamVM.validate()
+                    createTeamVM.isAlertOn.toggle()
                 }, style: .filled(color: .green), fontSize: Typography.largeTitle)
                 
             }
@@ -71,6 +71,7 @@ struct CreateTeamView: View {
                 }
                 
                 Button("Continuer", role: .cancel) {
+                    createTeamVM.validate()
                     router.push(.playerChooseGameView)
                 }
                 

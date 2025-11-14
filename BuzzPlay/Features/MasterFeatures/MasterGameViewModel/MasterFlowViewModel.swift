@@ -11,18 +11,16 @@ import MultipeerConnectivity
 
 
 @Observable
-final class MasterFlowViewModel: ObservableObject {
+final class MasterFlowViewModel {
     
     var gameState: GameState = .lobby
     var connectedPeers: [MCPeerID] = []
     
     var teams: [Team] = []
     
-    var isHost: Bool = false
+    var mpcService: MPCService = MPCService(peerName: "Master", role: .master)
     
-    var mpcService: MPCService = MPCService()
-    
-    
+    private var hasStartedHosting = false
 
     
     //MARK: Master's makeVM
@@ -69,6 +67,10 @@ final class MasterFlowViewModel: ObservableObject {
 extension MasterFlowViewModel {
     
     func setupMPC() {
+            // Si tu veux vraiment empêcher plusieurs appels :
+            guard !hasStartedHosting else { return }
+            hasStartedHosting = true
+
             mpcService.onPeerConnected = { [weak self] peer in
                 guard let self else { return }
                 self.connectedPeers.append(peer)
@@ -79,6 +81,27 @@ extension MasterFlowViewModel {
                 self.connectedPeers.removeAll { $0 == peer }
             }
 
-            mpcService.startHosting()
+            mpcService.onMessage = { [weak self] data, peer in
+                guard let self else { return }
+
+                if let team = try? JSONDecoder().decode(Team.self, from: data) {
+                    print("Master received team \(team.name) from \(peer.displayName)")
+                    self.teams.append(team)
+                } else {
+                    print("Master: received nonTeam data from \(peer.displayName)")
+                }
+            }
+
+            print("Master start advertising")
+            mpcService.startHostingIfNeeded()   // ⬅️ nouvelle méthode côté MPCService
+            hasStartedHosting = true
         }
+}
+
+
+//MARK: func send games to Peer connected
+extension MasterFlowViewModel {
+    func broadcastGameAvailability() {
+        mpcService.sendGameAvailability(gamesOpen)
+    }
 }

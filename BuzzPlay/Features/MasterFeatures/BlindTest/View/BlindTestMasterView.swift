@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BlindTestMasterView: View {
-    @State var blindTestViewModel: BlindTestViewModel
+    @Bindable var blindTestViewModel: BlindTestViewModel
     
     var body: some View {
         GeometryReader { geo in

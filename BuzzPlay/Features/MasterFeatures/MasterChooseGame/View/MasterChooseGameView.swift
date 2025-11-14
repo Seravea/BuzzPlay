@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MasterChooseGameView: View {
-    @State var masterChooseGameVM: MasterChooseGameViewModel
+    @Bindable var masterChooseGameVM: MasterChooseGameViewModel
     @EnvironmentObject private var router: Router
     @State var isOpen: Bool = false
     
