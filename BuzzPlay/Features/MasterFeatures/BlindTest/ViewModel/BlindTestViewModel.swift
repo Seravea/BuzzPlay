@@ -12,7 +12,7 @@ import Observation
 
 
 @Observable
-class BlindTestViewModel: ObservableObject {
+class BlindTestViewModel {
     var gameVM: MasterFlowViewModel
     
     //MARK: données de manche en cours

@@ -9,13 +9,13 @@ import SwiftUI
 
 struct LobbyMasterView: View {
     @EnvironmentObject var router: Router
-    @State var masterGameVM: MasterLobbyViewModel
+    @Bindable var masterGameVM: MasterLobbyViewModel
     var body: some View {
         VStack {
             Text("Lobby Master")
             
             Spacer()
-            if masterGameVM.connectedPeers.isEmpty {
+            if masterGameVM.teams.isEmpty {
                 ProgressView {
                     Text("Aucune équipe n'a rejoint pour l'instant")
                 }
@@ -23,14 +23,14 @@ struct LobbyMasterView: View {
                 VStack {
                     HStack {
                         ScrollView(.horizontal) {
-                            ForEach(masterGameVM.connectedPeers, id: \.self) { team in
+                            ForEach(masterGameVM.teams) { team in
                                 VStack {
-                                    Text(team.displayName)
+                                    Text(team.name)
                                         .font(.poppins(.largeTitle))
-//                                    ForEach(team.players) { player in
-//                                        Text(player.name)
-//                                            .font(.poppins(.title3))
-//                                    }
+                                    ForEach(team.players) { player in
+                                        Text(player.name)
+                                            .font(.poppins(.title3))
+                                    }
                                 }
                             }
                         }
@@ -48,4 +48,5 @@ struct LobbyMasterView: View {
 
 #Preview {
     LobbyMasterView(masterGameVM: MasterLobbyViewModel(gameVM: MasterFlowViewModel()))
+        .environmentObject(Router())
 }

@@ -25,14 +25,19 @@ class MasterChooseGameViewModel {
     }
     
     func addGame(_ game: GameType) {
-        availableGames.append(game)
+        if !gameVM.gamesOpen.contains(game) {
+            gameVM.gamesOpen.append(game)
+            gameVM.broadcastGameAvailability()
+        }
     }
+
     
     func removeGame(_ game: GameType) {
-        availableGames.removeAll { $0 == game }
+        gameVM.gamesOpen.removeAll { $0 == game }
+        gameVM.broadcastGameAvailability()
     }
     
     func gameIsAvailable(_ game: GameType) -> Bool {
-        availableGames.contains(game)
+        gameVM.gamesOpen.contains(game)
     }
 }

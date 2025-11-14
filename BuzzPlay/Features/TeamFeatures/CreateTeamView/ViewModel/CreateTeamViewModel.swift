@@ -9,16 +9,14 @@ import Foundation
 import Observation
 
 @Observable
-class CreateTeamViewModel: ObservableObject {
+class CreateTeamViewModel {
     var team: Team = Team(name: "", colorIndex: 0, players: [])
     var isAlertOn: Bool = false
     
     var onTeamCreated: ((Team) -> Void)?
     
     func validate() {
-        isAlertOn = true
         onTeamCreated?(team)
-    
     }
     
     var nbofPlayers: Int {

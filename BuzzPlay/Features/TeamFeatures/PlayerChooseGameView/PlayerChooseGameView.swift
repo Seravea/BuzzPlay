@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PlayerChooseGameView: View {
-    var teamGameVM: TeamGameViewModel
+    @Bindable var teamGameVM: TeamGameViewModel
     @EnvironmentObject var router: Router
     var body: some View {
         GeometryReader { geo in
@@ -17,7 +17,7 @@ struct PlayerChooseGameView: View {
                 HStack {
                    Spacer()
                     
-                    ButtonChooseGameView(isOpen: true, geo: geo, action: {
+                    ButtonChooseGameView(isOpen: teamGameVM.gameIsAvalaible(.blindTest), geo: geo, action: {
                         router.push(.blindTestPlayer)
                     }, title: GameType.blindTest.gameTitle)
 //                    ButtonGameCardView(gameTitle: "Blind Test") {
@@ -44,5 +44,5 @@ struct PlayerChooseGameView: View {
 }
 
 #Preview {
-    PlayerChooseGameView(teamGameVM: TeamGameViewModel(gameVM: TeamFlowViewModel()))
+    PlayerChooseGameView(teamGameVM: TeamGameViewModel(team: Team(name: "la team", colorIndex: 0), mpc: MPCService(peerName: "l'équipe", role: .team)))
 }

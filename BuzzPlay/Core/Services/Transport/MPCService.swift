@@ -8,12 +8,19 @@
 import Foundation
 import MultipeerConnectivity
 
+enum MPCRole {
+    case master
+    case team
+}
+
 
 final class MPCService: NSObject {
     //MARK: MPC Session datas
+    private let role: MPCRole
     private let serviceType = "buzzplay-game"
     private let myPeerID: MCPeerID
     private let session: MCSession
+    private var invitedPeers = Set<String>()
     
     //MARK: MPC for Master
     private var advertiser: MCNearbyServiceAdvertiser?
@@ -28,8 +35,9 @@ final class MPCService: NSObject {
     var onMessage: ((Data, MCPeerID) -> Void)?
     
     //MARK: class init()
-    override init() {
-        self.myPeerID = MCPeerID(displayName: UIDevice.current.name)
+    init(peerName: String, role: MPCRole) {
+        self.role = role
+        self.myPeerID = MCPeerID(displayName: peerName)
         self.session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
         
         super.init()
@@ -41,10 +49,12 @@ final class MPCService: NSObject {
 //MARK: Advertiser Master
 extension MPCService {
     //MARK: Master send present call
-    func startHosting() {
+    func startHostingIfNeeded() {
+        guard role == .master else { return }
+
         advertiser = MCNearbyServiceAdvertiser(
             peer: myPeerID,
-            discoveryInfo: nil,
+            discoveryInfo: ["role": "master"],
             serviceType: serviceType
         )
         advertiser?.delegate = self
@@ -62,11 +72,29 @@ extension MPCService {
 
 //MARK: Browser Player/Team
 extension MPCService {
-    func startBrowsing() {
-        browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
-        browser?.delegate = self
-        browser?.startBrowsingForPeers()
-        print("OK MPC: browsing(TEAM) started as \(myPeerID.displayName)")
+    func startBrowsingIfNeeded() {
+            guard role == .team else { return }
+
+            browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
+            browser?.delegate = self
+            browser?.startBrowsingForPeers()
+            print("OK MPC: browsing(TEAM) started as \(myPeerID.displayName)")
+    }
+    
+   //send team to Hosting
+    func sendTeam(_ team: Team) {
+        guard !session.connectedPeers.isEmpty else {
+            print("ERREUR MPC: no peer connected, can't send team DATA")
+            return
+        }
+        do {
+            let data = try JSONEncoder().encode(team)
+            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+            
+            print("MPC Sent team \(team.name) to \(session.connectedPeers.map(\.displayName).joined(separator: ", "))")
+        } catch {
+            print("MPC failed to send Team \(team.name)")
+        }
     }
 }
 
@@ -135,15 +163,54 @@ extension MPCService: MCNearbyServiceAdvertiserDelegate {
 
 //MARK: Browser Delegate
 extension MPCService: MCNearbyServiceBrowserDelegate {
-    func browser(_ browser: MCNearbyServiceBrowser,
-                 foundPeer peerID: MCPeerID,
-                 withDiscoveryInfo info: [String : String]?) {
-        print("👀 MPC: found peer \(peerID.displayName)")
-        browser.invitePeer(peerID, to: session, withContext: nil, timeout: 10)
-    }
 
     func browser(_ browser: MCNearbyServiceBrowser,
-                 lostPeer peerID: MCPeerID) {
-        print("❌ MPC: lost peer \(peerID.displayName)")
+                     foundPeer peerID: MCPeerID,
+                     withDiscoveryInfo info: [String : String]?) {
+        guard role == .team else { return }
+            let name = peerID.displayName
+            let peerRole = info?["role"] ?? "unknown"
+
+            // 👉 N'inviter QUE le Master
+            guard peerRole == "master" else {
+                print("⚠️ MPC: ignoring non-master peer \(name) (role=\(peerRole))")
+                return
+            }
+
+            guard !invitedPeers.contains(name) else {
+                print("⚠️ MPC: already invited \(name)")
+                return
+            }
+
+            invitedPeers.insert(name)
+            print("👀 MPC: found master \(name), inviting…")
+            browser.invitePeer(peerID, to: session, withContext: nil, timeout: 10)
+        }
+
+        func browser(_ browser: MCNearbyServiceBrowser,
+                     lostPeer peerID: MCPeerID) {
+            invitedPeers.remove(peerID.displayName)
+            print("❌ MPC: lost peer \(peerID.displayName)")
+        }
+}
+
+
+
+//MARK: ChooseGame func
+extension MPCService {
+    func sendGameAvailability(_ openGames: [GameType]) {
+        guard !session.connectedPeers.isEmpty else {
+            print("Erreur MPC: pas de peer connecté, can't send")
+            return
+        }
+        
+        let update = GameAvailability(openGames: openGames)
+        do {
+            let data = try JSONEncoder().encode(update)
+            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+            print("MPC sent games List \(openGames)")
+        } catch {
+            print("MPC can't sent, there is an error: \(error)")
+        }
     }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct BuzzerPlayerView: View {
     @State var isTapped: Bool = false
-    var buzzerVM: BuzzerViewModel
+    @Bindable var buzzerVM: BuzzerViewModel
     @State var textTEST: String = ""
     var body: some View {
         VStack {
