@@ -9,7 +9,8 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject private var router: Router
-    @State var flowVM = TeamFlowViewModel()
+    @State var teamFlowVM = TeamFlowViewModel()
+    @State var masterFlowVM = MasterFlowViewModel()
     var body: some View {
         NavigationStack(path: $router.path) {
             VStack {
@@ -39,22 +40,33 @@ struct HomeView: View {
                        EmptyView()
                     case .masterLobbyView:
                         //TODO: view
-                        //MasterView()
-                        EmptyView()
+                        LobbyMasterViewModel(masterGameVM: masterFlowVM.makeLobbyViewModel())
                     case .playerChooseGameView:
                         //TODO: view
-                        if let vm = flowVM.teamGameVM {
+                        if let vm = teamFlowVM.teamGameVM {
                             PlayerChooseGameView(teamGameVM: vm)
                         } else {
                             Text("Pas de team Gros Bug sa reum")
                         }
-                    case .blindTest:
+                    case .blindTestMaster:
+                        BlindTestMasterView(blindTestViewModel: masterFlowVM.makeBlindTestMasterVM())
+                    case .blindTestPlayer:
                         //TODO: view
-                        BuzzerPlayerView(buzzerVM: flowVM.makeBuzzerViewModel(for: .blindTest))
+                        BuzzerPlayerView(buzzerVM: teamFlowVM.makeBuzzerViewModel(for: .blindTest))
                     case .createTeamView:
                         //TODO: view
-                        CreateTeamView(createTeamVM: flowVM.makeCreateTeamViewModel())
+                        CreateTeamView(createTeamVM: teamFlowVM.makeCreateTeamViewModel())
                  
+                    case .quizMaster:
+                        //TODO: View
+                        EmptyView()
+                    case .quizPlayer:
+                        if let vm = teamFlowVM.teamGameVM {
+                            BuzzerPlayerView(buzzerVM: BuzzerViewModel(team: vm.team, mode: .quiz))
+                        }
+                       
+                    case .karaoke:
+                        EmptyView()
                     }
                 }
                 

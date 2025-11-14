@@ -13,6 +13,8 @@ import Observation
 
 @Observable
 class BlindTestViewModel: ObservableObject {
+    var gameVM: MasterFlowViewModel
+    
     //MARK: données de manche en cours
     var isPlaying: Bool = false
     var songs: [Song] = songsData
@@ -25,9 +27,13 @@ class BlindTestViewModel: ObservableObject {
     
     var gameTimer: String = "00:00"
     
+    
+    
     //MARK: données de jeu
     
-    
+    init(gameVM: MasterFlowViewModel) {
+        self.gameVM = gameVM
+    }
     
     var gameAudioPlayer: AVAudioPlayer = AVAudioPlayer()
     

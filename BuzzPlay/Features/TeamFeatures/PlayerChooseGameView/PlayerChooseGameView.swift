@@ -17,7 +17,7 @@ struct PlayerChooseGameView: View {
                 HStack {
                    Spacer()
                     ButtonGameCardView(gameTitle: "Blind Test") {
-                        router.push(.blindTest)
+                        router.push(.blindTestPlayer)
                     }
                     
                     ButtonGameCardView(gameTitle: "Quiz") {

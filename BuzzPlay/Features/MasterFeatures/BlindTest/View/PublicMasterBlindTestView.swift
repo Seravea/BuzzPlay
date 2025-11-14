@@ -46,6 +46,6 @@ struct PublicMasterBlindTestView: View {
 }
 
 #Preview {
-    PublicMasterBlindTestView(blindTestVM: BlindTestViewModel())
+    PublicMasterBlindTestView(blindTestVM: BlindTestViewModel(gameVM: MasterFlowViewModel()))
       
 }
