@@ -11,9 +11,9 @@ import SwiftUI
 
 struct PrivateMasterBlindTestView: View {
     
-    @StateObject var ambiantaudioPlayerVM = AmbiantSoundViewModel()
+    @Bindable var ambiantaudioPlayerVM = AmbiantSoundViewModel()
 
-    @ObservedObject var blindTestVM: BlindTestViewModel
+    @Bindable var blindTestVM: BlindTestViewModel
 
     var body: some View {
         VStack {
@@ -58,5 +58,5 @@ struct PrivateMasterBlindTestView: View {
 }
 
 #Preview {
-    PrivateMasterBlindTestView(blindTestVM: BlindTestViewModel())
+    PrivateMasterBlindTestView(blindTestVM: BlindTestViewModel(gameVM: MasterFlowViewModel()))
 }

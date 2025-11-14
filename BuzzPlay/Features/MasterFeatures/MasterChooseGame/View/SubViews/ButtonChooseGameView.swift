@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ButtonChooseGameView: View {
-    @Binding var isOpen: Bool
+    let isOpen: Bool
     var geo: GeometryProxy
     let action: () -> Void
     let title: String
@@ -24,25 +24,27 @@ struct ButtonChooseGameView: View {
                     ZStack(alignment: .topTrailing) {
                         RoundedRectangle(cornerRadius: 12)
                             .foregroundStyle(Color.darkestPurple)
-                        Text(isOpen == true ? "Open" : "Close")
-                            .foregroundStyle(isOpen == true ? Color.darkestPurple : Color.white)
+                            .opacity(isOpen ? 1 : 0.8)
+                        Text(isOpen ? "Open" : "Close")
+                            .foregroundStyle(isOpen ? Color.darkestPurple : Color.white)
                             .padding(24)
                             .background {
                                 RoundedRectangle(cornerRadius: 12)
-                                    .foregroundStyle(isOpen == true ? .green : .red)
+                                    .foregroundStyle(isOpen ? .green : .red)
                                     .padding()
                             }
                         
                     }
                 }
         }
-        .appDefaultTextStyle(Typography.body)
+        .disabled(!isOpen)
+       
     }
 }
 
 
 #Preview {
     GeometryReader { geo in
-        ButtonChooseGameView(isOpen: .constant(false), geo: geo, action: {}, title: "BlindTest")
+        ButtonChooseGameView(isOpen: false, geo: geo, action: {}, title: "BlindTest")
     }
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BlindTestMasterView: View {
-    @StateObject var blindTestViewModel = BlindTestViewModel()
+    @Bindable var blindTestViewModel: BlindTestViewModel
     
     var body: some View {
         GeometryReader { geo in
@@ -35,5 +35,5 @@ struct BlindTestMasterView: View {
 }
 
 #Preview {
-    BlindTestMasterView()
+    BlindTestMasterView(blindTestViewModel: BlindTestViewModel(gameVM: MasterFlowViewModel()))
 }
