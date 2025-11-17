@@ -43,5 +43,5 @@ struct BuzzerPlayerView: View {
 }
 
 #Preview {
-    BuzzerPlayerView(buzzerVM: BuzzerViewModel(team: Team(name: "L'équipe 1", colorIndex: 0), mode: .blindTest))
+    BuzzerPlayerView(buzzerVM: BuzzerViewModel(team: Team(name: "L'équipe 1", teamColor: .blueGame), mode: .blindTest))
 }

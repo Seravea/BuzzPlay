@@ -28,7 +28,7 @@ class TeamFlowViewModel {
             // La team finale, unique source de vérité
             let newTeam = Team(
                 name: rawTeam.name.trimmingCharacters(in: .whitespaces),
-                colorIndex: 0,
+                teamColor: rawTeam.teamColor,
                 players: cleanedPlayers
             )
 

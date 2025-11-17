@@ -14,15 +14,48 @@ struct CreateTeamView: View {
     var body: some View {
         GeometryReader { geo in
             VStack(spacing: 24) {
-                TextFieldCustom(
-                    text: $createTeamVM.team.name,
-                    prompt: "Nom de l'équipe",
-                    textSize: .largeTitle
-                )
-                
-                Text("De 1 à 6 joueurs")
-                    .font(.poppins(.largeTitle, weight: .bold))
-                
+                HStack(spacing: 24) {
+                    TextFieldCustom(
+                        text: $createTeamVM.team.name,
+                        prompt: "Nom de l'équipe",
+                        textSize: .largeTitle
+                    )
+                    HStack(spacing: 12) {
+                        ForEach(GameColor.allCases, id: \.self) { color in
+                            Button {
+                                createTeamVM.team.teamColor = color
+                            } label: {
+                                Circle()
+                                    .frame(height: 52)
+                                    .foregroundStyle(Color(color.rawValue))
+                                    .opacity(createTeamVM.isSelectedGameColor(color))
+                            }
+
+                        }
+                    }
+                }
+                HStack {
+                    Text("De 1 à 6 joueurs")
+                        .font(.poppins(.largeTitle, weight: .bold))
+                    
+                    Spacer()
+                    
+                    PrimaryButtonView(
+                        title: "Ajouter un joueur \(createTeamVM.nbofPlayers)/6",
+                        action: {
+                            withAnimation {
+                                createTeamVM.team.players.append(Player(name: ""))
+                            }
+                        },
+                        style: .filled(color: createTeamVM.nbofPlayers > 6 ? .gray : .mustardYellow),
+                        fontSize: Typography.largeTitle,
+                        sfIconName: "plus.circle.fill",
+                        iconSize: .largeTitle,
+                        colorIcon: .white,
+                        size: geo.size.width * 0.4
+                    )
+                    .disabled(createTeamVM.nbofPlayers > 5)
+                }
                 VStack(spacing: 12) {
                     ForEach($createTeamVM.team.players) { $player in
                         HStack {
@@ -41,21 +74,7 @@ struct CreateTeamView: View {
                     }
                     
                    
-                        PrimaryButtonView(
-                            title: "Ajouter un joueur \(createTeamVM.nbofPlayers)/6",
-                            action: {
-                                withAnimation {
-                                    createTeamVM.team.players.append(Player(name: ""))
-                                }
-                            },
-                            style: .filled(color: createTeamVM.nbofPlayers > 6 ? .gray : .mustardYellow),
-                            fontSize: Typography.largeTitle,
-                            sfIconName: "plus.circle.fill",
-                            iconSize: .largeTitle,
-                            colorIcon: .white,
-                            size: geo.size.width * 0.3
-                        )
-                        .disabled(createTeamVM.nbofPlayers > 5)
+                        
                     }
                 
                 Spacer()

@@ -41,5 +41,5 @@ struct TeamCardView: View {
 }
 
 #Preview {
-    TeamCardView(teamWining: Team(name: "La Team", colorIndex: 1), buzzTime: "00:01")
+    TeamCardView(teamWining: Team(name: "La Team", teamColor: .blueGame), buzzTime: "00:01")
 }

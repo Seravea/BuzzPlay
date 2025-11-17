@@ -13,7 +13,7 @@ struct Team: Identifiable, Hashable, Codable, Equatable {
     var id = UUID()
     var name: String
     var image: String?
-    var colorIndex: Int
+    var teamColor: GameColor = .blueGame
     var players: [Player] = []
     var score: Int = 0
 }
