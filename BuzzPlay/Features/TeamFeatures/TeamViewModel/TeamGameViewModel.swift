@@ -16,6 +16,7 @@ final class TeamGameViewModel{
     
     var team: Team
     var mpc: MPCService
+    var currentBuzzerVM: BuzzerViewModel?
     
     var hasStartedBrowsing = false
     var hasSetupMPC = false
@@ -25,6 +26,9 @@ final class TeamGameViewModel{
     var receivedMessage: String = ""
     
     var openGames: [GameType] = []
+    
+    var isBuzzLocked: Bool = true
+    
     
     init(team: Team, mpc: MPCService) {
         self.team = team
@@ -41,10 +45,7 @@ final class TeamGameViewModel{
         openGames.contains(game)
     }
 
-//        func makeBuzzViewModel() -> BuzzViewModel {
-//            BuzzViewModel(team: team, parent: self)
-//        }
-    
+
 }
 
 
@@ -71,6 +72,25 @@ extension TeamGameViewModel {
             } else {
                 // Ici, tu peux ignorer ou logger
                 // ex: print("TEAM: received non-gameAvailability data")
+            }
+            
+            
+            //recoit le lock du buzzer
+            if let lock = try? JSONDecoder().decode(BuzzLockPayload.self, from: data) {
+                print("TEAM: received BUZZ LOCK (winner: \(lock.name))")
+                    currentBuzzerVM?.teamNameHasBuzz = lock.name
+                
+                    self.isBuzzLocked = true
+                
+                    return
+                }
+            
+            //recoit le unlock du buzzer
+            if let _ = try? JSONDecoder().decode(BuzzUnlockPayload.self, from: data) {
+                print("TEAM: received BUZZ UNLOCK")
+                self.isBuzzLocked = false
+                self.currentBuzzerVM?.isEnabled = true   // bouton à nouveau cliquable
+                return
             }
         }
     }

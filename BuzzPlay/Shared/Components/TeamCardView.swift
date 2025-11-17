@@ -9,37 +9,57 @@ import SwiftUI
 
 
 struct TeamCardView: View {
-    var teamWining: Team
-    var buzzTime: String
+    var team: Team
+    var buzzTime: String?
+    var isWining: Bool = false
     var body: some View {
       
             
             ZStack(alignment: .bottom) {
                 
                 VStack {
-                    Text(teamWining.name)
-                    
-                    Text("\(buzzTime)")
+                    Text(team.name)
+                    if let buzzTime = buzzTime {
+                        Text("\(buzzTime)")
+                    }
+                    if !isWining {
+                        
+                        
+                        ForEach(team.players.indices, id: \.self) { playerIndex in
+                            HStack {
+                                Text("\(playerIndex + 1).")
+                                    .font(.poppins(.title))
+                                Text(team.players[playerIndex].name)
+                                    .font(.poppins(.title))
+                                    .frame(maxWidth: 400, alignment: .leading)
+                            }
+
+                        }
+                       
+                    }
                 }
                 .padding()
                 .frame(minWidth: 400, minHeight: 400, alignment: .top)
                 .background {
-                    Rectangle()
+                    RoundedRectangle(cornerRadius: 8, )
                     //MARK: Couleur de l'équipe qui a buzzé
-                        .foregroundStyle(Color.darkestPurple)
+                        .foregroundStyle(Color(team.teamColor.rawValue))
                 }
                 
                 //MARK: Affiché si le master valide la réponse
-                Text("Bonne Réponse !")
-                    .padding(.bottom)
+                if isWining {
+                    Text("Bonne Réponse !")
+                        .padding(.bottom)
+                }
+               
             }
             .font(.poppins(.largeTitle, weight: .bold))
-            .foregroundStyle(.white)
+            .foregroundStyle(Color.darkestPurple)
             
         
     }
 }
 
 #Preview {
-    TeamCardView(teamWining: Team(name: "La Team", colorIndex: 1), buzzTime: "00:01")
+    TeamCardView(team: Team(name: "La Team", players: [Player(name: "kikoo"), Player(name: "Romain")]))
 }

@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct TimerCardView: View {
-    @Binding var timer: String
+    var timer: String
+    var isCorrectAnswer: Bool
     var body: some View {
         
         
@@ -30,8 +31,11 @@ struct TimerCardView: View {
             }
             
             //MARK: Affiché si le master valide la réponse
-            Text("Bonne Réponse !")
-                .padding(.bottom)
+            if isCorrectAnswer {
+                Text("Bonne Réponse !")
+                    .padding(.bottom)
+            }
+            
         }
         .font(.poppins(.largeTitle, weight: .bold))
         .foregroundStyle(.white)
@@ -42,5 +46,5 @@ struct TimerCardView: View {
 
 
 #Preview {
-    TimerCardView(timer: .constant("00:03"))
+    TimerCardView(timer: "00:00:01", isCorrectAnswer: true)
 }

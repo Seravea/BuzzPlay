@@ -44,5 +44,5 @@ struct PlayerChooseGameView: View {
 }
 
 #Preview {
-    PlayerChooseGameView(teamGameVM: TeamGameViewModel(team: Team(name: "la team", colorIndex: 0), mpc: MPCService(peerName: "l'équipe", role: .team)))
+    PlayerChooseGameView(teamGameVM: TeamGameViewModel(team: Team(name: "la team", teamColor: .blueGame), mpc: MPCService(peerName: "l'équipe", role: .team)))
 }

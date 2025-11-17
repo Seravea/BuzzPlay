@@ -10,6 +10,7 @@ import SwiftUI
 
 
 struct Player: Identifiable, Hashable, Codable, Equatable {
+    
     var id = UUID()
     var name: String
     var image: String?
