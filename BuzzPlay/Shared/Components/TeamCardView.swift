@@ -19,8 +19,8 @@ struct TeamCardView: View {
                 
                 VStack {
                     Text(team.name)
-                    if isWining {
-                        Text("\(buzzTime ?? "")")
+                    if let buzzTime = buzzTime {
+                        Text("\(buzzTime)")
                     }
                     if !isWining {
                         

@@ -27,29 +27,35 @@ struct PrivateMasterBlindTestView: View {
                 
                 //MARK: Music Play/Pause from Master
                 VStack {
-                    PrimaryButtonView(title: "Play", action: {
+                    PrimaryButtonView(title: "Lecture", action: {
                         blindTestVM.playSound()
                     }, style: .filled(color: .darkestPurple), fontSize: Typography.largeTitle)
                    // .disabled(ambiantaudioPlayerVM.isPlaying)
-                    PrimaryButtonView(title: "Pause", action: {
-                        blindTestVM.pauseSong()
-                    }, style: .outlined(color: .darkestPurple), fontSize: Typography.largeTitle)
+                    
+                    PrimaryButtonView(title: "Question suivante", action: {
+                                    blindTestVM.goToNextSong()  // reset timer + change de chanson, sans play
+                                }, style: .filled(color: .darkestPurple),
+                                   fontSize: Typography.largeTitle)
+                    .disabled(!blindTestVM.isCorrect)
                 }
 //                .frame(width: 120)
             }
             
             
             //MARK: Correct answer or Wrong answer
-            HStack {
-                PrimaryButtonView(title: "Valider", action: {
-                    blindTestVM.isCorrectAnswer()
-                }, style: .filled(color: .green), fontSize: Typography.largeTitle)
-                
-                
-                PrimaryButtonView(title: "Refuser", action: {
-                    blindTestVM.isWrongAnswer()
-                }, style: .filled(color: .red), fontSize: Typography.largeTitle)
-                
+            VStack {
+                HStack {
+                    PrimaryButtonView(title: "Valider la réponse", action: {
+                        blindTestVM.validateAnswer()
+                    }, style: .filled(color: .green), fontSize: Typography.largeTitle)
+                    
+                    
+                    PrimaryButtonView(title: "Refuser la réponse", action: {
+                        blindTestVM.rejectAnswer()
+                    }, style: .filled(color: .red), fontSize: Typography.largeTitle)
+                    
+                }
+               
             }
            
                 

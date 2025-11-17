@@ -54,15 +54,25 @@ class TeamFlowViewModel {
         guard let teamVM = teamGameVM else {
             fatalError("Pas de team défini")
         }
-        let vm = BuzzerViewModel(team: teamVM.team, mode: mode)
 
-            vm.onBuzz = { [weak self] team, mode in
-                // Ici tu feras plus tard :
-                // - envoyer le buzz via MPC
-                // - mettre à jour de l’état local si tu veux
-                print("Buzz de \(team.name) sur mode \(mode)")
+        let vm = BuzzerViewModel(team: teamVM.team, mode: mode)
+        teamVM.currentBuzzerVM = vm
+
+        // buzz -> envoi MPC
+        vm.onBuzz = { [weak self] team, mode in
+            print("Buzz de \(team.name) sur mode \(mode)")
+
+            guard let mpc = self?.mpc else {
+                print("ERREUR MPC: pas de MPCService dans TeamFlowViewModel")
+                return
             }
 
-            return vm
+            mpc.sendBuzz(team: team)
         }
+
+        // si tu veux synchroniser l'état de verrouillage depuis TeamGameVM :
+        vm.isEnabled = !teamVM.isBuzzLocked
+
+        return vm
+    }
 }
