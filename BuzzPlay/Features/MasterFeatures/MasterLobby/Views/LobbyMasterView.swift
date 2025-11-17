@@ -24,14 +24,7 @@ struct LobbyMasterView: View {
                     HStack {
                         ScrollView(.horizontal) {
                             ForEach(masterGameVM.teams) { team in
-                                VStack {
-                                    Text(team.name)
-                                        .font(.poppins(.largeTitle))
-                                    ForEach(team.players) { player in
-                                        Text(player.name)
-                                            .font(.poppins(.title3))
-                                    }
-                                }
+                                TeamCardView(team: team, isWining: false)
                             }
                         }
                     }

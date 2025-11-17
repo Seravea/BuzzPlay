@@ -68,7 +68,48 @@ extension MPCService {
         advertiser = nil
         session.disconnect()
     }
+    
+    
+    
+    //MARK: function to send messages to Browsers
+    func sendBuzzLock(winningTeamId: UUID, name: String) {
+        guard !session.connectedPeers.isEmpty else {
+            print("ERREUR MPC: no peer connected, can't send BUZZ LOCK")
+            return
+        }
+
+    let payload = BuzzLockPayload(winningTeamID: winningTeamId, name: name)
+
+        do {
+            let data = try JSONEncoder().encode(payload)
+            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+            print("MPC sent BUZZ LOCK for teamId \(winningTeamId)")
+        } catch {
+            print("MPC failed to send BUZZ LOCK: \(error)")
+        }
+    }
+    
+    
+    func sendBuzzUnlock() {
+        guard !session.connectedPeers.isEmpty else { return }
+        let payload = BuzzUnlockPayload()
+
+        do {
+            let data = try JSONEncoder().encode(payload)
+            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+            print("MPC sent BUZZ UNLOCK")
+        } catch {
+            print("MPC failed to send BUZZ UNLOCK: \(error)")
+        }
+    }
+    
 }
+
+
+
+
+
+
 
 //MARK: Browser Player/Team
 extension MPCService {
@@ -96,6 +137,25 @@ extension MPCService {
             print("MPC failed to send Team \(team.name)")
         }
     }
+    
+    
+    //MARK: function to send buzz to Master
+    func sendBuzz(team: Team) {
+            guard !session.connectedPeers.isEmpty else {
+                print("ERREUR MPC: no peer connected, can't send BUZZ")
+                return
+            }
+
+        let payload = BuzzPayload(teamID: team.id, name: team.name)
+
+            do {
+                let data = try JSONEncoder().encode(payload)
+                try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+                print("MPC sent BUZZ from team \(team.name)")
+            } catch {
+                print("MPC failed to send BUZZ: \(error)")
+            }
+        }
 }
 
 
