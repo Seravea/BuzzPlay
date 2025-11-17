@@ -28,7 +28,7 @@ struct PublicMasterBlindTestView: View {
             Spacer()
             if let teamWining = blindTestVM.teamWining, let buzzTime = blindTestVM.buzzTime {
                 
-                TeamCardView(teamWining: teamWining, buzzTime: buzzTime)
+                TeamCardView(team: teamWining, buzzTime: buzzTime)
                 
             } else {
                 
