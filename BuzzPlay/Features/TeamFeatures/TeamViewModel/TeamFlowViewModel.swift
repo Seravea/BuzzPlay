@@ -66,7 +66,8 @@ class TeamFlowViewModel {
         // buzz -> envoi MPC
         vm.onBuzz = { [weak self] team, mode in
             print("Buzz de \(team.name) sur mode \(mode)")
-
+            vm.isEnabled = false
+            
             guard let mpc = self?.mpc else {
                 print("ERREUR MPC: pas de MPCService dans TeamFlowViewModel")
                 return
@@ -74,9 +75,7 @@ class TeamFlowViewModel {
 
             mpc.sendBuzz(team: team)
         }
-
-        // synchroniser l'état de verrouillage du buzzer depuis TeamGameVM :
-        vm.isEnabled = !teamVM.isBuzzLocked
+        
 
         return vm
     }

@@ -27,7 +27,6 @@ final class TeamGameViewModel{
     var allGames: [GameType] = [.blindTest, .quiz]
     var openGames: [GameType] = []
     
-    var isBuzzLocked: Bool = true
     
     
     
@@ -74,7 +73,8 @@ extension TeamGameViewModel {
                 print("TEAM: received BUZZ LOCK (winner: \(lock.name))")
                     currentBuzzerVM?.teamNameHasBuzz = lock.name
                 
-                    self.isBuzzLocked = true
+                    currentBuzzerVM?.isEnabled = false
+                
                 
                     return
                 }
@@ -82,7 +82,6 @@ extension TeamGameViewModel {
             //recoit le unlock du buzzer
             if let _ = try? JSONDecoder().decode(BuzzUnlockPayload.self, from: data) {
                 print("TEAM: received BUZZ UNLOCK")
-                self.isBuzzLocked = false
                 self.currentBuzzerVM?.isEnabled = true   // bouton à nouveau cliquable
                 return
             }
