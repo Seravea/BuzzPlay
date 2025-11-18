@@ -51,6 +51,12 @@ final class MasterFlowViewModel {
         return vm
     }
     
+    func makeQuizMasterVM() -> QuizMasterViewModel {
+        let vm = QuizMasterViewModel(gameVM: self)
+        self.currentBuzzGame = vm
+        return vm
+    }
+    
     
     //MARK: Master's functions for Team
     

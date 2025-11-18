@@ -14,7 +14,7 @@ enum GameType: String, CaseIterable, Codable {
     case quiz
     case karaoke
     
-    var destination: Route {
+    var destinationMaster: Route {
         switch self {
         case .blindTest:
             return .blindTestMaster
@@ -33,6 +33,17 @@ enum GameType: String, CaseIterable, Codable {
             return "Quiz"
         case .karaoke:
             return "Karaoke"
+        }
+    }
+    
+    var destinationPlayer: Route {
+        switch self {
+        case .blindTest:
+            return .blindTestPlayer
+        case .quiz:
+            return .quizPlayer
+        case .karaoke:
+            return .karaoke
         }
     }
 }

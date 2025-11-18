@@ -24,10 +24,11 @@ final class TeamGameViewModel{
     
     
     var receivedMessage: String = ""
-    
+    var allGames: [GameType] = [.blindTest, .quiz]
     var openGames: [GameType] = []
     
     var isBuzzLocked: Bool = true
+    
     
     
     init(team: Team, mpc: MPCService) {
@@ -39,13 +40,6 @@ final class TeamGameViewModel{
         
         setupMPC()
     }
-   
-    
-    func gameIsAvalaible(_ game: GameType) -> Bool {
-        openGames.contains(game)
-    }
-
-
 }
 
 
@@ -102,4 +96,13 @@ extension TeamGameViewModel {
             mpc.startBrowsingIfNeeded()
         }
     
+}
+
+
+
+//UI properties funcs
+extension TeamGameViewModel {
+    func gameIsAvalaible(_ game: GameType) -> Bool {
+        openGames.contains(game)
+    }
 }

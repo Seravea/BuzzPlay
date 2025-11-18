@@ -59,7 +59,7 @@ struct HomeView: View {
                  
                     case .quizMaster:
                         //TODO: View
-                        EmptyView()
+                        QuizMasterListView(quizMasterVM: masterFlowVM.makeQuizMasterVM())
                     case .quizPlayer:
                         if let vm = teamFlowVM.teamGameVM {
                             BuzzerPlayerView(buzzerVM: BuzzerViewModel(team: vm.team, mode: .quiz))

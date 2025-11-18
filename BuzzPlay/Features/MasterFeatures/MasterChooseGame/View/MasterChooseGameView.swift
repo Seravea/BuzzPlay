@@ -30,7 +30,7 @@ struct MasterChooseGameView: View {
                                 ButtonChooseGameView(isOpen: masterChooseGameVM.gameIsAvailable(game), geo: geo, action: {
                                     //ROUTER destination BlindTest
                                     
-                                        router.push(game.destination)
+                                        router.push(game.destinationMaster)
                                     
                                     
                                 }, title: game.gameTitle)

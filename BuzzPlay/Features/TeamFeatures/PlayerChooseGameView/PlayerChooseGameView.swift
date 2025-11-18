@@ -17,18 +17,10 @@ struct PlayerChooseGameView: View {
                 HStack {
                    Spacer()
                     
-                    ButtonChooseGameView(isOpen: teamGameVM.gameIsAvalaible(.blindTest), geo: geo, action: {
-                        router.push(.blindTestPlayer)
-                    }, title: GameType.blindTest.gameTitle)
-//                    ButtonGameCardView(gameTitle: "Blind Test") {
-//                        router.push(.blindTestPlayer)
-//                    }
-                    
-                    ButtonGameCardView(gameTitle: "Quiz") {
-                        
-                    }
-                    
-                    ButtonGameCardView(gameTitle: "J'sais Pô") {
+                    ForEach(GameType.allCases, id: \.self) { game in
+                        ButtonChooseGameView(isOpen: teamGameVM.gameIsAvalaible(game), geo: geo, action: {
+                            router.push(game.destinationPlayer)
+                        }, title: game.gameTitle)
                         
                     }
 
