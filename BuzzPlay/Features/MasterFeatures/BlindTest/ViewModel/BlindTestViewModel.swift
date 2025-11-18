@@ -23,7 +23,7 @@ class BlindTestViewModel: BuzzDrivenGame {
     var nowPlayingSongIndex: Int = 0
     var isCorrect: Bool = false
     
-    var teamWining: Team? = nil
+    var teamHasBuzz: Team? = nil
     
     var state: RoundState = .idle
     
@@ -120,17 +120,21 @@ extension BlindTestViewModel {
     /// Valide la réponse de l'équipe gagnante (teamWining)
     /// Arrête la manche et fige le temps
     func validateAnswer() {
-        guard let _ = teamWining else { return }
+        guard let teamAnswers = teamHasBuzz else { return }
         
         isCorrect = true
         state = .finished
+        
+         // MARK: mise à jour du score via gameVM.addPoints(...)
+        gameVM.addPointToTeam(teamAnswers)
         
         // on fige définitivement la manche
         stopRound()
         gameAudioPlayer.pause()
         isPlaying = false
         
-        // TODO: mise à jour du score via gameVM.addPoints(...)
+        
+      
     }
     
     /// Refuse la réponse de l'équipe qui a buzzé
@@ -140,7 +144,7 @@ extension BlindTestViewModel {
         guard case .buzzed = state else { return }
         
         isCorrect = false
-        teamWining = nil
+        teamHasBuzz = nil
         state = .playing
         
         // on redémarre le timer sans reset (reprise de la manche) et autorise les buzz
@@ -155,7 +159,7 @@ extension BlindTestViewModel {
     func goToNextSong() {
         stopRound()          // on arrête le timer, il reste figé
         reactionTimeMs = 0   // on reset l’affichage
-        teamWining = nil
+        teamHasBuzz = nil
         isCorrect = false
         state = .idle        // la prochaine manche commencera au prochain Play
         nextSong()           // on change de chanson
@@ -177,7 +181,7 @@ extension BlindTestViewModel {
 extension BlindTestViewModel {
     func startRound() {
         reactionTimeMs = 0      // nouvelle manche → on reset
-        teamWining = nil
+        teamHasBuzz = nil
         isCorrect = false
         state = .playing
         gameVM.unlockBuzz()
@@ -217,7 +221,7 @@ extension BlindTestViewModel {
         // Ignorer les buzz si la manche n'est pas en cours
         guard case .playing = state else { return }
         
-        teamWining = team
+        teamHasBuzz = team
         state = .buzzed(team)
         
         // On fige le timer et on met la musique en pause au moment du buzz

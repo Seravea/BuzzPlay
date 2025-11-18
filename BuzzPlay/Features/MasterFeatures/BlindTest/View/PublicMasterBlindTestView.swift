@@ -26,7 +26,7 @@ struct PublicMasterBlindTestView: View {
                     .symbolEffect(.bounce)
                     
             Spacer()
-            if let teamWining = blindTestVM.teamWining {
+            if let teamWining = blindTestVM.teamHasBuzz {
                 
                 TeamCardView(team: teamWining, buzzTime: blindTestVM.formattedTime)
                 

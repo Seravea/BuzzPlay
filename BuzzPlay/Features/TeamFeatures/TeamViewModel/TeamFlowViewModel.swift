@@ -20,7 +20,12 @@ class TeamFlowViewModel {
 
         vm.onTeamCreated = { [weak self] rawTeam in
             guard let self else { return }
-
+            
+            //Si les deux ViewModel (TeamGame et MPC) sont créés ne recréer pas une nouvelle team
+            if let _ = self.teamGameVM, let _ = self.mpc {
+                print("TeamFlow: team already created, ignoring extra validate")
+                return
+            }
             // Nettoyage des joueurs
             let cleanedPlayers = rawTeam.players
                 .filter { !$0.name.isEmpty }
@@ -70,7 +75,7 @@ class TeamFlowViewModel {
             mpc.sendBuzz(team: team)
         }
 
-        // si tu veux synchroniser l'état de verrouillage depuis TeamGameVM :
+        // synchroniser l'état de verrouillage du buzzer depuis TeamGameVM :
         vm.isEnabled = !teamVM.isBuzzLocked
 
         return vm

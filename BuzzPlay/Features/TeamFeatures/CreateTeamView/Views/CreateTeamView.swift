@@ -56,28 +56,30 @@ struct CreateTeamView: View {
                     )
                     .disabled(createTeamVM.nbofPlayers > 5)
                 }
-                VStack(spacing: 12) {
-                    ForEach($createTeamVM.team.players) { $player in
-                        HStack {
-                            TextFieldCustom(
-                                text: $player.name,
-                                prompt: "Nom du joueur",
-                                textSize: .title3
-                            )
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach($createTeamVM.team.players) { $player in
+                            HStack {
+                                TextFieldCustom(
+                                    text: $player.name,
+                                    prompt: "Nom du joueur",
+                                    textSize: .title3
+                                )
+                                
+                                PrimaryButtonView(title: "Supprimer", action: {
+                                    createTeamVM.removePlayer(player: player)
+                                }, style: .filled(color: .red), fontSize: Typography.title3, sfIconName: "trash.fill", iconSize: .title3, colorIcon: .white, size: geo.size.width * 0.15)
+                                .padding(.leading)
+                            }
                             
-                            PrimaryButtonView(title: "Supprimer", action: {
-                                createTeamVM.removePlayer(player: player)
-                            }, style: .filled(color: .red), fontSize: Typography.title3, sfIconName: "trash.fill", iconSize: .title3, colorIcon: .white, size: geo.size.width * 0.15)
-                            .padding(.leading)
                         }
                         
-                    }
-                    
-                   
+                        
                         
                     }
+                }
                 
-                Spacer()
+            
                 
                 PrimaryButtonView(title: "Valider la team", action: {
                     createTeamVM.isAlertOn.toggle()

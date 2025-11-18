@@ -152,3 +152,14 @@ extension MasterFlowViewModel {
 
     
 }
+
+
+
+
+//MARK: functions for game Score
+extension MasterFlowViewModel {
+    func addPointToTeam(_ team: Team) {
+        guard let index = teams.firstIndex(of: team) else { return }
+        teams[index].score += 10
+    }
+}
