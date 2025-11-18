@@ -10,7 +10,7 @@ import SwiftUI
 struct BuzzerPlayerView: View {
     @State var isTapped: Bool = false
     @Bindable var buzzerVM: BuzzerViewModel
-    @State var textTEST: String = ""
+    
     var body: some View {
         VStack {
           
@@ -46,7 +46,6 @@ struct BuzzerPlayerView: View {
             .onTapGesture {
                 if buzzerVM.isEnabled {
                     buzzerVM.buzz()
-                    textTEST = buzzerVM.team.name
                     isTapped.toggle()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                         isTapped.toggle()

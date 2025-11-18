@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PublicMasterBlindTestView: View {
-    @Bindable var blindTestVM: BlindTestViewModel
+    @Bindable var blindTestVM: BlindTestMasterViewModel
     
     var body: some View {
         VStack {
@@ -46,6 +46,6 @@ struct PublicMasterBlindTestView: View {
 }
 
 #Preview {
-    PublicMasterBlindTestView(blindTestVM: BlindTestViewModel(gameVM: MasterFlowViewModel()))
+    PublicMasterBlindTestView(blindTestVM: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()))
       
 }

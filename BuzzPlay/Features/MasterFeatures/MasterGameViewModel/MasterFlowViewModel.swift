@@ -44,8 +44,8 @@ final class MasterFlowViewModel {
         MasterChooseGameViewModel(gameVM: self)
     }
     
-    func makeBlindTestMasterVM() -> BlindTestViewModel {
-        let vm = BlindTestViewModel(gameVM: self)
+    func makeBlindTestMasterVM() -> BlindTestMasterViewModel {
+        let vm = BlindTestMasterViewModel(gameVM: self)
         // Le BlindTest est un jeu basé sur le buzz
         self.currentBuzzGame = vm
         return vm

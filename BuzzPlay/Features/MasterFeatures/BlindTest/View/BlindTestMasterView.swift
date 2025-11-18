@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BlindTestMasterView: View {
-    @Bindable var blindTestViewModel: BlindTestViewModel
+    @Bindable var blindTestViewModel: BlindTestMasterViewModel
     @Bindable var ambiantSoundViewModel = AmbiantSoundViewModel()
     
     var body: some View {
@@ -33,5 +33,5 @@ struct BlindTestMasterView: View {
 }
 
 #Preview {
-    BlindTestMasterView(blindTestViewModel: BlindTestViewModel(gameVM: MasterFlowViewModel()))
+    BlindTestMasterView(blindTestViewModel: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()))
 }

@@ -14,7 +14,7 @@ import Observation
 
 
 @Observable
-class BlindTestViewModel: BuzzDrivenGame {
+class BlindTestMasterViewModel: BuzzDrivenGame {
     var gameVM: MasterFlowViewModel
     
     //MARK: données de manche en cours
@@ -29,15 +29,8 @@ class BlindTestViewModel: BuzzDrivenGame {
     
     //MARK: Timer's datas
     var reactionTimeMs: Int = 0
-    private var timer: Timer?
-    
-    var formattedTime: String {
-        let total = reactionTimeMs
-        let m = total / 60000
-        let s = (total % 60000) / 1000
-        let ms = total % 1000
-        return String(format: "%02d:%02d.%03d", m, s, ms)
-    }
+    var timer: Timer?
+
     
     enum RoundState {
         case idle // next song and master hasn't lunch round/music
@@ -89,7 +82,7 @@ class BlindTestViewModel: BuzzDrivenGame {
 
 
 //MARK: func and data use in the View
-extension BlindTestViewModel {
+extension BlindTestMasterViewModel {
     
     //MARK: Questions Datas and Functions
     var songNowPlaying: Song {
@@ -129,7 +122,7 @@ extension BlindTestViewModel {
         gameVM.addPointToTeam(teamAnswers)
         
         // on fige définitivement la manche
-        stopRound()
+        stopReactionTimer()
         gameAudioPlayer.pause()
         isPlaying = false
         
@@ -149,7 +142,7 @@ extension BlindTestViewModel {
         
         // on redémarre le timer sans reset (reprise de la manche) et autorise les buzz
         gameVM.unlockBuzz()
-        startTimer()
+        startReactionTimer()
         
         // on relance la musique à partir de là où elle avait été mise en pause
         gameAudioPlayer.play()
@@ -157,7 +150,7 @@ extension BlindTestViewModel {
     }
     
     func goToNextSong() {
-        stopRound()          // on arrête le timer, il reste figé
+        stopReactionTimer()         // on arrête le timer, il reste figé
         reactionTimeMs = 0   // on reset l’affichage
         teamHasBuzz = nil
         isCorrect = false
@@ -178,45 +171,20 @@ extension BlindTestViewModel {
 
 
 //MARK: Round Funcs
-extension BlindTestViewModel {
+extension BlindTestMasterViewModel {
     func startRound() {
         reactionTimeMs = 0      // nouvelle manche → on reset
         teamHasBuzz = nil
         isCorrect = false
         state = .playing
         gameVM.unlockBuzz()
-        startTimer()
+        startReactionTimer()
         
     }
-    
-    func pauseRound() {
-        pauseTimer()            // pause sans reset
-    }
-
-    func stopRound() {
-        stopTimer()             // stop sans reset
-    }
-
-    private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
-            self?.reactionTimeMs += 10
-        }
-    }
-
-    private func stopTimer() {
-        timer?.invalidate()
-        timer = nil             // ne touche pas à reactionTimeMs
-    }
-    
-    private func pauseTimer() {
-        timer?.invalidate()
-        timer = nil             // idem
-    }
-    
 }
 
 //MARK: BuzzDrivenGame conformance
-extension BlindTestViewModel {
+extension BlindTestMasterViewModel {
     func handleBuzz(from team: Team) {
         // Ignorer les buzz si la manche n'est pas en cours
         guard case .playing = state else { return }
@@ -225,7 +193,7 @@ extension BlindTestViewModel {
         state = .buzzed(team)
         
         // On fige le timer et on met la musique en pause au moment du buzz
-        stopRound()
+        stopReactionTimer()
         gameAudioPlayer.pause()
         isPlaying = false
     }

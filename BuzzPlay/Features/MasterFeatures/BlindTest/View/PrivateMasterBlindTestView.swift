@@ -13,7 +13,7 @@ struct PrivateMasterBlindTestView: View {
     
     @Bindable var ambiantaudioPlayerVM: AmbiantSoundViewModel
 
-    @Bindable var blindTestVM: BlindTestViewModel
+    @Bindable var blindTestVM: BlindTestMasterViewModel
 
     var body: some View {
         VStack {
@@ -64,5 +64,5 @@ struct PrivateMasterBlindTestView: View {
 }
 
 #Preview {
-    PrivateMasterBlindTestView(ambiantaudioPlayerVM: AmbiantSoundViewModel(), blindTestVM: BlindTestViewModel(gameVM: MasterFlowViewModel()))
+    PrivateMasterBlindTestView(ambiantaudioPlayerVM: AmbiantSoundViewModel(), blindTestVM: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()))
 }
