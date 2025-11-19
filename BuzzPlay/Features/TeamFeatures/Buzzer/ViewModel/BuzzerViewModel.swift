@@ -19,7 +19,7 @@ class BuzzerViewModel {
     
     var hasBuzzed: Bool = false
     var isEnabled: Bool = false
-    var teamNameHasBuzz: String = ""
+    var teamNameHasBuzz: Team?
     
     var onBuzz: ((Team, BuzzerGameMode) -> Void)?
 

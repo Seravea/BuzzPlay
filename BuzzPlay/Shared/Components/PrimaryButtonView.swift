@@ -36,9 +36,9 @@ struct PrimaryButtonView: View {
             }
             .frame(maxWidth: size ?? .infinity)
             .padding(.vertical, 8)
-                    .background {
-                        RoundedRectangle.backgroundPrimaryButton(style: style)
-                    }
+            .background {
+                RoundedRectangle.backgroundPrimaryButton(style: style)
+            }
             
                 
         }

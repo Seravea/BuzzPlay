@@ -72,18 +72,18 @@ extension MPCService {
     
     
     //MARK: function to send messages to Browsers
-    func sendBuzzLock(winningTeamId: UUID, name: String) {
+    func sendBuzzLock(team: Team) {
         guard !session.connectedPeers.isEmpty else {
             print("ERREUR MPC: no peer connected, can't send BUZZ LOCK")
             return
         }
 
-    let payload = BuzzLockPayload(winningTeamID: winningTeamId, name: name)
+    let payload = BuzzLockPayload(team: team)
 
         do {
             let data = try JSONEncoder().encode(payload)
             try session.send(data, toPeers: session.connectedPeers, with: .reliable)
-            print("MPC sent BUZZ LOCK for teamId \(winningTeamId)")
+            print("MPC sent BUZZ LOCK for teamId \(team.id)")
         } catch {
             print("MPC failed to send BUZZ LOCK: \(error)")
         }
@@ -146,7 +146,7 @@ extension MPCService {
                 return
             }
 
-        let payload = BuzzPayload(teamID: team.id, name: team.name)
+        let payload = BuzzPayload(team: team)
 
             do {
                 let data = try JSONEncoder().encode(payload)

@@ -9,6 +9,5 @@ import Foundation
 
 
 struct BuzzLockPayload: Codable {
-    let winningTeamID: UUID
-    let name: String
+    let team: Team
 }

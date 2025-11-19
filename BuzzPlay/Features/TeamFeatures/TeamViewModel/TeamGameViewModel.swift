@@ -70,8 +70,8 @@ extension TeamGameViewModel {
             
             //recoit le lock du buzzer
             if let lock = try? JSONDecoder().decode(BuzzLockPayload.self, from: data) {
-                print("TEAM: received BUZZ LOCK (winner: \(lock.name))")
-                    currentBuzzerVM?.teamNameHasBuzz = lock.name
+                print("TEAM: received BUZZ LOCK (winner: \(lock.team.id))")
+                currentBuzzerVM?.teamNameHasBuzz = lock.team
                 
                     currentBuzzerVM?.isEnabled = false
                 

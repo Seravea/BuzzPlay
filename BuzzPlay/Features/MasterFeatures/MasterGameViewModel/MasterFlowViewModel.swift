@@ -10,6 +10,13 @@ import Observation
 import MultipeerConnectivity
 
 
+//TEST DATA  TEAMS
+
+var sampleTeams: [Team] = [
+    Team(name: "L'équipe"),
+    Team(name: "Les Dieux")
+]
+
 //MARK: - Master Flow ViewModel
 
 @Observable
@@ -17,7 +24,8 @@ final class MasterFlowViewModel {
     
     //MARK: MPC datas
     var connectedPeers: [MCPeerID] = []
-    var teams: [Team] = []
+    //TODO: Delete for TEST ON DEVICE or PRODUCTION
+    var teams: [Team] = sampleTeams
     
     var mpcService: MPCService = MPCService(peerName: "Master", role: .master)
     private var hasStartedHosting = false
@@ -99,7 +107,7 @@ extension MasterFlowViewModel {
 
             //MARK: receive buzz from Browsers
             if let buzz = try? JSONDecoder().decode(BuzzPayload.self, from: data) {
-                print("MASTER: received BUZZ from peer \(peer.displayName) (teamID: \(buzz.teamID))")
+                print("MASTER: received BUZZ from peer \(peer.displayName) (teamID: \(buzz.team.id))")
 
                 // si déjà verrouillé, on ignore les autres buzz
                 guard !self.isBuzzLocked else {
@@ -108,7 +116,7 @@ extension MasterFlowViewModel {
                 }
 
                 // retrouver la team qui a buzzé
-                if let team = self.teams.first(where: { $0.id == buzz.teamID }) {
+                if let team = self.teams.first(where: { $0.id == buzz.team.id}) {
                     self.currentBuzzTeam = team
                     self.isBuzzLocked = true
                     
@@ -118,9 +126,9 @@ extension MasterFlowViewModel {
                     self.currentBuzzGame?.handleBuzz(from: team)
 
                     // prévenir tous les iPads qu'on bloque les buzz
-                    self.mpcService.sendBuzzLock(winningTeamId: team.id, name: team.name)
+                    self.mpcService.sendBuzzLock(team: team)
                 } else {
-                    print("MASTER: BUZZ from unknown teamID \(buzz.teamID)")
+                    print("MASTER: BUZZ from unknown teamID \(buzz.team.id)")
                 }
 
                 return

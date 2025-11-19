@@ -16,13 +16,17 @@ struct BuzzerPlayerView: View {
           
             Spacer()
             
-            if buzzerVM.teamNameHasBuzz.isEmpty {
+            if let team = buzzerVM.teamNameHasBuzz {
+                
+                Text("\(team.name) a buzzer")
+                    .font(.poppins(.largeTitle, weight: .bold))
+                
+            } else {
+                
                 Text("UI emptyView")
                     .foregroundStyle(.clear)
                     .font(.largeTitle)
-            } else {
-                Text("\(buzzerVM.teamNameHasBuzz) a buzzer")
-                    .font(.poppins(.largeTitle, weight: .bold))
+                
             }
             
             Spacer()
