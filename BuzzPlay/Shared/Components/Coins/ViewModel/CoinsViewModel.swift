@@ -21,6 +21,8 @@ class CoinsViewModel {
     var teamFlowViewModel: TeamFlowViewModel?
     
     
+    var onGiftAction: ((Team, Gift) -> Void)?
+    
     init(masterFlowVM: MasterFlowViewModel) {
         self.masterFlowViewModel = masterFlowVM
         self.teamFlowViewModel = nil
@@ -38,7 +40,7 @@ class CoinsViewModel {
     
     
     
-    
+
 }
 
 
@@ -101,4 +103,14 @@ extension CoinsViewModel {
             }
         }
     }
+    
+    
+    
+    
+//    func buzz() {
+//        guard isEnabled, !hasBuzzed else { return }
+//        hasBuzzed = true
+//        //MARK: le TeamGameVM gère l'envoi du buzz au Master
+//        onBuzz?(team, mode)
+//    }
 }
