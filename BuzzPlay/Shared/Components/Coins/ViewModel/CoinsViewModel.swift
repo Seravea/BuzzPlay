@@ -20,8 +20,9 @@ class CoinsViewModel {
     var masterFlowViewModel: MasterFlowViewModel?
     var teamFlowViewModel: TeamFlowViewModel?
     
+    var errorMessage: String?
     
-    var onGiftAction: ((Team, Gift) -> Void)?
+    var onBuyGift: ((Team, Gift) -> Void)?
     
     init(masterFlowVM: MasterFlowViewModel) {
         self.masterFlowViewModel = masterFlowVM
@@ -104,13 +105,18 @@ extension CoinsViewModel {
         }
     }
     
+    func buyGift(_ gift: Gift) {
+        guard let team = teamFlowViewModel?.team else {
+            errorMessage = "Pas de team trouvé"
+            return
+        }
+        guard team.accountAmount >= gift.price else {
+            errorMessage = "Tu n'as pas assez d'argent"
+            return
+        }
+        
+        
+        onBuyGift?(team, gift)
+    }
     
-    
-    
-//    func buzz() {
-//        guard isEnabled, !hasBuzzed else { return }
-//        hasBuzzed = true
-//        //MARK: le TeamGameVM gère l'envoi du buzz au Master
-//        onBuzz?(team, mode)
-//    }
 }

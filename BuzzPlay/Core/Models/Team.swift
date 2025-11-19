@@ -16,4 +16,5 @@ struct Team: Identifiable, Hashable, Codable, Equatable {
     var teamColor: GameColor = .blueGame
     var players: [Player] = []
     var score: Int = 0
+    var accountAmount: Int = 0
 }
