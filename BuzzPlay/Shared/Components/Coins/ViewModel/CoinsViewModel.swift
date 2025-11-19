@@ -115,7 +115,6 @@ extension CoinsViewModel {
             return
         }
         
-        
         onBuyGift?(team, gift)
     }
     
