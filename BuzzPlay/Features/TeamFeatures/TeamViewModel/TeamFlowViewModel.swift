@@ -44,7 +44,7 @@ class TeamFlowViewModel {
             self.mpc = mpc
 
             // Le TeamGameVM doit recevoir LA MÊME TEAM
-            let gameVM = TeamGameViewModel(team: newTeam, mpc: mpc)
+            let gameVM = TeamGameViewModel(team: newTeam, mpc: mpc, clientMode: .team)
             self.teamGameVM = gameVM
 
             // On lance le browsing après que tout soit en place
@@ -73,7 +73,7 @@ class TeamFlowViewModel {
                 return
             }
 
-            mpc.sendBuzz(team: team)
+            mpc.sendMessage(.buzz(BuzzPayload(teamID: team.id)))
         }
         
 

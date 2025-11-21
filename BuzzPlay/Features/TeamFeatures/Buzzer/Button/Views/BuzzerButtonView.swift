@@ -7,18 +7,18 @@
 
 import SwiftUI
 
-struct BuzzerPlayerView: View {
+struct BuzzerButtonView: View {
     @State var isTapped: Bool = false
     @Bindable var buzzerVM: BuzzerViewModel
     
     var body: some View {
         VStack {
-          
+            
             Spacer()
             
-            if let team = buzzerVM.teamNameHasBuzz {
+            if let teamName = buzzerVM.teamNameHasBuzz {
                 
-                Text("\(team.name) a buzzer")
+                Text("\(teamName) a buzzer")
                     .font(.poppins(.largeTitle, weight: .bold))
                 
             } else {
@@ -66,5 +66,5 @@ struct BuzzerPlayerView: View {
 }
 
 #Preview {
-    BuzzerPlayerView(buzzerVM: BuzzerViewModel(team: Team(name: "L'équipe 1", teamColor: .blueGame), mode: .blindTest))
+    BuzzerButtonView(buzzerVM: BuzzerViewModel(team: Team(name: "L'équipe 1", teamColor: .blueGame), mode: .blindTest))
 }

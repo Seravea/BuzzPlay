@@ -8,12 +8,16 @@
 import Foundation
 import Observation
 
-
+enum ClientMode {
+    case team
+    case publicDisplay
+}
 
 
 @Observable
 final class TeamGameViewModel{
     
+    let mode: ClientMode
     var team: Team
     var mpc: MPCService
     var currentBuzzerVM: BuzzerViewModel?
@@ -26,16 +30,18 @@ final class TeamGameViewModel{
     var receivedMessage: String = ""
     var allGames: [GameType] = [.blindTest, .quiz]
     var openGames: [GameType] = []
+    var isPublicDisplayActive: Bool = false
+    var publicState: PublicState?
     
     
     
-    
-    init(team: Team, mpc: MPCService) {
+    init(team: Team, mpc: MPCService, clientMode: ClientMode) {
         self.team = team
         
         self.mpc = mpc
         
-        print("TeamGameViewModel Initializing... for \(team.name)")
+        self.mode = clientMode
+        
         
         setupMPC()
     }
@@ -53,40 +59,60 @@ extension TeamGameViewModel {
             guard let self else { return }
             guard !self.didSentTeam else { return }
             self.didSentTeam = true
-            self.mpc.sendTeam(self.team)
+            switch mode {
+            case .team:
+                self.mpc.sendTeam(team)
+            case .publicDisplay:
+                let publicTeam = Team(name: "DisplayPublic")
+                self.mpc.sendTeam(publicTeam)
+            }
+                
+            
+            
         }
         
         mpc.onMessage = { [weak self] data, peer in
             guard let self else { return }
             
-            if let update = try? JSONDecoder().decode(GameAvailability.self, from: data) {
-                print("TEAM: received game availability \(update.openGames)")
-                self.openGames = update.openGames
-            } else {
-                // Ici, tu peux ignorer ou logger
-                // ex: print("TEAM: received non-gameAvailability data")
+            do {
+                let message = try JSONDecoder().decode(MPCMessage.self, from: data)
+                self.handleMessage(message)
+            } catch {
+                print("Message reçus mais inconnu dans MPCMessage : \(error)")
             }
             
             
-            //recoit le lock du buzzer
-            if let lock = try? JSONDecoder().decode(BuzzLockPayload.self, from: data) {
-                print("TEAM: received BUZZ LOCK (winner: \(lock.team.id))")
-                currentBuzzerVM?.teamNameHasBuzz = lock.team
-                
-                    currentBuzzerVM?.isEnabled = false
-                
-                
-                    return
-                }
             
-            //recoit le unlock du buzzer
-            if let _ = try? JSONDecoder().decode(BuzzUnlockPayload.self, from: data) {
-                print("TEAM: received BUZZ UNLOCK")
-                self.currentBuzzerVM?.isEnabled = true   // bouton à nouveau cliquable
-                return
-            }
         }
     }
+            //MARK: refactor using MPCMessage
+//            if let update = try? JSONDecoder().decode(GameAvailability.self, from: data) {
+//                print("TEAM: received game availability \(update.openGames)")
+//                self.openGames = update.openGames
+//            } else {
+//                // Ici, tu peux ignorer ou logger
+//                // ex: print("TEAM: received non-gameAvailability data")
+//            }
+//            
+//            
+//            //recoit le lock du buzzer
+//            if let lock = try? JSONDecoder().decode(BuzzLockPayload.self, from: data) {
+//                print("TEAM: received BUZZ LOCK (winner: \(lock.teamID))")
+//                currentBuzzerVM?.teamNameHasBuzz = lock.teamName
+//                
+//                    currentBuzzerVM?.isEnabled = false
+//                
+//                
+//                    return
+//                }
+//            
+//            //recoit le unlock du buzzer
+//            if let _ = try? JSONDecoder().decode(BuzzUnlockPayload.self, from: data) {
+//                print("TEAM: received BUZZ UNLOCK")
+//                self.currentBuzzerVM?.isEnabled = true   // bouton à nouveau cliquable
+//                return
+//            }
+      
         
         func startBrowsing() {
             guard !hasStartedBrowsing else { return }
@@ -104,4 +130,34 @@ extension TeamGameViewModel {
     func gameIsAvalaible(_ game: GameType) -> Bool {
         openGames.contains(game)
     }
+}
+
+
+
+//MARK: receive Message from Master
+extension TeamGameViewModel {
+    func handleMessage(_ message: MPCMessage) {
+        switch message {
+        case .publicDisplayMode(let isActive):
+            isPublicDisplayActive = isActive
+        case .publicUpdate(let state):
+            publicState = state
+        case .gameAvailability(let games):
+            self.openGames = games
+        case .buzzLock(let payload):
+            currentBuzzerVM?.lockBuzz(teamNameHasBuzz: payload.teamName)
+        case .buzzUnlock:
+            currentBuzzerVM?.unLockBuzz()
+        case .updatedTeam(let updatedTeam):
+            if updatedTeam.id == self.team.id {
+                self.team = updatedTeam
+            }
+        default:
+            break
+        }
+    }
+    
+    
+    
+    
 }

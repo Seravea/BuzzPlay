@@ -9,5 +9,6 @@ import Foundation
 
 
 struct BuzzUnlockPayload: Codable {
-    
+    var teamID: UUID
+    var teamName: String
 }

@@ -19,6 +19,9 @@ import Foundation
 
 @Observable
 class QuizMasterViewModel: BuzzDrivenGame {
+    
+    
+    
     let gameVM: MasterFlowViewModel
     
     var questions: [QuizQuestion] = quizMusic90sTo10s
@@ -49,10 +52,12 @@ extension QuizMasterViewModel {
     }
     
     func startRound() {
-        guard let question = currentQuestion else { return }
+        //SI pas de question ne peu pas commencer la manche
+        guard currentQuestion != nil else { return }
         
         //TODO: envoyer la question aux teams (MPC)
         
+        gameVM.broadcastPublicStateFromCurrentGame()
         gameVM.unlockBuzz()
         //TODO: start Timer
         startReactionTimer()
@@ -115,5 +120,25 @@ extension QuizMasterViewModel {
     
     var isPlaying: Bool {
         currentQuestion != nil
+    }
+}
+
+
+//MARK: making/sending Payload to peers
+extension QuizMasterViewModel {
+    func makePublicState() -> PublicState {
+        guard let question = currentQuestion else {
+            return .waiting
+        }
+        
+        return PublicState.quiz(
+            PublicQuizState(
+                question: question,
+                formattedTime: formattedTime,
+                buzzingTeam: teamHasBuzz,
+                isAnswerRevealed: false,
+                isHintVisible: false
+            )
+        )
     }
 }

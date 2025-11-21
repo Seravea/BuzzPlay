@@ -14,7 +14,7 @@ struct QuizMasterListView: View {
             HStack {
                 VStack(alignment: .leading) {
                     ForEach(quizMasterVM.questions) { question in
-                        PrimaryButtonView(title: question.question, action: {
+                        PrimaryButtonView(title: question.title, action: {
                             withAnimation {
                                 quizMasterVM.selectQuestion(question)
                             }
@@ -28,7 +28,7 @@ struct QuizMasterListView: View {
                 if let currentQuestion = quizMasterVM.currentQuestion {
                     
                     VStack {
-                        Text(currentQuestion.question)
+                        Text(currentQuestion.title)
                             .font(.largeTitle)
                         
                         Text(quizMasterVM.formattedTime)

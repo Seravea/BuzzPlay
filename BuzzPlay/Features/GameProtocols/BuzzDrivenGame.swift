@@ -16,6 +16,8 @@ protocol BuzzDrivenGame: AnyObject {
     
     //Le master annonce qu'une team a buzzé
     func handleBuzz(from team: Team)
+    
+    func makePublicState() -> PublicState
 }
 
 
@@ -30,8 +32,8 @@ extension BuzzDrivenGame {
     
     func startReactionTimer() {
         stopReactionTimer()
-        timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
-            self?.reactionTimeMs += 10
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            self?.reactionTimeMs += 100
         }
     }
     

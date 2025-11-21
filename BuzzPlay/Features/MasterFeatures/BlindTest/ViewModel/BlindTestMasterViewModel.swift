@@ -15,6 +15,7 @@ import Observation
 
 @Observable
 class BlindTestMasterViewModel: BuzzDrivenGame {
+    
     var gameVM: MasterFlowViewModel
     
     //MARK: données de manche en cours
@@ -160,7 +161,7 @@ extension BlindTestMasterViewModel {
     }
     
     
-    //MARK: Team Datas dans Funtions
+    //MARK: Team Datas Funtions
     func registerBuzz(from team: Team) {
         handleBuzz(from: team)
     }
@@ -198,7 +199,13 @@ extension BlindTestMasterViewModel {
         isPlaying = false
     }
     
-    
+    func makePublicState() -> PublicState {
+        //MARK: make publicState for blindTest
+       guard let currentTeamHasBuzz = teamHasBuzz else {
+           return .waiting
+        }
+        return .waiting
+    }
    
     
 }
