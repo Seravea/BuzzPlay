@@ -8,16 +8,17 @@
 import SwiftUI
 
 struct PublicDisplayView: View {
-    @State var publicDisplayVM = PublicDisplayViewModel()
+    //TODO: finish TeamGameVM and PublicDisplayVM
+//    @State var publicDisplayVM = PublicDisplayViewModel(teamGameVM: <#TeamGameViewModel#>)
    
     var body: some View {
     
-        switch publicDisplayVM.state {
-        case .waiting:
-            ProgressView()
-        case .quiz(let state):
-            PublicQuizDisplayView(state: state)
-        }
+//        switch publicDisplayVM.state {
+//        case .waiting:
+//            ProgressView()
+//        case .quiz(let state):
+//            PublicQuizDisplayView(state: state)
+//        }
     
     }
 }

@@ -46,21 +46,21 @@ class PublicDisplayViewModel {
     }
     
     //MPC Browsing verification
-    private func startBrowsingPublicDisplay() {
-        guard !hasStartedBrowsing else { return }
-        hasStartedBrowsing = true
-        print("TEAM Starting MPC browsing...")
-        mpc.onPeerConnected = { [weak self] peer in
-                guard let self else { return }
-
-                print("PUBLIC DISPLAY connected to MASTER → sending teamJoin")
-                
-                let displayTeam = Team(name: "DisplayPublic")
-                self.mpc.sendMessage(.teamJoin(displayTeam))
-            }
-
-            mpc.startBrowsingIfNeeded()
-    }
+//    private func startBrowsingPublicDisplay() {
+//        guard !hasStartedBrowsing else { return }
+//        hasStartedBrowsing = true
+//        print("TEAM Starting MPC browsing...")
+//        mpc.onPeerConnected = { [weak self] peer in
+//                guard let self else { return }
+//
+//                print("PUBLIC DISPLAY connected to MASTER → sending teamJoin")
+//                
+//                let displayTeam = Team(name: "DisplayPublic")
+//                self.mpc.sendMessage(.teamJoin(displayTeam))
+//            }
+//
+//            mpc.startBrowsingIfNeeded()
+//    }
     
 }
 
