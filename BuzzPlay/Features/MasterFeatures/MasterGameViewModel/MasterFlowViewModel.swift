@@ -69,6 +69,9 @@ final class MasterFlowViewModel {
     //MARK: Master's functions for Team
     
     func addTeam(_ team: Team) {
+        if team.name == "Écran Publique" {
+            mpcService.sendMessage(.publicDisplayMode(isActive: true))
+        }
         teams.append(team)
     }
     
@@ -103,7 +106,6 @@ extension MasterFlowViewModel {
         case .pong:
             print("pong reçus")
             //TODO: Send/receive publicDisplay isActive
-        //case .publicDisplayMode(isActive:  )
         default:
             break
         }
@@ -219,6 +221,7 @@ extension MasterFlowViewModel {
         let state = game.makePublicState()
         sendPublicState(state)
     }
+    
     
    
 }

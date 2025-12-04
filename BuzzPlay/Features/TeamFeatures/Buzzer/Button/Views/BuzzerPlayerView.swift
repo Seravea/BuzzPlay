@@ -13,14 +13,17 @@ struct BuzzerPlayerView: View {
     var body: some View {
         if let buzzerVM = teamGameVM.currentBuzzerVM {
             if teamGameVM.isPublicDisplayActive {
-                VStack {
-                    //PublicView
-                    
-                    BuzzerButtonView(buzzerVM: buzzerVM)
-                }
-            } else {
+                
+                //PublicView isON
                 BuzzerButtonView(buzzerVM: buzzerVM)
+                
+            } else {
+                VStack {
+                    BuzzerButtonView(buzzerVM: buzzerVM)
+                    PublicDisplayView(publicState: teamGameVM.publicState)
+                }
             }
+            
         } else {
             Text("Pas de buzzer BUG DE OUF")
         }

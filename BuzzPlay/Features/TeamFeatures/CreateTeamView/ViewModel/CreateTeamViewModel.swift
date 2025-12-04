@@ -13,10 +13,10 @@ class CreateTeamViewModel {
     var team: Team = Team(name: "", teamColor: .redGame, players: [])
     var isAlertOn: Bool = false
     
-    var onTeamCreated: ((Team) -> Void)?
+    var onTeamCreated: ((Team, Bool) -> Void)?
     
-    func validate() {
-        onTeamCreated?(team)
+    func validate(isPublicDisplay: Bool){
+        onTeamCreated?(team, isPublicDisplay)
     }
     
     var nbofPlayers: Int {
@@ -46,5 +46,9 @@ class CreateTeamViewModel {
         } else {
             return 0.3
         }
+    }
+    
+    func loadDisplayTeam() {
+        team = Team(name: "Écran Publique")
     }
 }

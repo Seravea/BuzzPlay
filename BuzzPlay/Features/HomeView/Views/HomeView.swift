@@ -35,7 +35,7 @@ struct HomeView: View {
                     }
                     
                     PrimaryButtonView(title: "Partage d'écran", action: {
-                        router.push(.publicDisplayScreen)
+                        router.push(.createPublicDisplayTeam)
                     }, style: .filled(color: .mustardYellow), fontSize: Typography.body)
                     
                 }
@@ -51,7 +51,7 @@ struct HomeView: View {
                     case .playerChooseGameView:
                         //TODO: view
                         if let vm = teamFlowVM.teamGameVM {
-                            PlayerChooseGameView(teamGameVM: vm)
+                            PlayerChooseGameView(teamGameVM: vm, teamFlowVM: teamFlowVM)
                         } else {
                             Text("Pas de team Gros Bug sa reum")
                         }
@@ -60,7 +60,9 @@ struct HomeView: View {
                     case .blindTestPlayer:
                         //TODO: view
                         if let teamGameVM = teamFlowVM.teamGameVM {
+                            
                             BuzzerPlayerView(teamGameVM: teamGameVM)
+                                
                         }
                         
                     case .createTeamView:
@@ -74,9 +76,13 @@ struct HomeView: View {
                         if let teamGameVM = teamFlowVM.teamGameVM {
                             BuzzerPlayerView(teamGameVM: teamGameVM)
                         }
+                    case .createPublicDisplayTeam:
+                        CreateDisplayPublicTeamView(createTeamVM: teamFlowVM.makeCreateTeamViewModel())
                     case .publicDisplayScreen:
-                        PublicDisplayView()
-                        
+                        if let teamGameVM = teamFlowVM.teamGameVM {
+                            
+                            PublicDisplayView(publicState: teamGameVM.publicState)
+                        }
                     case .karaoke:
                         EmptyView()
                     }

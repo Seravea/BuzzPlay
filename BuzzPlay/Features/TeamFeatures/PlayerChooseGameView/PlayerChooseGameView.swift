@@ -10,6 +10,7 @@ import SwiftUI
 struct PlayerChooseGameView: View {
     @Bindable var teamGameVM: TeamGameViewModel
     @EnvironmentObject var router: Router
+    @Bindable var teamFlowVM: TeamFlowViewModel
     var body: some View {
         GeometryReader { geo in
             VStack {
@@ -19,6 +20,7 @@ struct PlayerChooseGameView: View {
                     
                     ForEach(GameType.allCases, id: \.self) { game in
                         ButtonChooseGameView(isOpen: teamGameVM.gameIsAvalaible(game), geo: geo, action: {
+                            teamGameVM.currentBuzzerVM = teamFlowVM.makeBuzzerViewModel(for: game == .quiz ? .quiz : .blindTest)
                             router.push(game.destinationPlayer)
                         }, title: game.gameTitle)
                         
@@ -36,5 +38,5 @@ struct PlayerChooseGameView: View {
 }
 
 #Preview {
-    PlayerChooseGameView(teamGameVM: TeamGameViewModel(team: Team(name: "la team", teamColor: .blueGame), mpc: MPCService(peerName: "l'équipe", role: .team), clientMode: .team))
+    PlayerChooseGameView(teamGameVM: TeamGameViewModel(team: Team(name: "la team", teamColor: .blueGame), mpc: MPCService(peerName: "l'équipe", role: .team), clientMode: .team), teamFlowVM: TeamFlowViewModel())
 }

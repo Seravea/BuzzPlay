@@ -13,7 +13,6 @@ struct PublicQuizDisplayView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(state.question.title)
-            //TimerCardView(timer: teamGameVM.currentBuzzerVM., isCorrectAnswer: )
 //            Text(publicDisplayVM.formattedTime)
             
             if let team = state.buzzingTeam {

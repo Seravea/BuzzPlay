@@ -289,7 +289,8 @@ extension MPCService {
             let data = try JSONEncoder().encode(message)
             try session.send(data, toPeers: session.connectedPeers, with: .reliable)
         } catch {
-            print("MPC error when trying sending message : \(error)")
+            let mpcError = MPCError.sendFailed(underlying: error)
+            print("MPC error: \(mpcError), underlying: \(error)")
         }
     }
 }

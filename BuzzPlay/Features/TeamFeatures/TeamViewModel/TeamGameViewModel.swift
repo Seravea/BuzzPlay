@@ -15,7 +15,7 @@ enum ClientMode {
 
 
 @Observable
-final class TeamGameViewModel{
+final class TeamGameViewModel {
     
     let mode: ClientMode
     var team: Team
@@ -31,7 +31,7 @@ final class TeamGameViewModel{
     var allGames: [GameType] = [.blindTest, .quiz]
     var openGames: [GameType] = []
     var isPublicDisplayActive: Bool = false
-    var publicState: PublicState?
+    var publicState: PublicState = .waiting
     
     
     
@@ -42,8 +42,8 @@ final class TeamGameViewModel{
         
         self.mode = clientMode
         
-        
         setupMPC()
+        
     }
 }
 
@@ -81,9 +81,8 @@ extension TeamGameViewModel {
                 print("Message reçus mais inconnu dans MPCMessage : \(error)")
             }
             
-            
-            
         }
+
     }
             //MARK: refactor using MPCMessage
 //            if let update = try? JSONDecoder().decode(GameAvailability.self, from: data) {

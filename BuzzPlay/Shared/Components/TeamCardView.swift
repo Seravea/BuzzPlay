@@ -17,7 +17,7 @@ struct TeamCardView: View {
             
             ZStack(alignment: .bottom) {
                 
-                VStack {
+                VStack(alignment: .leading) {
                     Text(team.name)
                     if let buzzTime = buzzTime {
                         Text("\(buzzTime)")
@@ -31,7 +31,7 @@ struct TeamCardView: View {
                                     .font(.poppins(.title))
                                 Text(team.players[playerIndex].name)
                                     .font(.poppins(.title))
-                                    .frame(maxWidth: 400, alignment: .leading)
+                                    .frame(alignment: .leading)
                             }
 
                         }
@@ -39,7 +39,7 @@ struct TeamCardView: View {
                     }
                 }
                 .padding()
-                .frame(minWidth: 400, minHeight: 400, alignment: .top)
+                .frame(alignment: .top)
                 .background {
                     RoundedRectangle(cornerRadius: 8, )
                     //MARK: Couleur de l'équipe qui a buzzé

@@ -18,7 +18,7 @@ class TeamFlowViewModel {
     func makeCreateTeamViewModel() -> CreateTeamViewModel {
         let vm = CreateTeamViewModel()
 
-        vm.onTeamCreated = { [weak self] rawTeam in
+        vm.onTeamCreated = { [weak self] (rawTeam, isPublicDisplay) in
             guard let self else { return }
             
             //Si les deux ViewModel (TeamGame et MPC) sont créés ne recréer pas une nouvelle team
@@ -49,6 +49,10 @@ class TeamFlowViewModel {
 
             // On lance le browsing après que tout soit en place
             gameVM.startBrowsing()
+            
+            if isPublicDisplay {
+                mpc.sendMessage(.publicDisplayMode(isActive: isPublicDisplay))
+            }
         }
 
         return vm

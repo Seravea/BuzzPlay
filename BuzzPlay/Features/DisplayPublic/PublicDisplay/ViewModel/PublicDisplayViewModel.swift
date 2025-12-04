@@ -29,6 +29,7 @@ class PublicDisplayViewModel {
     init(teamGameVM: TeamGameViewModel) {
         self.teamGameVM = teamGameVM
         
+        
     }
     
     //TODO: send publicDisplay isActive -> and handleMessage de TeamGameVM change values for the PublicDisplayScreen
