@@ -75,9 +75,9 @@ final class MasterFlowViewModel {
         teams.append(team)
     }
     
-    func removeTeam(_ team: Team) {
-        teams.removeAll { $0.id == team.id }
-    }
+//    func removeTeam(_ team: Team) {
+//        teams.removeAll { $0.id == team.id }
+//    }
     
     
     //MARK: Master's functions for gameSelection
@@ -143,60 +143,6 @@ extension MasterFlowViewModel {
     }
 }
        
-        //TODO: Delete when newSending MPCMessage working
-        /// Réception des messages (buzz, teams, etc.)
-//        mpcService.onMessage = { [weak self] data, peer in
-//            guard let self else { return }
-//
-//            //MARK: receive buzz from Browsers
-//            if let buzz = try? JSONDecoder().decode(BuzzPayload.self, from: data) {
-//                print("MASTER: received BUZZ from peer \(peer.displayName) (teamID: \(buzz.team.id))")
-//
-//                // si déjà verrouillé, on ignore les autres buzz
-//                guard !self.isBuzzLocked else {
-//                    print("MASTER: buzz ignored, already locked")
-//                    return
-//                }
-//
-//                // retrouver la team qui a buzzé
-//                if let team = self.teams.first(where: { $0.id == buzz.team.id}) {
-//                    self.currentBuzzTeam = team
-//                    self.isBuzzLocked = true
-//                    
-//                    print("MASTER: BUZZ WON by \(team.name)")
-//                    
-//                    // déléguer au jeu courant (BlindTest, etc.)
-//                    self.currentBuzzGame?.handleBuzz(from: team)
-//
-//                    // prévenir tous les iPads qu'on bloque les buzz
-//                    self.mpcService.sendBuzzLock(team: team)
-//                } else {
-//                    print("MASTER: BUZZ from unknown teamID \(buzz.team.id)")
-//                }
-//
-//                return
-//            }
-//
-//            // Team complète (au moment où les équipes se connectent)
-//            if let team = try? JSONDecoder().decode(Team.self, from: data) {
-//                print("Master received team \(team.name) from \(peer.displayName)")
-//                self.teams.append(team)
-//                return
-//            }
-//
-//            print("Master: received unknown data from \(peer.displayName)")
-//        }
-
-       
-    
-    
-    
-    
-    
-
-
-
-
 //MARK: sending TO Peer connected
 extension MasterFlowViewModel {
     
