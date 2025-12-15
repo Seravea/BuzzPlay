@@ -14,6 +14,6 @@ func songDataToShow(song: Song) -> some View {
         Text(song.artist)
         Text(song.creationYear)
     }
-    .font(.poppins(.largeTitle))
+    .font(.poppins(.title))
     .frame(maxWidth: .infinity)
 }

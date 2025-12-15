@@ -9,19 +9,20 @@ import SwiftUI
 
 struct PublicQuizDisplayView: View {
     var state: PublicQuizState
-    
     var body: some View {
         VStack(alignment: .leading) {
             Text(state.question.title)
 //            Text(publicDisplayVM.formattedTime)
+        
+            if let teamHasBuzz = state.buzzingTeam {
+                TeamCardView(team: teamHasBuzz, buzzTime: state.formattedTime)
             
-            if let team = state.buzzingTeam {
-                TeamCardView(team: team, buzzTime: state.formattedTime)
             }
+        
         }
     }
 }
 
 #Preview {
-    PublicQuizDisplayView(state: PublicQuizState(question: quizMusic90sTo10s[2], formattedTime: "00:00", buzzingTeam: nil, isAnswerRevealed: false, isHintVisible: false))
+    PublicQuizDisplayView(state: PublicQuizState(question: quizMusic90sTo10s[2], formattedTime: "00:00", buzzingTeam: sampleTeams[0], isAnswerRevealed: false, isHintVisible: false))
 }

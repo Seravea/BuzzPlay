@@ -9,11 +9,12 @@ import SwiftUI
 
 struct PublicDisplayView: View {
     //TODO: finish TeamGameVM and PublicDisplayVM
-
+    var buzzLockPayload: BuzzLockPayload?
     var publicState: PublicState
     
     var body: some View {
         VStack {
+            
             switch publicState {
                 
             case .waiting:
@@ -21,6 +22,7 @@ struct PublicDisplayView: View {
             case .quiz(let state):
                 PublicQuizDisplayView(state: state)
             }
+            
         }
         
     }

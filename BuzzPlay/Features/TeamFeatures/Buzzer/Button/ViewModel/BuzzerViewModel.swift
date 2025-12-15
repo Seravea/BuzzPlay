@@ -18,7 +18,6 @@ class BuzzerViewModel {
     var team: Team
     let mode: BuzzerGameMode
     
-    var hasBuzzed: Bool = false
     var isEnabled: Bool = false
     var teamNameHasBuzz: String?
     
@@ -36,8 +35,8 @@ class BuzzerViewModel {
 //MARK: buzzFunctions
 extension BuzzerViewModel {
     func buzz() {
-        guard isEnabled, !hasBuzzed else { return }
-        hasBuzzed = true
+        guard isEnabled/*, !hasBuzzed*/ else { return }
+//        hasBuzzed = true
         //MARK: le TeamGameVM gère l'envoi du buzz au Master
         onBuzz?(team, mode)
     }
@@ -46,6 +45,7 @@ extension BuzzerViewModel {
     func unLockBuzz() {
         isEnabled = true
         teamNameHasBuzz = nil
+        
     }
     
     func lockBuzz(teamNameHasBuzz: String) {

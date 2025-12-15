@@ -18,35 +18,57 @@ struct QuizMasterListView: View {
                             withAnimation {
                                 quizMasterVM.selectQuestion(question)
                             }
-                        }, style: quizMasterVM.questionButtonStyle(question), fontSize: Typography.body, size: 450)
-                        .disabled(quizMasterVM.isPlaying)
+                        }, style: quizMasterVM.questionsPassed.contains(question) ? .outlined(color: .green) : .outlined(color: .darkestPurple) , fontSize: Typography.body, size: 450)
+                        .disabled(quizMasterVM.quizButtonDisabled(question: question))
                         
                     }
                     
-                    
+                    /*
+                     return .outlined(color: .green)
+                     */
                 }
-                if let currentQuestion = quizMasterVM.currentQuestion {
+                
+                VStack {
                     
+                    //MARK: Correct answer or Wrong answer
                     VStack {
-                        Text(currentQuestion.title)
-                            .font(.largeTitle)
-                        
-                        Text(quizMasterVM.formattedTime)
-                        
-                        Spacer()
-                        
-                        if let currentTeamHasBuzz = quizMasterVM.gameVM.currentBuzzTeam {
-                            TeamCardView(team: currentTeamHasBuzz)
+                        HStack {
+                            PrimaryButtonView(title: "Valider la réponse", action: {
+                                quizMasterVM.validateAnswer()
+                            }, style: .filled(color: .green), fontSize: Typography.body)
+                            
+                            
+                            PrimaryButtonView(title: "Refuser la réponse", action: {
+                                quizMasterVM.rejectAnswer()
+                            }, style: .filled(color: .red), fontSize: Typography.body)
+                            
                         }
                         
                     }
-                    .frame(maxWidth: .infinity)
-    
-                } else {
-                    Spacer()
+                    
+                    if let currentQuestion = quizMasterVM.currentQuestion {
+                        
+                        VStack {
+                            Text(currentQuestion.title)
+                                .font(.largeTitle)
+                            
+                            Text(quizMasterVM.formattedTime)
+                            
+                            Spacer()
+                            
+                            if let currentTeamHasBuzz = quizMasterVM.gameVM.currentBuzzTeam {
+                                TeamCardView(team: currentTeamHasBuzz)
+                            }
+                            
+                        }
+                        .frame(maxWidth: .infinity)
+                        
+                    } else {
+                        Spacer()
+                    }
                 }
+                .padding()
             }
-            .padding()
         }
         
     }

@@ -35,6 +35,7 @@ extension BuzzDrivenGame {
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             self?.reactionTimeMs += 100
         }
+        
     }
     
     func pauseReactionTimer() {

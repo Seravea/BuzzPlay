@@ -25,7 +25,6 @@ struct PrimaryButtonView: View {
                 Text(title)
                     .primaryButtonTextStyle(style, fontSize: fontSize)
                     
-                
                 if let iconName = sfIconName, let iconSize = iconSize, let colorIcon = colorIcon {
                     Image(systemName: iconName)
                         .font(iconSize)

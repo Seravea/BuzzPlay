@@ -47,7 +47,9 @@ class QuizMasterViewModel: BuzzDrivenGame {
 extension QuizMasterViewModel {
     func selectQuestion(_ question: QuizQuestion) {
         currentQuestion = question
+        teamHasBuzz = nil
         
+        gameVM.unlockBuzz()
         startRound()
     }
     
@@ -59,13 +61,16 @@ extension QuizMasterViewModel {
         
         gameVM.broadcastPublicStateFromCurrentGame()
         gameVM.unlockBuzz()
-        //TODO: start Timer
+        //TODO: start Timer for the DisplayPublic
         startReactionTimer()
     }
     
     func validateAnswer() {
         if let team = gameVM.currentBuzzTeam {
             gameVM.addPointToTeam(team)
+            goToSelectNewQuestion()
+            
+            
             
         }
         //TODO: etat du jeux pour question suivante etc..
@@ -80,7 +85,7 @@ extension QuizMasterViewModel {
     
     func handleBuzz(from team: Team) {
         gameVM.currentBuzzTeam = team
-        
+        teamHasBuzz = team
         pauseReactionTimer()
         
         //TODO: handle du buzz pour le Quiz a voir s'il est différent du BlindTestVM handleBuzz(team)
@@ -93,7 +98,11 @@ extension QuizMasterViewModel {
         }
         stopReactionTimer()
         currentQuestion = nil
+        teamHasBuzz = nil
+        gameVM.currentBuzzTeam = nil
         
+        let state = makePublicState()
+        gameVM.sendPublicState(state)
     }
     
 }
@@ -115,6 +124,16 @@ extension QuizMasterViewModel {
             return .outlined(color: .green)
         } else {
             return .filled(color: .darkestPurple)
+        }
+    }
+    
+    func quizButtonDisabled(question: QuizQuestion) -> Bool {
+        if isPlaying {
+            return true
+        } else if questionsPassed.contains(question) {
+            return true
+        } else {
+            return false
         }
     }
     

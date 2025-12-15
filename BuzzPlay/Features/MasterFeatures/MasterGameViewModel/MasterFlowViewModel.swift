@@ -24,7 +24,7 @@ final class MasterFlowViewModel {
     
     //MARK: MPC datas
     var connectedPeers: [MCPeerID] = []
-    //TODO: Delete for TEST ON DEVICE or PRODUCTION
+    //TODO: empty Collection for TEST ON DEVICE or PRODUCTION
     var teams: [Team] = []
     
     var mpcService: MPCService = MPCService(peerName: "Master", role: .master)
@@ -219,6 +219,7 @@ extension MasterFlowViewModel {
     func broadcastPublicStateFromCurrentGame() {
         guard let game = currentBuzzGame else { return }
         let state = game.makePublicState()
+        
         sendPublicState(state)
     }
     
@@ -246,14 +247,23 @@ extension MasterFlowViewModel {
         currentBuzzGame?.handleBuzz(from: team)
 
         //envoi le State de l'écran Public
-        broadcastPublicStateFromCurrentGame()
+        
         
         // lock pour tout le monde + envoie le nom
         let lockPayload = BuzzLockPayload(teamID: team.id, teamName: team.name)
         //envoi le lock du buzz
         mpcService.sendMessage(.buzzLock(lockPayload))
+        print("buzz lock pour tout le monde")
         
-    
+        guard let game = currentBuzzGame else {
+            print("no currentBuzzGame, can't send buzz result")
+            return
+        }
+        let state = game.makePublicState()
+        print("MAKE Public State ->\n \(state)")
+        print("TEAM BUZZING : \(String(describing: currentBuzzTeam))")
+        mpcService.sendMessage(.publicUpdate(state))
+        print("public state SENT")
     }
     
     
