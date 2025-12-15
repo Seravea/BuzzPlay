@@ -41,7 +41,7 @@ struct TeamCardView: View {
                 .padding()
                 .frame(alignment: .top)
                 .background {
-                    RoundedRectangle(cornerRadius: 8, )
+                    RoundedRectangle(cornerRadius: 8)
                     //MARK: Couleur de l'équipe qui a buzzé
                         .foregroundStyle(Color(team.teamColor.rawValue))
                 }
