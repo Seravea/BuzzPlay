@@ -18,14 +18,10 @@ struct QuizMasterListView: View {
                             withAnimation {
                                 quizMasterVM.selectQuestion(question)
                             }
-                        }, style: quizMasterVM.questionsPassed.contains(question) ? .outlined(color: .green) : .outlined(color: .darkestPurple) , fontSize: Typography.body, size: 450)
+                        }, style: quizMasterVM.questionButtonStyle(question), fontSize: Typography.body, size: 450)
                         .disabled(quizMasterVM.quizButtonDisabled(question: question))
                         
                     }
-                    
-                    /*
-                     return .outlined(color: .green)
-                     */
                 }
                 
                 VStack {
@@ -43,6 +39,8 @@ struct QuizMasterListView: View {
                             }, style: .filled(color: .red), fontSize: Typography.body)
                             
                         }
+                        .disabled(quizMasterVM.validateRejectDisabled)
+                        .opacity(quizMasterVM.UIDisabledValidateRejectButtonOpacity())
                         
                     }
                     
@@ -57,7 +55,7 @@ struct QuizMasterListView: View {
                             Spacer()
                             
                             if let currentTeamHasBuzz = quizMasterVM.gameVM.currentBuzzTeam {
-                                TeamCardView(team: currentTeamHasBuzz)
+                                TeamCardView(team: currentTeamHasBuzz, buzzTime: quizMasterVM.formattedTime)
                             }
                             
                         }
@@ -69,6 +67,7 @@ struct QuizMasterListView: View {
                 }
                 .padding()
             }
+            .padding()
         }
         
     }

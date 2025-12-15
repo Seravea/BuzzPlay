@@ -118,12 +118,13 @@ extension QuizMasterViewModel {
         var isAlreadyPassed: Bool {
             questionsPassed.contains(question)
         }
-        if !isSelected {
-            return .outlined(color: .darkestPurple)
-        } else if isAlreadyPassed {
-            return .outlined(color: .green)
-        } else {
+        if isSelected {
             return .filled(color: .darkestPurple)
+        } else if isAlreadyPassed {
+            return .filled(color: .green)
+        } else {
+            return .outlined(color: .darkestPurple)
+            
         }
     }
     
@@ -139,6 +140,22 @@ extension QuizMasterViewModel {
     
     var isPlaying: Bool {
         currentQuestion != nil
+    }
+    
+    var validateRejectDisabled: Bool {
+        if teamHasBuzz == nil {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func UIDisabledValidateRejectButtonOpacity() -> Double {
+        if validateRejectDisabled {
+            return 0.6
+        } else {
+            return 1
+        }
     }
 }
 
