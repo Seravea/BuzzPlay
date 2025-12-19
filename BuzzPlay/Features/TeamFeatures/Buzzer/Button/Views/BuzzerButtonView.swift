@@ -14,35 +14,18 @@ struct BuzzerButtonView: View {
     var body: some View {
         VStack {
             
-            Spacer()
-            
-            if let teamName = buzzerVM.teamNameHasBuzz {
-                
-                Text("\(teamName) a buzzer")
-                    .font(.poppins(.largeTitle, weight: .bold))
-                
-            } else {
-                
-                Text("UI emptyView")
-                    .foregroundStyle(.clear)
-                    .font(.largeTitle)
-                
-            }
-            
-            Spacer()
-            
             ZStack {
                 
                 
                 Image(.buttonFloor)
                     .resizable()
-                    .scaledToFill()
-                    .frame(width: 300, height: 240)
+                    .scaledToFit()
+                    .frame(maxWidth: 320, maxHeight: 230)
                     .opacity(buzzerVM.isEnabled ? 1 : 0.5)
                 Image(.buttonTap)
                     .resizable()
-                    .scaledToFill()
-                    .frame(width: 320, height: 230)
+                    .scaledToFit()
+                    .frame(maxWidth: 300, maxHeight: 240)
                     .padding(.bottom, isTapped ? 10 : 100)
                     
             }
@@ -58,8 +41,6 @@ struct BuzzerButtonView: View {
             }
             .animation(.easeInOut(duration: 0.1), value: isTapped)
             
-           Spacer()
-//            .frame(height: 400)
         }
         .appDefaultTextStyle(Typography.body)
     }

@@ -39,6 +39,7 @@ struct HomeView: View {
                     }, style: .filled(color: .mustardYellow), fontSize: Typography.body)
                     
                 }
+                .padding()
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .homeView:

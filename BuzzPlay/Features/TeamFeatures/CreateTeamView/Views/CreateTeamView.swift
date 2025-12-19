@@ -18,7 +18,7 @@ struct CreateTeamView: View {
                     TextFieldCustom(
                         text: $createTeamVM.team.name,
                         prompt: "Nom de l'équipe",
-                        textSize: .largeTitle
+                        textSize: .body
                     )
                     HStack(spacing: 12) {
                         ForEach(GameColor.allCases, id: \.self) { color in
@@ -36,7 +36,7 @@ struct CreateTeamView: View {
                 }
                 HStack {
                     Text("De 1 à 6 joueurs")
-                        .font(.poppins(.largeTitle, weight: .bold))
+                        .font(.poppins(.title3, weight: .bold))
                     
                     Spacer()
                     
@@ -48,9 +48,9 @@ struct CreateTeamView: View {
                             }
                         },
                         style: .filled(color: createTeamVM.nbofPlayers > 6 ? .gray : .mustardYellow),
-                        fontSize: Typography.largeTitle,
+                        fontSize: Typography.body,
                         sfIconName: "plus.circle.fill",
-                        iconSize: .largeTitle,
+                        iconSize: .title3,
                         colorIcon: .white,
                         size: geo.size.width * 0.4
                     )
@@ -63,12 +63,12 @@ struct CreateTeamView: View {
                                 TextFieldCustom(
                                     text: $player.name,
                                     prompt: "Nom du joueur",
-                                    textSize: .title3
+                                    textSize: .body
                                 )
                                 
                                 PrimaryButtonView(title: "Supprimer", action: {
                                     createTeamVM.removePlayer(player: player)
-                                }, style: .filled(color: .red), fontSize: Typography.title3, sfIconName: "trash.fill", iconSize: .title3, colorIcon: .white, size: geo.size.width * 0.15)
+                                }, style: .filled(color: .red), fontSize: Typography.body, sfIconName: "trash.fill", iconSize: .body, colorIcon: .white, size: geo.size.width * 0.4)
                                 .padding(.leading)
                             }
                             
@@ -83,7 +83,7 @@ struct CreateTeamView: View {
                 
                 PrimaryButtonView(title: "Valider la team", action: {
                     createTeamVM.isAlertOn.toggle()
-                }, style: .filled(color: .green), fontSize: Typography.largeTitle)
+                }, style: .filled(color: .green), fontSize: Typography.body)
                 
             }
             .alert("Es-tu sûr des prénoms de tes joueurs ?", isPresented: $createTeamVM.isAlertOn) {

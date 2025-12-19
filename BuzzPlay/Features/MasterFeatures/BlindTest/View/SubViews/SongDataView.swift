@@ -8,12 +8,11 @@
 import Foundation
 import SwiftUI
 
-func songDataToShow(song: Song) -> some View {
+func songDataToShow(song: BlindTestSong) -> some View {
     return VStack(alignment: .leading) {
         Text(song.title)
         Text(song.artist)
-        Text(song.creationYear)
     }
-    .font(.poppins(.title))
+    .font(.poppins(.body))
     .frame(maxWidth: .infinity)
 }

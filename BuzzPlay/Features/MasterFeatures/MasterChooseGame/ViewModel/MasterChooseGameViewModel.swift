@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import SwiftUI
 
 @Observable
 class MasterChooseGameViewModel {
@@ -40,4 +40,13 @@ class MasterChooseGameViewModel {
     func gameIsAvailable(_ game: GameType) -> Bool {
         gameVM.gamesOpen.contains(game)
     }
+}
+
+
+
+//MARK: UI Functions
+extension MasterChooseGameViewModel {
+//    func disableGameButton(game: GameType) -> some View {
+//        
+//    }
 }

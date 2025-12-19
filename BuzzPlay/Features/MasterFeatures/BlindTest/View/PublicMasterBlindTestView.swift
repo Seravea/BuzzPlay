@@ -12,11 +12,6 @@ struct PublicMasterBlindTestView: View {
     
     var body: some View {
         VStack {
-            Text(blindTestVM.progressText)
-                .font(.poppins(.largeTitle))
-            
-            ProgressView(value: blindTestVM.progressValue)
-                .progressViewStyle(.linear)
            
             Image(systemName: blindTestVM.isPlaying == true ? "play.circle.fill" : "stop.circle.fill")
                     .font(.system(size: 150))
