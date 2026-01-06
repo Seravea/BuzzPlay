@@ -9,11 +9,15 @@ import Foundation
 import Observation
 
 @Observable
-class CreateTeamViewModel: ObservableObject {
-    var team: Team = Team(name: "", colorIndex: 0, players: [])
+class CreateTeamViewModel {
+    var team: Team = Team(name: "", teamColor: .redGame, players: [])
     var isAlertOn: Bool = false
     
+    var onTeamCreated: ((Team) -> Void)?
     
+    func validate() {
+        onTeamCreated?(team)
+    }
     
     var nbofPlayers: Int {
         team.players.count
@@ -34,5 +38,13 @@ class CreateTeamViewModel: ObservableObject {
         }
         isAlertOn = true
         team.players = newPlayers
+    }
+    
+    func isSelectedGameColor(_ color: GameColor) -> Double {
+        if team.teamColor == color {
+            return 1
+        } else {
+            return 0.3
+        }
     }
 }

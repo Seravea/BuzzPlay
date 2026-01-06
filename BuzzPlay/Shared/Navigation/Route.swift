@@ -14,5 +14,9 @@ enum Route: Hashable, Codable {
     case createTeamView
     case masterChooseGameView
     case playerChooseGameView
-    case buzzerView
+    case blindTestMaster
+    case blindTestPlayer
+    case quizMaster
+    case quizPlayer
+    case karaoke
 }

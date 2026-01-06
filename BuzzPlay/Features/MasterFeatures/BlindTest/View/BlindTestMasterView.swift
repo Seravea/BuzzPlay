@@ -8,32 +8,30 @@
 import SwiftUI
 
 struct BlindTestMasterView: View {
-    @StateObject var blindTestViewModel = BlindTestViewModel()
+    @Bindable var blindTestViewModel: BlindTestMasterViewModel
+    @Bindable var ambiantSoundViewModel = AmbiantSoundViewModel()
     
     var body: some View {
         GeometryReader { geo in
             HStack {
                 
                 //MARK: View for the Master ONLY (PRIVATE)
-                PrivateMasterBlindTestView(blindTestVM: blindTestViewModel)
+                PrivateMasterBlindTestView(ambiantaudioPlayerVM: ambiantSoundViewModel, blindTestVM: blindTestViewModel)
                     .frame(width: geo.size.width/2)
                     .padding()
+                
+                ///separator
                 Rectangle()
                     .frame(width: geo.size.width/200)
-//                    .ignoresSafeArea()
                 
                 //MARK: View for shareScreen PUBLIC
                 PublicMasterBlindTestView(blindTestVM: blindTestViewModel)
-//                    .frame(width: geo.size.width/2)
                     .padding()
-//                    .padding(.trailing, -0)
             }
-            
         }
-//        .padding(10)
     }
 }
 
 #Preview {
-    BlindTestMasterView()
+    BlindTestMasterView(blindTestViewModel: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()))
 }

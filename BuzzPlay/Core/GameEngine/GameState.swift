@@ -6,3 +6,12 @@
 //
 
 import Foundation
+
+
+enum GameState {
+    case lobby
+    case inGame(GameType)
+    case gameOver
+}
+
+

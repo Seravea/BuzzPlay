@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PublicMasterBlindTestView: View {
-    @ObservedObject var blindTestVM: BlindTestViewModel
+    @Bindable var blindTestVM: BlindTestMasterViewModel
     
     var body: some View {
         VStack {
@@ -26,13 +26,13 @@ struct PublicMasterBlindTestView: View {
                     .symbolEffect(.bounce)
                     
             Spacer()
-            if let teamWining = blindTestVM.teamWining, let buzzTime = blindTestVM.buzzTime {
+            if let teamWining = blindTestVM.teamHasBuzz {
                 
-                TeamCardView(teamWining: teamWining, buzzTime: buzzTime)
+                TeamCardView(team: teamWining, buzzTime: blindTestVM.formattedTime)
                 
             } else {
                 
-                TimerCardView(timer: $blindTestVM.gameTimer)
+                TimerCardView(timer: blindTestVM.formattedTime, isCorrectAnswer: blindTestVM.isCorrect)
                 
             }
             Spacer()
@@ -46,6 +46,6 @@ struct PublicMasterBlindTestView: View {
 }
 
 #Preview {
-    PublicMasterBlindTestView(blindTestVM: BlindTestViewModel())
+    PublicMasterBlindTestView(blindTestVM: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()))
       
 }

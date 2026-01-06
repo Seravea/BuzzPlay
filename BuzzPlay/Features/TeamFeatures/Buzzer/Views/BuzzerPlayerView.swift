@@ -9,36 +9,62 @@ import SwiftUI
 
 struct BuzzerPlayerView: View {
     @State var isTapped: Bool = false
-    var teamPlaying: Team?
+    @Bindable var buzzerVM: BuzzerViewModel
+    
     var body: some View {
         VStack {
+          
+            Spacer()
+            
+            if let team = buzzerVM.teamNameHasBuzz {
+                
+                Text("\(team.name) a buzzer")
+                    .font(.poppins(.largeTitle, weight: .bold))
+                
+            } else {
+                
+                Text("UI emptyView")
+                    .foregroundStyle(.clear)
+                    .font(.largeTitle)
+                
+            }
+            
+            Spacer()
             
             ZStack {
+                
                 
                 Image(.buttonFloor)
                     .resizable()
                     .scaledToFill()
                     .frame(width: 300, height: 240)
+                    .opacity(buzzerVM.isEnabled ? 1 : 0.5)
                 Image(.buttonTap)
                     .resizable()
                     .scaledToFill()
                     .frame(width: 320, height: 230)
-                    .padding(.bottom, isTapped ? 10 : 100)  
+                    .padding(.bottom, isTapped ? 10 : 100)
+                    
             }
+            .opacity(buzzerVM.isEnabled ? 1 : 0.7)
             .onTapGesture {
-                isTapped.toggle()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                if buzzerVM.isEnabled {
+                    buzzerVM.buzz()
                     isTapped.toggle()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        isTapped.toggle()
+                    }
                 }
             }
             .animation(.easeInOut(duration: 0.1), value: isTapped)
             
-           
+           Spacer()
 //            .frame(height: 400)
         }
+        .appDefaultTextStyle(Typography.body)
     }
 }
 
 #Preview {
-    BuzzerPlayerView(teamPlaying: Team(name: "La team", colorIndex: 1))
+    BuzzerPlayerView(buzzerVM: BuzzerViewModel(team: Team(name: "L'équipe 1", teamColor: .blueGame), mode: .blindTest))
 }

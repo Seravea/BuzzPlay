@@ -10,8 +10,8 @@ import SwiftUI
 
 
 struct AmbiantSoundsPadView: View {
-    var ambiantAudioPlayerVM: AmbiantSoundViewModel
-    var blindTestVM: BlindTestViewModel
+    @Bindable var ambiantAudioPlayerVM: AmbiantSoundViewModel
+    @Bindable var blindTestVM: BlindTestMasterViewModel
     
     var column: [GridItem] = [GridItem(.flexible(minimum: 0)), GridItem(.flexible(minimum: 0))]
     var body: some View {
