@@ -25,7 +25,6 @@ struct PrimaryButtonView: View {
                 Text(title)
                     .primaryButtonTextStyle(style, fontSize: fontSize)
                     
-                
                 if let iconName = sfIconName, let iconSize = iconSize, let colorIcon = colorIcon {
                     Image(systemName: iconName)
                         .font(iconSize)
@@ -35,7 +34,8 @@ struct PrimaryButtonView: View {
                
             }
             .frame(maxWidth: size ?? .infinity)
-            .padding(.vertical, 8)
+            .padding([.vertical], 8)
+            .padding(.horizontal, 12)
             .background {
                 RoundedRectangle.backgroundPrimaryButton(style: style)
             }

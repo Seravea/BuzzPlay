@@ -10,31 +10,30 @@ import SwiftUI
 struct PlayerChooseGameView: View {
     @Bindable var teamGameVM: TeamGameViewModel
     @EnvironmentObject var router: Router
+    @Bindable var teamFlowVM: TeamFlowViewModel
     var body: some View {
-        GeometryReader { geo in
             VStack {
                 Spacer()
-                HStack {
-                   Spacer()
-                    
-                    ForEach(GameType.allCases, id: \.self) { game in
-                        ButtonChooseGameView(isOpen: teamGameVM.gameIsAvalaible(game), geo: geo, action: {
-                            router.push(game.destinationPlayer)
-                        }, title: game.gameTitle)
-                        
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(GameType.allCases, id: \.self) { game in
+                            ButtonChooseGameView(isOpen: teamGameVM.gameIsAvalaible(game), action: {
+                                teamGameVM.currentBuzzerVM = teamFlowVM.makeBuzzerViewModel(for: game == .quiz ? .quiz : .blindTest)
+                                router.push(game.destinationPlayer)
+                            }, title: game.gameTitle)
+                            .frame(minWidth: 200)
+                        }
                     }
-
-                    Spacer()
-                    
+                    .padding(.leading, 8)
                 }
-                .padding()
+                .scrollIndicators(.hidden)
                 Spacer()
             }
-        }
+        
         
     }
 }
 
 #Preview {
-    PlayerChooseGameView(teamGameVM: TeamGameViewModel(team: Team(name: "la team", teamColor: .blueGame), mpc: MPCService(peerName: "l'équipe", role: .team)))
+    PlayerChooseGameView(teamGameVM: TeamGameViewModel(team: Team(name: "la team", teamColor: .blueGame), mpc: MPCService(peerName: "l'équipe", role: .team), clientMode: .team), teamFlowVM: TeamFlowViewModel())
 }

@@ -14,6 +14,7 @@ struct BuzzPlayApp: App {
         WindowGroup {
           HomeView()
                 .environmentObject(router)
+                .appDefaultTextStyle(Typography.body)
         }
     }
 }

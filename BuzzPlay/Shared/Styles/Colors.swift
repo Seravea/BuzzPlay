@@ -14,4 +14,5 @@ extension Color {
     static let darkPurple = Color(hex: "3B185F")
     static let darkPink = Color(hex: "A12568")
     static let mustardYellow = Color(hex: "FEC260")
+    static let backgroundColor = Color(hex: "FCFBFD")
 }

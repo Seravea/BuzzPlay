@@ -6,9 +6,10 @@
 //
 
 import Foundation
-
+import SwiftUI
 
 @Observable
+@MainActor
 class MasterChooseGameViewModel {
     private let gameVM: MasterFlowViewModel
     
@@ -40,4 +41,13 @@ class MasterChooseGameViewModel {
     func gameIsAvailable(_ game: GameType) -> Bool {
         gameVM.gamesOpen.contains(game)
     }
+}
+
+
+
+//MARK: UI Functions
+extension MasterChooseGameViewModel {
+//    func disableGameButton(game: GameType) -> some View {
+//        
+//    }
 }

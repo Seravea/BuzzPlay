@@ -20,18 +20,26 @@ struct HomeView: View {
                 
                   Spacer()
                 
-                HStack {
-                    //MARK: Destination to PlayerView
-                    PrimaryButtonView(title: "Joueurs", action: {
-                        router.push(.createTeamView)
-                    }, style: .filled(color: .darkestPurple), fontSize: Typography.largeTitle)
-                     
-                    //MARK: Destination to MasterView
-                    PrimaryButtonView(title: "Maître", action: {
-                        router.push(.masterLobbyView)
-                    }, style: .outlined(color: .darkestPurple), fontSize: Typography.largeTitle)
-                  
+                VStack {
+                    HStack {
+                        //MARK: Destination to PlayerView
+                        PrimaryButtonView(title: "Joueurs", action: {
+                            router.push(.createTeamView)
+                        }, style: .filled(color: .darkestPurple), fontSize: Typography.body)
+                        
+                        //MARK: Destination to MasterView
+                        PrimaryButtonView(title: "Maître", action: {
+                            router.push(.masterLobbyView)
+                        }, style: .outlined(color: .darkestPurple), fontSize: Typography.body, size: 400)
+                        
+                    }
+                    
+                    PrimaryButtonView(title: "Partage d'écran", action: {
+                        router.push(.createPublicDisplayTeam)
+                    }, style: .filled(color: .mustardYellow), fontSize: Typography.body)
+                    
                 }
+                .padding()
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .homeView:
@@ -44,7 +52,7 @@ struct HomeView: View {
                     case .playerChooseGameView:
                         //TODO: view
                         if let vm = teamFlowVM.teamGameVM {
-                            PlayerChooseGameView(teamGameVM: vm)
+                            PlayerChooseGameView(teamGameVM: vm, teamFlowVM: teamFlowVM)
                         } else {
                             Text("Pas de team Gros Bug sa reum")
                         }
@@ -52,24 +60,39 @@ struct HomeView: View {
                         BlindTestMasterView(blindTestViewModel: masterFlowVM.makeBlindTestMasterVM())
                     case .blindTestPlayer:
                         //TODO: view
-                        BuzzerPlayerView(buzzerVM: teamFlowVM.makeBuzzerViewModel(for: .blindTest))
+                        if let teamGameVM = teamFlowVM.teamGameVM {
+                            
+                            BuzzerPlayerView(teamGameVM: teamGameVM)
+                                
+                        }
+                        
                     case .createTeamView:
                         //TODO: view
                         CreateTeamView(createTeamVM: teamFlowVM.makeCreateTeamViewModel())
-                 
+                        
                     case .quizMaster:
                         //TODO: View
                         QuizMasterListView(quizMasterVM: masterFlowVM.makeQuizMasterVM())
                     case .quizPlayer:
-                        BuzzerPlayerView(buzzerVM: teamFlowVM.makeBuzzerViewModel(for: .quiz))
-                       
+                        if let teamGameVM = teamFlowVM.teamGameVM {
+                            BuzzerPlayerView(teamGameVM: teamGameVM)
+                        }
+                    case .createPublicDisplayTeam:
+                        CreateDisplayPublicTeamView(createTeamVM: teamFlowVM.makeCreateTeamViewModel())
+                    case .publicDisplayScreen:
+                        if let teamGameVM = teamFlowVM.teamGameVM {
+                            
+                            PublicDisplayView(teamGameVM: teamGameVM)
+                        }
                     case .karaoke:
                         EmptyView()
                     }
                 }
-                
                 Spacer()
                 
+            }
+            .onAppear {
+                teamFlowVM.restoreSavedTeamIfPossible()
             }
             .appDefaultTextStyle(Typography.body)
         }

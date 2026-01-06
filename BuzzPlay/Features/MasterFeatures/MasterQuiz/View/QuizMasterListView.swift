@@ -10,44 +10,80 @@ import SwiftUI
 struct QuizMasterListView: View {
     @Bindable var quizMasterVM: QuizMasterViewModel
     var body: some View {
-        ScrollView {
+        
             HStack {
                 VStack(alignment: .leading) {
-                    ForEach(quizMasterVM.questions) { question in
-                        PrimaryButtonView(title: question.question, action: {
-                            withAnimation {
-                                quizMasterVM.selectQuestion(question)
-                            }
-                        }, style: quizMasterVM.questionButtonStyle(question), fontSize: Typography.body, size: 450)
-                        .disabled(quizMasterVM.isPlaying)
-                        
-                    }
-                    
-                    
-                }
-                if let currentQuestion = quizMasterVM.currentQuestion {
-                    
-                    VStack {
-                        Text(currentQuestion.question)
-                            .font(.largeTitle)
-                        
-                        Text(quizMasterVM.formattedTime)
-                        
-                        Spacer()
-                        
-                        if let currentTeamHasBuzz = quizMasterVM.gameVM.currentBuzzTeam {
-                            TeamCardView(team: currentTeamHasBuzz)
+                    ScrollView {
+                        ForEach(quizMasterVM.questions) { question in
+                            PrimaryButtonView(title: question.title, action: {
+                                withAnimation {
+                                    quizMasterVM.selectQuestion(question)
+                                }
+                            }, style: quizMasterVM.questionButtonStyle(question), fontSize: Typography.body, size: 450)
+                            .disabled(quizMasterVM.quizButtonDisabled(question: question))
+                            
                         }
+                    }
+                }
+                VStack {
+                    
+                    //MARK: Correct answer or Wrong answer
+                    VStack {
+                        VStack {
+                            PrimaryButtonView(title: "Valider 1 réponse (10 points)", action: {
+                                quizMasterVM.validateAnswer(points: 10)
+                            }, style: .filled(color: .green), fontSize: Typography.body)
+                        
+                            PrimaryButtonView(title: "Valider 2 réponses (20 points)", action: {
+                                quizMasterVM.validateAnswer(points: 20)
+                            }, style: .filled(color: .green), fontSize: Typography.body)
+                            
+                            
+                            PrimaryButtonView(title: "Valider 3 réponses (30 points)", action: {
+                                quizMasterVM.validateAnswer(points: 30)
+                            }, style: .filled(color: .green), fontSize: Typography.body)
+                            
+                            PrimaryButtonView(title: "Refuser la réponse", action: {
+                                quizMasterVM.rejectAnswer()
+                            }, style: .filled(color: .red), fontSize: Typography.body)
+                            
+                        }
+                        .disabled(quizMasterVM.validateRejectDisabled)
+                        .opacity(quizMasterVM.UIDisabledValidateRejectButtonOpacity())
                         
                     }
-                    .frame(maxWidth: .infinity)
-    
-                } else {
-                    Spacer()
+                    
+                    if let currentQuestion = quizMasterVM.currentQuestion {
+                        
+                        VStack {
+                            TimerCardView(timer: quizMasterVM.formattedTime, isCorrectAnswer: false)
+                
+                            Text("Question : \(currentQuestion.title)")
+                                .font(.largeTitle)
+                            ForEach(currentQuestion.answers, id: \.self) { answer in
+                                Text("- \(answer)")
+                                    .frame(alignment: .leading)
+                            }
+                            
+                            
+                            
+                            Spacer()
+                            
+                            if let currentTeamHasBuzz = quizMasterVM.gameVM.currentBuzzTeam {
+                                TeamCardView(team: currentTeamHasBuzz, buzzTime: quizMasterVM.formattedTime, showPoints: false)
+                            }
+                            
+                        }
+                        .frame(maxWidth: .infinity)
+                        
+                    } else {
+                        Spacer()
+                    }
                 }
+                .padding()
             }
             .padding()
-        }
+        
         
     }
 }

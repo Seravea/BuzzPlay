@@ -11,6 +11,7 @@ import MultipeerConnectivity
 enum MPCRole {
     case master
     case team
+    case publicScreen
 }
 
 
@@ -73,34 +74,36 @@ extension MPCService {
     
     //MARK: function to send messages to Browsers
     func sendBuzzLock(team: Team) {
-        guard !session.connectedPeers.isEmpty else {
-            print("ERREUR MPC: no peer connected, can't send BUZZ LOCK")
-            return
-        }
-
-    let payload = BuzzLockPayload(team: team)
-
-        do {
-            let data = try JSONEncoder().encode(payload)
-            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
-            print("MPC sent BUZZ LOCK for teamId \(team.id)")
-        } catch {
-            print("MPC failed to send BUZZ LOCK: \(error)")
-        }
+        let payload = BuzzLockPayload(teamID: team.id, teamName: team.name)
+        sendMessage(.buzzLock(payload))
+//        guard !session.connectedPeers.isEmpty else {
+//            print("ERREUR MPC: no peer connected, can't send BUZZ LOCK")
+//            return
+//        }
+//
+//        let payload = BuzzLockPayload(teamID: team.id, teamName: team.name)
+//
+//        do {
+//            let data = try JSONEncoder().encode(payload)
+//            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+//            print("MPC sent BUZZ LOCK for teamId \(team.id)")
+//        } catch {
+//            print("MPC failed to send BUZZ LOCK: \(error)")
+//        }
     }
     
     
     func sendBuzzUnlock() {
-        guard !session.connectedPeers.isEmpty else { return }
-        let payload = BuzzUnlockPayload()
-
-        do {
-            let data = try JSONEncoder().encode(payload)
-            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
-            print("MPC sent BUZZ UNLOCK")
-        } catch {
-            print("MPC failed to send BUZZ UNLOCK: \(error)")
-        }
+        sendMessage(.buzzUnlock)
+//        guard !session.connectedPeers.isEmpty else { return }
+//
+//        do {
+//            let data = try JSONEncoder().encode(payload)
+//            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+//            print("MPC sent BUZZ UNLOCK")
+//        } catch {
+//            print("MPC failed to send BUZZ UNLOCK: \(error)")
+//        }
     }
     
 }
@@ -114,7 +117,7 @@ extension MPCService {
 //MARK: Browser Player/Team
 extension MPCService {
     func startBrowsingIfNeeded() {
-            guard role == .team else { return }
+        guard role == .team || role == .publicScreen else { return }
 
             browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
             browser?.delegate = self
@@ -124,37 +127,29 @@ extension MPCService {
     
    //send team to Hosting
     func sendTeam(_ team: Team) {
-        guard !session.connectedPeers.isEmpty else {
-            print("ERREUR MPC: no peer connected, can't send team DATA")
-            return
-        }
-        do {
-            let data = try JSONEncoder().encode(team)
-            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
-            
-            print("MPC Sent team \(team.name) to \(session.connectedPeers.map(\.displayName).joined(separator: ", "))")
-        } catch {
-            print("MPC failed to send Team \(team.name)")
-        }
+        print("TEAM: sending teamJoin for \(team.name)")
+            sendMessage(.teamJoin(team))
     }
     
     
     //MARK: function to send buzz to Master
     func sendBuzz(team: Team) {
-            guard !session.connectedPeers.isEmpty else {
-                print("ERREUR MPC: no peer connected, can't send BUZZ")
-                return
-            }
-
-        let payload = BuzzPayload(team: team)
-
-            do {
-                let data = try JSONEncoder().encode(payload)
-                try session.send(data, toPeers: session.connectedPeers, with: .reliable)
-                print("MPC sent BUZZ from team \(team.name)")
-            } catch {
-                print("MPC failed to send BUZZ: \(error)")
-            }
+        let payload = BuzzPayload(teamID: team.id)
+        sendMessage(.buzz(payload))
+//            guard !session.connectedPeers.isEmpty else {
+//                print("ERREUR MPC: no peer connected, can't send BUZZ")
+//                return
+//            }
+//
+//        let payload = BuzzPayload(teamID: team.id)
+//
+//            do {
+//                let data = try JSONEncoder().encode(payload)
+//                try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+//                print("MPC sent BUZZ from team \(team.name)")
+//            } catch {
+//                print("MPC failed to send BUZZ: \(error)")
+//            }
         }
 }
 
@@ -259,18 +254,54 @@ extension MPCService: MCNearbyServiceBrowserDelegate {
 //MARK: ChooseGame func
 extension MPCService {
     func sendGameAvailability(_ openGames: [GameType]) {
-        guard !session.connectedPeers.isEmpty else {
-            print("Erreur MPC: pas de peer connecté, can't send")
-            return
-        }
         
-        let update = GameAvailability(openGames: openGames)
+        sendMessage(.gameAvailability(openGames))
+//        guard !session.connectedPeers.isEmpty else {
+//            print("Erreur MPC: pas de peer connecté, can't send")
+//            return
+//        }
+//        
+//        let update = GameAvailability(openGames: openGames)
+//        do {
+//            let data = try JSONEncoder().encode(update)
+//            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+//            print("MPC sent games List \(openGames)")
+//        } catch {
+//            print("MPC can't sent, there is an error: \(error)")
+//        }
+    }
+}
+
+//MARK: Quiz Message
+extension MPCService {
+    
+    func sendPublicStateQuestion(_ publicState: PublicState) {
+        
+    }
+}
+
+
+
+//MARK: MCPSendMessage
+extension MPCService {
+    func sendMessage(_ message: MPCMessage) {
         do {
-            let data = try JSONEncoder().encode(update)
+            let data = try JSONEncoder().encode(message)
             try session.send(data, toPeers: session.connectedPeers, with: .reliable)
-            print("MPC sent games List \(openGames)")
         } catch {
-            print("MPC can't sent, there is an error: \(error)")
+            let mpcError = MPCError.sendFailed(underlying: error)
+            print("MPC error: \(mpcError), underlying: \(error)")
+        }
+    }
+    
+    func sendMessagetoOneTeam(message: MPCMessage, team: Team) {
+        do {
+            let peerID = MCPeerID(displayName: team.name)
+            let data = try JSONEncoder().encode(message)
+            try session.send(data, toPeers: [peerID], with: .reliable)
+        } catch {
+            let mpcError = MPCError.sendFailed(underlying: error)
+            print("MPC error: \(mpcError), underlying: \(error)")
         }
     }
 }

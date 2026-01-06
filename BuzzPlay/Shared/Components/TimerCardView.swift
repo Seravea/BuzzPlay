@@ -13,9 +13,9 @@ struct TimerCardView: View {
     var body: some View {
         
         
-        ZStack(alignment: .bottom) {
+       
             
-            VStack {
+        VStack(spacing: 8) {
                 
                 Text("Chrono")
                 
@@ -23,28 +23,17 @@ struct TimerCardView: View {
                    
             }
             .padding()
-            .frame(minWidth: 400, minHeight: 400, alignment: .center)
             .background {
                 Rectangle()
-                //MARK: Couleur de l'équipe qui a buzzé
                     .foregroundStyle(Color.darkestPurple)
             }
-            
-            //MARK: Affiché si le master valide la réponse
-            if isCorrectAnswer {
-                Text("Bonne Réponse !")
-                    .padding(.bottom)
-            }
-            
-        }
-        .font(.poppins(.largeTitle, weight: .bold))
-        .foregroundStyle(.white)
         
-        .appDefaultTextStyle(Typography.largeTitle)
+        .font(.poppins(.body, weight: .bold))
+        .foregroundStyle(.white)
     }
 }
 
 
 #Preview {
-    TimerCardView(timer: "00:00:01", isCorrectAnswer: true)
+    TimerCardView(timer: "00:01", isCorrectAnswer: true)
 }

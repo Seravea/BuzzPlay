@@ -7,18 +7,10 @@
 
 import Foundation
 
-//TODO: des états du jeux :
-// - Le master est en train de choisir une question
-// - debut de la manche avec la question choisi (quiz en cours)
-// - une equipe a buzzé - pause
-// - relance le jeux (quiz en cours (même état que debut de manche je pense)
-// - validate() réponse ( les points son affichés a tout le monde)
-// -> le master choisi une autre question (reprise de l'etat a 0)
-
-
-
+@MainActor
 @Observable
 class QuizMasterViewModel: BuzzDrivenGame {
+    
     let gameVM: MasterFlowViewModel
     
     var questions: [QuizQuestion] = quizMusic90sTo10s
@@ -27,13 +19,9 @@ class QuizMasterViewModel: BuzzDrivenGame {
     
     var questionsPassed: [QuizQuestion] = []
     
-    
     //MARK: Timer's datas
     var reactionTimeMs: Int = 0
     var timer: Timer?
-    
-    
-    
     
     init(gameVM: MasterFlowViewModel) {
         self.gameVM = gameVM
@@ -44,76 +32,114 @@ class QuizMasterViewModel: BuzzDrivenGame {
 extension QuizMasterViewModel {
     func selectQuestion(_ question: QuizQuestion) {
         currentQuestion = question
+        teamHasBuzz = nil
         
+        gameVM.unlockBuzz()
         startRound()
     }
     
     func startRound() {
-        guard let question = currentQuestion else { return }
+        //SI pas de question ne peu pas commencer la manche
+        guard currentQuestion != nil else { return }
         
-        //TODO: envoyer la question aux teams (MPC)
-        
+        gameVM.broadcastPublicStateFromCurrentGame()
         gameVM.unlockBuzz()
-        //TODO: start Timer
         startReactionTimer()
     }
     
-    func validateAnswer() {
+    func validateAnswer(points: Int) {
         if let team = gameVM.currentBuzzTeam {
-            gameVM.addPointToTeam(team)
+            gameVM.addPointToTeam(team, points: points)
+            goToSelectNewQuestion()
+            teamHasBuzz = nil
+            gameVM.currentBuzzTeam = nil
             
         }
-        //TODO: etat du jeux pour question suivante etc..
-        
-        
     }
     
     func rejectAnswer() {
         gameVM.unlockBuzz()
+        teamHasBuzz = nil
+        gameVM.currentBuzzTeam = nil
+        let state = makePublicState()
+        gameVM.sendPublicState(state)
         startReactionTimer()
     }
     
     func handleBuzz(from team: Team) {
         gameVM.currentBuzzTeam = team
-        
+        teamHasBuzz = team
         pauseReactionTimer()
-        
-        //TODO: handle du buzz pour le Quiz a voir s'il est différent du BlindTestVM handleBuzz(team)
-        
     }
     
     func goToSelectNewQuestion() {
         if let currentQuestion = currentQuestion {
             questionsPassed.append(currentQuestion)
         }
-        stopReactionTimer()
         currentQuestion = nil
+        stopReactionTimer()
         
+        
+        let state = makePublicState()
+        gameVM.sendPublicState(state)
     }
-    
 }
 
 
 //MARK: Quiz UI details
 extension QuizMasterViewModel {
     func questionButtonStyle(_ question: QuizQuestion) -> Style {
-        var isSelected: Bool  {
-            question == currentQuestion
-        }
+        let isSelected = (question == currentQuestion)
+        let isAlreadyPassed = questionsPassed.contains(question)
         
-        var isAlreadyPassed: Bool {
-            questionsPassed.contains(question)
-        }
-        if !isSelected {
-            return .outlined(color: .darkestPurple)
-        } else if isAlreadyPassed {
-            return .outlined(color: .green)
-        } else {
+        if isSelected {
             return .filled(color: .darkestPurple)
+        } else if isAlreadyPassed {
+            return .filled(color: .green)
+        } else {
+            return .outlined(color: .darkestPurple)
+        }
+    }
+    
+    func quizButtonDisabled(question: QuizQuestion) -> Bool {
+        if isPlaying {
+            return true
+        } else if questionsPassed.contains(question) {
+            return true
+        } else {
+            return false
         }
     }
     
     var isPlaying: Bool {
         currentQuestion != nil
+    }
+    
+    var validateRejectDisabled: Bool {
+        teamHasBuzz == nil
+    }
+    
+    func UIDisabledValidateRejectButtonOpacity() -> Double {
+        validateRejectDisabled ? 0.7 : 1
+    }
+}
+
+
+//MARK: making/sending Payload to peers
+extension QuizMasterViewModel {
+    func makePublicState() -> PublicState {
+        guard let question = currentQuestion else {
+            return .waiting
+        }
+        
+        return PublicState.quiz(
+            PublicQuizState(
+                question: question,
+                formattedTime: formattedTime,
+                buzzingTeam: teamHasBuzz,
+                isAnswerRevealed: false,
+                isHintVisible: false
+            )
+        )
     }
 }

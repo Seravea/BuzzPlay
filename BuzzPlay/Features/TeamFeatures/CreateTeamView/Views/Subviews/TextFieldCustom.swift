@@ -15,10 +15,11 @@ struct TextFieldCustom: View {
     var body: some View {
         TextField("", text: $text, prompt: Text(prompt))
             .font(.poppins(textSize))
-            .padding()
+            .padding(8)
             .background {
                 RoundedRectangle(cornerRadius: 6)
-                    .stroke(lineWidth: 2)
+                    .stroke(lineWidth: 1)
+                    .opacity(0.4)
             }
 //            .padding()
             .frame(maxWidth: widthSize ?? .infinity)
@@ -26,5 +27,5 @@ struct TextFieldCustom: View {
 }
 
 #Preview {
-    TextFieldCustom(text: .constant(""), prompt: "Nom de l'équipe", textSize: .largeTitle)
+    TextFieldCustom(text: .constant(""), prompt: "Nom de l'équipe", textSize: .body)
 }
