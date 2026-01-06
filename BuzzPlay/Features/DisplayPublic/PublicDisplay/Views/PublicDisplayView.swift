@@ -8,26 +8,29 @@
 import SwiftUI
 
 struct PublicDisplayView: View {
-    //TODO: finish TeamGameVM and PublicDisplayVM
-    var buzzLockPayload: BuzzLockPayload?
-    var publicState: PublicState
-    
+    // Centralize rendering based on the team view model
+    @Bindable var teamGameVM: TeamGameViewModel
+
     var body: some View {
         VStack {
-            
-            switch publicState {
-                
+            switch teamGameVM.publicState {
             case .waiting:
-                ProgressView()
+                Text("Choix de la question en cours")
+                Text("Préparez-vous !")
+
             case .quiz(let state):
-                PublicQuizDisplayView(state: state)
+                // Use the view model's formatted time
+                PublicQuizDisplayView(state: state, timer: teamGameVM.formattedTime)
             }
-            
         }
-        
     }
 }
 
 #Preview {
-    PublicDisplayView(publicState: PublicState.waiting)
+    // Minimal preview scaffolding
+    let vm = TeamGameViewModel(team: Team(name: "Preview Team"),
+                               mpc: MPCService(peerName: "Preview", role: .team),
+                               clientMode: .team)
+    return PublicDisplayView(teamGameVM: vm)
 }
+

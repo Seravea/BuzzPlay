@@ -33,7 +33,12 @@ final class TeamGameViewModel {
     var isPublicDisplayActive: Bool = false
     var publicState: PublicState = .waiting
     
-    
+    // MARK: - Public display timer mirroring
+    // Expose a formatted time string for UI
+    var formattedTime: String = "00:00"
+    private var timer: Timer?
+    // Keep the last known formatted time from master to display immediately
+    private var lastMasterFormattedTime: String = "00:00"
     
     init(team: Team, mpc: MPCService, clientMode: ClientMode) {
         self.team = team
@@ -66,9 +71,6 @@ extension TeamGameViewModel {
                 let publicTeam = Team(name: "DisplayPublic")
                 self.mpc.sendTeam(publicTeam)
             }
-                
-            
-            
         }
         
         mpc.onMessage = { [weak self] data, peer in
@@ -80,45 +82,17 @@ extension TeamGameViewModel {
             } catch {
                 print("Message reçus mais inconnu dans MPCMessage : \(error)")
             }
-            
         }
 
     }
-            //MARK: refactor using MPCMessage
-//            if let update = try? JSONDecoder().decode(GameAvailability.self, from: data) {
-//                print("TEAM: received game availability \(update.openGames)")
-//                self.openGames = update.openGames
-//            } else {
-//                // Ici, tu peux ignorer ou logger
-//                // ex: print("TEAM: received non-gameAvailability data")
-//            }
-//            
-//            
-//            //recoit le lock du buzzer
-//            if let lock = try? JSONDecoder().decode(BuzzLockPayload.self, from: data) {
-//                print("TEAM: received BUZZ LOCK (winner: \(lock.teamID))")
-//                currentBuzzerVM?.teamNameHasBuzz = lock.teamName
-//                
-//                    currentBuzzerVM?.isEnabled = false
-//                
-//                
-//                    return
-//                }
-//            
-//            //recoit le unlock du buzzer
-//            if let _ = try? JSONDecoder().decode(BuzzUnlockPayload.self, from: data) {
-//                print("TEAM: received BUZZ UNLOCK")
-//                self.currentBuzzerVM?.isEnabled = true   // bouton à nouveau cliquable
-//                return
-//            }
       
         
-        func startBrowsing() {
-            guard !hasStartedBrowsing else { return }
-            hasStartedBrowsing = true
-            print("TEAM Starting MPC browsing...")
-            mpc.startBrowsingIfNeeded()
-        }
+    func startBrowsing() {
+        guard !hasStartedBrowsing else { return }
+        hasStartedBrowsing = true
+        print("TEAM Starting MPC browsing...")
+        mpc.startBrowsingIfNeeded()
+    }
     
 }
 
@@ -139,14 +113,20 @@ extension TeamGameViewModel {
         switch message {
         case .publicDisplayMode(let isActive):
             isPublicDisplayActive = isActive
+            
         case .publicUpdate(let state):
             publicState = state
+            handlePublicStateChange(state)
+            
         case .gameAvailability(let games):
             self.openGames = games
+            
         case .buzzLock(let payload):
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: payload.teamName)
+            
         case .buzzUnlock:
             currentBuzzerVM?.unLockBuzz()
+            
         case .updatedTeam(let updatedTeam):
             if updatedTeam.id == self.team.id {
                 self.team = updatedTeam
@@ -155,8 +135,42 @@ extension TeamGameViewModel {
             break
         }
     }
-    
-    
-    
-    
 }
+
+// MARK: - Timer mirroring logic
+extension TeamGameViewModel {
+    private func handlePublicStateChange(_ state: PublicState) {
+        switch state {
+        case .waiting:
+            stopUITimer()
+            formattedTime = "00:00"
+            lastMasterFormattedTime = "00:00"
+        case .quiz(let quizState):
+            // Seed with master's formattedTime immediately so UI reflects source of truth
+            lastMasterFormattedTime = quizState.formattedTime
+            formattedTime = quizState.formattedTime
+            startUITimerIfNeeded()
+        }
+    }
+    
+    // A lightweight UI timer to keep the display "alive" between master updates.
+    // We don't attempt to compute exact time; we simply keep showing last known value.
+    // If you want it to tick, you can parse mm:ss and increment. For now, we mirror.
+    private func startUITimerIfNeeded() {
+        guard timer == nil else { return }
+        // Update at ~10Hz to keep UI responsive if you later add smoothing
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            // Keep formattedTime equal to the last value received from master.
+            // If you want local ticking, parse and adjust here.
+            self.formattedTime = self.lastMasterFormattedTime
+        }
+        RunLoop.main.add(timer!, forMode: .common)
+    }
+    
+    private func stopUITimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+}
+

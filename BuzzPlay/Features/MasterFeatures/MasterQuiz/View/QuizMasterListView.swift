@@ -10,29 +10,38 @@ import SwiftUI
 struct QuizMasterListView: View {
     @Bindable var quizMasterVM: QuizMasterViewModel
     var body: some View {
-        ScrollView {
+        
             HStack {
                 VStack(alignment: .leading) {
-                    ForEach(quizMasterVM.questions) { question in
-                        PrimaryButtonView(title: question.title, action: {
-                            withAnimation {
-                                quizMasterVM.selectQuestion(question)
-                            }
-                        }, style: quizMasterVM.questionButtonStyle(question), fontSize: Typography.body, size: 450)
-                        .disabled(quizMasterVM.quizButtonDisabled(question: question))
-                        
+                    ScrollView {
+                        ForEach(quizMasterVM.questions) { question in
+                            PrimaryButtonView(title: question.title, action: {
+                                withAnimation {
+                                    quizMasterVM.selectQuestion(question)
+                                }
+                            }, style: quizMasterVM.questionButtonStyle(question), fontSize: Typography.body, size: 450)
+                            .disabled(quizMasterVM.quizButtonDisabled(question: question))
+                            
+                        }
                     }
                 }
-                
                 VStack {
                     
                     //MARK: Correct answer or Wrong answer
                     VStack {
-                        HStack {
-                            PrimaryButtonView(title: "Valider la réponse", action: {
-                                quizMasterVM.validateAnswer()
+                        VStack {
+                            PrimaryButtonView(title: "Valider 1 réponse (10 points)", action: {
+                                quizMasterVM.validateAnswer(points: 10)
+                            }, style: .filled(color: .green), fontSize: Typography.body)
+                        
+                            PrimaryButtonView(title: "Valider 2 réponses (20 points)", action: {
+                                quizMasterVM.validateAnswer(points: 20)
                             }, style: .filled(color: .green), fontSize: Typography.body)
                             
+                            
+                            PrimaryButtonView(title: "Valider 3 réponses (30 points)", action: {
+                                quizMasterVM.validateAnswer(points: 30)
+                            }, style: .filled(color: .green), fontSize: Typography.body)
                             
                             PrimaryButtonView(title: "Refuser la réponse", action: {
                                 quizMasterVM.rejectAnswer()
@@ -47,15 +56,21 @@ struct QuizMasterListView: View {
                     if let currentQuestion = quizMasterVM.currentQuestion {
                         
                         VStack {
-                            Text(currentQuestion.title)
+                            TimerCardView(timer: quizMasterVM.formattedTime, isCorrectAnswer: false)
+                
+                            Text("Question : \(currentQuestion.title)")
                                 .font(.largeTitle)
+                            ForEach(currentQuestion.answers, id: \.self) { answer in
+                                Text("- \(answer)")
+                                    .frame(alignment: .leading)
+                            }
                             
-                            Text(quizMasterVM.formattedTime)
+                            
                             
                             Spacer()
                             
                             if let currentTeamHasBuzz = quizMasterVM.gameVM.currentBuzzTeam {
-                                TeamCardView(team: currentTeamHasBuzz, buzzTime: quizMasterVM.formattedTime)
+                                TeamCardView(team: currentTeamHasBuzz, buzzTime: quizMasterVM.formattedTime, showPoints: false)
                             }
                             
                         }
@@ -68,7 +83,7 @@ struct QuizMasterListView: View {
                 .padding()
             }
             .padding()
-        }
+        
         
     }
 }

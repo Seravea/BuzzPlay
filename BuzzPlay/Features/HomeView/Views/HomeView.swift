@@ -82,7 +82,7 @@ struct HomeView: View {
                     case .publicDisplayScreen:
                         if let teamGameVM = teamFlowVM.teamGameVM {
                             
-                            PublicDisplayView(publicState: teamGameVM.publicState)
+                            PublicDisplayView(teamGameVM: teamGameVM)
                         }
                     case .karaoke:
                         EmptyView()
@@ -90,6 +90,9 @@ struct HomeView: View {
                 }
                 Spacer()
                 
+            }
+            .onAppear {
+                teamFlowVM.restoreSavedTeamIfPossible()
             }
             .appDefaultTextStyle(Typography.body)
         }

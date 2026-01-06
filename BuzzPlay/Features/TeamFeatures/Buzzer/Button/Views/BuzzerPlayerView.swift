@@ -13,17 +13,19 @@ struct BuzzerPlayerView: View {
     var body: some View {
         if let buzzerVM = teamGameVM.currentBuzzerVM {
             if teamGameVM.isPublicDisplayActive {
-                
-                //PublicView isON
+                // PublicView is ON
                 BuzzerButtonView(buzzerVM: buzzerVM)
-                
             } else {
                 VStack {
+                    PublicDisplayView(teamGameVM: teamGameVM)
+                    
+                    Spacer()
+                    
                     BuzzerButtonView(buzzerVM: buzzerVM)
-                    PublicDisplayView(publicState: teamGameVM.publicState)
+                    // Public display now owns the timer; just pass the VM
+                   
                 }
             }
-            
         } else {
             Text("Pas de buzzer BUG DE OUF")
         }
@@ -33,3 +35,4 @@ struct BuzzerPlayerView: View {
 #Preview {
     BuzzerPlayerView(teamGameVM: TeamGameViewModel(team: sampleTeams[0], mpc: MPCService(peerName: "Team1", role: .team), clientMode: .team))
 }
+

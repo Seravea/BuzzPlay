@@ -64,15 +64,14 @@ struct PrivateMasterBlindTestView: View {
                 } else {
                     ScrollView {
                         
-                        
-                        
                         ForEach(blindTestVM.allSongs) { song in
                             
-                            
                             Button {
-                                blindTestVM.selectedMusic = song
+                                withAnimation {
+                                    blindTestVM.selectedMusic = song
+                                }
                             } label: {
-                                SongCard(song: song, selectedSong: blindTestVM.selectedMusic)
+                                SongCard(song: song, selectedSong: blindTestVM.selectedMusic, canPlayFullTrack: blindTestVM.canPlayCatalogContent)
                             }
                             
                         }
@@ -81,21 +80,40 @@ struct PrivateMasterBlindTestView: View {
                     
                 }
             }
+            .padding(.bottom)
+            
             if blindTestVM.playlists.isEmpty || blindTestVM.allSongs.isEmpty {
                 Spacer()
             }
             
             
             if let song = blindTestVM.selectedMusic {
-                songDataToShow(song: song)
+                SongCard(song: song, canPlayFullTrack: blindTestVM.canPlayCatalogContent)
             } else {
-                VStack(alignment: .leading) {
-                    Text("Selectionne une Musique pour la jouer")
-                    Text("song.artist")
-                        .foregroundStyle(.clear)
+                HStack(alignment: .top) {
+                        Text("")
+                            .frame(width: 80, height: 80)
+                    
+                    VStack(alignment: .leading) {
+                        Text(blindTestVM.playlists.isEmpty ? "Selectionne une playlist à jouer" : "Selectionne une musique à jouer")
+                            .font(.poppins(.headline))
+                            .bold()
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text("i")
+                            .font(.poppins(.body))
+                            .foregroundStyle(.clear)
+                        Text("i")
+                            .foregroundStyle(.clear)
+                    }
                 }
-                .font(.poppins(.body))
-                .frame(maxWidth: .infinity)
+                .frame(height: 80)
+                .padding(12)
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .foregroundStyle(.gray.opacity(0.2))
+                }
+
             }
             
             //MARK: Music Play/Pause from Master
@@ -105,7 +123,8 @@ struct PrivateMasterBlindTestView: View {
                     blindTestVM.startRound()
                     
                 }, style: .filled(color: .darkestPurple), fontSize: Typography.body)
-                // .disabled(ambiantaudioPlayerVM.isPlaying)
+                .disabled(blindTestVM.isPlaying)
+                .opacity(blindTestVM.isPlaying ? 0.7 : 1)
                 
             }
             
@@ -113,25 +132,37 @@ struct PrivateMasterBlindTestView: View {
             VStack {
                 HStack {
                     PrimaryButtonView(title: "Valider la réponse", action: {
-                        blindTestVM.validateAnswer()
+                        blindTestVM.validateAnswer(points: 10)
                     }, style: .filled(color: .green), fontSize: Typography.body)
+                    .disabled(blindTestVM.teamHasBuzz == nil)
+                    .opacity(blindTestVM.teamHasBuzz == nil ? 0.7 : 1)
                     
                     
                     PrimaryButtonView(title: "Refuser la réponse", action: {
                         blindTestVM.rejectAnswer()
                     }, style: .filled(color: .red), fontSize: Typography.body)
-                    
+                    .disabled(blindTestVM.teamHasBuzz == nil)
+                    .opacity(blindTestVM.teamHasBuzz == nil ? 0.7 : 1)
                 }
                 
             }
+            .animation(.default, value: blindTestVM.teamHasBuzz)
+            .animation(.default, value: blindTestVM.isPlaying)
             
             .onAppear {
                 blindTestVM.appleMusicService.setupAudioSession()
                 
                 Task {
                     await blindTestVM.appleMusicService.setupAppleMusic()
+                    await blindTestVM.updateCatalogPlaybackCapability()
                 }
             }
+        }
+        // Alerte abonnement/fallback preview
+        .alert("Information", isPresented: $blindTestVM.showSubscriptionAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(blindTestVM.subscriptionAlertMessage)
         }
     }
 }
@@ -139,3 +170,4 @@ struct PrivateMasterBlindTestView: View {
 #Preview {
     PrivateMasterBlindTestView(ambiantaudioPlayerVM: AmbiantSoundViewModel(), blindTestVM: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()))
 }
+

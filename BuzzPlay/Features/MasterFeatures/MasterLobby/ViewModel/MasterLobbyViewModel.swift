@@ -10,6 +10,7 @@ import MultipeerConnectivity
 
 
 @Observable
+@MainActor
 class MasterLobbyViewModel {
     private let gameVM: MasterFlowViewModel
     

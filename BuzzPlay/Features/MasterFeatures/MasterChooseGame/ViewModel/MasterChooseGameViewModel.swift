@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 @Observable
+@MainActor
 class MasterChooseGameViewModel {
     private let gameVM: MasterFlowViewModel
     

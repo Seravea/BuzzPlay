@@ -11,9 +11,11 @@ import MusicKit
 struct SongCard: View {
     var song: BlindTestSong
     var selectedSong: BlindTestSong?
+    var canPlayFullTrack: Bool
+    
     var body: some View {
         
-            HStack {
+        HStack(alignment: .top) {
                 AsyncImage(url: song.postertURL) { PosterImage in
                     PosterImage
                         .resizable()
@@ -34,6 +36,11 @@ struct SongCard: View {
                     Text("Sortie : \(song.releaseYearString)")
                 }
                 .appDefaultTextStyle(Typography.body)
+                
+                // Badge disponibilité lecture
+                if !canPlayFullTrack {
+                    BadgePreviewView()
+                }
             }
             .frame(height: 80)
             .padding(12)
@@ -44,6 +51,39 @@ struct SongCard: View {
     }
 }
 
-#Preview {
-    SongCard(song: BlindTestSong(artist: "Britney Spears", title: "Toxic", appleMusicID: MusicItemID("123456789"), postertURL: nil, releaseDate: Date.now, previewURL: nil,), selectedSong: BlindTestSong(artist: "Britney Spears", title: "Toxic", appleMusicID: MusicItemID("123456789"), postertURL: nil, releaseDate: Date.now, previewURL: nil,))
+private struct BadgePreviewView: View {
+    var body: some View {
+        Text("Preview")
+            .font(.poppins(.caption, weight: .bold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(
+                Capsule()
+                    .foregroundStyle(.orange)
+            )
+    }
 }
+
+#Preview {
+    SongCard(
+        song: BlindTestSong(
+            artist: "Britney Spears",
+            title: "Toxic",
+            appleMusicID: MusicItemID("123456789"),
+            postertURL: nil,
+            releaseDate: Date.now,
+            previewURL: nil
+        ),
+        selectedSong: BlindTestSong(
+            artist: "Britney Spears",
+            title: "Toxic",
+            appleMusicID: MusicItemID("123456789"),
+            postertURL: nil,
+            releaseDate: Date.now,
+            previewURL: nil
+        ),
+        canPlayFullTrack: true
+    )
+}
+

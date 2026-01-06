@@ -7,13 +7,14 @@
 
 import Foundation
 import SwiftUI
+import MultipeerConnectivity
 
 
 struct Team: Identifiable, Hashable, Codable, Equatable {
     var id = UUID()
     var name: String
     var image: String?
-    var teamColor: GameColor = .blueGame
+    var teamColor: GameColor = .purpleGame
     var players: [Player] = []
     var score: Int = 0
     var accountAmount: Int = 0

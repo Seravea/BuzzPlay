@@ -10,6 +10,56 @@ import Observation
 
 @Observable
 class TeamFlowViewModel {
+    //MARK: - Persistence
+    private let savedTeamKey = "buzzplay.savedTeam.v1"
+
+    var hasSavedTeam: Bool {
+        UserDefaults.standard.data(forKey: savedTeamKey) != nil
+    }
+
+    func restoreSavedTeamIfPossible() {
+        guard teamGameVM == nil, mpc == nil else {
+            // Already initialized in memory
+            return
+        }
+        guard let data = UserDefaults.standard.data(forKey: savedTeamKey) else { return }
+        do {
+            let savedTeam = try JSONDecoder().decode(Team.self, from: data)
+            self.team = savedTeam
+
+            let mpc = MPCService(peerName: savedTeam.name, role: .team)
+            self.mpc = mpc
+
+            let gameVM = TeamGameViewModel(team: savedTeam, mpc: mpc, clientMode: .team)
+            self.teamGameVM = gameVM
+
+            gameVM.startBrowsing()
+        } catch {
+            print("TeamFlow: failed to restore saved team: \(error)")
+        }
+    }
+
+    func clearSavedTeam() {
+        UserDefaults.standard.removeObject(forKey: savedTeamKey)
+    }
+    
+    func resetLocalSession(clearPersistence: Bool = false) {
+        teamGameVM = nil
+        mpc = nil
+        team = nil
+        if clearPersistence {
+            clearSavedTeam()
+        }
+    }
+
+    private func persistTeam(_ team: Team) {
+        do {
+            let data = try JSONEncoder().encode(team)
+            UserDefaults.standard.set(data, forKey: savedTeamKey)
+        } catch {
+            print("TeamFlow: failed to persist team: \(error)")
+        }
+    }
     var teamGameVM: TeamGameViewModel?
     var mpc: MPCService?
     
@@ -39,19 +89,29 @@ class TeamFlowViewModel {
 
             self.team = newTeam
 
-            // MPCService unique pour l’iPad joueur
-            let mpc = MPCService(peerName: newTeam.name, role: .team)
+            // ✅ Persist only real teams (never persist the Public Display “team”)
+            if !isPublicDisplay {
+                self.persistTeam(newTeam)
+            }
+
+            // MPC role + clientMode depend on the creation type
+            let role: MPCRole = isPublicDisplay ? .publicScreen : .team
+            let clientMode: ClientMode = isPublicDisplay ? .publicDisplay : .team
+
+            // MPCService unique pour CE device
+            let mpc = MPCService(peerName: newTeam.name, role: role)
             self.mpc = mpc
 
             // Le TeamGameVM doit recevoir LA MÊME TEAM
-            let gameVM = TeamGameViewModel(team: newTeam, mpc: mpc, clientMode: .team)
+            let gameVM = TeamGameViewModel(team: newTeam, mpc: mpc, clientMode: clientMode)
             self.teamGameVM = gameVM
 
             // On lance le browsing après que tout soit en place
             gameVM.startBrowsing()
-            
+
+            // Si c'est un écran public, on informe le master qu'un display est actif
             if isPublicDisplay {
-                mpc.sendMessage(.publicDisplayMode(isActive: isPublicDisplay))
+                mpc.sendMessage(.publicDisplayMode(isActive: true))
             }
         }
 

@@ -25,7 +25,7 @@ struct LobbyMasterView: View {
                     ScrollView(.horizontal) {
                         HStack {
                             ForEach(masterGameVM.teams) { team in
-                                TeamCardView(team: team, isWining: false)
+                                TeamCardView(team: team, isWining: false, showPoints: false)
                             }
                         }
                     }

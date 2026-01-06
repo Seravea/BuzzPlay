@@ -9,16 +9,15 @@ import Foundation
 import Observation
 import MultipeerConnectivity
 
-
 //TEST DATA  TEAMS
-
 var sampleTeams: [Team] = [
-    Team(name: "L'équipe"),
+    Team(name: "L'équipe",players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),], score: 240),
     Team(name: "Les Dieux")
 ]
 
 //MARK: - Master Flow ViewModel
 
+@MainActor
 @Observable
 final class MasterFlowViewModel {
     
@@ -75,16 +74,17 @@ final class MasterFlowViewModel {
         teams.append(team)
     }
     
-//    func removeTeam(_ team: Team) {
-//        teams.removeAll { $0.id == team.id }
-//    }
-    
+    func sendUpdatedTeam(team: Team) {
+        mpcService.sendMessagetoOneTeam(message: .updatedTeam(team), team: team)
+    }
     
     //MARK: Master's functions for gameSelection
     
     func selectGame(_ game: GameType) {
         gameState = .inGame(game)
     }
+    
+    
 }
 
 
@@ -99,13 +99,13 @@ extension MasterFlowViewModel {
         case .buzz(let payload):
             handleBuzzReceive(data: payload, from: peer)
         case .buyGiftRequest(let request):
-            //handleGiftRequest(request)
             print("TODO: Func handle and send gift request \(request)")
         case .publicUpdate(let update):
             sendPublicState(update)
         case .pong:
             print("pong reçus")
-            //TODO: Send/receive publicDisplay isActive
+        case .updatedTeam(let team):
+            sendUpdatedTeam(team: team)
         default:
             break
         }
@@ -123,9 +123,6 @@ extension MasterFlowViewModel {
             self.connectedPeers.removeAll { $0 == peer }
         }
         
-        
-        //MARK: new MPC onMessageReceived,
-        //TODO: TEST
         mpcService.onMessage = { [weak self] data, peer in
             guard let self else { return }
             
@@ -145,9 +142,6 @@ extension MasterFlowViewModel {
        
 //MARK: sending TO Peer connected
 extension MasterFlowViewModel {
-    
-    
-    
     func broadcastGameAvailability() {
         mpcService.sendGameAvailability(gamesOpen)
     }
@@ -165,12 +159,8 @@ extension MasterFlowViewModel {
     func broadcastPublicStateFromCurrentGame() {
         guard let game = currentBuzzGame else { return }
         let state = game.makePublicState()
-        
         sendPublicState(state)
     }
-    
-    
-   
 }
 
 
@@ -192,14 +182,9 @@ extension MasterFlowViewModel {
 
         currentBuzzGame?.handleBuzz(from: team)
 
-        //envoi le State de l'écran Public
-        
-        
         // lock pour tout le monde + envoie le nom
         let lockPayload = BuzzLockPayload(teamID: team.id, teamName: team.name)
-        //envoi le lock du buzz
         mpcService.sendMessage(.buzzLock(lockPayload))
-        print("buzz lock pour tout le monde")
         
         guard let game = currentBuzzGame else {
             print("no currentBuzzGame, can't send buzz result")
@@ -211,21 +196,15 @@ extension MasterFlowViewModel {
         mpcService.sendMessage(.publicUpdate(state))
         print("public state SENT")
     }
-    
-    
 }
-
-
-
 
 
 
 //MARK: functions for game Score
 extension MasterFlowViewModel {
-    func addPointToTeam(_ team: Team) {
+    func addPointToTeam(_ team: Team, points: Int) {
         guard let index = teams.firstIndex(of: team) else { return }
-        teams[index].score += 10
+        teams[index].score += points
+    
     }
 }
-
-

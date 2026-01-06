@@ -8,12 +8,11 @@
 import Foundation
 
 
-struct PublicQuizState: Codable {
+struct PublicQuizState: Codable, Equatable {
     let question: QuizQuestion
     let formattedTime: String
     let buzzingTeam: Team?
     let isAnswerRevealed: Bool
     let isHintVisible: Bool
 }
-
 

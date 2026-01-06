@@ -9,20 +9,36 @@ import SwiftUI
 
 struct PublicQuizDisplayView: View {
     var state: PublicQuizState
+    var timer: String
+   
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack {
             Text(state.question.title)
-//            Text(publicDisplayVM.formattedTime)
+                .font(.poppins(.largeTitle))
+            
+            Text("Timer : \(timer)")
+            Spacer()
         
             if let teamHasBuzz = state.buzzingTeam {
-                TeamCardView(team: teamHasBuzz, buzzTime: state.formattedTime)
-            
+                TeamCardView(team: teamHasBuzz, buzzTime: state.formattedTime, showPoints: false)
             }
+            
+            Spacer()
         
         }
+        .padding()
     }
 }
 
 #Preview {
-    PublicQuizDisplayView(state: PublicQuizState(question: quizMusic90sTo10s[2], formattedTime: "00:00", buzzingTeam: sampleTeams[0], isAnswerRevealed: false, isHintVisible: false))
+    PublicQuizDisplayView(
+        state: PublicQuizState(
+            question: quizMusic90sTo10s[3],
+            formattedTime: "00:00",
+            buzzingTeam: sampleTeams[1],
+            isAnswerRevealed: false,
+            isHintVisible: false
+        ),
+        timer: "00:00"
+    )
 }

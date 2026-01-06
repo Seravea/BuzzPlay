@@ -15,6 +15,9 @@ final class AppleMusicService {
     var playlists: [Playlist] = []
     var allSongs: [BlindTestSong] = []
     
+    enum AppleMusicServiceError: Error {
+        case songNotFound
+    }
     
     func loadSongs(from playlist: BlindTestPlaylist) async throws -> [BlindTestSong] {
 
@@ -68,6 +71,16 @@ final class AppleMusicService {
         )
     }
     
+    // Récupère l'objet Song à partir d'un MusicItemID (nécessaire pour construire la queue)
+    func fetchSong(by id: MusicItemID) async throws -> Song {
+        let request = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: id)
+        let response = try await request.response()
+        guard let song = response.items.first else {
+            throw AppleMusicServiceError.songNotFound
+        }
+        return song
+    }
+    
     @MainActor
     func setupAppleMusic() async {
         let status = await MusicAuthorization.request()
@@ -95,3 +108,4 @@ final class AppleMusicService {
     
     
 }
+

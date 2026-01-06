@@ -8,7 +8,8 @@
 import Foundation
 
 
-enum PublicState: Codable {
+enum PublicState: Codable, Equatable {
     case waiting
     case quiz(PublicQuizState)
 }
+

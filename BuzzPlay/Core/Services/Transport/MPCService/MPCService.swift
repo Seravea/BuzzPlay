@@ -293,4 +293,15 @@ extension MPCService {
             print("MPC error: \(mpcError), underlying: \(error)")
         }
     }
+    
+    func sendMessagetoOneTeam(message: MPCMessage, team: Team) {
+        do {
+            let peerID = MCPeerID(displayName: team.name)
+            let data = try JSONEncoder().encode(message)
+            try session.send(data, toPeers: [peerID], with: .reliable)
+        } catch {
+            let mpcError = MPCError.sendFailed(underlying: error)
+            print("MPC error: \(mpcError), underlying: \(error)")
+        }
+    }
 }
