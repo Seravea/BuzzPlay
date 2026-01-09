@@ -62,14 +62,23 @@ extension TeamGameViewModel {
         
         mpc.onPeerConnected = { [weak self] _ in
             guard let self else { return }
-            guard !self.didSentTeam else { return }
-            self.didSentTeam = true
-            switch mode {
-            case .team:
-                self.mpc.sendTeam(team)
-            case .publicDisplay:
-                let publicTeam = Team(name: "DisplayPublic")
-                self.mpc.sendTeam(publicTeam)
+            DispatchQueue.main.async {
+                guard !self.didSentTeam else { return }
+
+                // ✅ Only send once we are connected (prevents MCSession Code=2: Invalid peerIDs)
+                self.didSentTeam = true
+
+                switch self.mode {
+                case .team:
+                    // TEAM joins the master
+                    self.mpc.sendMessage(.teamJoin(self.team))
+
+                case .publicDisplay:
+                    // PUBLIC DISPLAY joins the master as a special client
+                    self.mpc.sendMessage(.teamJoin(self.team))
+                    // Tell the master that a public display client is present/active
+                    self.mpc.sendMessage(.publicDisplayMode(isActive: true))
+                }
             }
         }
         
@@ -78,7 +87,9 @@ extension TeamGameViewModel {
             
             do {
                 let message = try JSONDecoder().decode(MPCMessage.self, from: data)
-                self.handleMessage(message)
+                DispatchQueue.main.async {
+                    self.handleMessage(message)
+                }
             } catch {
                 print("Message reçus mais inconnu dans MPCMessage : \(error)")
             }
@@ -150,6 +161,10 @@ extension TeamGameViewModel {
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
             startUITimerIfNeeded()
+        case .blindTest(let blindTestState):
+            formattedTime = blindTestState.formattedTime
+            lastMasterFormattedTime = blindTestState.formattedTime
+            startUITimerIfNeeded()
         }
     }
     
@@ -173,4 +188,3 @@ extension TeamGameViewModel {
         timer = nil
     }
 }
-

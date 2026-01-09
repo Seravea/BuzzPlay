@@ -71,7 +71,13 @@ final class MasterFlowViewModel {
         if team.name == "Écran Publique" {
             mpcService.sendMessage(.publicDisplayMode(isActive: true))
         }
+
         teams.append(team)
+
+        // Si un écran public vient de se connecter, on lui envoie tout de suite l'état actuel
+        if team.name == "Écran Publique" {
+            broadcastPublicStateFromCurrentGame()
+        }
     }
     
     func sendUpdatedTeam(team: Team) {
@@ -150,6 +156,9 @@ extension MasterFlowViewModel {
         isBuzzLocked = false
         currentBuzzTeam = nil
         mpcService.sendMessage(.buzzUnlock)
+
+        // Important: met à jour l'écran public au moment où on relance/autorise les buzz
+        broadcastPublicStateFromCurrentGame()
     }
     
     func sendPublicState(_ state: PublicState) {
@@ -157,7 +166,10 @@ extension MasterFlowViewModel {
     }
     
     func broadcastPublicStateFromCurrentGame() {
-        guard let game = currentBuzzGame else { return }
+        guard let game = currentBuzzGame else {
+            sendPublicState(.waiting)
+            return
+        }
         let state = game.makePublicState()
         sendPublicState(state)
     }
@@ -186,15 +198,8 @@ extension MasterFlowViewModel {
         let lockPayload = BuzzLockPayload(teamID: team.id, teamName: team.name)
         mpcService.sendMessage(.buzzLock(lockPayload))
         
-        guard let game = currentBuzzGame else {
-            print("no currentBuzzGame, can't send buzz result")
-            return
-        }
-        let state = game.makePublicState()
-        print("MAKE Public State ->\n \(state)")
-        print("TEAM BUZZING : \(String(describing: currentBuzzTeam))")
-        mpcService.sendMessage(.publicUpdate(state))
-        print("public state SENT")
+        // Mettre à jour l'écran public (timer figé + équipe qui a buzz)
+        broadcastPublicStateFromCurrentGame()
     }
 }
 

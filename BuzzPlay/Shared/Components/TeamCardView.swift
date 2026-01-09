@@ -40,12 +40,12 @@ struct TeamCardView: View {
                 }
                 .font(.poppins(.title3, weight: .medium))
                 .padding(.bottom, 4)
-                
+            }
                 ForEach(team.players) { player in
                     Text("- \(player.name)")
                 }
                 
-            }
+            
             
         }
         .frame(minHeight: 230, alignment: .top)

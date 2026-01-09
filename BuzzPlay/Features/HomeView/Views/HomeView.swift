@@ -91,9 +91,6 @@ struct HomeView: View {
                 Spacer()
                 
             }
-            .onAppear {
-                teamFlowVM.restoreSavedTeamIfPossible()
-            }
             .appDefaultTextStyle(Typography.body)
         }
     }

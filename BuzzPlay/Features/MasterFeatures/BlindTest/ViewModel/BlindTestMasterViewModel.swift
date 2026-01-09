@@ -16,6 +16,7 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     
     let gameVM: MasterFlowViewModel
     let appleMusicService = AppleMusicService()
+    var isFetching: Bool = false
     
     //MARK: données de manche en cours
     var isPlaying: Bool = false
@@ -93,6 +94,11 @@ extension BlindTestMasterViewModel {
         stopReactionTimer()
         pause()
         isPlaying = false
+
+        // ✅ update public display (answer revealed)
+        gameVM.broadcastPublicStateFromCurrentGame()
+
+        // (optionnel) on nettoie ensuite la sélection
         selectedMusic = nil
     }
     
@@ -113,6 +119,9 @@ extension BlindTestMasterViewModel {
         // on relance la musique à partir de là où elle avait été mise en pause
         resume()
         isPlaying = true
+        
+        // ✅ update public display (resume round)
+        gameVM.broadcastPublicStateFromCurrentGame()
     }
 }
 
@@ -124,6 +133,7 @@ extension BlindTestMasterViewModel {
         
         Task {
             do {
+                isFetching = true
                 // Essaye lecture complète si l'utilisateur peut lire le catalogue
                 if await canPlayFullCatalog() {
                     do {
@@ -147,6 +157,8 @@ extension BlindTestMasterViewModel {
                 
                 // IMPORTANT: tout ce qui touche l’UI + démarrage du timer sur le MainActor
                 await MainActor.run {
+                    isFetching = false
+                    
                     self.reactionTimeMs = 0
                     self.teamHasBuzz = nil
                     self.isCorrect = false
@@ -154,8 +166,12 @@ extension BlindTestMasterViewModel {
                     
                     self.gameVM.unlockBuzz()
                     self.startReactionTimer()
+                    
+                    // ✅ update public display immediately when the round starts
+                    self.gameVM.broadcastPublicStateFromCurrentGame()
                 }
             } catch {
+                isFetching = false
                 print("error when play random song:", error)
             }
         }
@@ -175,11 +191,51 @@ extension BlindTestMasterViewModel {
         // Pause uniquement: timer + musique (ne pas reset, pour pouvoir reprendre)
         pause()
         isPlaying = false
+
+        // ✅ update public display (buzz received)
+        gameVM.broadcastPublicStateFromCurrentGame()
     }
     
     func makePublicState() -> PublicState {
-        // À implémenter quand vous aurez un PublicState spécifique au BlindTest
-        return .waiting
+        switch state {
+
+           case .idle:
+               return .waiting
+
+           case .playing:
+            return .blindTest(
+                    PublicBlindTestState(
+                        title: "🎵 Blind Test en cours",
+                        artist: nil,
+                        formattedTime: formattedTime,
+                        buzzingTeam: nil,
+                        isAnswerRevealed: false,
+                        isPlaying: true
+                    )
+                )
+
+           case .buzzed(let team):
+               return .blindTest(
+                   PublicBlindTestState(
+                       title: nil,
+                       artist: nil,
+                       formattedTime: formattedTime,
+                       buzzingTeam: team,
+                       isAnswerRevealed: false, isPlaying: false
+                   )
+               )
+
+           case .finished:
+               return .blindTest(
+                   PublicBlindTestState(
+                       title: selectedMusic?.title,
+                       artist: selectedMusic?.artist,
+                       formattedTime: formattedTime,
+                       buzzingTeam: teamHasBuzz,
+                       isAnswerRevealed: true, isPlaying: false
+                   )
+               )
+           }
     }
 }
 
@@ -187,22 +243,28 @@ extension BlindTestMasterViewModel {
 extension BlindTestMasterViewModel {
     func search(query: String) async {
         do {
+            isFetching = true
             let results = try await appleMusicService.searchPlaylists(query: query)
             await MainActor.run {
+                isFetching = false
                 self.playlists = results
             }
         } catch {
+            isFetching = false
             print("Erreur recherche playlists:", error)
         }
     }
     
     func selectPlaylist(_ playlist: BlindTestPlaylist) async {
         do {
+            isFetching = true
             let songs = try await appleMusicService.loadSongs(from: playlist)
             await MainActor.run {
+                isFetching = false
                 self.allSongs = songs
             }
         } catch {
+            isFetching = false
             print("Erreur chargement playlist:", error)
         }
     }
@@ -235,6 +297,7 @@ extension BlindTestMasterViewModel {
         guard let url = song.previewURL else { return }
         
         await MainActor.run {
+            isFetching = true
             configureAudioSession()
             
             player?.pause()
@@ -250,6 +313,8 @@ extension BlindTestMasterViewModel {
             newPlayer.seek(to: time)
             newPlayer.play()
             
+            isFetching = false
+            
             self.player = newPlayer
             self.isPlaying = true
         }
@@ -262,6 +327,7 @@ extension BlindTestMasterViewModel {
     ) async throws {
         // Arrête un éventuel AVPlayer (preview)
         await MainActor.run {
+            isFetching = true
             configureAudioSession()
             player?.pause()
             player = nil
@@ -279,6 +345,7 @@ extension BlindTestMasterViewModel {
         try await musicPlayer.play()
         
         await MainActor.run {
+            isFetching = false
             self.isPlaying = true
         }
     }

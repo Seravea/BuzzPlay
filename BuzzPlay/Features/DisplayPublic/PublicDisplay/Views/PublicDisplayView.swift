@@ -8,19 +8,21 @@
 import SwiftUI
 
 struct PublicDisplayView: View {
-    // Centralize rendering based on the team view model
+    
     @Bindable var teamGameVM: TeamGameViewModel
 
     var body: some View {
         VStack {
             switch teamGameVM.publicState {
-            case .waiting:
-                Text("Choix de la question en cours")
-                Text("Préparez-vous !")
+                case .waiting:
+                    Text("Le Master va envoyer une question")
+                    Text("Préparez-vous !")
 
-            case .quiz(let state):
-                // Use the view model's formatted time
-                PublicQuizDisplayView(state: state, timer: teamGameVM.formattedTime)
+                case .quiz(let quizState):
+                    PublicQuizDisplayView(state: quizState, timer: teamGameVM.formattedTime)
+                    
+                case .blindTest(let blindTestState):
+                PublicBlindTestView(state: blindTestState, timer: teamGameVM.formattedTime)
             }
         }
     }

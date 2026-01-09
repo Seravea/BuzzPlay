@@ -11,5 +11,6 @@ import Foundation
 enum PublicState: Codable, Equatable {
     case waiting
     case quiz(PublicQuizState)
+    case blindTest(PublicBlindTestState)
 }
 

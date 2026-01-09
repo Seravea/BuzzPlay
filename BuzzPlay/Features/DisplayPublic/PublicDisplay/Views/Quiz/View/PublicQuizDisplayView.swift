@@ -16,7 +16,9 @@ struct PublicQuizDisplayView: View {
             Text(state.question.title)
                 .font(.poppins(.largeTitle))
             
-            Text("Timer : \(timer)")
+            //TODO: Activer un timer dans le display public quand onBuzzUnlock/onBuzzLock
+//            Text("Timer : \(timer)")
+            
             Spacer()
         
             if let teamHasBuzz = state.buzzingTeam {
