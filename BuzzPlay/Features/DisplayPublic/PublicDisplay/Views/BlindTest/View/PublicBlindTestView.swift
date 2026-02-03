@@ -13,16 +13,16 @@ struct PublicBlindTestView: View {
     let timer: String
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack {
 
             // Header + Timer
             HStack {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Blind Test")
-                        .font(.poppins(.largeTitle, weight: .bold))
+                        .font(.nohemi(.largeTitle, weight: .bold))
 
                     Text(state.isPlaying ? "🎵 En cours" : "⏸️ En pause")
-                        .font(.poppins(.title3))
+                        .font(.nohemi(.title3))
                         .opacity(0.8)
                 }
 
@@ -30,11 +30,11 @@ struct PublicBlindTestView: View {
 
                 VStack(alignment: .trailing, spacing: 6) {
                     Text("Temps")
-                        .font(.poppins(.title3, weight: .bold))
+                        .font(.nohemi(.title3, weight: .bold))
                         .opacity(0.8)
 
                     Text(timer)
-                        .font(.poppins(.largeTitle, weight: .bold))
+                        .font(.nohemi(.largeTitle, weight: .bold))
                 }
             }
 
@@ -57,16 +57,16 @@ struct PublicBlindTestView: View {
                 }()
 
                 Text(displayTitle)
-                    .font(.poppins(.largeTitle, weight: .bold))
+                    .font(.nohemi(.largeTitle, weight: .bold))
                     .multilineTextAlignment(.center)
 
                 if let displaySubtitle {
                     Text(displaySubtitle)
-                        .font(.poppins(.title3))
+                        .font(.nohemi(.title3))
                         .opacity(0.9)
                 } else {
                     Text("…")
-                        .font(.poppins(.title3))
+                        .font(.nohemi(.title3))
                         .opacity(0.7)
                 }
             }
@@ -79,13 +79,14 @@ struct PublicBlindTestView: View {
                 TeamCardView(team: team, buzzTime: state.formattedTime, showPoints: false)
             } else {
                 Text("En attente d’un buzz…")
-                    .font(.poppins(.title3))
+                    .font(.nohemi(.title3))
                     .opacity(0.8)
             }
 
             Spacer()
         }
         .padding()
+        .animation(.default, value: state)
     }
 }
 

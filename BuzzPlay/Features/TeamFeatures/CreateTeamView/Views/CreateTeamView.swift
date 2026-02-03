@@ -18,9 +18,9 @@ struct CreateTeamView: View {
                 if createTeamVM.hasSavedTeamDraft {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Team sauvegardée détectée")
-                            .font(.poppins(.title3, weight: .bold))
+                            .font(.nohemi(.title3, weight: .bold))
                         Text("\"\(createTeamVM.savedTeamDraft?.name ?? "No Name")\" • \(createTeamVM.savedTeamDraft?.players.filter { !$0.name.isEmpty }.count ?? 0) joueur(s)")
-                            .font(.poppins(.body))
+                            .font(.nohemi(.body))
                             .opacity(0.8)
 
                         HStack(spacing: 12) {
@@ -30,7 +30,7 @@ struct CreateTeamView: View {
                                     createTeamVM.useSavedTeamDraft()
                                     createTeamVM.didLoadSavedTeam = true
                                 },
-                                style: .filled(color: .mustardYellow),
+                                style: .filled(buttonStyle: .secondary),
                                 fontSize: Typography.body
                             )
 
@@ -40,7 +40,7 @@ struct CreateTeamView: View {
                                     createTeamVM.resetForm()
                                     createTeamVM.didLoadSavedTeam = true
                                 },
-                                style: .outlined(color: .darkestPurple),
+                                style: .outlined(buttonStyle: .neutral),
                                 fontSize: Typography.body
                             )
 
@@ -49,7 +49,7 @@ struct CreateTeamView: View {
                                 action: {
                                     createTeamVM.deleteSavedTeamDraft()
                                 },
-                                style: .filled(color: .red),
+                                style: .filled(buttonStyle: .destructive),
                                 fontSize: Typography.body,
                                 sfIconName: "trash.fill",
                                 iconSize: .body,
@@ -83,7 +83,7 @@ struct CreateTeamView: View {
                 }
                 HStack {
                     Text("De 1 à 6 joueurs")
-                        .font(.poppins(.title3, weight: .bold))
+                        .font(.nohemi(.title3, weight: .bold))
                     
                     Spacer()
                     
@@ -94,7 +94,7 @@ struct CreateTeamView: View {
                                 createTeamVM.team.players.append(Player(name: ""))
                             }
                         },
-                        style: .filled(color: createTeamVM.nbofPlayers > 6 ? .gray : .mustardYellow),
+                        style: .filled(buttonStyle:  .secondary ),
                         fontSize: Typography.body,
                         sfIconName: "plus.circle.fill",
                         iconSize: .title3,
@@ -102,6 +102,7 @@ struct CreateTeamView: View {
                         size: geo.size.width * 0.4
                     )
                     .disabled(createTeamVM.nbofPlayers > 5)
+                    .opacity(createTeamVM.nbofPlayers > 5 ? 0.3 : 1)
                 }
                 ScrollView {
                     VStack(spacing: 12) {
@@ -115,22 +116,16 @@ struct CreateTeamView: View {
                                 
                                 PrimaryButtonView(title: "Supprimer", action: {
                                     createTeamVM.removePlayer(player: player)
-                                }, style: .filled(color: .red), fontSize: Typography.body, sfIconName: "trash.fill", iconSize: .body, colorIcon: .white, size: geo.size.width * 0.4)
+                                }, style: .filled(buttonStyle: .destructive), fontSize: Typography.body, sfIconName: "trash.fill", iconSize: .body, colorIcon: .white, size: geo.size.width * 0.4)
                                 .padding(.leading)
                             }
                             
                         }
-                        
-                        
-                        
                     }
                 }
-                
-            
-                
                 PrimaryButtonView(title: "Valider la team", action: {
                     createTeamVM.isAlertOn.toggle()
-                }, style: .filled(color: .green), fontSize: Typography.body)
+                }, style: .filled(buttonStyle: .positive),  fontSize: Typography.body)
                 
             }
             .alert("Es-tu sûr des prénoms de tes joueurs ?", isPresented: $createTeamVM.isAlertOn) {
@@ -146,8 +141,12 @@ struct CreateTeamView: View {
             }
             
         }
+        .foregroundStyle(.white)
         .padding()
         .appDefaultTextStyle(Typography.body)
+        .background(
+            BackgroundAppView()
+        )
     }
 }
 

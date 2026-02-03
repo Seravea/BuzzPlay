@@ -53,7 +53,6 @@ extension QuizMasterViewModel {
             goToSelectNewQuestion()
             teamHasBuzz = nil
             gameVM.currentBuzzTeam = nil
-            
         }
     }
     
@@ -93,13 +92,27 @@ extension QuizMasterViewModel {
         let isAlreadyPassed = questionsPassed.contains(question)
         
         if isSelected {
-            return .filled(color: .darkestPurple)
+            return .filled(buttonStyle: .neutral)
         } else if isAlreadyPassed {
-            return .filled(color: .green)
+            return .filled(buttonStyle: .positive)
         } else {
-            return .outlined(color: .darkestPurple)
+            return .outlined(buttonStyle: .neutral)
         }
     }
+    
+    func questionButtonBCKStyle(_ question: QuizQuestion) -> ButtonStyleE {
+        let isSelected = (question == currentQuestion)
+        let isAlreadyPassed = questionsPassed.contains(question)
+        
+        if isSelected {
+            return .positive
+        } else if isAlreadyPassed {
+            return .destructive
+        } else {
+            return .neutral
+        }
+    }
+    
     
     func quizButtonDisabled(question: QuizQuestion) -> Bool {
         if isPlaying {

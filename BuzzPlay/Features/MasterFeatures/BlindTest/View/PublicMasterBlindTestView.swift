@@ -14,11 +14,11 @@ struct PublicMasterBlindTestView: View {
         VStack {
            
             Image(systemName: blindTestVM.isPlaying == true ? "play.circle.fill" : "stop.circle.fill")
-                    .font(.system(size: 150))
-                    .padding(.leading)
-                    .foregroundStyle(Color.darkPink)
-                    .symbolEffectsRemoved(!blindTestVM.isPlaying)
-                    .symbolEffect(.bounce)
+                .font(.title3)
+                .padding(.leading)
+                .foregroundStyle(Color.darkPink)
+                .symbolEffectsRemoved(!blindTestVM.isPlaying)
+                .symbolEffect(.bounce)
                     
             Spacer()
             if let teamWining = blindTestVM.teamHasBuzz {

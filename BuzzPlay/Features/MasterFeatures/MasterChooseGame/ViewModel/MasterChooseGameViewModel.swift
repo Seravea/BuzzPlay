@@ -22,7 +22,7 @@ class MasterChooseGameViewModel {
     
     //MARK: Datas en functions for views
     var allGames: [GameType] {
-        [.quiz, .blindTest]
+        [.quiz, .blindTest, .score]
     }
     
     func addGame(_ game: GameType) {

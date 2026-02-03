@@ -9,13 +9,15 @@ import SwiftUI
 import MusicKit
 
 struct SongCard: View {
-    var song: BlindTestSong
+    @Namespace private var songAnimation
+    var song: BlindTestSong?
     var selectedSong: BlindTestSong?
-    var canPlayFullTrack: Bool
+    var isPlaying: Bool?
+//    var canPlayFullTrack: Bool
     
     var body: some View {
-        
-        HStack(alignment: .top) {
+        if let song = song {
+            HStack(alignment: .top) {
                 AsyncImage(url: song.postertURL) { PosterImage in
                     PosterImage
                         .resizable()
@@ -26,44 +28,67 @@ struct SongCard: View {
                         .frame(width: 80, height: 80)
                 }
                 VStack(alignment: .leading) {
-                    Text("Titre : \(song.title)")
-                        .font(.poppins(.headline))
-                        .bold()
+                    Text("\(song.title)")
+                        .font(.nohemi(.headline, weight: .bold))
                         .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("Artiste : \(song.artist)")
-                        .font(.poppins(.body))
-                    Text("Sortie : \(song.releaseYearString)")
-                }
-                .appDefaultTextStyle(Typography.body)
-                
-                // Badge disponibilité lecture
-                if !canPlayFullTrack {
-                    BadgePreviewView()
+                    Text("\(song.artist)")
+                        .font(.nohemi(.body))
+                        .opacity(0.8)
+                    Text("\(song.releaseYearString)")
+                        .font(.nohemi(.footnote))
+                        .opacity(0.6)
                 }
             }
             .frame(height: 80)
             .padding(12)
             .background {
                 RoundedRectangle(cornerRadius: 12)
-                    .foregroundStyle(selectedSong == song ? .green.opacity(0.4) : .gray.opacity(0.2))
+                    .foregroundStyle(selectedSong == song ? .green.opacity(0.4) : .white.opacity(0.1))
             }
+            .foregroundStyle(.white)
+            
+        } else {
+            HStack(alignment: .top) {
+                    Text("")
+                        .frame(width: 80, height: 80)
+
+                VStack(alignment: .leading) {
+                    Text("Selectionne une musique à jouer")
+                        .font(.nohemi(.headline))
+                        .bold()
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text("i")
+                        .font(.nohemi(.body))
+                        .foregroundStyle(.clear)
+                    Text("i")
+                        .foregroundStyle(.clear)
+                }
+            }
+            .frame(height: 80)
+            .padding(12)
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                    .foregroundStyle(.gray.opacity(0.2))
+            }
+        }
     }
 }
 
-private struct BadgePreviewView: View {
-    var body: some View {
-        Text("Preview")
-            .font(.poppins(.caption, weight: .bold))
-            .foregroundStyle(.white)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(
-                Capsule()
-                    .foregroundStyle(.orange)
-            )
-    }
-}
+//private struct BadgePreviewView: View {
+//    var body: some View {
+//        Text("Preview")
+//            .font(.poppins(.caption, weight: .bold))
+//            .foregroundStyle(.white)
+//            .padding(.horizontal, 10)
+//            .padding(.vertical, 6)
+//            .background(
+//                Capsule()
+//                    .foregroundStyle(.orange)
+//            )
+//    }
+//}
 
 #Preview {
     SongCard(
@@ -82,8 +107,12 @@ private struct BadgePreviewView: View {
             postertURL: nil,
             releaseDate: Date.now,
             previewURL: nil
-        ),
-        canPlayFullTrack: true
+        ), isPlaying: true
+    )
+    .appDefaultTextStyle(Typography.body)
+    .frame(maxHeight: .infinity)
+    .background(
+        BackgroundAppView()
     )
 }
 

@@ -31,11 +31,11 @@ struct CoinsTeamView: View {
             } label: {
                 
                 Text("Acheter")
-                    .primaryButtonTextStyle(.filled(color: .white), fontSize: Typography.body)
+                    .primaryButtonTextStyle(.filled(buttonStyle: .neutral), fontSize: Typography.body)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
                     .background {
-                        RoundedRectangle.backgroundPrimaryButton(style: .filled(color: .mustardYellow))
+                        RoundedRectangle.backgroundPrimaryButton(style: .filled(buttonStyle: .secondary))
                     }
                 
             }

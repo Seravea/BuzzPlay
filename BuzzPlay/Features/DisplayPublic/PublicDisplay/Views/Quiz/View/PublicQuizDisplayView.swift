@@ -14,7 +14,7 @@ struct PublicQuizDisplayView: View {
     var body: some View {
         VStack {
             Text(state.question.title)
-                .font(.poppins(.largeTitle))
+                .font(.nohemi(.largeTitle))
             
             //TODO: Activer un timer dans le display public quand onBuzzUnlock/onBuzzLock
 //            Text("Timer : \(timer)")
@@ -29,6 +29,7 @@ struct PublicQuizDisplayView: View {
         
         }
         .padding()
+        .animation(.default, value: state)
     }
 }
 

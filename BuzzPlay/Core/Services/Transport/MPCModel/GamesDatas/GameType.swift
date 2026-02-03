@@ -12,7 +12,7 @@ import Foundation
 enum GameType: String, CaseIterable, Codable {
     case blindTest
     case quiz
-    case karaoke
+    case score
     
     var destinationMaster: Route {
         switch self {
@@ -20,8 +20,8 @@ enum GameType: String, CaseIterable, Codable {
             return .blindTestMaster
         case .quiz:
             return .quizMaster
-        case .karaoke:
-            return .karaoke
+        case .score:
+            return .scoreMaster
         }
     }
     
@@ -31,8 +31,8 @@ enum GameType: String, CaseIterable, Codable {
             return "Blind Test"
         case .quiz:
             return "Quiz"
-        case .karaoke:
-            return "Karaoke"
+        case .score:
+            return "Score"
         }
     }
     
@@ -42,8 +42,19 @@ enum GameType: String, CaseIterable, Codable {
             return .blindTestPlayer
         case .quiz:
             return .quizPlayer
-        case .karaoke:
-            return .karaoke
+        case .score:
+            return .scorePlayer
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .blindTest:
+            return "music.note.list"
+        case .quiz:
+            return "brain"
+        case .score:
+            return "list.clipboard"
         }
     }
 }

@@ -11,6 +11,7 @@ struct ButtonChooseGameView: View {
     let isOpen: Bool
     let action: () -> Void
     let title: String
+    let iconName: String
     var body: some View {
         Button {
             withAnimation {
@@ -19,25 +20,40 @@ struct ButtonChooseGameView: View {
         } label: {
             
             ZStack(alignment: .topTrailing) {
-                Text(title)
-                    .font(.poppins(.headline, weight: .black))
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, maxHeight: 400)
-                    .frame(minWidth: 200)
-                    .background {
-                        RoundedRectangle(cornerRadius: 18)
-                            .foregroundStyle(Color.darkestPurple)
-                            .opacity(isOpen ? 1 : 0.8)
-                    }
+                VStack(spacing: 40) {
+                    Image(systemName: iconName)
+                        .font(.largeTitle)
+                        .foregroundStyle(.white)
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .foregroundStyle(.white)
+                                .opacity(0.1)
+                        )
+                    Text(title)
+                        .font(.nohemi(.headline, weight: .black))
+                        .foregroundStyle(.white)
+                }
+                        .frame(maxWidth: .infinity, maxHeight: 400)
+                        .frame(minWidth: 200)
+                        .background {
+                            RoundedRectangle(cornerRadius: 18)
+                                .foregroundStyle(.white.opacity(0.1))
+                                .opacity(isOpen ? 1 : 0.8)
+                        }
+                
                     
-                Text(isOpen ? "Open" : "Close")
-                    .foregroundStyle(isOpen ? Color.darkestPurple : Color.white)
-                    .padding(8)
-                    .background {
-                        RoundedRectangle(cornerRadius: 10)
-                            .foregroundStyle(isOpen ? .green : .red)
-                    }
-                    .padding()
+             
+                    
+                    Text(isOpen ? "Open" : "Close")
+                        .foregroundStyle(isOpen ? Color.darkestPurple : Color.white)
+                        .padding(8)
+                        .background {
+                            RoundedRectangle(cornerRadius: 10)
+                                .foregroundStyle(isOpen ? .green : .red)
+                        }
+                        .padding()
+                
             }
         }
         .disabled(!isOpen)
@@ -48,5 +64,9 @@ struct ButtonChooseGameView: View {
 
 
 #Preview {
-    ButtonChooseGameView(isOpen: false, action: {}, title: "BlindTest")
+    ButtonChooseGameView(isOpen: false, action: {}, title: "BlindTest", iconName: "brain")
+        .frame(maxHeight: .infinity)
+        .background(
+           BackgroundAppView()
+        )
 }

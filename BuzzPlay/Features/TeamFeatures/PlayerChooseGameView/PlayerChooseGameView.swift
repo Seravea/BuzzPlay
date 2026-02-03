@@ -20,7 +20,7 @@ struct PlayerChooseGameView: View {
                             ButtonChooseGameView(isOpen: teamGameVM.gameIsAvalaible(game), action: {
                                 teamGameVM.currentBuzzerVM = teamFlowVM.makeBuzzerViewModel(for: game == .quiz ? .quiz : .blindTest)
                                 router.push(game.destinationPlayer)
-                            }, title: game.gameTitle)
+                            }, title: game.gameTitle, iconName: game.iconName)
                             .frame(minWidth: 200)
                         }
                     }
@@ -29,7 +29,10 @@ struct PlayerChooseGameView: View {
                 .scrollIndicators(.hidden)
                 Spacer()
             }
-        
+            .background(
+                BackgroundAppView()
+            )
+            .navigationBarBackButtonHidden()
         
     }
 }

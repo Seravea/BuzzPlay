@@ -33,7 +33,7 @@ struct MasterChooseGameView: View {
                                     router.push(game.destinationMaster)
                                     
                                     
-                                }, title: game.gameTitle)
+                                }, title: game.gameTitle, iconName: game.iconName)
                                 
                                 
                                 HStack{
@@ -41,13 +41,13 @@ struct MasterChooseGameView: View {
                                     PrimaryButtonView(title: "Ouvrir", action: {
                                         //MARK: ouvrir la game
                                         masterChooseGameVM.addGame(game)
-                                    }, style: .outlined(color: .darkestPurple), fontSize: Typography.body)
+                                    }, style: .filled(buttonStyle: .positive), fontSize: Typography.body)
                                     .disabled(masterChooseGameVM.gameIsAvailable(game))
                                     .opacity(masterChooseGameVM.gameIsAvailable(game) ? 0.8 : 1)
                                     PrimaryButtonView(title: "Fermer", action: {
                                         //MARK: fermer la game
                                         masterChooseGameVM.removeGame(game)
-                                    }, style: .filled(color: .darkestPurple), fontSize: Typography.body)
+                                    }, style: .outlined(buttonStyle: .destructive), fontSize: Typography.body)
                                     .disabled(!masterChooseGameVM.gameIsAvailable(game))
                                     .opacity(!masterChooseGameVM.gameIsAvailable(game) ? 0.8 : 1)
                                 }
@@ -63,9 +63,12 @@ struct MasterChooseGameView: View {
                 Spacer()
                 
             }
-            .background(Color.backgroundColor)
+//            .background(Color.backgroundColor)
             
         }
+        .background(
+            BackgroundAppView()
+        )
         .appDefaultTextStyle(Typography.body)
     }
 }

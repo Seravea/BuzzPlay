@@ -24,6 +24,7 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var allSongs: [BlindTestSong] = []
     var playlists: [BlindTestPlaylist] = []
     var selectedMusic: BlindTestSong? = nil
+    var isGameActive: Bool = false
     
     var nowPlayingSongIndex: Int = 0
     var isCorrect: Bool = false
@@ -62,21 +63,9 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
 
 //MARK: func and data use in the View
 extension BlindTestMasterViewModel {
-    var questionNumber: Int {
-        nowPlayingSongIndex + 1
-    }
-    
+
     var totalNumberOfSongs: Int {
         allSongs.count
-    }
-    
-    var progressValue: Double {
-        guard totalNumberOfSongs > 0 else { return 0 }
-        return Double(questionNumber) / Double(totalNumberOfSongs)
-    }
-    
-    var progressText: String {
-        "Question \(questionNumber)/\(totalNumberOfSongs)"
     }
     
     /// Valide la réponse de l'équipe gagnante (teamWining)
@@ -89,7 +78,7 @@ extension BlindTestMasterViewModel {
         
         // MARK: mise à jour du score via gameVM.addPoints(...)
         gameVM.addPointToTeam(teamAnswers, points: points)
-        
+       
         // on fige définitivement la manche
         stopReactionTimer()
         pause()
@@ -100,6 +89,7 @@ extension BlindTestMasterViewModel {
 
         // (optionnel) on nettoie ensuite la sélection
         selectedMusic = nil
+        isGameActive = false
     }
     
     /// Refuse la réponse de l'équipe qui a buzzé
@@ -154,7 +144,7 @@ extension BlindTestMasterViewModel {
                     }
                     try await playRandomPreview(song: selectedMusic)
                 }
-                
+                isGameActive = true
                 // IMPORTANT: tout ce qui touche l’UI + démarrage du timer sur le MainActor
                 await MainActor.run {
                     isFetching = false
@@ -171,6 +161,7 @@ extension BlindTestMasterViewModel {
                     self.gameVM.broadcastPublicStateFromCurrentGame()
                 }
             } catch {
+                isGameActive = false
                 isFetching = false
                 print("error when play random song:", error)
             }

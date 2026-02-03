@@ -29,7 +29,7 @@ final class TeamGameViewModel {
     
     var receivedMessage: String = ""
     var allGames: [GameType] = [.blindTest, .quiz]
-    var openGames: [GameType] = []
+    var openGames: [GameType] = [.score]
     var isPublicDisplayActive: Bool = false
     var publicState: PublicState = .waiting
     
@@ -139,9 +139,9 @@ extension TeamGameViewModel {
             currentBuzzerVM?.unLockBuzz()
             
         case .updatedTeam(let updatedTeam):
-            if updatedTeam.id == self.team.id {
-                self.team = updatedTeam
-            }
+            print("Before receive \(self.team)")
+            self.team = updatedTeam
+            print("After receive \(self.team)")
         default:
             break
         }

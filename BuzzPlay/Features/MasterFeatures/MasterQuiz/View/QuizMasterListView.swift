@@ -32,20 +32,20 @@ struct QuizMasterListView: View {
                         VStack {
                             PrimaryButtonView(title: "Valider 1 réponse (10 points)", action: {
                                 quizMasterVM.validateAnswer(points: 10)
-                            }, style: .filled(color: .green), fontSize: Typography.body)
+                            }, style: .filled(buttonStyle: .positive), fontSize: Typography.body)
                         
                             PrimaryButtonView(title: "Valider 2 réponses (20 points)", action: {
                                 quizMasterVM.validateAnswer(points: 20)
-                            }, style: .filled(color: .green), fontSize: Typography.body)
+                            }, style: .filled(buttonStyle: .positive), fontSize: Typography.body)
                             
                             
                             PrimaryButtonView(title: "Valider 3 réponses (30 points)", action: {
                                 quizMasterVM.validateAnswer(points: 30)
-                            }, style: .filled(color: .green), fontSize: Typography.body)
+                            }, style: .filled(buttonStyle: .positive), fontSize: Typography.body)
                             
                             PrimaryButtonView(title: "Refuser la réponse", action: {
                                 quizMasterVM.rejectAnswer()
-                            }, style: .filled(color: .red), fontSize: Typography.body)
+                            }, style: .filled(buttonStyle: .destructive), fontSize: Typography.body)
                             
                         }
                         .disabled(quizMasterVM.validateRejectDisabled)
@@ -84,7 +84,9 @@ struct QuizMasterListView: View {
             }
             .padding()
         
-        
+            .background(
+                BackgroundAppView()
+            )
     }
 }
 
