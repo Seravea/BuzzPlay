@@ -12,7 +12,8 @@ struct LobbyMasterView: View {
     @Bindable var masterGameVM: MasterLobbyViewModel
     var body: some View {
         VStack {
-            Text("Lobby Master")
+            Text("Salle d'attente")
+                .font(.nohemi(.largeTitle, weight: .bold))
             
             Spacer()
             if masterGameVM.teams.isEmpty {
@@ -20,23 +21,35 @@ struct LobbyMasterView: View {
                     Text("Aucune équipe n'a rejoint pour l'instant")
                 }
             } else {
-                VStack {
-                    
-                    ScrollView(.horizontal) {
-                        HStack {
+                VStack(alignment: .leading) {
+                    Text("Équipes connectées (\(masterGameVM.teams.count))")
+                        .padding(.leading)
+                        .padding(.bottom, -8)
+                        .font(.nohemi(.title, weight: .semiBold))
+                    ScrollView {
+                        VStack {
                             ForEach(masterGameVM.teams) { team in
                                 TeamCardView(team: team, isWining: false, showPoints: false)
+                                    .padding(.trailing)
                             }
                         }
                     }
                     
-                    PrimaryButtonView(title: "Commencer la partie", action: {
+                    StartingButtonView(iconName: "play", size: .largeTitle, buttonLabel: "Démarrer la partie") {
                         router.push(.masterChooseGameView)
-                    }, style: .filled(color: .mustardYellow), fontSize: Typography.title)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
             }
             Spacer()
         }
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity)
+        .appDefaultTextStyle(Typography.body)
+        .background(
+            BackgroundAppView()
+        )
+        
     }
 }
 

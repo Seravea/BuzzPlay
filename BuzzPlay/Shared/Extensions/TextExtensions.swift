@@ -10,21 +10,22 @@ import SwiftUI
 
 
 enum Style: Equatable {
-    case filled(color: Color)
-    case outlined(color: Color)
+    case filled(buttonStyle: ButtonStyleE)
+    case outlined(buttonStyle: ButtonStyleE)
     case `default`
     
-    var color: Color {
+    var gradient: LinearGradient {
         switch self {
-        case .filled(color: let color):
-            return color
-        case .outlined(color: let color):
-            return color
+        case .filled(buttonStyle: let buttonStyle):
+            return buttonStyle.linearGradient
+        case .outlined(buttonStyle: let buttonStyle):
+            return buttonStyle.linearGradient
         case .default:
             //IF SEE ORANGE, THERE IS AN ERROR
-            return .orange
+            return ButtonStyleE.neutral.linearGradient
         }
     }
+    
 }
 
 
@@ -40,7 +41,7 @@ extension Text {
                 .textStyle(fontSize)
         case .outlined:
             return self
-                .foregroundStyle(Color.darkPurple)
+                .foregroundStyle(Color.white)
                 .textStyle(fontSize)
         case .default:
             return self
@@ -51,22 +52,41 @@ extension Text {
 
 
 
+
 // MARK: - Poppins family for App
-enum PoppinsWeight: String {
-    case thin, extraLight, light, regular, medium, semiBold, bold, extraBold, black
+enum NohemiWeight: String {
+    case thin
+    case extraLight
+    case light
+    case regular
+    case medium
+    case semiBold
+    case bold
+    case extraBold
+    case black
+
 
     var baseName: String {
         switch self {
-        case .thin:       return "Poppins-Thin"
-        case .extraLight: return "Poppins-ExtraLight"
-        case .light:      return "Poppins-Light"
-        case .regular:    return "Poppins-Regular"
-        case .medium:     return "Poppins-Medium"
-        case .semiBold:   return "Poppins-SemiBold"
-        case .bold:       return "Poppins-Bold"
-        case .extraBold:  return "Poppins-ExtraBold"
-        case .black:      return "Poppins-Black"
-        }
+                case .thin:
+                    return "Nohemi-Thin"
+                case .extraLight:
+                    return "Nohemi-ExtraLight"
+                case .light:
+                    return "Nohemi-Light"
+                case .regular:
+                    return "Nohemi-Regular"
+                case .medium:
+                    return "Nohemi-Medium"
+                case .semiBold:
+                    return "Nohemi-SemiBold"
+                case .bold:
+                    return "Nohemi-Bold"
+                case .extraBold:
+                    return "Nohemi-ExtraBold"
+                case .black:
+                    return "Nohemi-Black"
+                }
     }
 
     func name(italic: Bool) -> String { italic ? "\(baseName)Italic" : baseName }
@@ -74,11 +94,32 @@ enum PoppinsWeight: String {
 
 // MARK: - Font factory (Dynamic Type friendly)
 extension Font {
-    static func poppins(_ style: Font.TextStyle,
-                        weight: PoppinsWeight = .regular,
-                        italic: Bool = false) -> Font {
-        .custom(weight.name(italic: italic), size: UIFont.preferredFont(forTextStyle: style.ui).pointSize,
-                relativeTo: style)
+    static func nohemi(_ style: Font.TextStyle,
+                       weight: NohemiWeight = .regular) -> Font {
+        .custom(
+            weight.baseName,
+            size: style.sfProSize,
+            relativeTo: style
+        )
+    }
+}
+
+private extension Font.TextStyle {
+    var sfProSize: CGFloat {
+        switch self {
+        case .largeTitle: return 34
+        case .title:      return 28
+        case .title2:     return 22
+        case .title3:     return 20
+        case .headline:   return 17
+        case .body:       return 17
+        case .callout:    return 16
+        case .subheadline:return 15
+        case .footnote:   return 13
+        case .caption:    return 12
+        case .caption2:   return 11
+        @unknown default: return 17
+        }
     }
 }
 
@@ -105,19 +146,16 @@ private extension Font.TextStyle {
 struct Typography {
     struct Token: Hashable {
         let style: Font.TextStyle
-        let weight: PoppinsWeight
-        let italic: Bool
+        let weight: NohemiWeight
         let tracking: CGFloat        // letter spacing (pt)
         let lineSpacing: CGFloat     // extra spacing between lines (pt)
 
         init(_ style: Font.TextStyle,
-             weight: PoppinsWeight = .regular,
-             italic: Bool = false,
+             weight: NohemiWeight = .regular,
              tracking: CGFloat = 0,
              lineSpacing: CGFloat = 0) {
             self.style = style
             self.weight = weight
-            self.italic = italic
             self.tracking = tracking
             self.lineSpacing = lineSpacing
         }
@@ -151,7 +189,7 @@ struct TextStyleModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .font(.poppins(token.style, weight: token.weight, italic: token.italic))
+            .font(.nohemi(token.style, weight: token.weight))
             .tracking(token.tracking)
             .lineSpacing(token.lineSpacing)
             .minimumScaleFactor(minimumScale)
@@ -182,24 +220,8 @@ extension View {
     /// Définit la typo par défaut de l’app (ex: `.body` Poppins)
     func appDefaultTextStyle(_ token: Typography.Token) -> some View {
         environment(\.defaultTextStyle, token)
-            .font(.poppins(token.style, weight: token.weight, italic: token.italic))
+            .font(.nohemi(token.style, weight: token.weight))
     }
 }
-
-
-//MARK: filled
-//    .background(.purple)
-//    .clipShape(
-//        RoundedRectangle(cornerRadius: 8)
-//    )
-
-//MARK: outlined
-//    .background(.purple)
-//    .clipShape(
-//        RoundedRectangle(cornerRadius: 8)
-//            .stroke(lineWidth: 2)
-//    )
-
-
 
 

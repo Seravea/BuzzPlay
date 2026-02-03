@@ -22,7 +22,7 @@ struct CoinsMasterView: View {
                         
                         
                         
-                    }, style: .filled(color: .mustardYellow), fontSize: Typography.body, sfIconName: "dollarsign.bank.building.fill", iconSize: .body, colorIcon: .white)
+                    }, style: .filled(buttonStyle: .neutral), fontSize: Typography.body, sfIconName: "dollarsign.bank.building.fill", iconSize: .body, colorIcon: .white)
                 }
                 .frame(maxWidth: 130)
                 
@@ -42,7 +42,7 @@ struct CoinsMasterView: View {
                                     }
                                 }
                             } label: {
-                                PrimaryButtonView(title: team.name, action: {}, style: .filled(color: .mustardYellow), fontSize: Typography.body)
+                                PrimaryButtonView(title: team.name, action: {}, style: .filled(buttonStyle: .neutral), fontSize: Typography.body)
                                     .frame(maxWidth: 120)
                                 
                             }

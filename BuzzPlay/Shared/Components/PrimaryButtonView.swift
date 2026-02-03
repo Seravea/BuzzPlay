@@ -11,6 +11,7 @@ struct PrimaryButtonView: View {
     let title: String
     let action: () -> Void
     let style: Style
+//    let buttonBCKStyle: ButtonStyleE
     let fontSize: Typography.Token
     var sfIconName: String? = nil
     var iconSize: Font? = nil
@@ -37,21 +38,23 @@ struct PrimaryButtonView: View {
             .padding([.vertical], 8)
             .padding(.horizontal, 12)
             .background {
-                RoundedRectangle.backgroundPrimaryButton(style: style)
+                Self.backgroundPrimaryButton(style: style)
+                    
             }
             
                 
         }
         //MARK: TO DELET a enlever et mettre qu'une seul fois dans le @main App project
-        .appDefaultTextStyle(Typography.body)
+        
     }
 }
 
 #Preview {
     VStack {
-        PrimaryButtonView(title: "Valider", action: {}, style: .filled(color: .darkestPurple), fontSize: Typography.body)
-        PrimaryButtonView(title: "Annuler", action: {}, style: .outlined(color: .darkestPurple), fontSize: Typography.body)
+        PrimaryButtonView(title: "Valider", action: {}, style: .filled(buttonStyle: .positive), fontSize: Typography.body)
+        PrimaryButtonView(title: "Annuler", action: {}, style: .outlined(buttonStyle: .destructive), fontSize: Typography.body)
     }
+    .appDefaultTextStyle(Typography.body)
 }
 
 

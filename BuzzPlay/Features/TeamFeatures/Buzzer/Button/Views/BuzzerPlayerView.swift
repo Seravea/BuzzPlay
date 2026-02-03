@@ -9,7 +9,7 @@ import SwiftUI
 
 struct BuzzerPlayerView: View {
     @Bindable var teamGameVM: TeamGameViewModel
-    
+    var gameType: GameType
     var body: some View {
         if let buzzerVM = teamGameVM.currentBuzzerVM {
             if teamGameVM.isPublicDisplayActive {
@@ -17,7 +17,7 @@ struct BuzzerPlayerView: View {
                 BuzzerButtonView(buzzerVM: buzzerVM)
             } else {
                 VStack {
-                    PublicDisplayView(teamGameVM: teamGameVM)
+                    PublicDisplayView(teamGameVM: teamGameVM, gameType: gameType)
                     
                     Spacer()
                     
@@ -25,6 +25,11 @@ struct BuzzerPlayerView: View {
                     // Public display now owns the timer; just pass the VM
                    
                 }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    BackgroundAppView()
+                )
             }
         } else {
             Text("Pas de buzzer BUG DE OUF")
@@ -33,6 +38,6 @@ struct BuzzerPlayerView: View {
 }
 
 #Preview {
-    BuzzerPlayerView(teamGameVM: TeamGameViewModel(team: sampleTeams[0], mpc: MPCService(peerName: "Team1", role: .team), clientMode: .team))
+    BuzzerPlayerView(teamGameVM: TeamGameViewModel(team: sampleTeams[0], mpc: MPCService(peerName: "Team1", role: .team), clientMode: .team), gameType: .blindTest)
 }
 

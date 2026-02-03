@@ -28,7 +28,7 @@ struct TimerCardView: View {
                     .foregroundStyle(Color.darkestPurple)
             }
         
-        .font(.poppins(.body, weight: .bold))
+        .font(.nohemi(.body, weight: .bold))
         .foregroundStyle(.white)
     }
 }

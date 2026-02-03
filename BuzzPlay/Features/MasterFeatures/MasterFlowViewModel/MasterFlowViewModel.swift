@@ -11,8 +11,11 @@ import MultipeerConnectivity
 
 //TEST DATA  TEAMS
 var sampleTeams: [Team] = [
-    Team(name: "L'équipe",players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),], score: 240),
-    Team(name: "Les Dieux")
+    Team(name: "L'équipe",teamColor: .greenGame, players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),] , score: 240),
+    Team(name: "L'équipe",teamColor: .blueGame, players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),] , score: 240),
+    Team(name: "L'équipe",teamColor: .redGame, players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),] , score: 240),
+    Team(name: "L'équipe",teamColor: .purpleGame, players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),] , score: 240),
+    Team(name: "L'équipe",teamColor: .yellowGame, players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),] , score: 240),
 ]
 
 //MARK: - Master Flow ViewModel
@@ -35,7 +38,7 @@ final class MasterFlowViewModel {
     var gameState: GameState = .lobby
     
     /// Liste des jeux ouverts par le maître
-    var gamesOpen: [GameType] = []
+    var gamesOpen: [GameType] = [.score]
     
     /// Jeu courant qui réagit aux buzz (BlindTest, Quiz, etc.)
     weak var currentBuzzGame: BuzzDrivenGame?
@@ -71,7 +74,13 @@ final class MasterFlowViewModel {
         if team.name == "Écran Publique" {
             mpcService.sendMessage(.publicDisplayMode(isActive: true))
         }
+
         teams.append(team)
+
+        // Si un écran public vient de se connecter, on lui envoie tout de suite l'état actuel
+        if team.name == "Écran Publique" {
+            broadcastPublicStateFromCurrentGame()
+        }
     }
     
     func sendUpdatedTeam(team: Team) {
@@ -150,6 +159,9 @@ extension MasterFlowViewModel {
         isBuzzLocked = false
         currentBuzzTeam = nil
         mpcService.sendMessage(.buzzUnlock)
+
+        // Important: met à jour l'écran public au moment où on relance/autorise les buzz
+        broadcastPublicStateFromCurrentGame()
     }
     
     func sendPublicState(_ state: PublicState) {
@@ -157,7 +169,10 @@ extension MasterFlowViewModel {
     }
     
     func broadcastPublicStateFromCurrentGame() {
-        guard let game = currentBuzzGame else { return }
+        guard let game = currentBuzzGame else {
+            sendPublicState(.waiting)
+            return
+        }
         let state = game.makePublicState()
         sendPublicState(state)
     }
@@ -186,15 +201,8 @@ extension MasterFlowViewModel {
         let lockPayload = BuzzLockPayload(teamID: team.id, teamName: team.name)
         mpcService.sendMessage(.buzzLock(lockPayload))
         
-        guard let game = currentBuzzGame else {
-            print("no currentBuzzGame, can't send buzz result")
-            return
-        }
-        let state = game.makePublicState()
-        print("MAKE Public State ->\n \(state)")
-        print("TEAM BUZZING : \(String(describing: currentBuzzTeam))")
-        mpcService.sendMessage(.publicUpdate(state))
-        print("public state SENT")
+        // Mettre à jour l'écran public (timer figé + équipe qui a buzz)
+        broadcastPublicStateFromCurrentGame()
     }
 }
 
@@ -204,7 +212,13 @@ extension MasterFlowViewModel {
 extension MasterFlowViewModel {
     func addPointToTeam(_ team: Team, points: Int) {
         guard let index = teams.firstIndex(of: team) else { return }
+        print("addPointFunc is begin")
         teams[index].score += points
     
+        print(team.name, "receive :", points, "points")
+        
+        mpcService.sendMessagetoOneTeam(message: .updatedTeam(teams[index]), team: teams[index])
+        print("mpcService updatedTeam send to \(team.name)")
+        print("addPointFunc is ending")
     }
 }

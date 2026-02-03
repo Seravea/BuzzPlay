@@ -8,20 +8,29 @@
 import SwiftUI
 
 struct PublicDisplayView: View {
-    // Centralize rendering based on the team view model
+    
     @Bindable var teamGameVM: TeamGameViewModel
-
+    var gameType: GameType  
     var body: some View {
         VStack {
             switch teamGameVM.publicState {
             case .waiting:
-                Text("Choix de la question en cours")
+                if gameType == .blindTest {
+                    Text("Le Master choisi une musique")
+                } else if gameType == .quiz {
+                    Text("Le Master va envoyer une question")
+                }
                 Text("Préparez-vous !")
 
-            case .quiz(let state):
-                // Use the view model's formatted time
-                PublicQuizDisplayView(state: state, timer: teamGameVM.formattedTime)
+                case .quiz(let quizState):
+                    PublicQuizDisplayView(state: quizState, timer: teamGameVM.formattedTime)
+                    
+                case .blindTest(let blindTestState):
+                PublicBlindTestView(state: blindTestState, timer: teamGameVM.formattedTime)
             }
+        }
+        .onDisappear {
+            teamGameVM.publicState = .waiting
         }
     }
 }
@@ -31,6 +40,6 @@ struct PublicDisplayView: View {
     let vm = TeamGameViewModel(team: Team(name: "Preview Team"),
                                mpc: MPCService(peerName: "Preview", role: .team),
                                clientMode: .team)
-    return PublicDisplayView(teamGameVM: vm)
+    return PublicDisplayView(teamGameVM: vm, gameType: .blindTest)
 }
 

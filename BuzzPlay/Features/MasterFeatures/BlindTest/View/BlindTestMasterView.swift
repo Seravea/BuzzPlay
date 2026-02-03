@@ -17,17 +17,21 @@ struct BlindTestMasterView: View {
                 
                 //MARK: View for the Master ONLY (PRIVATE)
                 PrivateMasterBlindTestView(ambiantaudioPlayerVM: ambiantSoundViewModel, blindTestVM: blindTestViewModel)
-                    .frame(width: geo.size.width/2)
+//                    .frame(width: geo.size.width/2)
                     .padding()
                 
                 ///separator
-                Rectangle()
-                    .frame(width: geo.size.width/200)
-                
-                //MARK: View for shareScreen PUBLIC
-                PublicMasterBlindTestView(blindTestVM: blindTestViewModel)
-                    .padding()
+//                Rectangle()
+//                    .frame(width: geo.size.width/200)
+//                
+//                //MARK: View for shareScreen PUBLIC
+//                PublicMasterBlindTestView(blindTestVM: blindTestViewModel)
+//                    .padding()
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(
+                BackgroundAppView()
+            )
         }
     }
 }

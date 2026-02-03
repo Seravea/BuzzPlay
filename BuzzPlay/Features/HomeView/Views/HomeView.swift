@@ -16,30 +16,44 @@ struct HomeView: View {
             VStack {
                 
                 Text("Zik'jeu")
-                    .font(.poppins(.largeTitle, weight: .bold))
+                    .font(.nohemi(.largeTitle, weight: .bold))
+                    .foregroundStyle(.white)
                 
                   Spacer()
                 
                 VStack {
-                    HStack {
-                        //MARK: Destination to PlayerView
-                        PrimaryButtonView(title: "Joueurs", action: {
-                            router.push(.createTeamView)
-                        }, style: .filled(color: .darkestPurple), fontSize: Typography.body)
-                        
-                        //MARK: Destination to MasterView
-                        PrimaryButtonView(title: "Maître", action: {
-                            router.push(.masterLobbyView)
-                        }, style: .outlined(color: .darkestPurple), fontSize: Typography.body, size: 400)
+                    ScrollView(.horizontal) {
+                        HStack(spacing: 24) {
+                            ForEach(RoleButtonUI.allCases, id: \.self) { role in
+                                Button {
+                                    router.push(role.destination)
+                                } label: {
+                                    ChooseRoleCardsView(roleButtonUI: role)
+                                        .padding(.leading)
+                                }
+                            }
+                        }
                         
                     }
-                    
-                    PrimaryButtonView(title: "Partage d'écran", action: {
-                        router.push(.createPublicDisplayTeam)
-                    }, style: .filled(color: .mustardYellow), fontSize: Typography.body)
-                    
+                    .scrollIndicators(.hidden)
+//                        //MARK: Destination to PlayerView
+//                        PrimaryButtonView(title: "Joueurs", action: {
+//                            router.push(.createTeamView)
+//                        }, style: .filled(color: .darkestPurple), fontSize: Typography.body)
+//                        
+//                        //MARK: Destination to MasterView
+//                        PrimaryButtonView(title: "Maître", action: {
+//                            router.push(.masterLobbyView)
+//                        }, style: .outlined(color: .darkestPurple), fontSize: Typography.body, size: 400)
+//                        
+//                    }
+//                    
+//                    PrimaryButtonView(title: "Partage d'écran", action: {
+//                        router.push(.createPublicDisplayTeam)
+//                    }, style: .filled(color: .mustardYellow), fontSize: Typography.body)
+//                    
                 }
-                .padding()
+//                .padding()
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .homeView:
@@ -62,7 +76,7 @@ struct HomeView: View {
                         //TODO: view
                         if let teamGameVM = teamFlowVM.teamGameVM {
                             
-                            BuzzerPlayerView(teamGameVM: teamGameVM)
+                            BuzzerPlayerView(teamGameVM: teamGameVM, gameType: .blindTest)
                                 
                         }
                         
@@ -75,26 +89,31 @@ struct HomeView: View {
                         QuizMasterListView(quizMasterVM: masterFlowVM.makeQuizMasterVM())
                     case .quizPlayer:
                         if let teamGameVM = teamFlowVM.teamGameVM {
-                            BuzzerPlayerView(teamGameVM: teamGameVM)
+                            BuzzerPlayerView(teamGameVM: teamGameVM, gameType: .quiz)
                         }
                     case .createPublicDisplayTeam:
                         CreateDisplayPublicTeamView(createTeamVM: teamFlowVM.makeCreateTeamViewModel())
                     case .publicDisplayScreen:
                         if let teamGameVM = teamFlowVM.teamGameVM {
                             
-                            PublicDisplayView(teamGameVM: teamGameVM)
+                            PublicDisplayView(teamGameVM: teamGameVM, gameType: .score)
                         }
-                    case .karaoke:
-                        EmptyView()
+            //TODO: deux vues de score, Player et Master
+                    case .scoreMaster:
+                        ScoreMasterView(masterFlowVM: masterFlowVM)
+                    case .scorePlayer:
+                        if let teamGameVM = teamFlowVM.teamGameVM {
+                            ScorePlayerView(teamGameVM: teamGameVM)
+                        }
                     }
                 }
                 Spacer()
                 
             }
-            .onAppear {
-                teamFlowVM.restoreSavedTeamIfPossible()
-            }
             .appDefaultTextStyle(Typography.body)
+            .background(
+                BackgroundAppView()
+            )
         }
     }
 }

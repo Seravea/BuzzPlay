@@ -14,6 +14,53 @@ struct CreateTeamView: View {
     var body: some View {
         GeometryReader { geo in
             VStack(spacing: 24) {
+                //MARK: Saved team draft (optional)
+                if createTeamVM.hasSavedTeamDraft {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Team sauvegardée détectée")
+                            .font(.nohemi(.title3, weight: .bold))
+                        Text("\"\(createTeamVM.savedTeamDraft?.name ?? "No Name")\" • \(createTeamVM.savedTeamDraft?.players.filter { !$0.name.isEmpty }.count ?? 0) joueur(s)")
+                            .font(.nohemi(.body))
+                            .opacity(0.8)
+
+                        HStack(spacing: 12) {
+                            PrimaryButtonView(
+                                title: "Utiliser",
+                                action: {
+                                    createTeamVM.useSavedTeamDraft()
+                                    createTeamVM.didLoadSavedTeam = true
+                                },
+                                style: .filled(buttonStyle: .secondary),
+                                fontSize: Typography.body
+                            )
+
+                            PrimaryButtonView(
+                                title: "Nouveau",
+                                action: {
+                                    createTeamVM.resetForm()
+                                    createTeamVM.didLoadSavedTeam = true
+                                },
+                                style: .outlined(buttonStyle: .neutral),
+                                fontSize: Typography.body
+                            )
+
+                            PrimaryButtonView(
+                                title: "Supprimer",
+                                action: {
+                                    createTeamVM.deleteSavedTeamDraft()
+                                },
+                                style: .filled(buttonStyle: .destructive),
+                                fontSize: Typography.body,
+                                sfIconName: "trash.fill",
+                                iconSize: .body,
+                                colorIcon: .white
+                            )
+                        }
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                }
                 HStack(spacing: 24) {
                     TextFieldCustom(
                         text: $createTeamVM.team.name,
@@ -36,7 +83,7 @@ struct CreateTeamView: View {
                 }
                 HStack {
                     Text("De 1 à 6 joueurs")
-                        .font(.poppins(.title3, weight: .bold))
+                        .font(.nohemi(.title3, weight: .bold))
                     
                     Spacer()
                     
@@ -47,7 +94,7 @@ struct CreateTeamView: View {
                                 createTeamVM.team.players.append(Player(name: ""))
                             }
                         },
-                        style: .filled(color: createTeamVM.nbofPlayers > 6 ? .gray : .mustardYellow),
+                        style: .filled(buttonStyle:  .secondary ),
                         fontSize: Typography.body,
                         sfIconName: "plus.circle.fill",
                         iconSize: .title3,
@@ -55,6 +102,7 @@ struct CreateTeamView: View {
                         size: geo.size.width * 0.4
                     )
                     .disabled(createTeamVM.nbofPlayers > 5)
+                    .opacity(createTeamVM.nbofPlayers > 5 ? 0.3 : 1)
                 }
                 ScrollView {
                     VStack(spacing: 12) {
@@ -68,22 +116,16 @@ struct CreateTeamView: View {
                                 
                                 PrimaryButtonView(title: "Supprimer", action: {
                                     createTeamVM.removePlayer(player: player)
-                                }, style: .filled(color: .red), fontSize: Typography.body, sfIconName: "trash.fill", iconSize: .body, colorIcon: .white, size: geo.size.width * 0.4)
+                                }, style: .filled(buttonStyle: .destructive), fontSize: Typography.body, sfIconName: "trash.fill", iconSize: .body, colorIcon: .white, size: geo.size.width * 0.4)
                                 .padding(.leading)
                             }
                             
                         }
-                        
-                        
-                        
                     }
                 }
-                
-            
-                
                 PrimaryButtonView(title: "Valider la team", action: {
                     createTeamVM.isAlertOn.toggle()
-                }, style: .filled(color: .green), fontSize: Typography.body)
+                }, style: .filled(buttonStyle: .positive),  fontSize: Typography.body)
                 
             }
             .alert("Es-tu sûr des prénoms de tes joueurs ?", isPresented: $createTeamVM.isAlertOn) {
@@ -99,8 +141,12 @@ struct CreateTeamView: View {
             }
             
         }
+        .foregroundStyle(.white)
         .padding()
         .appDefaultTextStyle(Typography.body)
+        .background(
+            BackgroundAppView()
+        )
     }
 }
 

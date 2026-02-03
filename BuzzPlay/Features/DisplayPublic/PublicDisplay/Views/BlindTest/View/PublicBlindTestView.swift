@@ -8,15 +8,97 @@
 import SwiftUI
 
 struct PublicBlindTestView: View {
-    
+
+    let state: PublicBlindTestState
+    let timer: String
+
     var body: some View {
-        
         VStack {
-            
+
+            // Header + Timer
+            HStack {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Blind Test")
+                        .font(.nohemi(.largeTitle, weight: .bold))
+
+                    Text(state.isPlaying ? "🎵 En cours" : "⏸️ En pause")
+                        .font(.nohemi(.title3))
+                        .opacity(0.8)
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 6) {
+                    Text("Temps")
+                        .font(.nohemi(.title3, weight: .bold))
+                        .opacity(0.8)
+
+                    Text(timer)
+                        .font(.nohemi(.largeTitle, weight: .bold))
+                }
+            }
+
+            Divider()
+
+            // Song info (revealed or hidden)
+            VStack(spacing: 12) {
+                let displayTitle: String = {
+                    if state.isAnswerRevealed {
+                        return state.title ?? "Titre inconnu"
+                    }
+                    return state.title ?? "Devinez le titre !"
+                }()
+
+                let displaySubtitle: String? = {
+                    if state.isAnswerRevealed {
+                        return state.artist ?? "Artiste inconnu"
+                    }
+                    return nil
+                }()
+
+                Text(displayTitle)
+                    .font(.nohemi(.largeTitle, weight: .bold))
+                    .multilineTextAlignment(.center)
+
+                if let displaySubtitle {
+                    Text(displaySubtitle)
+                        .font(.nohemi(.title3))
+                        .opacity(0.9)
+                } else {
+                    Text("…")
+                        .font(.nohemi(.title3))
+                        .opacity(0.7)
+                }
+            }
+            .frame(maxWidth: .infinity)
+
+            Spacer()
+
+            // Buzz result
+            if let team = state.buzzingTeam {
+                TeamCardView(team: team, buzzTime: state.formattedTime, showPoints: false)
+            } else {
+                Text("En attente d’un buzz…")
+                    .font(.nohemi(.title3))
+                    .opacity(0.8)
+            }
+
+            Spacer()
         }
+        .padding()
+        .animation(.default, value: state)
     }
 }
 
 #Preview {
-//    PublicBlindTestView(publicPayload: PublicStatePayload(teams: sampleTeams, currentGame: .blindTest, winningTeamID: nil, currentQuestion: quizMusic90sTo10s[1]))
+    let sample = PublicBlindTestState(
+        title: "🎵 Blind Test en cours",
+        artist: nil,
+        formattedTime: "00:12",
+        buzzingTeam: nil,
+        isAnswerRevealed: false,
+        isPlaying: true
+    )
+
+    PublicBlindTestView(state: sample, timer: "00:12")
 }

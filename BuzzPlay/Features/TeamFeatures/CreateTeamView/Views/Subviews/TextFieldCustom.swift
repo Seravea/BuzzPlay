@@ -14,7 +14,7 @@ struct TextFieldCustom: View {
     var textSize: Font.TextStyle
     var body: some View {
         TextField("", text: $text, prompt: Text(prompt))
-            .font(.poppins(textSize))
+            .font(.nohemi(textSize))
             .padding(8)
             .background {
                 RoundedRectangle(cornerRadius: 6)
@@ -22,6 +22,7 @@ struct TextFieldCustom: View {
                     .opacity(0.4)
             }
 //            .padding()
+            .foregroundStyle(.white)
             .frame(maxWidth: widthSize ?? .infinity)
     }
 }
