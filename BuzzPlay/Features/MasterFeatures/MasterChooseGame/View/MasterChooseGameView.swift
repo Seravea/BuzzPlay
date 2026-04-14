@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MasterChooseGameView: View {
     @Bindable var masterChooseGameVM: MasterChooseGameViewModel
-    @EnvironmentObject private var router: Router
+    @Environment(Router.self) private var router
     @State var isOpen: Bool = false
     
     
@@ -75,7 +75,7 @@ struct MasterChooseGameView: View {
 
 #Preview {
     MasterChooseGameView(masterChooseGameVM: MasterChooseGameViewModel(gameVM: MasterFlowViewModel()))
-        .environmentObject(Router())
+        .environment(Router())
 }
 
 

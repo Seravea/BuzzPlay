@@ -20,6 +20,4 @@ enum Route: Hashable, Codable {
     case quizPlayer
     case scoreMaster
     case scorePlayer
-    case createPublicDisplayTeam
-    case publicDisplayScreen
 }

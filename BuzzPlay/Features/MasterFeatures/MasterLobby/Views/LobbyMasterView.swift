@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LobbyMasterView: View {
-    @EnvironmentObject var router: Router
+    @Environment(Router.self) private var router
     @Bindable var masterGameVM: MasterLobbyViewModel
     var body: some View {
         VStack {
@@ -55,5 +55,5 @@ struct LobbyMasterView: View {
 
 #Preview {
     LobbyMasterView(masterGameVM: MasterLobbyViewModel(gameVM: MasterFlowViewModel()))
-        .environmentObject(Router())
+        .environment(Router())
 }

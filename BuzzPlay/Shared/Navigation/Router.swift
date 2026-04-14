@@ -12,14 +12,13 @@ import SwiftUI
 
 
 @MainActor
-final class Router: ObservableObject {
-    @Published var path = NavigationPath()
-    @Published var modal: Bool = false
-    
+@Observable
+final class Router {
+    var path = NavigationPath()
+    var modal: Bool = false
+
     func push(_ route: Route) { path.append(route) }
     func popToRoot() { path = NavigationPath() }
     func presentModal() { self.modal = true }
     func dismissModal() { self.modal = false }
-    
-    
 }

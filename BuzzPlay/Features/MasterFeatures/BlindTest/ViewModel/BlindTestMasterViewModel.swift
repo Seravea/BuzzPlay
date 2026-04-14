@@ -72,22 +72,16 @@ extension BlindTestMasterViewModel {
     /// Arrête la manche et fige le temps
     @MainActor func validateAnswer(points: Int) {
         guard let teamAnswers = teamHasBuzz else { return }
-        
+
         isCorrect = true
         state = .finished
-        
-        // MARK: mise à jour du score via gameVM.addPoints(...)
+
         gameVM.addPointToTeam(teamAnswers, points: points)
-       
-        // on fige définitivement la manche
+
         stopReactionTimer()
         pause()
         isPlaying = false
 
-        // ✅ update public display (answer revealed)
-        gameVM.broadcastPublicStateFromCurrentGame()
-
-        // (optionnel) on nettoie ensuite la sélection
         selectedMusic = nil
         isGameActive = false
     }
@@ -95,23 +89,16 @@ extension BlindTestMasterViewModel {
     /// Refuse la réponse de l'équipe qui a buzzé
     /// Reprend la manche là où elle avait été mise en pause
     @MainActor func rejectAnswer() {
-        // si aucune équipe n'avait buzzé, on ne fait rien
         guard case .buzzed = state else { return }
-        
+
         isCorrect = false
         teamHasBuzz = nil
         state = .playing
-        
-        // on redémarre le timer sans reset (reprise de la manche) et autorise les buzz
+
         gameVM.unlockBuzz()
         startReactionTimer()
-        
-        // on relance la musique à partir de là où elle avait été mise en pause
         resume()
         isPlaying = true
-        
-        // ✅ update public display (resume round)
-        gameVM.broadcastPublicStateFromCurrentGame()
     }
 }
 
@@ -148,17 +135,12 @@ extension BlindTestMasterViewModel {
                 // IMPORTANT: tout ce qui touche l’UI + démarrage du timer sur le MainActor
                 await MainActor.run {
                     isFetching = false
-                    
                     self.reactionTimeMs = 0
                     self.teamHasBuzz = nil
                     self.isCorrect = false
                     self.state = .playing
-                    
                     self.gameVM.unlockBuzz()
                     self.startReactionTimer()
-                    
-                    // ✅ update public display immediately when the round starts
-                    self.gameVM.broadcastPublicStateFromCurrentGame()
                 }
             } catch {
                 isGameActive = false
@@ -173,60 +155,13 @@ extension BlindTestMasterViewModel {
 extension BlindTestMasterViewModel {
     @MainActor
     func handleBuzz(from team: Team) {
-        // Ignorer les buzz si la manche n'est pas en cours
         guard case .playing = state else { return }
-        
+
         teamHasBuzz = team
         state = .buzzed(team)
-        
-        // Pause uniquement: timer + musique (ne pas reset, pour pouvoir reprendre)
+
         pause()
         isPlaying = false
-
-        // ✅ update public display (buzz received)
-        gameVM.broadcastPublicStateFromCurrentGame()
-    }
-    
-    func makePublicState() -> PublicState {
-        switch state {
-
-           case .idle:
-               return .waiting
-
-           case .playing:
-            return .blindTest(
-                    PublicBlindTestState(
-                        title: "🎵 Blind Test en cours",
-                        artist: nil,
-                        formattedTime: formattedTime,
-                        buzzingTeam: nil,
-                        isAnswerRevealed: false,
-                        isPlaying: true
-                    )
-                )
-
-           case .buzzed(let team):
-               return .blindTest(
-                   PublicBlindTestState(
-                       title: nil,
-                       artist: nil,
-                       formattedTime: formattedTime,
-                       buzzingTeam: team,
-                       isAnswerRevealed: false, isPlaying: false
-                   )
-               )
-
-           case .finished:
-               return .blindTest(
-                   PublicBlindTestState(
-                       title: selectedMusic?.title,
-                       artist: selectedMusic?.artist,
-                       formattedTime: formattedTime,
-                       buzzingTeam: teamHasBuzz,
-                       isAnswerRevealed: true, isPlaying: false
-                   )
-               )
-           }
     }
 }
 

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PlayerChooseGameView: View {
     @Bindable var teamGameVM: TeamGameViewModel
-    @EnvironmentObject var router: Router
+    @Environment(Router.self) private var router
     @Bindable var teamFlowVM: TeamFlowViewModel
     var body: some View {
             VStack {

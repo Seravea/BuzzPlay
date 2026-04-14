@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CreateTeamView: View {
     @Bindable var createTeamVM: CreateTeamViewModel
-    @EnvironmentObject private var router: Router
+    @Environment(Router.self) private var router
     
     var body: some View {
         GeometryReader { geo in
@@ -134,7 +134,7 @@ struct CreateTeamView: View {
                 }
                 
                 Button("Continuer", role: .cancel) {
-                    createTeamVM.validate(isPublicDisplay: false)
+                    createTeamVM.validate()
                     router.push(.playerChooseGameView)
                 }
                 
@@ -152,4 +152,5 @@ struct CreateTeamView: View {
 
 #Preview {
     CreateTeamView(createTeamVM: CreateTeamViewModel())
+        .environment(Router())
 }

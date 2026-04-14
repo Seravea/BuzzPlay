@@ -9,12 +9,15 @@ import SwiftUI
 
 @main
 struct BuzzPlayApp: App {
-    @StateObject private var router = Router()
+    @State private var router = Router()
+
     var body: some Scene {
         WindowGroup {
-          HomeView()
-                .environmentObject(router)
-                .appDefaultTextStyle(Typography.body)
+            NavigationStack(path: $router.path) {
+                HomeView()
+            }
+            .environment(router)
+            .appDefaultTextStyle(Typography.body)
         }
     }
 }
