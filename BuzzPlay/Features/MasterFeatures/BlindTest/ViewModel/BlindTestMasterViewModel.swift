@@ -100,6 +100,21 @@ extension BlindTestMasterViewModel {
         resume()
         isPlaying = true
     }
+
+    /// Abandonne la manche en cours (personne ne trouve, trop long)
+    /// Stoppe la musique et remet à l'état idle
+    @MainActor func skipRound() {
+        guard case .playing = state else { return }
+
+        stop()
+        stopReactionTimer()
+        isPlaying = false
+        isGameActive = false
+        selectedMusic = nil
+        teamHasBuzz = nil
+        state = .idle
+        gameVM.unlockBuzz()
+    }
 }
 
 //MARK: Round Funcs

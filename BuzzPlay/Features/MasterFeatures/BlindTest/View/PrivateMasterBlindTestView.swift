@@ -124,12 +124,17 @@ struct PrivateMasterBlindTestView: View {
             
             //MARK: Music Play/Pause from Master
             VStack {
-                PrimaryButtonView(title: "Lecture", action: {
-                    blindTestVM.startRound()
-                    
-                }, style: .filled(buttonStyle: .neutral), fontSize: Typography.body)
-                .disabled(blindTestVM.isPlaying)
-                .opacity(blindTestVM.isPlaying ? 0.7 : 1)
+                if case .playing = blindTestVM.state {
+                    PrimaryButtonView(title: "Passer la manche", action: {
+                        blindTestVM.skipRound()
+                    }, style: .filled(buttonStyle: .destructive), fontSize: Typography.body)
+                } else {
+                    PrimaryButtonView(title: "Lecture", action: {
+                        blindTestVM.startRound()
+                    }, style: .filled(buttonStyle: .neutral), fontSize: Typography.body)
+                    .disabled(blindTestVM.selectedMusic == nil || blindTestVM.isFetching)
+                    .opacity(blindTestVM.selectedMusic == nil || blindTestVM.isFetching ? 0.7 : 1)
+                }
                 
                 
                 
