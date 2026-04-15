@@ -10,6 +10,7 @@ import Foundation
 
 struct PublicQuizState: Codable, Equatable {
     let question: QuizQuestion
+    let setTitle: String
     let formattedTime: String
     let buzzingTeam: Team?
     let isAnswerRevealed: Bool

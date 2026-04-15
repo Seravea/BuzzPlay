@@ -36,24 +36,7 @@ struct HomeView: View {
                         
                     }
                     .scrollIndicators(.hidden)
-//                        //MARK: Destination to PlayerView
-//                        PrimaryButtonView(title: "Joueurs", action: {
-//                            router.push(.createTeamView)
-//                        }, style: .filled(color: .darkestPurple), fontSize: Typography.body)
-//                        
-//                        //MARK: Destination to MasterView
-//                        PrimaryButtonView(title: "Maître", action: {
-//                            router.push(.masterLobbyView)
-//                        }, style: .outlined(color: .darkestPurple), fontSize: Typography.body, size: 400)
-//                        
-//                    }
-//                    
-//                    PrimaryButtonView(title: "Partage d'écran", action: {
-//                        router.push(.createPublicDisplayTeam)
-//                    }, style: .filled(color: .mustardYellow), fontSize: Typography.body)
-//                    
                 }
-//                .padding()
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .homeView:
@@ -91,13 +74,8 @@ struct HomeView: View {
                         if let teamGameVM = teamFlowVM.teamGameVM {
                             BuzzerPlayerView(teamGameVM: teamGameVM, gameType: .quiz)
                         }
-                    case .createPublicDisplayTeam:
-                        CreateDisplayPublicTeamView(createTeamVM: teamFlowVM.makeCreateTeamViewModel())
-                    case .publicDisplayScreen:
-                        if let teamGameVM = teamFlowVM.teamGameVM {
-                            
-                            PublicDisplayView(teamGameVM: teamGameVM, gameType: .score)
-                        }
+                    case .quizThemeSelection:
+                        QuizThemeSelectionView(viewModel: masterFlowVM.makeQuizThemeSelectionVM())
             //TODO: deux vues de score, Player et Master
                     case .scoreMaster:
                         ScoreMasterView(masterFlowVM: masterFlowVM)

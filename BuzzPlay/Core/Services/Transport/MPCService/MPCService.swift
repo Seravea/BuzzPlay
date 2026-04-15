@@ -11,7 +11,6 @@ import MultipeerConnectivity
 enum MPCRole {
     case master
     case team
-    case publicScreen
 }
 
 
@@ -117,13 +116,12 @@ extension MPCService {
 //MARK: Browser Player/Team
 extension MPCService {
     func startBrowsingIfNeeded() {
-        guard role == .team || role == .publicScreen else { return }
+        guard role == .team else { return }
 
         browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
         browser?.delegate = self
         browser?.startBrowsingForPeers()
-        let label = (role == .publicScreen) ? "PUBLIC" : "TEAM"
-        print("OK MPC: browsing(\(label)) started as \(myPeerID.displayName)")
+        print("OK MPC: browsing(TEAM) started as \(myPeerID.displayName)")
     }
     
    //send team to Hosting
@@ -224,7 +222,7 @@ extension MPCService: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser,
                  foundPeer peerID: MCPeerID,
                  withDiscoveryInfo info: [String : String]?) {
-        guard role == .team || role == .publicScreen else { return }
+        guard role == .team else { return }
         let name = peerID.displayName
         let peerRole = info?["role"] ?? "unknown"
 

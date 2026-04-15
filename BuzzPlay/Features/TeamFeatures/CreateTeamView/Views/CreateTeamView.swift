@@ -134,7 +134,7 @@ struct CreateTeamView: View {
                 }
                 
                 Button("Continuer", role: .cancel) {
-                    createTeamVM.validate(isPublicDisplay: false)
+                    createTeamVM.validate()
                     router.push(.playerChooseGameView)
                 }
                 

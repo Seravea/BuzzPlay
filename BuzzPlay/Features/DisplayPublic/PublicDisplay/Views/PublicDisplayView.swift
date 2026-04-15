@@ -38,8 +38,7 @@ struct PublicDisplayView: View {
 #Preview {
     // Minimal preview scaffolding
     let vm = TeamGameViewModel(team: Team(name: "Preview Team"),
-                               mpc: MPCService(peerName: "Preview", role: .team),
-                               clientMode: .team)
+                               mpc: MPCService(peerName: "Preview", role: .team))
     return PublicDisplayView(teamGameVM: vm, gameType: .blindTest)
 }
 
