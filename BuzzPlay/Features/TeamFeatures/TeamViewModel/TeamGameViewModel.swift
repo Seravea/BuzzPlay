@@ -8,47 +8,35 @@
 import Foundation
 import Observation
 
-enum ClientMode {
-    case team
-    case publicDisplay
-}
-
 
 @Observable
 final class TeamGameViewModel {
-    
-    let mode: ClientMode
+
     var team: Team
     var mpc: MPCService
     var currentBuzzerVM: BuzzerViewModel?
-    
+
     var hasStartedBrowsing = false
     var hasSetupMPC = false
     var didSentTeam = false
-    
-    
+
+
     var receivedMessage: String = ""
     var allGames: [GameType] = [.blindTest, .quiz]
     var openGames: [GameType] = [.score]
-    var isPublicDisplayActive: Bool = false
     var publicState: PublicState = .waiting
-    
+
     // MARK: - Public display timer mirroring
     // Expose a formatted time string for UI
     var formattedTime: String = "00:00"
     private var timer: Timer?
     // Keep the last known formatted time from master to display immediately
     private var lastMasterFormattedTime: String = "00:00"
-    
-    init(team: Team, mpc: MPCService, clientMode: ClientMode) {
+
+    init(team: Team, mpc: MPCService) {
         self.team = team
-        
         self.mpc = mpc
-        
-        self.mode = clientMode
-        
         setupMPC()
-        
     }
 }
 
@@ -68,17 +56,8 @@ extension TeamGameViewModel {
                 // ✅ Only send once we are connected (prevents MCSession Code=2: Invalid peerIDs)
                 self.didSentTeam = true
 
-                switch self.mode {
-                case .team:
-                    // TEAM joins the master
-                    self.mpc.sendMessage(.teamJoin(self.team))
-
-                case .publicDisplay:
-                    // PUBLIC DISPLAY joins the master as a special client
-                    self.mpc.sendMessage(.teamJoin(self.team))
-                    // Tell the master that a public display client is present/active
-                    self.mpc.sendMessage(.publicDisplayMode(isActive: true))
-                }
+                // TEAM joins the master
+                self.mpc.sendMessage(.teamJoin(self.team))
             }
         }
         
@@ -122,9 +101,6 @@ extension TeamGameViewModel {
 extension TeamGameViewModel {
     func handleMessage(_ message: MPCMessage) {
         switch message {
-        case .publicDisplayMode(let isActive):
-            isPublicDisplayActive = isActive
-            
         case .publicUpdate(let state):
             publicState = state
             handlePublicStateChange(state)

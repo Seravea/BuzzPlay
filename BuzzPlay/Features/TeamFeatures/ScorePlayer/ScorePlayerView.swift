@@ -22,5 +22,5 @@ struct ScorePlayerView: View {
 }
 
 #Preview {
-    ScorePlayerView(teamGameVM: TeamGameViewModel(team: sampleTeams[0], mpc: MPCService(peerName: sampleTeams[0].name, role: .team), clientMode: .team))
+    ScorePlayerView(teamGameVM: TeamGameViewModel(team: sampleTeams[0], mpc: MPCService(peerName: sampleTeams[0].name, role: .team)))
 }

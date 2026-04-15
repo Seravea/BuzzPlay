@@ -19,7 +19,7 @@ enum GameType: String, CaseIterable, Codable {
         case .blindTest:
             return .blindTestMaster
         case .quiz:
-            return .quizMaster
+            return .quizThemeSelection
         case .score:
             return .scoreMaster
         }

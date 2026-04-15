@@ -10,21 +10,24 @@ import Foundation
 @MainActor
 @Observable
 class QuizMasterViewModel: BuzzDrivenGame {
-    
+
     let gameVM: MasterFlowViewModel
-    
-    var questions: [QuizQuestion] = quizMusic90sTo10s
+    let quizSet: QuizSet
+
+    var questions: [QuizQuestion]
     var currentQuestion: QuizQuestion?
     var teamHasBuzz: Team?
-    
+
     var questionsPassed: [QuizQuestion] = []
-    
+
     //MARK: Timer's datas
     var reactionTimeMs: Int = 0
     var timer: Timer?
-    
-    init(gameVM: MasterFlowViewModel) {
+
+    init(gameVM: MasterFlowViewModel, quizSet: QuizSet) {
         self.gameVM = gameVM
+        self.quizSet = quizSet
+        self.questions = quizSet.questions
     }
 }
 
@@ -144,10 +147,11 @@ extension QuizMasterViewModel {
         guard let question = currentQuestion else {
             return .waiting
         }
-        
+
         return PublicState.quiz(
             PublicQuizState(
                 question: question,
+                setTitle: quizSet.title,
                 formattedTime: formattedTime,
                 buzzingTeam: teamHasBuzz,
                 isAnswerRevealed: false,

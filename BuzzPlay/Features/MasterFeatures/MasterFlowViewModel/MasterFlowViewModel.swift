@@ -39,7 +39,10 @@ final class MasterFlowViewModel {
     
     /// Liste des jeux ouverts par le maître
     var gamesOpen: [GameType] = [.score]
-    
+
+    /// QuizSet sélectionné par le Master dans l'écran de sélection de thème
+    var selectedQuizSet: QuizSet?
+
     /// Jeu courant qui réagit aux buzz (BlindTest, Quiz, etc.)
     weak var currentBuzzGame: BuzzDrivenGame?
     
@@ -61,8 +64,13 @@ final class MasterFlowViewModel {
         return vm
     }
     
+    func makeQuizThemeSelectionVM() -> QuizThemeSelectionViewModel {
+        QuizThemeSelectionViewModel(gameVM: self)
+    }
+
     func makeQuizMasterVM() -> QuizMasterViewModel {
-        let vm = QuizMasterViewModel(gameVM: self)
+        let set = selectedQuizSet ?? QuizSamples.music2000s
+        let vm = QuizMasterViewModel(gameVM: self, quizSet: set)
         self.currentBuzzGame = vm
         return vm
     }
@@ -71,16 +79,7 @@ final class MasterFlowViewModel {
     //MARK: Master's functions for Team
     
     func addTeam(_ team: Team) {
-        if team.name == "Écran Publique" {
-            mpcService.sendMessage(.publicDisplayMode(isActive: true))
-        }
-
         teams.append(team)
-
-        // Si un écran public vient de se connecter, on lui envoie tout de suite l'état actuel
-        if team.name == "Écran Publique" {
-            broadcastPublicStateFromCurrentGame()
-        }
     }
     
     func sendUpdatedTeam(team: Team) {

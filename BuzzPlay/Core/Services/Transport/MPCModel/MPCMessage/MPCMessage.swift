@@ -24,9 +24,8 @@ enum MPCMessage: Codable {
     case buzzLock(BuzzLockPayload)   // master dit "X a gagné, buzzer lock"
     case buzzUnlock                  // master dit "nouvelle manche, vous pouvez rebuzzer"
     
-    //Master -> PublicDisplay / Team
+    //Master -> Team : état courant du jeu (affiché côté Team)
     case publicUpdate(PublicState)
-    case publicDisplayMode(isActive: Bool)
 
     //TEST
     case pong

@@ -91,5 +91,5 @@ struct QuizMasterListView: View {
 }
 
 #Preview {
-    QuizMasterListView(quizMasterVM: QuizMasterViewModel(gameVM: MasterFlowViewModel()))
+    QuizMasterListView(quizMasterVM: QuizMasterViewModel(gameVM: MasterFlowViewModel(), quizSet: QuizSamples.music2000s))
 }

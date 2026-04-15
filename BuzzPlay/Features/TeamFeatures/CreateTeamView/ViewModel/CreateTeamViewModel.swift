@@ -22,8 +22,8 @@ class CreateTeamViewModel {
     var didLoadSavedTeam: Bool = false
     var isAlertOn: Bool = false
     
-    /// Le bool sert à dire si on crée une vraie team joueur (false) ou un "client" écran public (true)
-    var onTeamCreated: ((Team, Bool) -> Void)?
+    /// Callback appelé quand l'utilisateur valide la création de sa team.
+    var onTeamCreated: ((Team) -> Void)?
     
     //MARK: - Init
 
@@ -79,14 +79,10 @@ class CreateTeamViewModel {
     }
     
     //MARK: - Actions
-    
-    //MARK: - Actions
-    func validate(isPublicDisplay: Bool) {
-        
-        if !isPublicDisplay {
+    func validate() {
         // ✅ Safety UX:
-        // Si l'utilisateur a une team sauvegardée mais n'a pas appuyé sur “Utiliser”
-        // et qu'il clique “Continuer” avec un formulaire vide → on utilise la draft.
+        // Si l'utilisateur a une team sauvegardée mais n'a pas appuyé sur "Utiliser"
+        // et qu'il clique "Continuer" avec un formulaire vide → on utilise la draft.
         let trimmedName = team.name.trimmingCharacters(in: .whitespacesAndNewlines)
         let hasAnyPlayerName = team.players.contains { !$0.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
@@ -100,12 +96,11 @@ class CreateTeamViewModel {
         // Nettoyage léger ici (le gros nettoyage reste dans TeamFlow)
         team.name = team.name.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // ✅ Persistance : on sauvegarde uniquement une vraie team (pas l'écran public)
-            Self.saveSavedTeam(team)
-            savedTeamDraft = team
-        }
+        // ✅ Persistance
+        Self.saveSavedTeam(team)
+        savedTeamDraft = team
 
-        onTeamCreated?(team, isPublicDisplay)
+        onTeamCreated?(team)
     }
     
     var nbofPlayers: Int {
@@ -126,21 +121,5 @@ class CreateTeamViewModel {
     
     func isSelectedGameColor(_ color: GameColor) -> Double {
         team.teamColor == color ? 1 : 0.3
-    }
-    
-    
-    //MARK: - Public Display (écran)
-    
-    /// Prépare un "pseudo team" dédiée à l'écran public.
-    /// Important : on ne veut pas de joueurs ici, ni de logique "team normale".
-    func loadDisplayTeam() {
-        team = Team(
-            name: "Écran Public",
-            image: nil,
-            teamColor: .blueGame,
-            players: [],
-            score: 0,
-            accountAmount: 0
-        )
     }
 }

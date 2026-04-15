@@ -76,7 +76,7 @@ class TeamFlowViewModel {
     var createTeamVM: CreateTeamViewModel = CreateTeamViewModel()
 
     init() {
-        createTeamVM.onTeamCreated = { [weak self] (rawTeam, isPublicDisplay) in
+        createTeamVM.onTeamCreated = { [weak self] rawTeam in
             guard let self else { return }
 
             // Si une ancienne session existe (retour arrière, relance, etc.),
@@ -99,30 +99,18 @@ class TeamFlowViewModel {
 
             self.team = newTeam
 
-            // ✅ Persistence is currently disabled (see isPersistenceEnabled)
-            // If you re-enable it later, this will save only real teams (not Public Display).
-            if !isPublicDisplay {
-                self.persistTeamIfEnabled(newTeam)
-            }
-
-            // MPC role + clientMode depend on the creation type
-            let role: MPCRole = isPublicDisplay ? .publicScreen : .team
-            let clientMode: ClientMode = isPublicDisplay ? .publicDisplay : .team
+            self.persistTeamIfEnabled(newTeam)
 
             // MPCService unique pour CE device
-            let mpc = MPCService(peerName: newTeam.name, role: role)
+            let mpc = MPCService(peerName: newTeam.name, role: .team)
             self.mpc = mpc
 
             // Le TeamGameVM doit recevoir LA MÊME TEAM
-            let gameVM = TeamGameViewModel(team: newTeam, mpc: mpc, clientMode: clientMode)
+            let gameVM = TeamGameViewModel(team: newTeam, mpc: mpc)
             self.teamGameVM = gameVM
 
             // On lance le browsing après que tout soit en place
             gameVM.startBrowsing()
-
-            // ✅ Important: do NOT send any message here.
-            // The device might not be connected yet (connectedPeers can be empty).
-            // PublicDisplayMode must be sent AFTER connection (inside TeamGameViewModel.mpc.onPeerConnected).
         }
     }
 

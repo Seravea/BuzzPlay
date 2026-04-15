@@ -16,10 +16,9 @@ enum Route: Hashable, Codable {
     case playerChooseGameView
     case blindTestMaster
     case blindTestPlayer
+    case quizThemeSelection
     case quizMaster
     case quizPlayer
     case scoreMaster
     case scorePlayer
-    case createPublicDisplayTeam
-    case publicDisplayScreen
 }
