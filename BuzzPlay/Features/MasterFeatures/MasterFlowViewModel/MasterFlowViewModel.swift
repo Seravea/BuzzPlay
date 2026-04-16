@@ -36,6 +36,9 @@ final class MasterFlowViewModel {
     var currentBuzzTeam: Team?
     var isBuzzLocked: Bool = false
     var gameState: GameState = .lobby
+
+    /// Nom de la dernière équipe déconnectée (nil = pas d'alerte à montrer)
+    var disconnectedTeamName: String? = nil
     
     /// Liste des jeux ouverts par le maître
     var gamesOpen: [GameType] = [.score]
@@ -129,6 +132,11 @@ extension MasterFlowViewModel {
         mpcService.onPeerDisconnected = { [weak self] peer in
             guard let self else { return }
             self.connectedPeers.removeAll { $0 == peer }
+            let name = peer.displayName
+            self.teams.removeAll { $0.name == name }
+            if name != "Écran Publique" {
+                self.disconnectedTeamName = name
+            }
         }
         
         mpcService.onMessage = { [weak self] data, peer in
