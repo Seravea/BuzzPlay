@@ -24,7 +24,7 @@ struct ConnectionStatusBadge: View {
                 .shadow(color: dotColor.opacity(0.6), radius: 4)
 
             Text("\(connected)/\(total)")
-                .font(.poppins(.subheadline, weight: .semibold))
+                .font(.nohemi(.subheadline, weight: .medium))
                 .foregroundStyle(.white)
         }
         .padding(.horizontal, 12)
