@@ -19,7 +19,7 @@ final class TeamGameViewModel {
     var hasStartedBrowsing = false
     var hasSetupMPC = false
     var didSentTeam = false
-
+    var isConnectedToMaster = false
 
     var receivedMessage: String = ""
     var allGames: [GameType] = [.blindTest, .quiz]
@@ -47,10 +47,11 @@ extension TeamGameViewModel {
     private func setupMPC() {
         guard !hasSetupMPC else { return }
         hasSetupMPC = true
-        
+
         mpc.onPeerConnected = { [weak self] _ in
             guard let self else { return }
             DispatchQueue.main.async {
+                self.isConnectedToMaster = true
                 guard !self.didSentTeam else { return }
 
                 // ✅ Only send once we are connected (prevents MCSession Code=2: Invalid peerIDs)
@@ -60,10 +61,21 @@ extension TeamGameViewModel {
                 self.mpc.sendMessage(.teamJoin(self.team))
             }
         }
-        
+
+        mpc.onPeerDisconnected = { [weak self] _ in
+            guard let self else { return }
+            DispatchQueue.main.async {
+                self.isConnectedToMaster = false
+                // Reset so team re-announces itself when master comes back
+                self.didSentTeam = false
+                self.openGames = []
+                // Browser continues running; master will be re-discovered automatically
+            }
+        }
+
         mpc.onMessage = { [weak self] data, peer in
             guard let self else { return }
-            
+
             do {
                 let message = try JSONDecoder().decode(MPCMessage.self, from: data)
                 DispatchQueue.main.async {
@@ -75,15 +87,15 @@ extension TeamGameViewModel {
         }
 
     }
-      
-        
+
+
     func startBrowsing() {
         guard !hasStartedBrowsing else { return }
         hasStartedBrowsing = true
         print("TEAM Starting MPC browsing...")
         mpc.startBrowsingIfNeeded()
     }
-    
+
 }
 
 
@@ -104,16 +116,16 @@ extension TeamGameViewModel {
         case .publicUpdate(let state):
             publicState = state
             handlePublicStateChange(state)
-            
+
         case .gameAvailability(let games):
             self.openGames = games
-            
+
         case .buzzLock(let payload):
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: payload.teamName)
-            
+
         case .buzzUnlock:
             currentBuzzerVM?.unLockBuzz()
-            
+
         case .updatedTeam(let updatedTeam):
             print("Before receive \(self.team)")
             self.team = updatedTeam
@@ -143,7 +155,7 @@ extension TeamGameViewModel {
             startUITimerIfNeeded()
         }
     }
-    
+
     // A lightweight UI timer to keep the display "alive" between master updates.
     // We don't attempt to compute exact time; we simply keep showing last known value.
     // If you want it to tick, you can parse mm:ss and increment. For now, we mirror.
@@ -158,7 +170,7 @@ extension TeamGameViewModel {
         }
         RunLoop.main.add(timer!, forMode: .common)
     }
-    
+
     private func stopUITimer() {
         timer?.invalidate()
         timer = nil

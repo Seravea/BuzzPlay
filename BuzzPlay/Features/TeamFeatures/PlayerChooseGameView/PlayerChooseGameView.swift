@@ -12,6 +12,7 @@ struct PlayerChooseGameView: View {
     @EnvironmentObject var router: Router
     @Bindable var teamFlowVM: TeamFlowViewModel
     var body: some View {
+        ZStack {
             VStack {
                 Spacer()
                 ScrollView(.horizontal) {
@@ -33,7 +34,11 @@ struct PlayerChooseGameView: View {
                 BackgroundAppView()
             )
             .navigationBarBackButtonHidden()
-        
+
+            if !teamGameVM.isConnectedToMaster {
+                ConnectionLostOverlay()
+            }
+        }
     }
 }
 

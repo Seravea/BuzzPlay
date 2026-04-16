@@ -14,13 +14,13 @@ struct HomeView: View {
     var body: some View {
         NavigationStack(path: $router.path) {
             VStack {
-                
+
                 Text("Zik'jeu")
                     .font(.nohemi(.largeTitle, weight: .bold))
                     .foregroundStyle(.white)
-                
+
                   Spacer()
-                
+
                 VStack {
                     ScrollView(.horizontal) {
                         HStack(spacing: 24) {
@@ -33,7 +33,7 @@ struct HomeView: View {
                                 }
                             }
                         }
-                        
+
                     }
                     .scrollIndicators(.hidden)
                 }
@@ -58,15 +58,15 @@ struct HomeView: View {
                     case .blindTestPlayer:
                         //TODO: view
                         if let teamGameVM = teamFlowVM.teamGameVM {
-                            
+
                             BuzzerPlayerView(teamGameVM: teamGameVM, gameType: .blindTest)
-                                
+
                         }
-                        
+
                     case .createTeamView:
                         //TODO: view
                         CreateTeamView(createTeamVM: teamFlowVM.makeCreateTeamViewModel())
-                        
+
                     case .quizMaster:
                         //TODO: View
                         QuizMasterListView(quizMasterVM: masterFlowVM.makeQuizMasterVM())
@@ -86,18 +86,31 @@ struct HomeView: View {
                     }
                 }
                 Spacer()
-                
+
             }
             .appDefaultTextStyle(Typography.body)
             .background(
                 BackgroundAppView()
             )
+            .alert(
+                "Équipe déconnectée",
+                isPresented: Binding(
+                    get: { masterFlowVM.disconnectedTeamName != nil },
+                    set: { if !$0 { masterFlowVM.disconnectedTeamName = nil } }
+                )
+            ) {
+                Button("OK") { masterFlowVM.disconnectedTeamName = nil }
+            } message: {
+                if let name = masterFlowVM.disconnectedTeamName {
+                    Text("L'équipe « \(name) » s'est déconnectée.")
+                }
+            }
         }
     }
 }
 
 #Preview {
-    
+
     HomeView()
         .environmentObject(Router())
 }
