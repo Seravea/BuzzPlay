@@ -90,16 +90,17 @@ final class MasterFlowViewModel {
     //MARK: Master's functions for Team
     
     func addTeam(_ team: Team) {
-        // Éviter les doublons si la team envoie teamJoin plusieurs fois
-        guard !teams.contains(where: { $0.id == team.id }) else { return }
+        // Éviter les doublons si la team envoie teamJoin plusieurs fois dans la même session
+        guard !teams.contains(where: { $0.name == team.name }) else { return }
 
-        if let saved = allRegisteredTeams.first(where: { $0.id == team.id }) {
-            // Reconnexion : restaurer le score sauvegardé
+        if let savedIndex = allRegisteredTeams.firstIndex(where: { $0.name == team.name }) {
+            // Reconnexion : restaurer le score sauvegardé (le nom est la clé — l'UUID peut changer)
             var restored = team
-            restored.score = saved.score
-            restored.accountAmount = saved.accountAmount
+            restored.score = allRegisteredTeams[savedIndex].score
+            restored.accountAmount = allRegisteredTeams[savedIndex].accountAmount
+            // Mettre à jour l'UUID dans allRegisteredTeams pour rester en sync
+            allRegisteredTeams[savedIndex] = restored
             teams.append(restored)
-            // Re-sync l'état à la team qui revient
             mpcService.sendMessagetoOneTeam(message: .updatedTeam(restored), team: restored)
             mpcService.sendMessagetoOneTeam(message: .gameAvailability(gamesOpen), team: restored)
         } else {
@@ -247,7 +248,7 @@ extension MasterFlowViewModel {
         teams[index].score += points
 
         // Sync allRegisteredTeams pour conserver le score en cas de déconnexion
-        if let savedIndex = allRegisteredTeams.firstIndex(where: { $0.id == team.id }) {
+        if let savedIndex = allRegisteredTeams.firstIndex(where: { $0.name == team.name }) {
             allRegisteredTeams[savedIndex].score = teams[index].score
         }
 
