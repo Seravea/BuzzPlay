@@ -90,9 +90,23 @@ final class MasterFlowViewModel {
     //MARK: Master's functions for Team
     
     func addTeam(_ team: Team) {
-        teams.append(team)
-        if !allRegisteredTeams.contains(where: { $0.id == team.id }) {
+        // Éviter les doublons si la team envoie teamJoin plusieurs fois
+        guard !teams.contains(where: { $0.id == team.id }) else { return }
+
+        if let saved = allRegisteredTeams.first(where: { $0.id == team.id }) {
+            // Reconnexion : restaurer le score sauvegardé
+            var restored = team
+            restored.score = saved.score
+            restored.accountAmount = saved.accountAmount
+            teams.append(restored)
+            // Re-sync l'état à la team qui revient
+            mpcService.sendMessagetoOneTeam(message: .updatedTeam(restored), team: restored)
+            mpcService.sendMessagetoOneTeam(message: .gameAvailability(gamesOpen), team: restored)
+        } else {
+            // Nouvelle team
+            teams.append(team)
             allRegisteredTeams.append(team)
+            mpcService.sendMessagetoOneTeam(message: .gameAvailability(gamesOpen), team: team)
         }
     }
     
@@ -230,13 +244,13 @@ extension MasterFlowViewModel {
 extension MasterFlowViewModel {
     func addPointToTeam(_ team: Team, points: Int) {
         guard let index = teams.firstIndex(of: team) else { return }
-        print("addPointFunc is begin")
         teams[index].score += points
-    
-        print(team.name, "receive :", points, "points")
-        
+
+        // Sync allRegisteredTeams pour conserver le score en cas de déconnexion
+        if let savedIndex = allRegisteredTeams.firstIndex(where: { $0.id == team.id }) {
+            allRegisteredTeams[savedIndex].score = teams[index].score
+        }
+
         mpcService.sendMessagetoOneTeam(message: .updatedTeam(teams[index]), team: teams[index])
-        print("mpcService updatedTeam send to \(team.name)")
-        print("addPointFunc is ending")
     }
 }
