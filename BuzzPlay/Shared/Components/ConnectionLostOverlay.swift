@@ -17,12 +17,10 @@ struct ConnectionLostOverlay: View {
                     .foregroundStyle(.white)
 
                 Text("Connexion perdue")
-                    .font(.poppins(.title2, weight: .bold))
                     .font(.nohemi(.title2, weight: .bold))
                     .foregroundStyle(.white)
 
                 Text("Reconnexion en cours…")
-                    .font(.poppins(.body, weight: .regular))
                     .font(.nohemi(.body, weight: .regular))
                     .foregroundStyle(.white.opacity(0.8))
 
