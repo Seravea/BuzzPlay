@@ -28,6 +28,14 @@ final class MasterFlowViewModel {
     var connectedPeers: [MCPeerID] = []
     //TODO: empty Collection for TEST ON DEVICE or PRODUCTION
     var teams: [Team] = []
+
+    /// Toutes les équipes qui ont rejoint la session (ne diminue jamais, sert au statut de connexion)
+    private(set) var allRegisteredTeams: [Team] = []
+
+    /// Nombre d'équipes actuellement connectées (hors écran public)
+    var connectedTeamsCount: Int { teams.filter { $0.name != "Écran Publique" }.count }
+    /// Nombre total d'équipes ayant rejoint depuis le début (hors écran public)
+    var totalTeamsCount: Int { allRegisteredTeams.filter { $0.name != "Écran Publique" }.count }
     
     var mpcService: MPCService = MPCService(peerName: "Master", role: .master)
     private var hasStartedHosting = false
@@ -83,6 +91,9 @@ final class MasterFlowViewModel {
     
     func addTeam(_ team: Team) {
         teams.append(team)
+        if !allRegisteredTeams.contains(where: { $0.id == team.id }) {
+            allRegisteredTeams.append(team)
+        }
     }
     
     func sendUpdatedTeam(team: Team) {

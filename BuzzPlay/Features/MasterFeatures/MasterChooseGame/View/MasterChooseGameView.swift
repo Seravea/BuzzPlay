@@ -66,10 +66,16 @@ struct MasterChooseGameView: View {
 //            .background(Color.backgroundColor)
             
         }
-        .background(
-            BackgroundAppView()
-        )
+        .background(BackgroundAppView())
         .appDefaultTextStyle(Typography.body)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ConnectionStatusBadge(
+                    connected: masterChooseGameVM.connectedTeamsCount,
+                    total: masterChooseGameVM.totalTeamsCount
+                )
+            }
+        }
     }
 }
 

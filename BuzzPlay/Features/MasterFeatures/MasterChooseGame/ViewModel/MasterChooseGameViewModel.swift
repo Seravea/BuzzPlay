@@ -18,6 +18,9 @@ class MasterChooseGameViewModel {
     }
     
     var availableGames: [GameType] = []
+
+    var connectedTeamsCount: Int { gameVM.connectedTeamsCount }
+    var totalTeamsCount: Int { gameVM.totalTeamsCount }
     
     
     //MARK: Datas en functions for views

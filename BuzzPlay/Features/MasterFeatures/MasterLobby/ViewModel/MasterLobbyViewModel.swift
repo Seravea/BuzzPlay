@@ -22,5 +22,7 @@ class MasterLobbyViewModel {
     var teams: [Team] {
         gameVM.teams
     }
-  
+
+    var connectedTeamsCount: Int { gameVM.connectedTeamsCount }
+    var totalTeamsCount: Int { gameVM.totalTeamsCount }
 }

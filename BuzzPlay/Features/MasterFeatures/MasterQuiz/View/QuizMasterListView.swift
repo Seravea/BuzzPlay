@@ -84,9 +84,15 @@ struct QuizMasterListView: View {
             }
             .padding()
         
-            .background(
-                BackgroundAppView()
-            )
+            .background(BackgroundAppView())
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    ConnectionStatusBadge(
+                        connected: quizMasterVM.gameVM.connectedTeamsCount,
+                        total: quizMasterVM.gameVM.totalTeamsCount
+                    )
+                }
+            }
     }
 }
 

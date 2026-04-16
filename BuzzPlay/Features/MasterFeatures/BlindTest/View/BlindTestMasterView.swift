@@ -29,9 +29,15 @@ struct BlindTestMasterView: View {
 //                    .padding()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(
-                BackgroundAppView()
-            )
+            .background(BackgroundAppView())
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    ConnectionStatusBadge(
+                        connected: blindTestViewModel.gameVM.connectedTeamsCount,
+                        total: blindTestViewModel.gameVM.totalTeamsCount
+                    )
+                }
+            }
         }
     }
 }

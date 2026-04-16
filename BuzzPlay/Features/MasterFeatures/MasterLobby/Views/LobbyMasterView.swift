@@ -46,10 +46,15 @@ struct LobbyMasterView: View {
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity)
         .appDefaultTextStyle(Typography.body)
-        .background(
-            BackgroundAppView()
-        )
-        
+        .background(BackgroundAppView())
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ConnectionStatusBadge(
+                    connected: masterGameVM.connectedTeamsCount,
+                    total: masterGameVM.totalTeamsCount
+                )
+            }
+        }
     }
 }
 
