@@ -173,7 +173,6 @@ struct PrivateMasterBlindTestView: View {
                 
                 .onAppear {
                     blindTestVM.appleMusicService.setupAudioSession()
-                    blindTestVM.observeSubscriptionUpdates()
                     Task {
                         await blindTestVM.appleMusicService.setupAppleMusic()
                         await blindTestVM.updateCatalogPlaybackCapability()

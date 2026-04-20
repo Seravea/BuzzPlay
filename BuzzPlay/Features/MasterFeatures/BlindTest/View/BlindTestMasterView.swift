@@ -22,6 +22,11 @@ struct BlindTestMasterView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(BackgroundAppView())
             .musicSubscriptionOffer(isPresented: $showSubscriptionOffer, options: .default)
+            .onChange(of: showSubscriptionOffer) { _, isPresented in
+                if !isPresented {
+                    Task { await blindTestViewModel.updateCatalogPlaybackCapability() }
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     if !blindTestViewModel.canPlayCatalogContent {
