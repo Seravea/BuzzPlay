@@ -2,100 +2,246 @@
 //  QuizMasterListView.swift
 //  BuzzPlay
 //
-//  Created by Apprenant 102 on 18/11/2025.
-//
 
 import SwiftUI
 
+// MARK: - Main Container
+
 struct QuizMasterListView: View {
     @Bindable var quizMasterVM: QuizMasterViewModel
+
+    @State private var showValidationOverlay = false
+    @State private var validationPoints = 0
+    @State private var validationTeamName = ""
+
     var body: some View {
-        
-            HStack {
-                VStack(alignment: .leading) {
-                    ScrollView {
-                        ForEach(quizMasterVM.questions) { question in
-                            PrimaryButtonView(title: question.title, action: {
-                                withAnimation {
-                                    quizMasterVM.selectQuestion(question)
-                                }
-                            }, style: quizMasterVM.questionButtonStyle(question), fontSize: Typography.body, size: 450)
-                            .disabled(quizMasterVM.quizButtonDisabled(question: question))
-                            
-                        }
-                    }
-                }
-                VStack {
-                    
-                    //MARK: Correct answer or Wrong answer
-                    VStack {
-                        VStack {
-                            PrimaryButtonView(title: "Valider 1 réponse (10 points)", action: {
-                                quizMasterVM.validateAnswer(points: 10)
-                            }, style: .filled(buttonStyle: .positive), fontSize: Typography.body)
-                        
-                            PrimaryButtonView(title: "Valider 2 réponses (20 points)", action: {
-                                quizMasterVM.validateAnswer(points: 20)
-                            }, style: .filled(buttonStyle: .positive), fontSize: Typography.body)
-                            
-                            
-                            PrimaryButtonView(title: "Valider 3 réponses (30 points)", action: {
-                                quizMasterVM.validateAnswer(points: 30)
-                            }, style: .filled(buttonStyle: .positive), fontSize: Typography.body)
-                            
-                            PrimaryButtonView(title: "Refuser la réponse", action: {
-                                quizMasterVM.rejectAnswer()
-                            }, style: .filled(buttonStyle: .destructive), fontSize: Typography.body)
-                            
-                        }
-                        .disabled(quizMasterVM.validateRejectDisabled)
-                        .opacity(quizMasterVM.UIDisabledValidateRejectButtonOpacity())
-                        
-                    }
-                    
-                    if let currentQuestion = quizMasterVM.currentQuestion {
-                        
-                        VStack {
-                            TimerCardView(timer: quizMasterVM.formattedTime, isCorrectAnswer: false)
-                
-                            Text("Question : \(currentQuestion.title)")
-                                .font(.largeTitle)
-                            ForEach(currentQuestion.answers, id: \.self) { answer in
-                                Text("- \(answer)")
-                                    .frame(alignment: .leading)
-                            }
-                            
-                            
-                            
-                            Spacer()
-                            
-                            if let currentTeamHasBuzz = quizMasterVM.gameVM.currentBuzzTeam {
-                                TeamCardView(team: currentTeamHasBuzz, buzzTime: quizMasterVM.formattedTime, showPoints: false)
-                            }
-                            
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                    } else {
-                        Spacer()
-                    }
-                }
-                .padding()
+        ZStack {
+            BackgroundAppView().ignoresSafeArea()
+
+            // Screen 1 — Question list
+            QuizQuestionListScreen(quizMasterVM: quizMasterVM)
+                .offset(x: quizMasterVM.isPlaying ? -UIScreen.main.bounds.width : 0)
+                .opacity(quizMasterVM.isPlaying ? 0 : 1)
+
+            // Screen 2 — Active question
+            QuizActiveQuestionScreen(
+                quizMasterVM: quizMasterVM,
+                onValidate: handleValidate,
+                onReject: { quizMasterVM.rejectAnswer() }
+            )
+            .offset(x: quizMasterVM.isPlaying ? 0 : UIScreen.main.bounds.width)
+            .opacity(quizMasterVM.isPlaying ? 1 : 0)
+
+            // Validation overlay — au-dessus des deux écrans
+            if showValidationOverlay {
+                QuizValidationOverlay(points: validationPoints, teamName: validationTeamName)
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 0.8).combined(with: .opacity),
+                        removal: .opacity
+                    ))
             }
-            .padding()
-        
-            .background(BackgroundAppView())
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    ConnectionStatusBadge(
-                        connected: quizMasterVM.gameVM.connectedTeamsCount,
-                        total: quizMasterVM.gameVM.totalTeamsCount
-                    )
-                }
+        }
+        .animation(.spring(duration: 0.45, bounce: 0.05), value: quizMasterVM.isPlaying)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ConnectionStatusBadge(
+                    connected: quizMasterVM.gameVM.connectedTeamsCount,
+                    total: quizMasterVM.gameVM.totalTeamsCount
+                )
             }
+        }
+    }
+
+    private func handleValidate(points: Int) {
+        validationPoints = points
+        validationTeamName = quizMasterVM.gameVM.currentBuzzTeam?.name ?? ""
+
+        withAnimation(.spring(duration: 0.3, bounce: 0.2)) {
+            showValidationOverlay = true
+        }
+        // Déclenche le retour à la liste pendant que l'overlay est visible
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            quizMasterVM.validateAnswer(points: points)
+        }
+        // Fade out de l'overlay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
+            withAnimation(.easeOut(duration: 0.3)) {
+                showValidationOverlay = false
+            }
+        }
     }
 }
 
+// MARK: - Screen 1: Question List
+
+private struct QuizQuestionListScreen: View {
+    @Bindable var quizMasterVM: QuizMasterViewModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            listHeader
+            questionList
+        }
+    }
+
+    private var listHeader: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(quizMasterVM.quizSet.title)
+                        .font(.nohemi(.title2, weight: .extraBold))
+                        .foregroundStyle(.white)
+                    Text("\(quizMasterVM.questions.count) questions · \(quizMasterVM.gameVM.teams.count) équipes")
+                        .font(.nohemi(.subheadline, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+                Spacer()
+                Text("\(quizMasterVM.questionsPassed.count)/\(quizMasterVM.questions.count) ✓")
+                    .font(.nohemi(.caption, weight: .semiBold))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(.white.opacity(0.1), in: Capsule())
+                    .foregroundStyle(.white)
+            }
+            // Progress bar
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(.white.opacity(0.1)).frame(height: 3)
+                    let progress = quizMasterVM.questions.isEmpty ? 0.0 :
+                        Double(quizMasterVM.questionsPassed.count) / Double(quizMasterVM.questions.count)
+                    Capsule()
+                        .fill(LinearGradient(colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
+                                            startPoint: .leading, endPoint: .trailing))
+                        .frame(width: geo.size.width * progress, height: 3)
+                        .animation(.spring(), value: quizMasterVM.questionsPassed.count)
+                }
+            }
+            .frame(height: 3)
+        }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 14)
+    }
+
+    private var questionList: some View {
+        ScrollView {
+            LazyVStack(spacing: 8) {
+                ForEach(Array(quizMasterVM.questions.enumerated()), id: \.element.id) { index, question in
+                    QuizQuestionRow(
+                        number: index + 1,
+                        question: question,
+                        isDone: quizMasterVM.questionsPassed.contains(question),
+                        isDisabled: quizMasterVM.quizButtonDisabled(question: question)
+                    ) {
+                        withAnimation { quizMasterVM.selectQuestion(question) }
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 20)
+        }
+    }
+}
+
+// MARK: - Question Row
+
+private struct QuizQuestionRow: View {
+    let number: Int
+    let question: QuizQuestion
+    let isDone: Bool
+    let isDisabled: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                // Number badge with difficulty color
+                Text("\(number)")
+                    .font(.nohemi(.caption, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 32, height: 32)
+                    .background(badgeColor, in: RoundedRectangle(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(question.title)
+                        .font(.nohemi(.subheadline, weight: .semiBold))
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.leading)
+                    if let theme = question.theme {
+                        Text(theme)
+                            .font(.nohemi(.caption2, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.4))
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                if isDone {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color.greenButtonLeading)
+                } else if !isDisabled {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.25))
+                }
+            }
+            .padding(14)
+            .background(.white.opacity(isDone ? 0.06 : 0.06), in: RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(isDone ? Color.greenButtonLeading.opacity(0.25) : .white.opacity(0.08), lineWidth: 1.5)
+            )
+            .opacity(isDone ? 0.6 : 1)
+        }
+        .disabled(isDisabled || isDone)
+        .opacity(isDisabled && !isDone ? 0.3 : 1)
+        .buttonStyle(.plain)
+    }
+
+    private var badgeColor: Color {
+        if isDone { return .white.opacity(0.1) }
+        switch question.difficulty {
+        case 1: return Color(hex: "#00C950").opacity(0.35)
+        case 2: return Color(hex: "#F0B100").opacity(0.45)
+        case 3: return Color(hex: "#FB2C36").opacity(0.4)
+        default: return .white.opacity(0.1)
+        }
+    }
+}
+
+// MARK: - Validation Overlay
+
+struct QuizValidationOverlay: View {
+    let points: Int
+    let teamName: String
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.55)
+                .ignoresSafeArea()
+                .background(.ultraThinMaterial)
+
+            VStack(spacing: 10) {
+                Text("✅")
+                    .font(.system(size: 52))
+                Text("+\(points)")
+                    .font(.nohemi(.largeTitle, weight: .black))
+                    .foregroundStyle(Color(hex: "#7DFFA0"))
+                    .tracking(1)
+                Text(teamName)
+                    .font(.nohemi(.body, weight: .semiBold))
+                    .foregroundStyle(.white.opacity(0.55))
+            }
+        }
+    }
+}
+
+// MARK: - Preview
+
 #Preview {
-    QuizMasterListView(quizMasterVM: QuizMasterViewModel(gameVM: MasterFlowViewModel(), quizSet: QuizSamples.music2000s))
+    NavigationStack {
+        QuizMasterListView(quizMasterVM: QuizMasterViewModel(
+            gameVM: MasterFlowViewModel(),
+            quizSet: QuizSamples.music2000s
+        ))
+    }
 }
