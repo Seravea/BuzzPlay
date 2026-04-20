@@ -31,6 +31,21 @@ struct BlindTestMasterView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(BackgroundAppView())
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if !blindTestViewModel.canPlayCatalogContent {
+                        HStack(spacing: 6) {
+                            Image(systemName: "music.note")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.orange)
+                            Text("Gratuit · ~15 sec")
+                                .font(.nohemi(.subheadline, weight: .medium))
+                                .foregroundStyle(.white)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(.ultraThinMaterial, in: Capsule())
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     ConnectionStatusBadge(
                         connected: blindTestViewModel.gameVM.connectedTeamsCount,
