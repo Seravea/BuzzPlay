@@ -31,7 +31,8 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var isCorrect: Bool = false
     
     var teamHasBuzz: Team? = nil
-    
+    var playedSongs: [BlindTestSong] = []
+
     var state: RoundState = .idle
     
     //MARK: Timer's datas
@@ -83,6 +84,9 @@ extension BlindTestMasterViewModel {
     @MainActor func validateAnswer(points: Int) {
         guard let teamAnswers = teamHasBuzz else { return }
         UINotificationFeedbackGenerator().notificationOccurred(.success)
+        if let song = selectedMusic, !playedSongs.contains(song) {
+            playedSongs.append(song)
+        }
         
         isCorrect = true
         state = .finished
@@ -181,6 +185,16 @@ extension BlindTestMasterViewModel {
                 }
             }
         }
+    }
+
+    @MainActor func cancelRound() {
+        stop()
+        stopReactionTimer()
+        isPlaying = false
+        isGameActive = false
+        teamHasBuzz = nil
+        state = .idle
+        gameVM.broadcastPublicStateFromCurrentGame()
     }
 
     @MainActor func handlePreviewEnd() {

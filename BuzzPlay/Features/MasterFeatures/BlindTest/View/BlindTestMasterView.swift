@@ -2,25 +2,16 @@
 //  BlindTestMasterView.swift
 //  BuzzPlay
 //
-//  Created by Apprenant 102 on 12/11/2025.
-//
 
 import SwiftUI
 import MusicKit
 
 struct BlindTestMasterView: View {
     @Bindable var blindTestViewModel: BlindTestMasterViewModel
-    @Bindable var ambiantSoundViewModel = AmbiantSoundViewModel()
     @State private var showSubscriptionOffer = false
 
     var body: some View {
-        GeometryReader { geo in
-            HStack {
-                PrivateMasterBlindTestView(ambiantaudioPlayerVM: ambiantSoundViewModel, blindTestVM: blindTestViewModel)
-                    .padding()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(BackgroundAppView())
+        PrivateMasterBlindTestView(blindTestVM: blindTestViewModel)
             .musicSubscriptionOffer(isPresented: $showSubscriptionOffer, options: .default)
             .onChange(of: showSubscriptionOffer) { _, isPresented in
                 if !isPresented {
@@ -28,8 +19,19 @@ struct BlindTestMasterView: View {
                 }
             }
             .toolbar {
+                // Bouton retour vers la liste des titres (manche active uniquement)
                 ToolbarItem(placement: .topBarLeading) {
-                    if !blindTestViewModel.canPlayCatalogContent {
+                    if blindTestViewModel.isGameActive {
+                        Button {
+                            withAnimation { blindTestViewModel.cancelRound() }
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .frame(width: 36, height: 36)
+                                .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+                        }
+                    } else if !blindTestViewModel.canPlayCatalogContent {
                         Button {
                             showSubscriptionOffer = true
                         } label: {
@@ -51,6 +53,7 @@ struct BlindTestMasterView: View {
                         .buttonStyle(.plain)
                     }
                 }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     ConnectionStatusBadge(
                         connected: blindTestViewModel.gameVM.connectedTeamsCount,
@@ -58,10 +61,11 @@ struct BlindTestMasterView: View {
                     )
                 }
             }
-        }
     }
 }
 
 #Preview {
-    BlindTestMasterView(blindTestViewModel: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()))
+    NavigationStack {
+        BlindTestMasterView(blindTestViewModel: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()))
+    }
 }

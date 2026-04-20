@@ -162,7 +162,7 @@ struct QuizActiveQuestionScreen: View {
 
 // MARK: - Score Row
 
-private struct QuizScoreRow: View {
+struct QuizScoreRow: View {
     let team: Team
     let maxScore: Int
 
