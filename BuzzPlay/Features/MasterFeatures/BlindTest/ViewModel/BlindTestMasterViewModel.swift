@@ -38,13 +38,21 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var reactionTimeMs: Int = 0
     var timer: Timer?
     
-    //MARK: UI alert (abonnement requis)
+    //MARK: UI alert (abonnement requis — affiché une seule fois via UserDefaults)
     var showSubscriptionAlert: Bool = false
     var subscriptionAlertMessage: String = "Pour lire le morceau en entier, un abonnement Apple Music est requis. Lecture de l'extrait à la place."
+    private let subscriptionInfoKey = "buzzplay.subscriptionInfoShown"
+    private var hasShownSubscriptionInfo: Bool {
+        get { UserDefaults.standard.bool(forKey: subscriptionInfoKey) }
+        set { UserDefaults.standard.set(newValue, forKey: subscriptionInfoKey) }
+    }
 
     //MARK: UI alert (erreurs réseau / Apple Music)
     var fetchError: String? = nil
-    
+
+    //MARK: Observer fin de preview
+    var previewEndObserver: (any NSObjectProtocol)? = nil
+
     // Badge/Disponibilité lecture catalogue
     var canPlayCatalogContent: Bool = false
     
@@ -130,18 +138,22 @@ extension BlindTestMasterViewModel {
                     do {
                         try await playFullTrackFromFiveSeconds(song: selectedMusic, startAt: 5)
                     } catch {
-                        // En cas d'échec de la lecture catalogue, alerte + fallback preview
                         await MainActor.run {
-                            self.showSubscriptionAlert = true
-                            self.subscriptionAlertMessage = "Impossible de lire le titre complet. Lecture de l'extrait à la place."
+                            if !self.hasShownSubscriptionInfo {
+                                self.subscriptionAlertMessage = "Impossible de lire le titre complet. Lecture de l'extrait à la place."
+                                self.showSubscriptionAlert = true
+                                self.hasShownSubscriptionInfo = true
+                            }
                         }
                         try await playRandomPreview(song: selectedMusic)
                     }
                 } else {
-                    // Pas abonné → alerte + preview
                     await MainActor.run {
-                        self.showSubscriptionAlert = true
-                        self.subscriptionAlertMessage = "Pour lire le morceau en entier, un abonnement Apple Music est requis. Lecture de l'extrait à la place."
+                        if !self.hasShownSubscriptionInfo {
+                            self.subscriptionAlertMessage = "Pour lire le morceau en entier, un abonnement Apple Music est requis. Lecture de l'extrait à la place."
+                            self.showSubscriptionAlert = true
+                            self.hasShownSubscriptionInfo = true
+                        }
                     }
                     try await playRandomPreview(song: selectedMusic)
                 }
@@ -169,6 +181,13 @@ extension BlindTestMasterViewModel {
                 }
             }
         }
+    }
+
+    @MainActor func handlePreviewEnd() {
+        guard case .playing = state else { return }
+        isPlaying = false
+        stopReactionTimer()
+        gameVM.broadcastPublicStateFromCurrentGame()
     }
 }
 
@@ -297,22 +316,34 @@ extension BlindTestMasterViewModel {
         await MainActor.run {
             isFetching = true
             configureAudioSession()
-            
+
             player?.pause()
             player = nil
-            
+            if let obs = previewEndObserver {
+                NotificationCenter.default.removeObserver(obs)
+                previewEndObserver = nil
+            }
+
             let item = AVPlayerItem(url: url)
             let newPlayer = AVPlayer(playerItem: item)
-            
+
             // Preview ≈ 30s → on démarre aléatoirement
             let randomStart = Double.random(in: 0...max(0, maxDuration - 10))
             let time = CMTime(seconds: randomStart, preferredTimescale: 600)
-            
             newPlayer.seek(to: time)
             newPlayer.play()
-            
+
+            previewEndObserver = NotificationCenter.default.addObserver(
+                forName: .AVPlayerItemDidPlayToEndTime,
+                object: item,
+                queue: .main
+            ) { [weak self] _ in
+                Task { @MainActor in
+                    self?.handlePreviewEnd()
+                }
+            }
+
             isFetching = false
-            
             self.player = newPlayer
             self.isPlaying = true
         }
