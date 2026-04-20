@@ -199,15 +199,19 @@ private struct BlindTestPlaylistRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 14) {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(LinearGradient(colors: [.purpleLeading, .purpleTrailing],
-                                         startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .frame(width: 46, height: 46)
-                    .overlay(
-                        Image(systemName: "music.note.list")
-                            .font(.system(size: 18))
-                            .foregroundStyle(.white.opacity(0.8))
-                    )
+                AsyncImage(url: playlist.artworkURL) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    LinearGradient(colors: [.purpleLeading, .purpleTrailing],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing)
+                        .overlay(
+                            Image(systemName: "music.note.list")
+                                .font(.system(size: 18))
+                                .foregroundStyle(.white.opacity(0.8))
+                        )
+                }
+                .frame(width: 60, height: 60)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(playlist.name)
@@ -233,8 +237,7 @@ private struct BlindTestPlaylistRow: View {
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.25))
             }
-            .padding(.vertical, 12)
-            .padding(.horizontal, 14)
+            .padding(8)
             .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 16))
             .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.08), lineWidth: 1.5))
         }
@@ -367,12 +370,25 @@ private struct BlindTestSongRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                // Badge numéro
-                Text(isPlayed ? "✓" : "\(number)")
-                    .font(.nohemi(.caption, weight: .bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 32, height: 32)
-                    .background(badgeColor, in: RoundedRectangle(cornerRadius: 10))
+                // Artwork avec badge played en overlay
+                ZStack {
+                    AsyncImage(url: song.postertURL) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        badgeColor
+                    }
+                    .frame(width: 56, height: 56)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                    if isPlayed {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(.black.opacity(0.55))
+                            .frame(width: 56, height: 56)
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                    }
+                }
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(song.title)
@@ -399,7 +415,7 @@ private struct BlindTestSongRow: View {
                         .foregroundStyle(.white.opacity(0.25))
                 }
             }
-            .padding(14)
+            .padding(8)
             .background(.white.opacity(isSelected ? 0.1 : 0.06), in: RoundedRectangle(cornerRadius: 16))
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
@@ -500,7 +516,7 @@ private struct BlindTestActiveScreen: View {
                     )
             }
             .frame(width: 56, height: 56)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 4) {
                 Text("EN COURS")
@@ -521,10 +537,10 @@ private struct BlindTestActiveScreen: View {
                 Image(systemName: "waveform")
                     .symbolEffect(.variableColor.iterative)
                     .font(.title2)
-                    .foregroundStyle(.mustardYellow)
+                    .foregroundStyle(Color.mustardYellow)
             }
         }
-        .padding(16)
+        .padding(12)
         .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
         .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.1), lineWidth: 1))
     }
@@ -609,7 +625,7 @@ struct BlindTestBuzzSheet: View {
                         .tracking(0.5)
                     Text(reactionTime)
                         .font(.nohemi(.body, weight: .extraBold))
-                        .foregroundStyle(.mustardYellow)
+                        .foregroundStyle(Color.mustardYellow)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
