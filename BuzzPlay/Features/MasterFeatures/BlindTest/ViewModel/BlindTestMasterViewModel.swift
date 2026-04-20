@@ -306,6 +306,17 @@ extension BlindTestMasterViewModel {
         let can = await canPlayFullCatalog()
         self.canPlayCatalogContent = can
     }
+
+    // Écoute les changements d'abonnement en temps réel
+    func observeSubscriptionUpdates() {
+        Task {
+            for await subscription in MusicSubscription.subscriptionUpdates {
+                await MainActor.run {
+                    self.canPlayCatalogContent = subscription.canPlayCatalogContent
+                }
+            }
+        }
+    }
     
     func playRandomPreview(
         song: BlindTestSong,
