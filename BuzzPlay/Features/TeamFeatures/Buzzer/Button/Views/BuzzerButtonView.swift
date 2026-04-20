@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct BuzzerButtonView: View {
     @State var isTapped: Bool = false
@@ -32,11 +33,14 @@ struct BuzzerButtonView: View {
             .opacity(buzzerVM.isEnabled ? 1 : 0.7)
             .onTapGesture {
                 if buzzerVM.isEnabled {
+                    UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                     buzzerVM.buzz()
                     isTapped.toggle()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                         isTapped.toggle()
                     }
+                } else {
+                    UINotificationFeedbackGenerator().notificationOccurred(.error)
                 }
             }
             .animation(.easeInOut(duration: 0.1), value: isTapped)

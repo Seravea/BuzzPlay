@@ -17,9 +17,19 @@ struct LobbyMasterView: View {
             
             Spacer()
             if masterGameVM.teams.isEmpty {
-                ProgressView {
-                    Text("Aucune équipe n'a rejoint pour l'instant")
+                VStack(spacing: 16) {
+                    Image(systemName: "person.3")
+                        .font(.system(size: 52))
+                        .opacity(0.4)
+                    Text("En attente des équipes…")
+                        .font(.nohemi(.title3, weight: .semiBold))
+                        .opacity(0.7)
+                    Text("Demande aux joueurs de rejoindre la partie")
+                        .font(.nohemi(.body))
+                        .opacity(0.5)
+                        .multilineTextAlignment(.center)
                 }
+                .padding()
             } else {
                 VStack(alignment: .leading) {
                     Text("Équipes connectées (\(masterGameVM.teams.count))")

@@ -48,26 +48,26 @@ struct PrivateMasterBlindTestView: View {
                 .frame(maxWidth: 150)
             }
             
-            if blindTestVM.allSongs.isEmpty {
+            if blindTestVM.isFetching {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                        .scaleEffect(1.3)
+                    Spacer()
+                }
+                .padding(.vertical, 32)
+            } else if blindTestVM.allSongs.isEmpty {
                 ScrollView(.horizontal) {
                     HStack {
-                        
                         ForEach(blindTestVM.playlists) { playlist in
-                            if blindTestVM.playlists.isEmpty {
-                                ProgressView()
-                            } else {
-                                Button {
-                                    
-                                    Task {
-                                        await blindTestVM.selectPlaylist(playlist)
-                                    }
-                                    
-                                } label: {
-                                    PlaylistCard(playlist: playlist)
+                            Button {
+                                Task {
+                                    await blindTestVM.selectPlaylist(playlist)
                                 }
-                                .buttonBorderShape(.roundedRectangle)
-                                
+                            } label: {
+                                PlaylistCard(playlist: playlist)
                             }
+                            .buttonBorderShape(.roundedRectangle)
                         }
                     }
                 }
@@ -95,7 +95,7 @@ struct PrivateMasterBlindTestView: View {
             
             
             //                    .padding(.bottom, 4)
-            if blindTestVM.allSongs.isEmpty {
+            if blindTestVM.allSongs.isEmpty && !blindTestVM.isFetching {
                 Spacer()
             }
            
@@ -126,10 +126,9 @@ struct PrivateMasterBlindTestView: View {
             VStack {
                 PrimaryButtonView(title: "Lecture", action: {
                     blindTestVM.startRound()
-                    
                 }, style: .filled(buttonStyle: .neutral), fontSize: Typography.body)
-                .disabled(blindTestVM.isPlaying)
-                .opacity(blindTestVM.isPlaying ? 0.7 : 1)
+                .disabled(blindTestVM.isPlaying || blindTestVM.isFetching)
+                .opacity(blindTestVM.isPlaying || blindTestVM.isFetching ? 0.7 : 1)
                 
                 
                 
@@ -158,11 +157,18 @@ struct PrivateMasterBlindTestView: View {
                 .foregroundStyle(.white)
                 
                 
-                // Alerte abonnement/ peut écoutert que la preview (15sec - 20sec)
                 .alert("Information", isPresented: $blindTestVM.showSubscriptionAlert) {
                     Button("OK", role: .cancel) {}
                 } message: {
                     Text(blindTestVM.subscriptionAlertMessage)
+                }
+                .alert("Erreur", isPresented: Binding(
+                    get: { blindTestVM.fetchError != nil },
+                    set: { if !$0 { blindTestVM.fetchError = nil } }
+                )) {
+                    Button("OK", role: .cancel) { blindTestVM.fetchError = nil }
+                } message: {
+                    Text(blindTestVM.fetchError ?? "")
                 }
                 
                 .onAppear {

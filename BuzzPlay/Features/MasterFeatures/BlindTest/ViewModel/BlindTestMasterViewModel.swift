@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 import AVFoundation
 import Observation
 import MusicKit
@@ -40,6 +41,9 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     //MARK: UI alert (abonnement requis)
     var showSubscriptionAlert: Bool = false
     var subscriptionAlertMessage: String = "Pour lire le morceau en entier, un abonnement Apple Music est requis. Lecture de l'extrait à la place."
+
+    //MARK: UI alert (erreurs réseau / Apple Music)
+    var fetchError: String? = nil
     
     // Badge/Disponibilité lecture catalogue
     var canPlayCatalogContent: Bool = false
@@ -68,10 +72,9 @@ extension BlindTestMasterViewModel {
         allSongs.count
     }
     
-    /// Valide la réponse de l'équipe gagnante (teamWining)
-    /// Arrête la manche et fige le temps
     @MainActor func validateAnswer(points: Int) {
         guard let teamAnswers = teamHasBuzz else { return }
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
         
         isCorrect = true
         state = .finished
@@ -92,11 +95,9 @@ extension BlindTestMasterViewModel {
         isGameActive = false
     }
     
-    /// Refuse la réponse de l'équipe qui a buzzé
-    /// Reprend la manche là où elle avait été mise en pause
     @MainActor func rejectAnswer() {
-        // si aucune équipe n'avait buzzé, on ne fait rien
         guard case .buzzed = state else { return }
+        UINotificationFeedbackGenerator().notificationOccurred(.warning)
         
         isCorrect = false
         teamHasBuzz = nil
@@ -161,9 +162,11 @@ extension BlindTestMasterViewModel {
                     self.gameVM.broadcastPublicStateFromCurrentGame()
                 }
             } catch {
-                isGameActive = false
-                isFetching = false
-                print("error when play random song:", error)
+                await MainActor.run {
+                    isGameActive = false
+                    isFetching = false
+                    fetchError = "Impossible de lancer la musique. Vérifie ta connexion et réessaie."
+                }
             }
         }
     }
@@ -241,8 +244,10 @@ extension BlindTestMasterViewModel {
                 self.playlists = results
             }
         } catch {
-            isFetching = false
-            print("Erreur recherche playlists:", error)
+            await MainActor.run {
+                isFetching = false
+                fetchError = "Impossible de chercher les playlists. Vérifie ta connexion."
+            }
         }
     }
     
@@ -255,8 +260,10 @@ extension BlindTestMasterViewModel {
                 self.allSongs = songs
             }
         } catch {
-            isFetching = false
-            print("Erreur chargement playlist:", error)
+            await MainActor.run {
+                isFetching = false
+                fetchError = "Impossible de charger cette playlist. Réessaie."
+            }
         }
     }
     

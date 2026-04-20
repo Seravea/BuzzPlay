@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 @MainActor
 @Observable
@@ -52,6 +53,7 @@ extension QuizMasterViewModel {
     
     func validateAnswer(points: Int) {
         if let team = gameVM.currentBuzzTeam {
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
             gameVM.addPointToTeam(team, points: points)
             goToSelectNewQuestion()
             teamHasBuzz = nil
@@ -60,6 +62,7 @@ extension QuizMasterViewModel {
     }
     
     func rejectAnswer() {
+        UINotificationFeedbackGenerator().notificationOccurred(.warning)
         gameVM.unlockBuzz()
         teamHasBuzz = nil
         gameVM.currentBuzzTeam = nil

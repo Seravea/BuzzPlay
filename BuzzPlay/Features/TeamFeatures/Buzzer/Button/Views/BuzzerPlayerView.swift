@@ -31,8 +31,10 @@ struct BuzzerPlayerView: View {
 
             if !teamGameVM.isConnectedToMaster {
                 ConnectionLostOverlay()
+                    .transition(.opacity)
             }
         }
+        .animation(.easeInOut(duration: 0.3), value: teamGameVM.isConnectedToMaster)
     }
 }
 

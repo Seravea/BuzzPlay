@@ -129,15 +129,14 @@ struct CreateTeamView: View {
                 
             }
             .alert("Es-tu sûr des prénoms de tes joueurs ?", isPresented: $createTeamVM.isAlertOn) {
-                Button("Annuler", role: .destructive) {
+                Button("Annuler", role: .cancel) {
                     createTeamVM.isAlertOn = false
                 }
-                
-                Button("Continuer", role: .cancel) {
+
+                Button("Continuer") {
                     createTeamVM.validate()
                     router.push(.playerChooseGameView)
                 }
-                
             }
             
         }
