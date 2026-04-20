@@ -11,7 +11,7 @@ import Observation
 
 
 @Observable
-class AmbiantSoundViewModel: ObservableObject {
+class AmbiantSoundViewModel {
     let songs: [String] = ["BeginQuestion", "Blblbl", "GoodAnswer", "WrongAnswer", "HeavenlyChoir", "Mosquito", "PositiveAnswer", "Tired"]
     
      var isPlaying: Bool = false

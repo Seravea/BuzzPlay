@@ -324,10 +324,10 @@ extension BlindTestMasterViewModel {
     ) async throws {
         guard let url = song.previewURL else { return }
         
+        configureAudioSession()
+
         await MainActor.run {
             isFetching = true
-            configureAudioSession()
-
             player?.pause()
             player = nil
             if let obs = previewEndObserver {
@@ -365,10 +365,9 @@ extension BlindTestMasterViewModel {
         song: BlindTestSong,
         startAt seconds: TimeInterval = 5
     ) async throws {
-        // Arrête un éventuel AVPlayer (preview)
+        configureAudioSession()
         await MainActor.run {
             isFetching = true
-            configureAudioSession()
             player?.pause()
             player = nil
         }
