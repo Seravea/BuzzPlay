@@ -133,7 +133,7 @@ extension BlindTestMasterViewModel {
         Task {
             do {
                 isFetching = true
-                // Essaye lecture complète si l'utilisateur peut lire le catalogue
+                configureAudioSession()
                 if await canPlayFullCatalog() {
                     do {
                         try await playFullTrackFromFiveSeconds(song: selectedMusic, startAt: 5)
@@ -324,10 +324,7 @@ extension BlindTestMasterViewModel {
     ) async throws {
         guard let url = song.previewURL else { return }
         
-        configureAudioSession()
-
         await MainActor.run {
-            isFetching = true
             player?.pause()
             player = nil
             if let obs = previewEndObserver {
@@ -365,9 +362,7 @@ extension BlindTestMasterViewModel {
         song: BlindTestSong,
         startAt seconds: TimeInterval = 5
     ) async throws {
-        configureAudioSession()
         await MainActor.run {
-            isFetching = true
             player?.pause()
             player = nil
         }
