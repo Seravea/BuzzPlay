@@ -45,7 +45,7 @@ struct ButtonChooseGameView: View {
                     
              
                     
-                    Text(isOpen ? "Open" : "Close")
+                    Text(isOpen ? "Ouvert" : "Fermé")
                         .foregroundStyle(isOpen ? Color.darkestPurple : Color.white)
                         .padding(8)
                         .background {
