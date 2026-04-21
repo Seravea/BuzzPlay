@@ -42,6 +42,7 @@ struct QuizMasterListView: View {
             }
         }
         .animation(.spring(duration: 0.45, bounce: 0.05), value: quizMasterVM.isPlaying)
+        .navigationBarBackButtonHidden(quizMasterVM.isPlaying)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
