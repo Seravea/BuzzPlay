@@ -44,6 +44,19 @@ struct QuizMasterListView: View {
         .animation(.spring(duration: 0.45, bounce: 0.05), value: quizMasterVM.isPlaying)
         .navigationBarBackButtonHidden(quizMasterVM.isPlaying)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                if quizMasterVM.isPlaying {
+                    Button {
+                        withAnimation { quizMasterVM.skipQuestion() }
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 36, height: 36)
+                            .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+                    }
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
                     connected: quizMasterVM.gameVM.connectedTeamsCount,

@@ -150,14 +150,15 @@ extension TeamGameViewModel {
             formattedTime = "00:00"
             lastMasterFormattedTime = "00:00"
         case .quiz(let quizState):
-            // Seed with master's formattedTime immediately so UI reflects source of truth
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
             startUITimerIfNeeded()
+            syncBuzzerState(buzzingTeam: quizState.buzzingTeam)
         case .blindTest(let blindTestState):
             formattedTime = blindTestState.formattedTime
             lastMasterFormattedTime = blindTestState.formattedTime
             startUITimerIfNeeded()
+            syncBuzzerState(buzzingTeam: blindTestState.buzzingTeam)
         }
     }
 
@@ -179,5 +180,13 @@ extension TeamGameViewModel {
     private func stopUITimer() {
         timer?.invalidate()
         timer = nil
+    }
+
+    private func syncBuzzerState(buzzingTeam: Team?) {
+        if let team = buzzingTeam {
+            currentBuzzerVM?.lockBuzz(teamNameHasBuzz: team.name)
+        } else {
+            currentBuzzerVM?.unLockBuzz()
+        }
     }
 }
