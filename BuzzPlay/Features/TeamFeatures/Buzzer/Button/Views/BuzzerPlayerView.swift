@@ -2,31 +2,24 @@
 //  BuzzerPlayerView.swift
 //  BuzzPlay
 //
-//  Created by Apprenant 102 on 20/11/2025.
-//
 
 import SwiftUI
 
 struct BuzzerPlayerView: View {
     @Bindable var teamGameVM: TeamGameViewModel
     var gameType: GameType
+    @Environment(\.horizontalSizeClass) private var sizeClass
+
     var body: some View {
         ZStack {
+            BackgroundAppView().ignoresSafeArea()
+
             if let buzzerVM = teamGameVM.currentBuzzerVM {
-                VStack {
-                    PublicDisplayView(teamGameVM: teamGameVM, gameType: gameType)
-
-                    Spacer()
-
-                    BuzzerButtonView(buzzerVM: buzzerVM)
+                if sizeClass == .regular {
+                    ipadLayout(buzzerVM: buzzerVM)
+                } else {
+                    iphoneLayout(buzzerVM: buzzerVM)
                 }
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(
-                    BackgroundAppView()
-                )
-            } else {
-                Text("Pas de buzzer BUG DE OUF")
             }
 
             if !teamGameVM.isConnectedToMaster {
@@ -34,10 +27,52 @@ struct BuzzerPlayerView: View {
                     .transition(.opacity)
             }
         }
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.easeInOut(duration: 0.3), value: teamGameVM.isConnectedToMaster)
+    }
+
+    // MARK: - iPhone Layout
+
+    private func iphoneLayout(buzzerVM: BuzzerViewModel) -> some View {
+        VStack(spacing: 0) {
+            PublicDisplayView(teamGameVM: teamGameVM, gameType: gameType)
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+
+            Spacer()
+
+            BuzzerButtonView(buzzerVM: buzzerVM)
+                .padding(.bottom, 36)
+        }
+    }
+
+    // MARK: - iPad Layout
+
+    private func ipadLayout(buzzerVM: BuzzerViewModel) -> some View {
+        HStack(spacing: 0) {
+            PublicDisplayView(teamGameVM: teamGameVM, gameType: gameType)
+                .padding(36)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(.white.opacity(0.03))
+
+            VStack {
+                Spacer()
+                BuzzerButtonView(buzzerVM: buzzerVM)
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(36)
+        }
     }
 }
 
 #Preview {
-    BuzzerPlayerView(teamGameVM: TeamGameViewModel(team: sampleTeams[0], mpc: MPCService(peerName: "Team1", role: .team)), gameType: .blindTest)
+    BuzzerPlayerView(
+        teamGameVM: TeamGameViewModel(
+            team: sampleTeams[0],
+            mpc: MPCService(peerName: "Team1", role: .team)
+        ),
+        gameType: .blindTest
+    )
 }

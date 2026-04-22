@@ -26,6 +26,9 @@ final class TeamGameViewModel {
     var openGames: [GameType] = [.score]
     var publicState: PublicState = .waiting
 
+    // Invite reçue du Master (jeu qu'il vient de lancer)
+    var pendingGameInvite: GameType? = nil
+
     // MARK: - Public display timer mirroring
     // Expose a formatted time string for UI
     var formattedTime: String = "00:00"
@@ -130,6 +133,8 @@ extension TeamGameViewModel {
             print("Before receive \(self.team)")
             self.team = updatedTeam
             print("After receive \(self.team)")
+        case .masterLaunchedGame(let game):
+            pendingGameInvite = game
         default:
             break
         }

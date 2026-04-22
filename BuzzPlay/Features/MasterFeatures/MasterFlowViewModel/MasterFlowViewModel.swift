@@ -56,6 +56,9 @@ final class MasterFlowViewModel {
 
     /// Jeu courant qui réagit aux buzz (BlindTest, Quiz, etc.)
     weak var currentBuzzGame: BuzzDrivenGame?
+
+    /// Jeu actuellement actif (pour la reconnexion)
+    var activeGameType: GameType? = nil
     
     
     //MARK: Master's makeVM
@@ -70,8 +73,8 @@ final class MasterFlowViewModel {
     
     func makeBlindTestMasterVM() -> BlindTestMasterViewModel {
         let vm = BlindTestMasterViewModel(gameVM: self)
-        // Le BlindTest est un jeu basé sur le buzz
         self.currentBuzzGame = vm
+        self.activeGameType = .blindTest
         return vm
     }
     
@@ -83,6 +86,7 @@ final class MasterFlowViewModel {
         let set = selectedQuizSet ?? QuizSamples.music2000s
         let vm = QuizMasterViewModel(gameVM: self, quizSet: set)
         self.currentBuzzGame = vm
+        self.activeGameType = .quiz
         return vm
     }
     
@@ -103,6 +107,13 @@ final class MasterFlowViewModel {
             teams.append(restored)
             mpcService.sendMessagetoOneTeam(message: .updatedTeam(restored), team: restored)
             mpcService.sendMessagetoOneTeam(message: .gameAvailability(gamesOpen), team: restored)
+            // Resync état courant du jeu si une partie est en cours
+            if currentBuzzGame != nil {
+                mpcService.sendMessagetoOneTeam(message: .publicUpdate(currentPublicState()), team: restored)
+            }
+            if let gameType = activeGameType, currentBuzzGame != nil {
+                mpcService.sendMessagetoOneTeam(message: .masterLaunchedGame(gameType), team: restored)
+            }
         } else {
             // Nouvelle team
             teams.append(team)
@@ -187,6 +198,10 @@ extension MasterFlowViewModel {
     func broadcastGameAvailability() {
         mpcService.sendGameAvailability(gamesOpen)
     }
+
+    func broadcastGameLaunch(_ game: GameType) {
+        mpcService.sendMessage(.masterLaunchedGame(game))
+    }
     
     func unlockBuzz() {
         isBuzzLocked = false
@@ -200,14 +215,14 @@ extension MasterFlowViewModel {
     func sendPublicState(_ state: PublicState) {
         mpcService.sendMessage(.publicUpdate(state))
     }
-    
+
     func broadcastPublicStateFromCurrentGame() {
-        guard let game = currentBuzzGame else {
-            sendPublicState(.waiting)
-            return
-        }
-        let state = game.makePublicState()
-        sendPublicState(state)
+        sendPublicState(currentPublicState())
+    }
+
+    private func currentPublicState() -> PublicState {
+        guard let game = currentBuzzGame else { return .waiting }
+        return game.makePublicState()
     }
 }
 
