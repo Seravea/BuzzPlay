@@ -44,6 +44,19 @@ struct QuizMasterListView: View {
         .animation(.spring(duration: 0.45, bounce: 0.05), value: quizMasterVM.isPlaying)
         .navigationBarBackButtonHidden(quizMasterVM.isPlaying)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                if quizMasterVM.isPlaying {
+                    Button {
+                        withAnimation { quizMasterVM.skipQuestion() }
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 36, height: 36)
+                            .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+                    }
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
                     connected: quizMasterVM.gameVM.connectedTeamsCount,
@@ -87,6 +100,37 @@ private struct QuizQuestionListScreen: View {
 
     private var listHeader: some View {
         VStack(alignment: .leading, spacing: 8) {
+            // Bouton "Lancer" — visible avant la 1ère question uniquement
+            if quizMasterVM.questionsPassed.isEmpty {
+                Button {
+                    quizMasterVM.gameVM.broadcastGameLaunch(.quiz)
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 13, weight: .bold))
+                        Text("Lancer le Quiz")
+                            .font(.nohemi(.subheadline, weight: .bold))
+                        Spacer()
+                        Text("Notifie les joueurs")
+                            .font(.nohemi(.caption2, weight: .regular))
+                            .foregroundStyle(.white.opacity(0.5))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(
+                        LinearGradient(
+                            colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
+                            startPoint: .leading, endPoint: .trailing
+                        ),
+                        in: RoundedRectangle(cornerRadius: 14)
+                    )
+                    .shadow(color: Color.greenButtonLeading.opacity(0.35), radius: 8, y: 3)
+                }
+                .buttonStyle(.plain)
+                .padding(.bottom, 4)
+            }
+
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(quizMasterVM.quizSet.title)

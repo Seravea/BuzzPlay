@@ -15,12 +15,21 @@ struct PublicDisplayView: View {
         VStack {
             switch teamGameVM.publicState {
             case .waiting:
-                if gameType == .blindTest {
-                    Text("Le Master choisi une musique")
-                } else if gameType == .quiz {
-                    Text("Le Master va envoyer une question")
+                VStack(spacing: 8) {
+                    Image(systemName: "hourglass")
+                        .font(.system(size: 28, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.4))
+                    Text("En attente du lancement…")
+                        .font(.nohemi(.title3, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text("Le Master va démarrer la partie")
+                        .font(.nohemi(.subheadline, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.45))
                 }
-                Text("Préparez-vous !")
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 24)
+                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 18))
+                .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.white.opacity(0.08), lineWidth: 1))
 
                 case .quiz(let quizState):
                     PublicQuizDisplayView(state: quizState, timer: teamGameVM.formattedTime)

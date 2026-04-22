@@ -193,6 +193,8 @@ extension BlindTestMasterViewModel {
         isPlaying = false
         isGameActive = false
         teamHasBuzz = nil
+        gameVM.currentBuzzTeam = nil
+        gameVM.isBuzzLocked = false
         state = .idle
         gameVM.broadcastPublicStateFromCurrentGame()
     }

@@ -27,6 +27,9 @@ enum MPCMessage: Codable {
     //Master -> Team : état courant du jeu (affiché côté Team)
     case publicUpdate(PublicState)
 
+    // Master -> Team : le Master lance une partie (invite les joueurs à rejoindre)
+    case masterLaunchedGame(GameType)
+
     //TEST
     case pong
 }

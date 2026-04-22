@@ -77,14 +77,20 @@ extension QuizMasterViewModel {
         pauseReactionTimer()
     }
     
+    func skipQuestion() {
+        teamHasBuzz = nil
+        gameVM.currentBuzzTeam = nil
+        gameVM.isBuzzLocked = false
+        goToSelectNewQuestion()
+    }
+
     func goToSelectNewQuestion() {
         if let currentQuestion = currentQuestion {
             questionsPassed.append(currentQuestion)
         }
         currentQuestion = nil
         stopReactionTimer()
-        
-        
+
         let state = makePublicState()
         gameVM.sendPublicState(state)
     }

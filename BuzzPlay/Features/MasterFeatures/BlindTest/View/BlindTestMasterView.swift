@@ -54,6 +54,33 @@ struct BlindTestMasterView: View {
                     }
                 }
 
+                // Bouton Lancer — visible quand la liste est prête, avant la 1ère manche
+                ToolbarItem(placement: .topBarTrailing) {
+                    if !blindTestViewModel.allSongs.isEmpty && !blindTestViewModel.isGameActive {
+                        Button {
+                            blindTestViewModel.gameVM.broadcastGameLaunch(.blindTest)
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "play.fill")
+                                    .font(.system(size: 11, weight: .bold))
+                                Text("Lancer")
+                                    .font(.nohemi(.subheadline, weight: .bold))
+                            }
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
+                                    startPoint: .leading, endPoint: .trailing
+                                ),
+                                in: Capsule()
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     ConnectionStatusBadge(
                         connected: blindTestViewModel.gameVM.connectedTeamsCount,
