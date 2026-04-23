@@ -11,7 +11,7 @@ struct PlayerChooseGameView: View {
     @Bindable var teamFlowVM: TeamFlowViewModel
     @Environment(\.horizontalSizeClass) private var sizeClass
 
-    private var teamColor: Color { Color(teamGameVM.team.teamColor.rawValue) }
+    private let accentColor = Color.white
 
     var body: some View {
         ZStack {
@@ -36,7 +36,7 @@ struct PlayerChooseGameView: View {
             if let game = teamGameVM.pendingGameInvite {
                 GameInviteOverlay(
                     game: game,
-                    teamColor: teamColor,
+                    accentColor: accentColor,
                     onJoin: { joinGame(game) },
                     onDismiss: { teamGameVM.pendingGameInvite = nil }
                 )
@@ -52,7 +52,7 @@ struct PlayerChooseGameView: View {
     private var teamHeader: some View {
         HStack(spacing: 14) {
             Circle()
-                .fill(teamColor)
+                .fill(accentColor)
                 .frame(width: 12, height: 12)
 
             VStack(alignment: .leading, spacing: 2) {
@@ -73,7 +73,7 @@ struct PlayerChooseGameView: View {
             VStack(alignment: .trailing, spacing: 1) {
                 Text("\(teamGameVM.team.score)")
                     .font(.nohemi(.title2, weight: .extraBold))
-                    .foregroundStyle(teamColor)
+                    .foregroundStyle(accentColor)
                 Text("points")
                     .font(.nohemi(.caption2, weight: .regular))
                     .foregroundStyle(.white.opacity(0.4))
@@ -81,10 +81,10 @@ struct PlayerChooseGameView: View {
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 14)
-        .background(teamColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 18))
+        .background(accentColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 18))
         .overlay(
             RoundedRectangle(cornerRadius: 18)
-                .strokeBorder(teamColor.opacity(0.35), lineWidth: 1.5)
+                .strokeBorder(accentColor.opacity(0.35), lineWidth: 1.5)
         )
     }
 
@@ -125,10 +125,10 @@ struct PlayerChooseGameView: View {
 
                 Image(systemName: game.iconName)
                     .font(.system(size: 30, weight: .medium))
-                    .foregroundStyle(isOpen ? teamColor : .white.opacity(0.25))
+                    .foregroundStyle(isOpen ? accentColor : .white.opacity(0.25))
                     .frame(width: 60, height: 60)
                     .background(
-                        isOpen ? teamColor.opacity(0.15) : .white.opacity(0.06),
+                        isOpen ? accentColor.opacity(0.15) : .white.opacity(0.06),
                         in: RoundedRectangle(cornerRadius: 16)
                     )
 
@@ -139,13 +139,13 @@ struct PlayerChooseGameView: View {
             .padding(16)
             .frame(maxWidth: .infinity, minHeight: 160)
             .background(
-                isOpen ? teamColor.opacity(0.08) : .white.opacity(0.04),
+                isOpen ? accentColor.opacity(0.08) : .white.opacity(0.04),
                 in: RoundedRectangle(cornerRadius: 20)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
                     .strokeBorder(
-                        isOpen ? teamColor.opacity(0.4) : .white.opacity(0.07),
+                        isOpen ? accentColor.opacity(0.4) : .white.opacity(0.07),
                         lineWidth: isOpen ? 1.5 : 1
                     )
             )
@@ -164,10 +164,10 @@ struct PlayerChooseGameView: View {
             HStack(spacing: 14) {
                 Image(systemName: GameType.score.iconName)
                     .font(.system(size: 22, weight: .medium))
-                    .foregroundStyle(isOpen ? teamColor : .white.opacity(0.25))
+                    .foregroundStyle(isOpen ? accentColor : .white.opacity(0.25))
                     .frame(width: 46, height: 46)
                     .background(
-                        isOpen ? teamColor.opacity(0.15) : .white.opacity(0.06),
+                        isOpen ? accentColor.opacity(0.15) : .white.opacity(0.06),
                         in: RoundedRectangle(cornerRadius: 12)
                     )
 
@@ -182,19 +182,19 @@ struct PlayerChooseGameView: View {
                 if isOpen {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(teamColor.opacity(0.6))
+                        .foregroundStyle(accentColor.opacity(0.6))
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
             .background(
-                isOpen ? teamColor.opacity(0.08) : .white.opacity(0.04),
+                isOpen ? accentColor.opacity(0.08) : .white.opacity(0.04),
                 in: RoundedRectangle(cornerRadius: 18)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 18)
                     .strokeBorder(
-                        isOpen ? teamColor.opacity(0.4) : .white.opacity(0.07),
+                        isOpen ? accentColor.opacity(0.4) : .white.opacity(0.07),
                         lineWidth: isOpen ? 1.5 : 1
                     )
             )
@@ -220,16 +220,16 @@ struct PlayerChooseGameView: View {
     private func statusBadge(isOpen: Bool) -> some View {
         HStack(spacing: 4) {
             Circle()
-                .fill(isOpen ? Color(hex: "#00C950") : .white.opacity(0.2))
+                .fill(isOpen ? .white.opacity(0.9) : .white.opacity(0.2))
                 .frame(width: 5, height: 5)
             Text(isOpen ? "Ouvert" : "Fermé")
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(isOpen ? Color(hex: "#00C950") : .white.opacity(0.35))
+                .foregroundStyle(isOpen ? .white.opacity(0.9) : .white.opacity(0.35))
         }
         .padding(.horizontal, 9)
         .padding(.vertical, 4)
         .background(
-            isOpen ? Color(hex: "#00C950").opacity(0.1) : .white.opacity(0.05),
+            isOpen ? .white.opacity(0.12) : .white.opacity(0.05),
             in: Capsule()
         )
     }
@@ -239,7 +239,7 @@ struct PlayerChooseGameView: View {
 
 private struct GameInviteOverlay: View {
     let game: GameType
-    let teamColor: Color
+    let accentColor: Color
     let onJoin: () -> Void
     let onDismiss: () -> Void
 
@@ -260,9 +260,9 @@ private struct GameInviteOverlay: View {
                 HStack(spacing: 14) {
                     Image(systemName: game.iconName)
                         .font(.system(size: 24, weight: .semibold))
-                        .foregroundStyle(teamColor)
+                        .foregroundStyle(accentColor)
                         .frame(width: 52, height: 52)
-                        .background(teamColor.opacity(0.15), in: RoundedRectangle(cornerRadius: 14))
+                        .background(accentColor.opacity(0.15), in: RoundedRectangle(cornerRadius: 14))
 
                     VStack(alignment: .leading, spacing: 3) {
                         Text("Le Master lance")
@@ -280,7 +280,7 @@ private struct GameInviteOverlay: View {
                             .stroke(.white.opacity(0.1), lineWidth: 3)
                         Circle()
                             .trim(from: 0, to: progress)
-                            .stroke(teamColor, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                            .stroke(accentColor, style: StrokeStyle(lineWidth: 3, lineCap: .round))
                             .rotationEffect(.degrees(-90))
                             .animation(.linear(duration: 1), value: progress)
                         Text("\(countdown)")
@@ -310,12 +310,12 @@ private struct GameInviteOverlay: View {
                             .padding(.vertical, 14)
                             .background(
                                 LinearGradient(
-                                    colors: [teamColor, teamColor.opacity(0.7)],
+                                    colors: [accentColor, accentColor.opacity(0.7)],
                                     startPoint: .leading, endPoint: .trailing
                                 ),
                                 in: RoundedRectangle(cornerRadius: 14)
                             )
-                            .shadow(color: teamColor.opacity(0.4), radius: 8, y: 3)
+                            .shadow(color: accentColor.opacity(0.4), radius: 8, y: 3)
                     }
                     .buttonStyle(.plain)
                 }

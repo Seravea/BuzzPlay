@@ -29,10 +29,12 @@ struct TeamCardView: View {
             }
             .font(.nohemi(.title2, weight: .bold))
             
-            HStack {
+            HStack(spacing: 6) {
                 ForEach(team.players) { player in
                     Text(player.name)
-                        .padding(.horizontal, 12)
+                        .lineLimit(1)
+                        .fixedSize()
+                        .padding(.horizontal, 10)
                         .padding(.vertical, 4)
                         .background(
                             Capsule()

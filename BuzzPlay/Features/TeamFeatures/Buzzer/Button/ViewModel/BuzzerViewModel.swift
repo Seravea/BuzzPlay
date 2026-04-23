@@ -52,6 +52,11 @@ extension BuzzerViewModel {
         self.teamNameHasBuzz = teamNameHasBuzz
         isEnabled = false
     }
+
+    func clearBuzzState() {
+        teamNameHasBuzz = nil
+        isEnabled = false
+    }
 }
 
 

@@ -10,7 +10,6 @@ struct BuzzerButtonView: View {
     @State private var isTapped: Bool = false
     @Bindable var buzzerVM: BuzzerViewModel
 
-    private var teamColor: Color { Color(buzzerVM.team.teamColor.rawValue) }
     private var ourTeamBuzzed: Bool { buzzerVM.teamNameHasBuzz == buzzerVM.team.name }
 
     var body: some View {
@@ -19,7 +18,7 @@ struct BuzzerButtonView: View {
                 // Glow when enabled
                 if buzzerVM.isEnabled {
                     Circle()
-                        .fill(teamColor.opacity(0.18))
+                        .fill(.white.opacity(0.12))
                         .frame(width: 260, height: 260)
                         .blur(radius: 40)
                 }

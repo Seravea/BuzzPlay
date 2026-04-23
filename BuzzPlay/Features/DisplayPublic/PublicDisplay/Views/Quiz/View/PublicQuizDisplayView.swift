@@ -12,27 +12,22 @@ struct PublicQuizDisplayView: View {
     var timer: String
 
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 8) {
             Text(state.setTitle)
-                .font(.nohemi(.title3))
+                .font(.nohemi(.subheadline))
                 .opacity(0.7)
 
             Text(state.question.title)
                 .font(.nohemi(.largeTitle))
 
-            //TODO: Activer un timer dans le display public quand onBuzzUnlock/onBuzzLock
-//            Text("Timer : \(timer)")
-
-            Spacer()
-
             if let teamHasBuzz = state.buzzingTeam {
                 TeamCardView(team: teamHasBuzz, buzzTime: state.formattedTime, showPoints: false)
+                    .padding(.top, 4)
             }
-
-            Spacer()
-
         }
-        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
+        .padding(.vertical, 12)
         .animation(.default, value: state)
     }
 }

@@ -9,6 +9,7 @@ struct BuzzerPlayerView: View {
     @Bindable var teamGameVM: TeamGameViewModel
     var gameType: GameType
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ZStack {
@@ -30,6 +31,19 @@ struct BuzzerPlayerView: View {
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.easeInOut(duration: 0.3), value: teamGameVM.isConnectedToMaster)
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button { dismiss() } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 17, weight: .semibold))
+                        Text("Retour")
+                    }
+                    .foregroundStyle(.white)
+                }
+            }
+        }
     }
 
     // MARK: - iPhone Layout
@@ -38,7 +52,8 @@ struct BuzzerPlayerView: View {
         VStack(spacing: 0) {
             PublicDisplayView(teamGameVM: teamGameVM, gameType: gameType)
                 .padding(.horizontal, 20)
-                .padding(.top, 16)
+                .padding(.top, 8)
+                .frame(maxHeight: 320)
 
             Spacer()
 

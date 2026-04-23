@@ -149,11 +149,16 @@ extension TeamGameViewModel {
             stopUITimer()
             formattedTime = "00:00"
             lastMasterFormattedTime = "00:00"
+            currentBuzzerVM?.clearBuzzState()
         case .quiz(let quizState):
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
             startUITimerIfNeeded()
-            syncBuzzerState(buzzingTeam: quizState.buzzingTeam)
+            if quizState.isAnswerRevealed {
+                currentBuzzerVM?.clearBuzzState()
+            } else {
+                syncBuzzerState(buzzingTeam: quizState.buzzingTeam)
+            }
         case .blindTest(let blindTestState):
             formattedTime = blindTestState.formattedTime
             lastMasterFormattedTime = blindTestState.formattedTime
