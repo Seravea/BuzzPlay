@@ -11,44 +11,83 @@ struct BuzzerButtonView: View {
     @Bindable var buzzerVM: BuzzerViewModel
 
     private var ourTeamBuzzed: Bool { buzzerVM.teamNameHasBuzz == buzzerVM.team.name }
+    private var hasBuzzed: Bool { buzzerVM.teamNameHasBuzz != nil }
 
     var body: some View {
         VStack(spacing: 20) {
             ZStack {
-                // Glow when enabled
-                if buzzerVM.isEnabled {
-                    Circle()
-                        .fill(.white.opacity(0.12))
-                        .frame(width: 260, height: 260)
-                        .blur(radius: 40)
+                // Pulse rings — uniquement quand actif et pas encore buzzé
+                if buzzerVM.isEnabled && !hasBuzzed {
+                    PulseRingView(delay: 0.0, color: Color(hex: "FB2C36"))
+                    PulseRingView(delay: 0.7, color: Color(hex: "FB2C36"))
+                    PulseRingView(delay: 1.4, color: Color(hex: "FB2C36"))
                 }
 
-                Image(.buttonFloor)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: 320, maxHeight: 230)
-                    .opacity(buzzerVM.isEnabled ? 1 : 0.4)
+                // Halo radial
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color(hex: "FB2C36").opacity(buzzerVM.isEnabled ? 0.45 : 0.08),
+                                .clear,
+                            ],
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 120
+                        )
+                    )
+                    .frame(width: 240, height: 240)
+                    .blur(radius: 20)
 
-                Image(.buttonTap)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: 300, maxHeight: 240)
-                    .padding(.bottom, isTapped ? 10 : 100)
-                    .opacity(buzzerVM.isEnabled ? 1 : (ourTeamBuzzed ? 0.55 : 0.3))
+                // Bouton principal
+                ZStack {
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                stops: [
+                                    .init(color: Color(hex: "FF5060"), location: 0),
+                                    .init(color: Color(hex: "FB2C36"), location: 0.50),
+                                    .init(color: Color(hex: "B10018"), location: 1),
+                                ],
+                                center: .init(x: 0.5, y: 0.35),
+                                startRadius: 0,
+                                endRadius: 110
+                            )
+                        )
+                        .frame(width: 220, height: 220)
+                        // Ring shadows
+                        .shadow(color: Color(hex: "FB2C36").opacity(0.18), radius: 0)
+                        .shadow(color: Color(hex: "FB2C36").opacity(0.08), radius: 8)
+                        // Bottom glow
+                        .shadow(color: Color(hex: "FB2C36").opacity(0.40), radius: 30, y: 15)
+                        .opacity(buzzerVM.isEnabled ? 1 : (ourTeamBuzzed ? 0.65 : 0.30))
+
+                    VStack(spacing: 4) {
+                        Image(systemName: "bolt.fill")
+                            .font(.system(size: 52, weight: .bold))
+                        Text(ourTeamBuzzed ? "BUZZÉ" : "BUZZ")
+                            .font(.custom("Nohemi-Black", size: 18))
+                            .tracking(2)
+                    }
+                    .foregroundStyle(.white)
+                }
+                .scaleEffect(isTapped ? 0.94 : (ourTeamBuzzed ? 0.91 : 1.0))
+                .animation(.easeInOut(duration: 0.12), value: isTapped)
+                .animation(.spring(response: 0.35, dampingFraction: 0.65), value: ourTeamBuzzed)
             }
+            .frame(width: 300, height: 300)
             .onTapGesture {
                 if buzzerVM.isEnabled {
                     UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                     buzzerVM.buzz()
-                    isTapped.toggle()
+                    isTapped = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                        isTapped.toggle()
+                        isTapped = false
                     }
                 } else {
                     UINotificationFeedbackGenerator().notificationOccurred(.error)
                 }
             }
-            .animation(.easeInOut(duration: 0.1), value: isTapped)
 
             stateLabel
         }
@@ -57,25 +96,58 @@ struct BuzzerButtonView: View {
 
     @ViewBuilder
     private var stateLabel: some View {
-        if let teamName = buzzerVM.teamNameHasBuzz {
-            if teamName == buzzerVM.team.name {
-                Label("Tu as buzzé !", systemImage: "bolt.fill")
-                    .font(.nohemi(.subheadline, weight: .bold))
-                    .foregroundStyle(Color(hex: "#F6339A"))
+        VStack(spacing: 4) {
+            if let teamName = buzzerVM.teamNameHasBuzz {
+                if teamName == buzzerVM.team.name {
+                    Text("Tu as buzzé !")
+                        .font(.nohemi(.headline, weight: .bold))
+                        .foregroundStyle(Color(hex: "F6339A"))
+                } else {
+                    Text("\(teamName) a buzzé")
+                        .font(.nohemi(.headline, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.40))
+                }
+            } else if buzzerVM.isEnabled {
+                Text("Appuie pour buzzer !")
+                    .font(.nohemi(.headline, weight: .bold))
+                    .foregroundStyle(.white)
+                Text("Le plus rapide gagne le droit de répondre")
+                    .font(.nohemi(.caption))
+                    .foregroundStyle(.white.opacity(0.45))
+                    .multilineTextAlignment(.center)
             } else {
-                Text("\(teamName) a buzzé")
+                Text("En attente d'une question…")
                     .font(.nohemi(.subheadline, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(.white.opacity(0.30))
             }
-        } else if buzzerVM.isEnabled {
-            Text("Appuie pour buzzer !")
-                .font(.nohemi(.subheadline, weight: .bold))
-                .foregroundStyle(.white.opacity(0.75))
-        } else {
-            Text("En attente d'une question…")
-                .font(.nohemi(.subheadline, weight: .regular))
-                .foregroundStyle(.white.opacity(0.3))
         }
+        .padding(.horizontal, 32)
+        .multilineTextAlignment(.center)
+    }
+}
+
+// MARK: - Pulse ring animé
+
+private struct PulseRingView: View {
+    let delay: Double
+    let color: Color
+    @State private var animate = false
+
+    var body: some View {
+        Circle()
+            .strokeBorder(color.opacity(0.40), lineWidth: 1.5)
+            .frame(width: 280, height: 280)
+            .scaleEffect(animate ? 1.40 : 0.85)
+            .opacity(animate ? 0 : 0.70)
+            .onAppear {
+                withAnimation(
+                    .easeOut(duration: 2.2)
+                    .repeatForever(autoreverses: false)
+                    .delay(delay)
+                ) {
+                    animate = true
+                }
+            }
     }
 }
 
