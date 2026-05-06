@@ -12,7 +12,7 @@ struct PublicQuizState: Codable, Equatable {
     let question: QuizQuestion
     let setTitle: String
     let formattedTime: String
-    let buzzingTeam: Team?
+    let buzzingPlayer: Player?
     let isAnswerRevealed: Bool
     let isHintVisible: Bool
 }

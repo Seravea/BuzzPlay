@@ -72,8 +72,8 @@ extension MPCService {
     
     
     //MARK: function to send messages to Browsers
-    func sendBuzzLock(team: Team) {
-        let payload = BuzzLockPayload(teamID: team.id, teamName: team.name)
+    func sendBuzzLock(player: Player) {
+        let payload = BuzzLockPayload(playerID: player.id, playerName: player.name)
         sendMessage(.buzzLock(payload))
 //        guard !session.connectedPeers.isEmpty else {
 //            print("ERREUR MPC: no peer connected, can't send BUZZ LOCK")
@@ -124,16 +124,16 @@ extension MPCService {
         print("OK MPC: browsing(TEAM) started as \(myPeerID.displayName)")
     }
     
-   //send team to Hosting
-    func sendTeam(_ team: Team) {
-        print("TEAM: sending teamJoin for \(team.name)")
-            sendMessage(.teamJoin(team))
+   //send player to Hosting
+    func sendPlayer(_ player: Player) {
+        print("PLAYER: sending playerJoin for \(player.name)")
+            sendMessage(.playerJoin(player))
     }
     
     
     //MARK: function to send buzz to Master
-    func sendBuzz(team: Team) {
-        let payload = BuzzPayload(teamID: team.id)
+    func sendBuzz(player: Player) {
+        let payload = BuzzPayload(playerID: player.id)
         sendMessage(.buzz(payload))
 //            guard !session.connectedPeers.isEmpty else {
 //                print("ERREUR MPC: no peer connected, can't send BUZZ")
@@ -292,9 +292,9 @@ extension MPCService {
         }
     }
     
-    func sendMessagetoOneTeam(message: MPCMessage, team: Team) {
-        guard let targetPeer = session.connectedPeers.first(where: { $0.displayName == team.name }) else {
-            print("MPC: no connected peer found for team \(team.name)")
+    func sendMessagetoOnePlayer(message: MPCMessage, player: Player) {
+        guard let targetPeer = session.connectedPeers.first(where: { $0.displayName == player.name }) else {
+            print("MPC: no connected peer found for player \(player.name)")
             return
         }
 

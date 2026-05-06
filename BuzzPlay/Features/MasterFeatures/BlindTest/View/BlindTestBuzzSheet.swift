@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct BlindTestBuzzSheet: View {
-    let team: Team
+    let player: Team
     let reactionTime: String
     let onValidate: (Int) -> Void
     let onReject: () -> Void
@@ -25,19 +25,19 @@ struct BlindTestBuzzSheet: View {
 
             HStack(spacing: 14) {
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(team.teamColor.gradient)
+                    .fill(player.teamColor.gradient)
                     .frame(width: 46, height: 46)
                     .overlay(
-                        Text(String(team.name.prefix(1)))
+                        Text(String(player.name.prefix(1)))
                             .font(.nohemi(.title3, weight: .bold))
                             .foregroundStyle(.white)
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(team.name)
+                    Text(player.name)
                         .font(.nohemi(.body, weight: .bold))
                         .foregroundStyle(.white)
-                    Text(team.players.map(\.name).joined(separator: " · "))
+                    Text(player.players.map(\.name).joined(separator: " · "))
                         .font(.nohemi(.caption2, weight: .medium))
                         .foregroundStyle(.white.opacity(0.45))
                         .lineLimit(1)
@@ -68,7 +68,7 @@ struct BlindTestBuzzSheet: View {
             )
             .overlay(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(team.teamColor.gradient)
+                    .fill(player.teamColor.gradient)
                     .frame(width: 4)
                     .padding(.leading, 0)
                     .clipShape(RoundedRectangle(cornerRadius: 18))
@@ -132,7 +132,7 @@ struct BlindTestBuzzSheet: View {
     ZStack {
         BackgroundAppView().ignoresSafeArea()
         BlindTestBuzzSheet(
-            team: Team(name: "L'équipe", teamColor: .blueGame, players: [Player(name: "Romain")]),
+            player: Player(name: "L'équipe", teamColor: .blueGame, players: [Player(name: "Romain")]),
             reactionTime: "0.45s",
             onValidate: { _ in },
             onReject: {}

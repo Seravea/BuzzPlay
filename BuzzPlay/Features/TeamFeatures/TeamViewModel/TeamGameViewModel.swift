@@ -12,13 +12,13 @@ import Observation
 @Observable
 final class TeamGameViewModel {
 
-    var team: Team
+    var player: Player
     var mpc: MPCService
     var currentBuzzerVM: BuzzerViewModel?
 
     var hasStartedBrowsing = false
     var hasSetupMPC = false
-    var didSentTeam = false
+    var didSentPlayer = false
     var isConnectedToMaster = false
 
     var receivedMessage: String = ""
@@ -36,8 +36,8 @@ final class TeamGameViewModel {
     // Keep the last known formatted time from master to display immediately
     private var lastMasterFormattedTime: String = "00:00"
 
-    init(team: Team, mpc: MPCService) {
-        self.team = team
+    init(player: Player, mpc: MPCService) {
+        self.player = player
         self.mpc = mpc
         setupMPC()
     }
@@ -55,13 +55,13 @@ extension TeamGameViewModel {
             guard let self else { return }
             DispatchQueue.main.async {
                 self.isConnectedToMaster = true
-                guard !self.didSentTeam else { return }
+                guard !self.didSentPlayer else { return }
 
                 // ✅ Only send once we are connected (prevents MCSession Code=2: Invalid peerIDs)
-                self.didSentTeam = true
+                self.didSentPlayer = true
 
-                // TEAM joins the master
-                self.mpc.sendMessage(.teamJoin(self.team))
+                // PLAYER joins the master
+                self.mpc.sendMessage(.playerJoin(self.player))
             }
         }
 
@@ -69,8 +69,8 @@ extension TeamGameViewModel {
             guard let self else { return }
             DispatchQueue.main.async {
                 self.isConnectedToMaster = false
-                // Reset so team re-announces itself when master comes back
-                self.didSentTeam = false
+                // Reset so player re-announces itself when master comes back
+                self.didSentPlayer = false
                 self.openGames = []
                 // Browser continues running; master will be re-discovered automatically
             }
@@ -85,7 +85,7 @@ extension TeamGameViewModel {
                     self.handleMessage(message)
                 }
             } catch {
-                print("Message reçus mais inconnu dans MPCMessage : \(error)")
+                print("Message received but unknown in MPCMessage: \(error)")
             }
         }
 
@@ -95,7 +95,7 @@ extension TeamGameViewModel {
     func startBrowsing() {
         guard !hasStartedBrowsing else { return }
         hasStartedBrowsing = true
-        print("TEAM Starting MPC browsing...")
+        print("PLAYER Starting MPC browsing...")
         mpc.startBrowsingIfNeeded()
     }
 
@@ -124,15 +124,15 @@ extension TeamGameViewModel {
             self.openGames = games
 
         case .buzzLock(let payload):
-            currentBuzzerVM?.lockBuzz(teamNameHasBuzz: payload.teamName)
+            currentBuzzerVM?.lockBuzz(teamNameHasBuzz: payload.playerName)
 
         case .buzzUnlock:
             currentBuzzerVM?.unLockBuzz()
 
-        case .updatedTeam(let updatedTeam):
-            print("Before receive \(self.team)")
-            self.team = updatedTeam
-            print("After receive \(self.team)")
+        case .updatedPlayer(let updatedPlayer):
+            print("Before receive \(self.player)")
+            self.player = updatedPlayer
+            print("After receive \(self.player)")
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
         default:
@@ -157,13 +157,13 @@ extension TeamGameViewModel {
             if quizState.isAnswerRevealed {
                 currentBuzzerVM?.clearBuzzState()
             } else {
-                syncBuzzerState(buzzingTeam: quizState.buzzingTeam)
+                syncBuzzerState(buzzingPlayer: quizState.buzzingPlayer)
             }
         case .blindTest(let blindTestState):
             formattedTime = blindTestState.formattedTime
             lastMasterFormattedTime = blindTestState.formattedTime
             startUITimerIfNeeded()
-            syncBuzzerState(buzzingTeam: blindTestState.buzzingTeam)
+            syncBuzzerState(buzzingPlayer: blindTestState.buzzingPlayer)
         }
     }
 
@@ -187,9 +187,9 @@ extension TeamGameViewModel {
         timer = nil
     }
 
-    private func syncBuzzerState(buzzingTeam: Team?) {
-        if let team = buzzingTeam {
-            currentBuzzerVM?.lockBuzz(teamNameHasBuzz: team.name)
+    private func syncBuzzerState(buzzingPlayer: Player?) {
+        if let player = buzzingPlayer {
+            currentBuzzerVM?.lockBuzz(teamNameHasBuzz: player.name)
         } else {
             currentBuzzerVM?.unLockBuzz()
         }

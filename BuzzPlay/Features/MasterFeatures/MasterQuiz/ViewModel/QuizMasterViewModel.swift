@@ -17,7 +17,7 @@ class QuizMasterViewModel: BuzzDrivenGame {
 
     var questions: [QuizQuestion]
     var currentQuestion: QuizQuestion?
-    var teamHasBuzz: Team?
+    var playerHasBuzz: Player?
 
     var questionsPassed: [QuizQuestion] = []
 
@@ -36,8 +36,8 @@ class QuizMasterViewModel: BuzzDrivenGame {
 extension QuizMasterViewModel {
     func selectQuestion(_ question: QuizQuestion) {
         currentQuestion = question
-        teamHasBuzz = nil
-        
+        playerHasBuzz = nil
+
         gameVM.unlockBuzz()
         startRound()
     }
@@ -52,34 +52,34 @@ extension QuizMasterViewModel {
     }
     
     func validateAnswer(points: Int) {
-        if let team = gameVM.currentBuzzTeam {
+        if let player = gameVM.currentBuzzPlayer {
             UINotificationFeedbackGenerator().notificationOccurred(.success)
-            gameVM.addPointToTeam(team, points: points)
+            gameVM.addPointToPlayer(player, points: points)
             goToSelectNewQuestion()
-            teamHasBuzz = nil
-            gameVM.currentBuzzTeam = nil
+            playerHasBuzz = nil
+            gameVM.currentBuzzPlayer = nil
         }
     }
     
     func rejectAnswer() {
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
         gameVM.unlockBuzz()
-        teamHasBuzz = nil
-        gameVM.currentBuzzTeam = nil
+        playerHasBuzz = nil
+        gameVM.currentBuzzPlayer = nil
         let state = makePublicState()
         gameVM.sendPublicState(state)
         startReactionTimer()
     }
     
-    func handleBuzz(from team: Team) {
-        gameVM.currentBuzzTeam = team
-        teamHasBuzz = team
+    func handleBuzz(from player: Player) {
+        gameVM.currentBuzzPlayer = player
+        playerHasBuzz = player
         pauseReactionTimer()
     }
     
     func skipQuestion() {
-        teamHasBuzz = nil
-        gameVM.currentBuzzTeam = nil
+        playerHasBuzz = nil
+        gameVM.currentBuzzPlayer = nil
         gameVM.isBuzzLocked = false
         goToSelectNewQuestion()
     }
@@ -141,7 +141,7 @@ extension QuizMasterViewModel {
     }
     
     var validateRejectDisabled: Bool {
-        teamHasBuzz == nil
+        playerHasBuzz == nil
     }
     
     func UIDisabledValidateRejectButtonOpacity() -> Double {
@@ -162,7 +162,7 @@ extension QuizMasterViewModel {
                 question: question,
                 setTitle: quizSet.title,
                 formattedTime: formattedTime,
-                buzzingTeam: teamHasBuzz,
+                buzzingPlayer: playerHasBuzz,
                 isAnswerRevealed: false,
                 isHintVisible: false
             )

@@ -12,10 +12,10 @@ protocol BuzzDrivenGame: AnyObject {
     // Timer
     var reactionTimeMs: Int { get set }
     var timer: Timer? { get set }
-    
-    // Le master annonce qu'une team a buzzé
-    func handleBuzz(from team: Team)
-    
+
+    // Le master annonce qu'un player a buzzé
+    func handleBuzz(from player: Player)
+
     func makePublicState() -> PublicState
 }
 

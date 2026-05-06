@@ -56,10 +56,10 @@ struct PlayerChooseGameView: View {
                 .frame(width: 12, height: 12)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(teamGameVM.team.name)
+                Text(teamGameVM.player.name)
                     .font(.nohemi(.title2, weight: .extraBold))
                     .foregroundStyle(.white)
-                let playerNames = teamGameVM.team.players.map(\.name).filter { !$0.isEmpty }.joined(separator: " · ")
+                let playerNames = teamGameVM.player.players.map(\.name).filter { !$0.isEmpty }.joined(separator: " · ")
                 if !playerNames.isEmpty {
                     Text(playerNames)
                         .font(.nohemi(.caption, weight: .regular))
@@ -71,7 +71,7 @@ struct PlayerChooseGameView: View {
             Spacer()
 
             VStack(alignment: .trailing, spacing: 1) {
-                Text("\(teamGameVM.team.score)")
+                Text("\(teamGameVM.player.score)")
                     .font(.nohemi(.title2, weight: .extraBold))
                     .foregroundStyle(accentColor)
                 Text("points")
@@ -350,7 +350,7 @@ private struct GameInviteOverlay: View {
 #Preview {
     PlayerChooseGameView(
         teamGameVM: TeamGameViewModel(
-            team: Team(name: "L'équipe des nul", teamColor: .blueGame),
+            player: Player(name: "L'équipe des nul", teamColor: .blueGame),
             mpc: MPCService(peerName: "l'équipe", role: .team)
         ),
         teamFlowVM: TeamFlowViewModel()

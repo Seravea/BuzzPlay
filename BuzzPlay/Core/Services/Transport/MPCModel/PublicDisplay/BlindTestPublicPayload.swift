@@ -11,7 +11,7 @@ struct PublicBlindTestState: Codable, Equatable {
     let title: String?
     let artist: String?
     let formattedTime: String
-    let buzzingTeam: Team?
+    let buzzingPlayer: Player?
     let isAnswerRevealed: Bool
     let isPlaying: Bool
 }

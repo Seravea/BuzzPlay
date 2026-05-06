@@ -59,8 +59,8 @@ struct QuizMasterListView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
-                    connected: quizMasterVM.gameVM.connectedTeamsCount,
-                    total: quizMasterVM.gameVM.totalTeamsCount
+                    connected: quizMasterVM.gameVM.connectedPlayersCount,
+                    total: quizMasterVM.gameVM.totalPlayersCount
                 )
             }
         }
@@ -136,7 +136,7 @@ private struct QuizQuestionListScreen: View {
                     Text(quizMasterVM.quizSet.title)
                         .font(.nohemi(.title2, weight: .extraBold))
                         .foregroundStyle(.white)
-                    Text("\(quizMasterVM.questions.count) questions · \(quizMasterVM.gameVM.teams.count) équipes")
+                    Text("\(quizMasterVM.questions.count) questions · \(quizMasterVM.gameVM.players.count) équipes")
                         .font(.nohemi(.subheadline, weight: .regular))
                         .foregroundStyle(.white.opacity(0.5))
                 }

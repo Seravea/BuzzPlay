@@ -106,11 +106,11 @@ extension CoinsViewModel {
     }
     
     func buyGift(_ gift: Gift) {
-        guard let team = teamFlowViewModel?.team else {
+        guard let team = teamFlowViewModel?.player else {
             errorMessage = "Pas de team trouvé"
             return
         }
-        guard team.accountAmount >= gift.price else {
+        guard player.accountAmount >= gift.price else {
             errorMessage = "Tu n'as pas assez d'argent"
             return
         }

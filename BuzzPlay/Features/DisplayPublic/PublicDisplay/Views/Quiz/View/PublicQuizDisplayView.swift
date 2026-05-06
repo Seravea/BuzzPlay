@@ -49,7 +49,7 @@ struct PublicQuizDisplayView: View {
                 .opacity(0.2)
 
             // Buzzing team highlight
-            if let teamHasBuzz = state.buzzingTeam {
+            if let teamHasBuzz = state.buzzingPlayer {
                 VStack(spacing: 12) {
                     Text("A BUZZÉ")
                         .font(.nohemi(.caption2, weight: .bold))
@@ -77,7 +77,7 @@ struct PublicQuizDisplayView: View {
             question: QuizSamples.music2000s.questions[3],
             setTitle: QuizSamples.music2000s.title,
             formattedTime: "00:00",
-            buzzingTeam: sampleTeams[1],
+            buzzingTeam: samplePlayers[1],
             isAnswerRevealed: false,
             isHintVisible: false
         ),

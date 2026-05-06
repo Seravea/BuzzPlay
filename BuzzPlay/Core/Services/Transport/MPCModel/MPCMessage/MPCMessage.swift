@@ -10,15 +10,15 @@ import Foundation
 //TODO: message to send or receive from master / to player // from player / to master
 //using it in MPCService and MAster/Player-FlowVM // refactor and scalable code
 enum MPCMessage: Codable {
-    // TEAM -> MASTER
-    case teamJoin(Team)
+    // PLAYER -> MASTER
+    case playerJoin(Player)
     case buzz(BuzzPayload)
     case buyGiftRequest(CoinsViewModel.Gift)
 
-    // MASTER -> TEAM
+    // MASTER -> PLAYER
     case gameAvailability([GameType])
     case buyGiftResult(CoinsViewModel.Gift)
-    case updatedTeam(Team)
+    case updatedPlayer(Player)
     
 
     case buzzLock(BuzzLockPayload)   // master dit "X a gagné, buzzer lock"

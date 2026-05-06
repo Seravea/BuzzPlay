@@ -12,7 +12,7 @@ struct QuizActiveQuestionScreen: View {
     let onValidate: (Int) -> Void
     let onReject: () -> Void
 
-    var buzzedTeam: Team? { quizMasterVM.teamHasBuzz }
+    var buzzedPlayer: Team? { quizMasterVM.teamHasBuzz }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -26,7 +26,7 @@ struct QuizActiveQuestionScreen: View {
             .padding(.horizontal, 20)
 
             // Dimmed overlay quand une équipe a buzzé — bloque les interactions avec l'écran derrière
-            if buzzedTeam != nil {
+            if buzzedPlayer != nil {
                 Color.black.opacity(0.5)
                     .ignoresSafeArea()
                     .contentShape(Rectangle())
@@ -34,7 +34,7 @@ struct QuizActiveQuestionScreen: View {
             }
 
             // Bottom sheet buzz
-            if let team = buzzedTeam {
+            if let team = buzzedPlayer {
                 QuizBuzzSheet(
                     team: team,
                     reactionTime: quizMasterVM.formattedTime,
@@ -44,7 +44,7 @@ struct QuizActiveQuestionScreen: View {
                 .transition(.move(edge: .bottom))
             }
         }
-        .animation(.spring(duration: 0.4, bounce: 0.05), value: buzzedTeam != nil)
+        .animation(.spring(duration: 0.4, bounce: 0.05), value: buzzedPlayer != nil)
     }
 
     // MARK: Timer
@@ -53,10 +53,10 @@ struct QuizActiveQuestionScreen: View {
         HStack {
             Text(quizMasterVM.formattedTime)
                 .font(.nohemi(.largeTitle, weight: .extraBold))
-                .foregroundStyle(buzzedTeam != nil ? Color(hex: "#F6339A") : Color.mustardYellow)
+                .foregroundStyle(buzzedPlayer != nil ? Color(hex: "#F6339A") : Color.mustardYellow)
                 .tracking(3)
             Spacer()
-            Text(buzzedTeam != nil ? "PAUSÉ" : "EN COURS")
+            Text(buzzedPlayer != nil ? "PAUSÉ" : "EN COURS")
                 .font(.nohemi(.caption, weight: .bold))
                 .foregroundStyle(.white.opacity(0.6))
                 .padding(.horizontal, 10)
@@ -119,7 +119,7 @@ struct QuizActiveQuestionScreen: View {
     // MARK: Scores + Waiting Radar
 
     private var scoresSection: some View {
-        let teams = quizMasterVM.gameVM.teams.sorted { $0.score > $1.score }
+        let teams = quizMasterVM.gameVM.players.sorted { $0.score > $1.score }
         let maxScore = max(teams.map(\.score).max() ?? 1, 1)
 
         return VStack(alignment: .leading, spacing: 8) {
@@ -149,17 +149,17 @@ struct QuizActiveQuestionScreen: View {
 // MARK: - Score Row
 
 struct QuizScoreRow: View {
-    let team: Team
+    let player: Team
     let maxScore: Int
     @State private var scoreChanged = false
 
     var body: some View {
         HStack(spacing: 10) {
             Circle()
-                .fill(team.teamColor.color)
+                .fill(player.teamColor.color)
                 .frame(width: 8, height: 8)
 
-            Text(team.name)
+            Text(player.name)
                 .font(.nohemi(.subheadline, weight: .semiBold))
                 .foregroundStyle(.white)
 
@@ -168,16 +168,16 @@ struct QuizScoreRow: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule().fill(.white.opacity(0.1)).frame(height: 4)
-                    let w = maxScore > 0 ? CGFloat(team.score) / CGFloat(maxScore) * geo.size.width : 0
+                    let w = maxScore > 0 ? CGFloat(player.score) / CGFloat(maxScore) * geo.size.width : 0
                     Capsule()
-                        .fill(team.teamColor.gradient)
+                        .fill(player.teamColor.gradient)
                         .frame(width: w, height: 4)
-                        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: team.score)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: player.score)
                 }
             }
             .frame(width: 80, height: 4)
 
-            Text("\(team.score) pts")
+            Text("\(player.score) pts")
                 .font(.nohemi(.subheadline, weight: .bold))
                 .foregroundStyle(.white.opacity(0.9))
                 .frame(minWidth: 50, alignment: .trailing)
@@ -188,8 +188,8 @@ struct QuizScoreRow: View {
         .padding(.vertical, 10)
         .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
         .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.white.opacity(0.07), lineWidth: 1))
-        .shadow(color: team.teamColor.color.opacity(0.15), radius: 8, y: 3)
-        .onChange(of: team.score) { oldScore, newScore in
+        .shadow(color: player.teamColor.color.opacity(0.15), radius: 8, y: 3)
+        .onChange(of: player.score) { oldScore, newScore in
             if newScore > oldScore {
                 scoreChanged = true
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -204,7 +204,7 @@ struct QuizScoreRow: View {
 // MARK: - Buzz Bottom Sheet
 
 struct QuizBuzzSheet: View {
-    let team: Team
+    let player: Team
     let reactionTime: String
     let onValidate: (Int) -> Void
     let onReject: () -> Void
@@ -225,19 +225,19 @@ struct QuizBuzzSheet: View {
             // Team card
             HStack(spacing: 14) {
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(team.teamColor.gradient)
+                    .fill(player.teamColor.gradient)
                     .frame(width: 46, height: 46)
                     .overlay(
-                        Text(String(team.name.prefix(1)))
+                        Text(String(player.name.prefix(1)))
                             .font(.nohemi(.title3, weight: .bold))
                             .foregroundStyle(.white)
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(team.name)
+                    Text(player.name)
                         .font(.nohemi(.body, weight: .bold))
                         .foregroundStyle(.white)
-                    Text(team.players.map(\.name).joined(separator: " · "))
+                    Text(player.players.map(\.name).joined(separator: " · "))
                         .font(.nohemi(.caption2, weight: .medium))
                         .foregroundStyle(.white.opacity(0.45))
                         .lineLimit(1)
@@ -268,7 +268,7 @@ struct QuizBuzzSheet: View {
             )
             .overlay(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(team.teamColor.gradient)
+                    .fill(player.teamColor.gradient)
                     .frame(width: 4)
                     .padding(.leading, 0)
                     .clipShape(RoundedRectangle(cornerRadius: 18))

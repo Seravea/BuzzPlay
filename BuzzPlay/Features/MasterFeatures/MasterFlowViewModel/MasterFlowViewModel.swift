@@ -9,13 +9,13 @@ import Foundation
 import Observation
 import MultipeerConnectivity
 
-//TEST DATA  TEAMS
-var sampleTeams: [Team] = [
-    Team(name: "L'équipe",teamColor: .greenGame, players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),] , score: 240),
-    Team(name: "L'équipe",teamColor: .blueGame, players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),] , score: 240),
-    Team(name: "L'équipe",teamColor: .redGame, players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),] , score: 240),
-    Team(name: "L'équipe",teamColor: .purpleGame, players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),] , score: 240),
-    Team(name: "L'équipe",teamColor: .yellowGame, players: [Player(name: "Romain"), Player(name: "Benjamin"),Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"), Player(name: "Romain"),] , score: 240),
+//TEST DATA  PLAYERS
+var samplePlayers: [Player] = [
+    Player(name: "L'équipe", teamColor: .greenGame, score: 240),
+    Player(name: "L'équipe", teamColor: .blueGame, score: 240),
+    Player(name: "L'équipe", teamColor: .redGame, score: 240),
+    Player(name: "L'équipe", teamColor: .purpleGame, score: 240),
+    Player(name: "L'équipe", teamColor: .yellowGame, score: 240),
 ]
 
 //MARK: - Master Flow ViewModel
@@ -27,26 +27,26 @@ final class MasterFlowViewModel {
     //MARK: MPC datas
     var connectedPeers: [MCPeerID] = []
     //TODO: empty Collection for TEST ON DEVICE or PRODUCTION
-    var teams: [Team] = []
+    var players: [Player] = []
 
-    /// Toutes les équipes qui ont rejoint la session (ne diminue jamais, sert au statut de connexion)
-    private(set) var allRegisteredTeams: [Team] = []
+    /// Tous les joueurs qui ont rejoint la session (ne diminue jamais, sert au statut de connexion)
+    private(set) var allRegisteredPlayers: [Player] = []
 
-    /// Nombre d'équipes actuellement connectées (hors écran public)
-    var connectedTeamsCount: Int { teams.filter { $0.name != "Écran Publique" }.count }
-    /// Nombre total d'équipes ayant rejoint depuis le début (hors écran public)
-    var totalTeamsCount: Int { allRegisteredTeams.filter { $0.name != "Écran Publique" }.count }
+    /// Nombre de joueurs actuellement connectés (hors écran public)
+    var connectedPlayersCount: Int { players.filter { $0.name != "Écran Publique" }.count }
+    /// Nombre total de joueurs ayant rejoint depuis le début (hors écran public)
+    var totalPlayersCount: Int { allRegisteredPlayers.filter { $0.name != "Écran Publique" }.count }
     
     var mpcService: MPCService = MPCService(peerName: "Master", role: .master)
     private var hasStartedHosting = false
 
     //MARK: Datas for games
-    var currentBuzzTeam: Team?
+    var currentBuzzPlayer: Player?
     var isBuzzLocked: Bool = false
     var gameState: GameState = .lobby
 
-    /// Nom de la dernière équipe déconnectée (nil = pas d'alerte à montrer)
-    var disconnectedTeamName: String? = nil
+    /// Nom du dernier joueur déconnecté (nil = pas d'alerte à montrer)
+    var disconnectedPlayerName: String? = nil
     
     /// Liste des jeux ouverts par le maître
     var gamesOpen: [GameType] = [.score]
@@ -91,39 +91,39 @@ final class MasterFlowViewModel {
     }
     
     
-    //MARK: Master's functions for Team
-    
-    func addTeam(_ team: Team) {
-        // Éviter les doublons si la team envoie teamJoin plusieurs fois dans la même session
-        guard !teams.contains(where: { $0.name == team.name }) else { return }
+    //MARK: Master's functions for Player
 
-        if let savedIndex = allRegisteredTeams.firstIndex(where: { $0.name == team.name }) {
+    func addPlayer(_ player: Player) {
+        // Éviter les doublons si le player envoie playerJoin plusieurs fois dans la même session
+        guard !players.contains(where: { $0.name == player.name }) else { return }
+
+        if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == player.name }) {
             // Reconnexion : restaurer le score sauvegardé (le nom est la clé — l'UUID peut changer)
-            var restored = team
-            restored.score = allRegisteredTeams[savedIndex].score
-            restored.accountAmount = allRegisteredTeams[savedIndex].accountAmount
-            // Mettre à jour l'UUID dans allRegisteredTeams pour rester en sync
-            allRegisteredTeams[savedIndex] = restored
-            teams.append(restored)
-            mpcService.sendMessagetoOneTeam(message: .updatedTeam(restored), team: restored)
-            mpcService.sendMessagetoOneTeam(message: .gameAvailability(gamesOpen), team: restored)
+            var restored = player
+            restored.score = allRegisteredPlayers[savedIndex].score
+            restored.accountAmount = allRegisteredPlayers[savedIndex].accountAmount
+            // Mettre à jour l'UUID dans allRegisteredPlayers pour rester en sync
+            allRegisteredPlayers[savedIndex] = restored
+            players.append(restored)
+            mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(restored), player: restored)
+            mpcService.sendMessagetoOnePlayer(message: .gameAvailability(gamesOpen), player: restored)
             // Resync état courant du jeu si une partie est en cours
             if currentBuzzGame != nil {
-                mpcService.sendMessagetoOneTeam(message: .publicUpdate(currentPublicState()), team: restored)
+                mpcService.sendMessagetoOnePlayer(message: .publicUpdate(currentPublicState()), player: restored)
             }
             if let gameType = activeGameType, currentBuzzGame != nil {
-                mpcService.sendMessagetoOneTeam(message: .masterLaunchedGame(gameType), team: restored)
+                mpcService.sendMessagetoOnePlayer(message: .masterLaunchedGame(gameType), player: restored)
             }
         } else {
-            // Nouvelle team
-            teams.append(team)
-            allRegisteredTeams.append(team)
-            mpcService.sendMessagetoOneTeam(message: .gameAvailability(gamesOpen), team: team)
+            // Nouveau player
+            players.append(player)
+            allRegisteredPlayers.append(player)
+            mpcService.sendMessagetoOnePlayer(message: .gameAvailability(gamesOpen), player: player)
         }
     }
-    
-    func sendUpdatedTeam(team: Team) {
-        mpcService.sendMessagetoOneTeam(message: .updatedTeam(team), team: team)
+
+    func sendUpdatedPlayer(player: Player) {
+        mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(player), player: player)
     }
     
     //MARK: Master's functions for gameSelection
@@ -142,8 +142,8 @@ extension MasterFlowViewModel {
     
     func handle(message: MPCMessage, from peer: MCPeerID) {
         switch message {
-        case .teamJoin(let team):
-            addTeam(team)
+        case .playerJoin(let player):
+            addPlayer(player)
         case .buzz(let payload):
             handleBuzzReceive(data: payload, from: peer)
         case .buyGiftRequest(let request):
@@ -152,8 +152,8 @@ extension MasterFlowViewModel {
             sendPublicState(update)
         case .pong:
             print("pong reçus")
-        case .updatedTeam(let team):
-            sendUpdatedTeam(team: team)
+        case .updatedPlayer(let player):
+            sendUpdatedPlayer(player: player)
         default:
             break
         }
@@ -170,9 +170,9 @@ extension MasterFlowViewModel {
             guard let self else { return }
             self.connectedPeers.removeAll { $0 == peer }
             let name = peer.displayName
-            self.teams.removeAll { $0.name == name }
+            self.players.removeAll { $0.name == name }
             if name != "Écran Publique" {
-                self.disconnectedTeamName = name
+                self.disconnectedPlayerName = name
             }
         }
         
@@ -205,7 +205,7 @@ extension MasterFlowViewModel {
     
     func unlockBuzz() {
         isBuzzLocked = false
-        currentBuzzTeam = nil
+        currentBuzzPlayer = nil
         mpcService.sendMessage(.buzzUnlock)
 
         // Important: met à jour l'écran public au moment où on relance/autorise les buzz
@@ -235,21 +235,21 @@ extension MasterFlowViewModel {
             return
         }
 
-        guard let team = teams.first(where: { $0.id == data.teamID }) else {
-            print("MASTER: buzz reçu mais team introuvable")
+        guard let player = players.first(where: { $0.id == data.playerID }) else {
+            print("MASTER: buzz reçu mais player introuvable")
             return
         }
 
-        currentBuzzTeam = team
+        currentBuzzPlayer = player
         isBuzzLocked = true
 
-        currentBuzzGame?.handleBuzz(from: team)
+        currentBuzzGame?.handleBuzz(from: player)
 
         // lock pour tout le monde + envoie le nom
-        let lockPayload = BuzzLockPayload(teamID: team.id, teamName: team.name)
+        let lockPayload = BuzzLockPayload(playerID: player.id, playerName: player.name)
         mpcService.sendMessage(.buzzLock(lockPayload))
-        
-        // Mettre à jour l'écran public (timer figé + équipe qui a buzz)
+
+        // Mettre à jour l'écran public (timer figé + joueur qui a buzz)
         broadcastPublicStateFromCurrentGame()
     }
 }
@@ -258,15 +258,15 @@ extension MasterFlowViewModel {
 
 //MARK: functions for game Score
 extension MasterFlowViewModel {
-    func addPointToTeam(_ team: Team, points: Int) {
-        guard let index = teams.firstIndex(of: team) else { return }
-        teams[index].score += points
+    func addPointToPlayer(_ player: Player, points: Int) {
+        guard let index = players.firstIndex(of: player) else { return }
+        players[index].score += points
 
-        // Sync allRegisteredTeams pour conserver le score en cas de déconnexion
-        if let savedIndex = allRegisteredTeams.firstIndex(where: { $0.name == team.name }) {
-            allRegisteredTeams[savedIndex].score = teams[index].score
+        // Sync allRegisteredPlayers pour conserver le score en cas de déconnexion
+        if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == player.name }) {
+            allRegisteredPlayers[savedIndex].score = players[index].score
         }
 
-        mpcService.sendMessagetoOneTeam(message: .updatedTeam(teams[index]), team: teams[index])
+        mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(players[index]), player: players[index])
     }
 }
