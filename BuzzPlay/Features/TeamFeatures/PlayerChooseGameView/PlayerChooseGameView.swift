@@ -11,7 +11,8 @@ struct PlayerChooseGameView: View {
     @Bindable var playerFlowVM: PlayerFlowViewModel
     @Environment(\.horizontalSizeClass) private var sizeClass
 
-    private let accentColor = Color.white
+    // Couleur personnalisée du joueur — cohérente avec le buzzer
+    private var playerColor: Color { Color(playerGameVM.player.teamColor.rawValue) }
 
     var body: some View {
         ZStack {
@@ -19,7 +20,7 @@ struct PlayerChooseGameView: View {
 
             ScrollView {
                 VStack(spacing: 20) {
-                    teamHeader
+                    playerHeader
                     gamesSection
                 }
                 .padding(.horizontal, sizeClass == .regular ? 0 : 20)
@@ -32,11 +33,10 @@ struct PlayerChooseGameView: View {
                 ConnectionLostOverlay()
             }
 
-            // Invite du Master
             if let game = playerGameVM.pendingGameInvite {
                 GameInviteOverlay(
                     game: game,
-                    accentColor: accentColor,
+                    accentColor: playerColor,
                     onJoin: { joinGame(game) },
                     onDismiss: { playerGameVM.pendingGameInvite = nil }
                 )
@@ -47,26 +47,26 @@ struct PlayerChooseGameView: View {
         .navigationBarBackButtonHidden()
     }
 
-    // MARK: - Team Header
+    // MARK: - Player Header
 
-    private var teamHeader: some View {
+    private var playerHeader: some View {
         HStack(spacing: 14) {
             Circle()
-                .fill(accentColor)
+                .fill(playerColor)
                 .frame(width: 12, height: 12)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(playerGameVM.player.name)
-                    .font(.nohemi(.title2, weight: .extraBold))
-                    .foregroundStyle(.white)
-            }
+            Text(playerGameVM.player.name)
+                .font(.nohemi(.title2, weight: .extraBold))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
 
             Spacer()
 
             VStack(alignment: .trailing, spacing: 1) {
                 Text("\(playerGameVM.player.score)")
                     .font(.nohemi(.title2, weight: .extraBold))
-                    .foregroundStyle(accentColor)
+                    .foregroundStyle(playerColor)
                 Text("points")
                     .font(.nohemi(.caption2, weight: .regular))
                     .foregroundStyle(.white.opacity(0.4))
@@ -74,10 +74,10 @@ struct PlayerChooseGameView: View {
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 14)
-        .background(accentColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 18))
+        .background(playerColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 18))
         .overlay(
             RoundedRectangle(cornerRadius: 18)
-                .strokeBorder(accentColor.opacity(0.35), lineWidth: 1.5)
+                .strokeBorder(playerColor.opacity(0.35), lineWidth: 1.5)
         )
     }
 
@@ -102,7 +102,7 @@ struct PlayerChooseGameView: View {
         }
     }
 
-    // MARK: - Vertical Game Card (Quiz / BlindTest / iPad Score)
+    // MARK: - Vertical Game Card (Quiz / BlindTest)
 
     @ViewBuilder
     private func gameCard(_ game: GameType) -> some View {
@@ -118,27 +118,29 @@ struct PlayerChooseGameView: View {
 
                 Image(systemName: game.iconName)
                     .font(.system(size: 30, weight: .medium))
-                    .foregroundStyle(isOpen ? accentColor : .white.opacity(0.25))
+                    .foregroundStyle(isOpen ? playerColor : .white.opacity(0.25))
                     .frame(width: 60, height: 60)
                     .background(
-                        isOpen ? accentColor.opacity(0.15) : .white.opacity(0.06),
+                        isOpen ? playerColor.opacity(0.15) : .white.opacity(0.06),
                         in: RoundedRectangle(cornerRadius: 16)
                     )
 
                 Text(game.gameTitle)
                     .font(.nohemi(.body, weight: .bold))
                     .foregroundStyle(isOpen ? .white : .white.opacity(0.3))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
             .padding(16)
             .frame(maxWidth: .infinity, minHeight: 160)
             .background(
-                isOpen ? accentColor.opacity(0.08) : .white.opacity(0.04),
+                isOpen ? playerColor.opacity(0.08) : .white.opacity(0.04),
                 in: RoundedRectangle(cornerRadius: 20)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
                     .strokeBorder(
-                        isOpen ? accentColor.opacity(0.4) : .white.opacity(0.07),
+                        isOpen ? playerColor.opacity(0.4) : .white.opacity(0.07),
                         lineWidth: isOpen ? 1.5 : 1
                     )
             )
@@ -157,10 +159,10 @@ struct PlayerChooseGameView: View {
             HStack(spacing: 14) {
                 Image(systemName: GameType.score.iconName)
                     .font(.system(size: 22, weight: .medium))
-                    .foregroundStyle(isOpen ? accentColor : .white.opacity(0.25))
+                    .foregroundStyle(isOpen ? playerColor : .white.opacity(0.25))
                     .frame(width: 46, height: 46)
                     .background(
-                        isOpen ? accentColor.opacity(0.15) : .white.opacity(0.06),
+                        isOpen ? playerColor.opacity(0.15) : .white.opacity(0.06),
                         in: RoundedRectangle(cornerRadius: 12)
                     )
 
@@ -175,19 +177,19 @@ struct PlayerChooseGameView: View {
                 if isOpen {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(accentColor.opacity(0.6))
+                        .foregroundStyle(playerColor.opacity(0.6))
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
             .background(
-                isOpen ? accentColor.opacity(0.08) : .white.opacity(0.04),
+                isOpen ? playerColor.opacity(0.08) : .white.opacity(0.04),
                 in: RoundedRectangle(cornerRadius: 18)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 18)
                     .strokeBorder(
-                        isOpen ? accentColor.opacity(0.4) : .white.opacity(0.07),
+                        isOpen ? playerColor.opacity(0.4) : .white.opacity(0.07),
                         lineWidth: isOpen ? 1.5 : 1
                     )
             )
@@ -196,7 +198,7 @@ struct PlayerChooseGameView: View {
         .disabled(!isOpen)
     }
 
-    // MARK: - Join Game (partagé entre tap carte et auto-nav invite)
+    // MARK: - Join Game
 
     private func joinGame(_ game: GameType) {
         playerGameVM.pendingGameInvite = nil
@@ -208,12 +210,12 @@ struct PlayerChooseGameView: View {
         router.push(game.destinationPlayer)
     }
 
-    // MARK: - Shared Badge
+    // MARK: - Status Badge
 
     private func statusBadge(isOpen: Bool) -> some View {
         HStack(spacing: 4) {
             Circle()
-                .fill(isOpen ? .white.opacity(0.9) : .white.opacity(0.2))
+                .fill(isOpen ? playerColor.opacity(0.9) : .white.opacity(0.2))
                 .frame(width: 5, height: 5)
             Text(isOpen ? "Ouvert" : "Fermé")
                 .font(.nohemi(.caption2, weight: .bold))
@@ -222,7 +224,7 @@ struct PlayerChooseGameView: View {
         .padding(.horizontal, 9)
         .padding(.vertical, 4)
         .background(
-            isOpen ? .white.opacity(0.12) : .white.opacity(0.05),
+            isOpen ? playerColor.opacity(0.15) : .white.opacity(0.05),
             in: Capsule()
         )
     }
@@ -244,12 +246,10 @@ private struct GameInviteOverlay: View {
         VStack {
             Spacer()
             VStack(spacing: 20) {
-                // Handle
                 RoundedRectangle(cornerRadius: 99)
                     .fill(.white.opacity(0.2))
                     .frame(width: 36, height: 4)
 
-                // Icon + titre
                 HStack(spacing: 14) {
                     Image(systemName: game.iconName)
                         .font(.system(size: 24, weight: .semibold))
@@ -267,7 +267,6 @@ private struct GameInviteOverlay: View {
                     }
                     Spacer()
 
-                    // Countdown circle
                     ZStack {
                         Circle()
                             .stroke(.white.opacity(0.1), lineWidth: 3)
@@ -283,7 +282,6 @@ private struct GameInviteOverlay: View {
                     .frame(width: 44, height: 44)
                 }
 
-                // Boutons
                 HStack(spacing: 10) {
                     Button(action: onDismiss) {
                         Text("Plus tard")
@@ -343,8 +341,8 @@ private struct GameInviteOverlay: View {
 #Preview {
     PlayerChooseGameView(
         playerGameVM: PlayerGameViewModel(
-            player: Player(name: "L'équipe des nul", teamColor: .blueGame),
-            mpc: MPCService(peerName: "l'équipe", role: .team)
+            player: Player(name: "Romain", teamColor: .blueGame),
+            mpc: MPCService(peerName: "Romain", role: .team)
         ),
         playerFlowVM: PlayerFlowViewModel()
     )
