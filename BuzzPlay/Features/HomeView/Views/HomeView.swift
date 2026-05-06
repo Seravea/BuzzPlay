@@ -7,7 +7,7 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject private var router: Router
-    @State var teamFlowVM = TeamFlowViewModel()
+    @State var playerFlowVM = PlayerFlowViewModel()
     @State var masterFlowVM = MasterFlowViewModel()
 
     var body: some View {
@@ -80,46 +80,46 @@ struct HomeView: View {
                 case .masterLobbyView:
                     LobbyMasterView(masterGameVM: masterFlowVM.makeLobbyViewModel())
                 case .playerChooseGameView:
-                    if let vm = teamFlowVM.teamGameVM {
-                        PlayerChooseGameView(teamGameVM: vm, teamFlowVM: teamFlowVM)
+                    if let vm = playerFlowVM.playerGameVM {
+                        PlayerChooseGameView(playerGameVM: vm, playerFlowVM: playerFlowVM)
                     } else {
-                        Text("Pas de team — erreur inattendue")
+                        Text("Pas de joueur — erreur inattendue")
                     }
                 case .blindTestMaster:
                     BlindTestMasterView(blindTestViewModel: masterFlowVM.makeBlindTestMasterVM())
                 case .blindTestPlayer:
-                    if let teamGameVM = teamFlowVM.teamGameVM {
-                        BuzzerPlayerView(teamGameVM: teamGameVM, gameType: .blindTest)
+                    if let playerGameVM = playerFlowVM.playerGameVM {
+                        BuzzerPlayerView(playerGameVM: playerGameVM, gameType: .blindTest)
                     }
                 case .createTeamView:
-                    CreateTeamView(createTeamVM: teamFlowVM.makeCreateTeamViewModel())
+                    CreateTeamView(createTeamVM: playerFlowVM.makeCreateTeamViewModel())
                 case .quizMaster:
                     QuizMasterListView(quizMasterVM: masterFlowVM.makeQuizMasterVM())
                 case .quizPlayer:
-                    if let teamGameVM = teamFlowVM.teamGameVM {
-                        BuzzerPlayerView(teamGameVM: teamGameVM, gameType: .quiz)
+                    if let playerGameVM = playerFlowVM.playerGameVM {
+                        BuzzerPlayerView(playerGameVM: playerGameVM, gameType: .quiz)
                     }
                 case .quizThemeSelection:
                     QuizThemeSelectionView(viewModel: masterFlowVM.makeQuizThemeSelectionVM())
                 case .scoreMaster:
                     ScoreMasterView(masterFlowVM: masterFlowVM)
                 case .scorePlayer:
-                    if let teamGameVM = teamFlowVM.teamGameVM {
-                        ScorePlayerView(teamGameVM: teamGameVM)
+                    if let playerGameVM = playerFlowVM.playerGameVM {
+                        ScorePlayerView(playerGameVM: playerGameVM)
                     }
                 }
             }
             .alert(
-                "Équipe déconnectée",
+                "Joueur déconnecté",
                 isPresented: Binding(
-                    get: { masterFlowVM.disconnectedTeamName != nil },
-                    set: { if !$0 { masterFlowVM.disconnectedTeamName = nil } }
+                    get: { masterFlowVM.disconnectedPlayerName != nil },
+                    set: { if !$0 { masterFlowVM.disconnectedPlayerName = nil } }
                 )
             ) {
-                Button("OK") { masterFlowVM.disconnectedTeamName = nil }
+                Button("OK") { masterFlowVM.disconnectedPlayerName = nil }
             } message: {
-                if let name = masterFlowVM.disconnectedTeamName {
-                    Text("L'équipe « \(name) » s'est déconnectée.")
+                if let name = masterFlowVM.disconnectedPlayerName {
+                    Text("Le joueur « \(name) » s'est déconnecté.")
                 }
             }
         }

@@ -21,15 +21,15 @@ struct MasterChooseGameView: View {
             }
         }
         .background(BackgroundAppView())
-        .appDefaultTextStyle(Typography.body)
-        .toolbar {
+        .toolbar(content: {
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
                     connected: masterChooseGameVM.connectedPlayersCount,
                     total: masterChooseGameVM.totalPlayersCount
                 )
             }
-        }
+        })
+        .appDefaultTextStyle(Typography.body)
     }
 
     private var ipadLayout: some View {

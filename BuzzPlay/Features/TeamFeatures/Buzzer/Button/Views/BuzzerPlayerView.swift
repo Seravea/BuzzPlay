@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct BuzzerPlayerView: View {
-    @Bindable var teamGameVM: TeamGameViewModel
+    @Bindable var playerGameVM: PlayerGameViewModel
     var gameType: GameType
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(\.dismiss) private var dismiss
@@ -15,7 +15,7 @@ struct BuzzerPlayerView: View {
         ZStack {
             BackgroundAppView().ignoresSafeArea()
 
-            if let buzzerVM = teamGameVM.currentBuzzerVM {
+            if let buzzerVM = playerGameVM.currentBuzzerVM {
                 if sizeClass == .regular {
                     ipadLayout(buzzerVM: buzzerVM)
                 } else {
@@ -23,14 +23,14 @@ struct BuzzerPlayerView: View {
                 }
             }
 
-            if !teamGameVM.isConnectedToMaster {
+            if !playerGameVM.isConnectedToMaster {
                 ConnectionLostOverlay()
                     .transition(.opacity)
             }
         }
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .animation(.easeInOut(duration: 0.3), value: teamGameVM.isConnectedToMaster)
+        .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -50,7 +50,7 @@ struct BuzzerPlayerView: View {
 
     private func iphoneLayout(buzzerVM: BuzzerViewModel) -> some View {
         VStack(spacing: 0) {
-            PublicDisplayView(teamGameVM: teamGameVM, gameType: gameType)
+            PublicDisplayView(playerGameVM: playerGameVM, gameType: gameType)
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
                 .frame(maxHeight: 320)
@@ -66,7 +66,7 @@ struct BuzzerPlayerView: View {
 
     private func ipadLayout(buzzerVM: BuzzerViewModel) -> some View {
         HStack(spacing: 0) {
-            PublicDisplayView(teamGameVM: teamGameVM, gameType: gameType)
+            PublicDisplayView(playerGameVM: playerGameVM, gameType: gameType)
                 .padding(36)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(.white.opacity(0.03))
@@ -84,7 +84,7 @@ struct BuzzerPlayerView: View {
 
 #Preview {
     BuzzerPlayerView(
-        teamGameVM: TeamGameViewModel(
+        playerGameVM: PlayerGameViewModel(
             player: samplePlayers[0],
             mpc: MPCService(peerName: "Team1", role: .team)
         ),

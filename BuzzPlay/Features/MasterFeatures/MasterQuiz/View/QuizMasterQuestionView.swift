@@ -34,9 +34,9 @@ struct QuizActiveQuestionScreen: View {
             }
 
             // Bottom sheet buzz
-            if let team = buzzedPlayer {
+            if let player = buzzedPlayer {
                 QuizBuzzSheet(
-                    team: team,
+                    player: player,
                     reactionTime: quizMasterVM.formattedTime,
                     onValidate: onValidate,
                     onReject: onReject
@@ -119,8 +119,8 @@ struct QuizActiveQuestionScreen: View {
     // MARK: Scores + Waiting Radar
 
     private var scoresSection: some View {
-        let teams = quizMasterVM.gameVM.players.sorted { $0.score > $1.score }
-        let maxScore = max(teams.map(\.score).max() ?? 1, 1)
+        let players = quizMasterVM.gameVM.players.sorted { $0.score > $1.score }
+        let maxScore = max(players.map(\.score).max() ?? 1, 1)
 
         return VStack(alignment: .leading, spacing: 8) {
             Text("CLASSEMENT EN DIRECT")
@@ -129,8 +129,8 @@ struct QuizActiveQuestionScreen: View {
                 .tracking(0.8)
                 .padding(.leading, 2)
 
-            ForEach(teams) { team in
-                QuizScoreRow(team: team, maxScore: maxScore)
+            ForEach(players) { player in
+                QuizScoreRow(player: player, maxScore: maxScore)
             }
 
             // Radar — attente buzz
@@ -237,10 +237,6 @@ struct QuizBuzzSheet: View {
                     Text(player.name)
                         .font(.nohemi(.body, weight: .bold))
                         .foregroundStyle(.white)
-                    Text(player.players.map(\.name).joined(separator: " · "))
-                        .font(.nohemi(.caption2, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.45))
-                        .lineLimit(1)
                 }
 
                 Spacer()

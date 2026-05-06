@@ -10,7 +10,7 @@ import Observation
 
 
 @Observable
-final class TeamGameViewModel {
+final class PlayerGameViewModel {
 
     var player: Player
     var mpc: MPCService
@@ -46,7 +46,7 @@ final class TeamGameViewModel {
 
 
 //MARK: MPC Browsing functions
-extension TeamGameViewModel {
+extension PlayerGameViewModel {
     private func setupMPC() {
         guard !hasSetupMPC else { return }
         hasSetupMPC = true
@@ -104,7 +104,7 @@ extension TeamGameViewModel {
 
 
 //UI properties funcs
-extension TeamGameViewModel {
+extension PlayerGameViewModel {
     func gameIsAvalaible(_ game: GameType) -> Bool {
         openGames.contains(game)
     }
@@ -113,7 +113,7 @@ extension TeamGameViewModel {
 
 
 //MARK: receive Message from Master
-extension TeamGameViewModel {
+extension PlayerGameViewModel {
     func handleMessage(_ message: MPCMessage) {
         switch message {
         case .publicUpdate(let state):
@@ -142,7 +142,7 @@ extension TeamGameViewModel {
 }
 
 // MARK: - Timer mirroring logic
-extension TeamGameViewModel {
+extension PlayerGameViewModel {
     private func handlePublicStateChange(_ state: PublicState) {
         switch state {
         case .waiting:

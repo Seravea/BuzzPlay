@@ -9,11 +9,11 @@ import SwiftUI
 
 struct PublicDisplayView: View {
     
-    @Bindable var teamGameVM: TeamGameViewModel
+    @Bindable var playerGameVM: PlayerGameViewModel
     var gameType: GameType  
     var body: some View {
         VStack {
-            switch teamGameVM.publicState {
+            switch playerGameVM.publicState {
             case .waiting:
                 VStack(spacing: 8) {
                     Image(systemName: "hourglass")
@@ -32,22 +32,22 @@ struct PublicDisplayView: View {
                 .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.white.opacity(0.08), lineWidth: 1))
 
                 case .quiz(let quizState):
-                    PublicQuizDisplayView(state: quizState, timer: teamGameVM.formattedTime)
+                    PublicQuizDisplayView(state: quizState, timer: playerGameVM.formattedTime)
                     
                 case .blindTest(let blindTestState):
-                PublicBlindTestView(state: blindTestState, timer: teamGameVM.formattedTime)
+                PublicBlindTestView(state: blindTestState, timer: playerGameVM.formattedTime)
             }
         }
         .onDisappear {
-            teamGameVM.publicState = .waiting
+            playerGameVM.publicState = .waiting
         }
     }
 }
 
 #Preview {
     // Minimal preview scaffolding
-    let vm = TeamGameViewModel(player: Player(name: "Preview Team"),
+    let vm = PlayerGameViewModel(player: Player(name: "Preview Team"),
                                mpc: MPCService(peerName: "Preview", role: .team))
-    return PublicDisplayView(teamGameVM: vm, gameType: .blindTest)
+    return PublicDisplayView(playerGameVM: vm, gameType: .blindTest)
 }
 

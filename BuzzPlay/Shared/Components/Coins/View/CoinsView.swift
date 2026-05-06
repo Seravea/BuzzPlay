@@ -31,7 +31,7 @@ struct CoinsView: View {
 #Preview {
     VStack {
         CoinsView(coinsVM: CoinsViewModel(masterFlowVM: MasterFlowViewModel()))
-        CoinsView(coinsVM: CoinsViewModel(teamFlowVM: TeamFlowViewModel()))
+        CoinsView(coinsVM: CoinsViewModel(playerFlowVM: PlayerFlowViewModel()))
         
     }
 }

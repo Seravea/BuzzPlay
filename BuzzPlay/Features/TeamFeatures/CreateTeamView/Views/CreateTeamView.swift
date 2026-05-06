@@ -144,7 +144,7 @@ struct CreateTeamView: View {
                     let isSelected = createTeamVM.playerColor == color
                     Button {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                            createTeamVM.teamColor = color
+                            createTeamVM.playerColor = color
                         }
                     } label: {
                         Circle()

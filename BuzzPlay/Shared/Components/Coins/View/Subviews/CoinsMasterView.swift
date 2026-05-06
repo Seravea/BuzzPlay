@@ -31,20 +31,20 @@ struct CoinsMasterView: View {
                     
                     
                     HStack {
-                        ForEach(masterFlowVM.players) { team in
+                        ForEach(masterFlowVM.players) { player in
                             Menu {
                                 ForEach(coinsVM.moneyCanSend, id: \.self) { money in
-                                    
+
                                     Button {
-                                        //SEND money to TEAM
+                                        //SEND money to player
                                     } label: {
                                         Text("\(money) $")
                                     }
                                 }
                             } label: {
-                                PrimaryButtonView(title: team.name, action: {}, style: .filled(buttonStyle: .neutral), fontSize: Typography.body)
+                                PrimaryButtonView(title: player.name, action: {}, style: .filled(buttonStyle: .neutral), fontSize: Typography.body)
                                     .frame(maxWidth: 120)
-                                
+
                             }
                             
                         }

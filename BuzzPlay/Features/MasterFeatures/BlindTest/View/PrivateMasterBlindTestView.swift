@@ -10,7 +10,7 @@ struct PrivateMasterBlindTestView: View {
 
     @State private var showValidationOverlay = false
     @State private var validationPoints = 0
-    @State private var validationTeamName = ""
+    @State private var validationPlayerName = ""
 
     private enum Screen: Equatable { case search, songList, playing }
 
@@ -49,7 +49,7 @@ struct PrivateMasterBlindTestView: View {
             .opacity(currentScreen == .playing ? 1 : 0)
 
             if showValidationOverlay {
-                QuizValidationOverlay(points: validationPoints, teamName: validationTeamName)
+                QuizValidationOverlay(points: validationPoints, teamName: validationPlayerName)
                     .transition(.asymmetric(
                         insertion: .scale(scale: 0.8).combined(with: .opacity),
                         removal: .opacity
@@ -80,7 +80,7 @@ struct PrivateMasterBlindTestView: View {
 
     private func handleValidate(points: Int) {
         validationPoints = points
-        validationTeamName = blindTestVM.playerHasBuzz?.name ?? ""
+        validationPlayerName = blindTestVM.playerHasBuzz?.name ?? ""
         withAnimation(.spring(duration: 0.3, bounce: 0.2)) { showValidationOverlay = true }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             blindTestVM.validateAnswer(points: points)

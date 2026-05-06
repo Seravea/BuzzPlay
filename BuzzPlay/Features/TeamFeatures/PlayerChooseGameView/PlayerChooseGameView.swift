@@ -6,9 +6,9 @@
 import SwiftUI
 
 struct PlayerChooseGameView: View {
-    @Bindable var teamGameVM: TeamGameViewModel
+    @Bindable var playerGameVM: PlayerGameViewModel
     @EnvironmentObject var router: Router
-    @Bindable var teamFlowVM: TeamFlowViewModel
+    @Bindable var playerFlowVM: PlayerFlowViewModel
     @Environment(\.horizontalSizeClass) private var sizeClass
 
     private let accentColor = Color.white
@@ -28,22 +28,22 @@ struct PlayerChooseGameView: View {
                 .frame(maxWidth: .infinity)
             }
 
-            if !teamGameVM.isConnectedToMaster {
+            if !playerGameVM.isConnectedToMaster {
                 ConnectionLostOverlay()
             }
 
             // Invite du Master
-            if let game = teamGameVM.pendingGameInvite {
+            if let game = playerGameVM.pendingGameInvite {
                 GameInviteOverlay(
                     game: game,
                     accentColor: accentColor,
                     onJoin: { joinGame(game) },
-                    onDismiss: { teamGameVM.pendingGameInvite = nil }
+                    onDismiss: { playerGameVM.pendingGameInvite = nil }
                 )
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .animation(.spring(duration: 0.45, bounce: 0.05), value: teamGameVM.pendingGameInvite != nil)
+        .animation(.spring(duration: 0.45, bounce: 0.05), value: playerGameVM.pendingGameInvite != nil)
         .navigationBarBackButtonHidden()
     }
 
@@ -56,22 +56,15 @@ struct PlayerChooseGameView: View {
                 .frame(width: 12, height: 12)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(teamGameVM.player.name)
+                Text(playerGameVM.player.name)
                     .font(.nohemi(.title2, weight: .extraBold))
                     .foregroundStyle(.white)
-                let playerNames = teamGameVM.player.players.map(\.name).filter { !$0.isEmpty }.joined(separator: " · ")
-                if !playerNames.isEmpty {
-                    Text(playerNames)
-                        .font(.nohemi(.caption, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.5))
-                        .lineLimit(1)
-                }
             }
 
             Spacer()
 
             VStack(alignment: .trailing, spacing: 1) {
-                Text("\(teamGameVM.player.score)")
+                Text("\(playerGameVM.player.score)")
                     .font(.nohemi(.title2, weight: .extraBold))
                     .foregroundStyle(accentColor)
                 Text("points")
@@ -113,7 +106,7 @@ struct PlayerChooseGameView: View {
 
     @ViewBuilder
     private func gameCard(_ game: GameType) -> some View {
-        let isOpen = teamGameVM.gameIsAvalaible(game)
+        let isOpen = playerGameVM.gameIsAvalaible(game)
         Button {
             if isOpen { joinGame(game) }
         } label: {
@@ -157,7 +150,7 @@ struct PlayerChooseGameView: View {
     // MARK: - Horizontal Score Row (iPhone only)
 
     private var scoreRow: some View {
-        let isOpen = teamGameVM.gameIsAvalaible(.score)
+        let isOpen = playerGameVM.gameIsAvalaible(.score)
         return Button {
             if isOpen { joinGame(.score) }
         } label: {
@@ -206,9 +199,9 @@ struct PlayerChooseGameView: View {
     // MARK: - Join Game (partagé entre tap carte et auto-nav invite)
 
     private func joinGame(_ game: GameType) {
-        teamGameVM.pendingGameInvite = nil
+        playerGameVM.pendingGameInvite = nil
         if game != .score {
-            teamGameVM.currentBuzzerVM = teamFlowVM.makeBuzzerViewModel(
+            playerGameVM.currentBuzzerVM = playerFlowVM.makeBuzzerViewModel(
                 for: game == .quiz ? .quiz : .blindTest
             )
         }
@@ -349,11 +342,11 @@ private struct GameInviteOverlay: View {
 
 #Preview {
     PlayerChooseGameView(
-        teamGameVM: TeamGameViewModel(
+        playerGameVM: PlayerGameViewModel(
             player: Player(name: "L'équipe des nul", teamColor: .blueGame),
             mpc: MPCService(peerName: "l'équipe", role: .team)
         ),
-        teamFlowVM: TeamFlowViewModel()
+        playerFlowVM: PlayerFlowViewModel()
     )
     .environmentObject(Router())
 }

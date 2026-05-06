@@ -12,7 +12,7 @@ struct QuizMasterListView: View {
 
     @State private var showValidationOverlay = false
     @State private var validationPoints = 0
-    @State private var validationTeamName = ""
+    @State private var validationPlayerName = ""
 
     var body: some View {
         ZStack {
@@ -34,7 +34,7 @@ struct QuizMasterListView: View {
 
             // Validation overlay — au-dessus des deux écrans
             if showValidationOverlay {
-                QuizValidationOverlay(points: validationPoints, teamName: validationTeamName)
+                QuizValidationOverlay(points: validationPoints, teamName: validationPlayerName)
                     .transition(.asymmetric(
                         insertion: .scale(scale: 0.8).combined(with: .opacity),
                         removal: .opacity
@@ -68,7 +68,7 @@ struct QuizMasterListView: View {
 
     private func handleValidate(points: Int) {
         validationPoints = points
-        validationTeamName = quizMasterVM.gameVM.currentBuzzTeam?.name ?? ""
+        validationPlayerName = quizMasterVM.gameVM.currentBuzzPlayer?.name ?? ""
 
         withAnimation(.spring(duration: 0.3, bounce: 0.2)) {
             showValidationOverlay = true

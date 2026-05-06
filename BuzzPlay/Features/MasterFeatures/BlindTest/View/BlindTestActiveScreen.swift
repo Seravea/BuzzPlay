@@ -32,9 +32,9 @@ struct BlindTestActiveScreen: View {
             }
 
             // Bottom sheet buzz
-            if let team = buzzedPlayer {
+            if let player = buzzedPlayer {
                 BlindTestBuzzSheet(
-                    player: team,
+                    player: player,
                     reactionTime: blindTestVM.formattedTime,
                     onValidate: onValidate,
                     onReject: onReject
@@ -108,8 +108,8 @@ struct BlindTestActiveScreen: View {
     }
 
     private var scoresSection: some View {
-        let teams = blindTestVM.gameVM.players.sorted { $0.score > $1.score }
-        let maxScore = max(teams.map(\.score).max() ?? 1, 1)
+        let players = blindTestVM.gameVM.players.sorted { $0.score > $1.score }
+        let maxScore = max(players.map(\.score).max() ?? 1, 1)
 
         return VStack(alignment: .leading, spacing: 8) {
             Text("CLASSEMENT EN DIRECT")
@@ -118,8 +118,8 @@ struct BlindTestActiveScreen: View {
                 .tracking(0.8)
                 .padding(.leading, 2)
 
-            ForEach(teams) { team in
-                QuizScoreRow(player: team, maxScore: maxScore)
+            ForEach(players) { player in
+                QuizScoreRow(player: player, maxScore: maxScore)
             }
 
             if blindTestVM.isPlaying && buzzedPlayer == nil {

@@ -59,7 +59,7 @@ struct LobbyMasterView: View {
                         .foregroundStyle(.white.opacity(0.40))
                 }
                 VStack(spacing: 6) {
-                    Text("En attente des équipes…")
+                    Text("En attente des joueurs…")
                         .font(.nohemi(.title3, weight: .semiBold))
                     Text("Demande aux joueurs de rejoindre la partie")
                         .font(.nohemi(.subheadline))
@@ -72,13 +72,13 @@ struct LobbyMasterView: View {
         }
     }
 
-    // MARK: - Team list + start button
+    // MARK: - Player list + start button
 
     private var teamList: some View {
         VStack(spacing: 0) {
             // Section label
             HStack {
-                Text("ÉQUIPES CONNECTÉES")
+                Text("JOUEURS CONNECTÉS")
                     .font(.nohemi(.caption2, weight: .bold))
                     .tracking(0.8)
                     .foregroundStyle(.white.opacity(0.40))
@@ -95,8 +95,8 @@ struct LobbyMasterView: View {
 
             ScrollView {
                 VStack(spacing: 10) {
-                    ForEach(masterGameVM.players) { team in
-                        LobbyTeamRow(team: team)
+                    ForEach(masterGameVM.players) { player in
+                        LobbyTeamRow(player: player)
                     }
                 }
                 .padding(.horizontal, 18)
@@ -153,12 +153,6 @@ private struct LobbyTeamRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(player.name)
                     .font(.nohemi(.body, weight: .bold))
-                if !player.players.isEmpty {
-                    Text(player.players.map(\.name).filter { !$0.isEmpty }.joined(separator: " · "))
-                        .font(.nohemi(.caption, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.50))
-                        .lineLimit(1)
-                }
             }
 
             Spacer()

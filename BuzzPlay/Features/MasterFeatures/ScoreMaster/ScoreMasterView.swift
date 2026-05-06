@@ -14,8 +14,8 @@ struct ScoreMasterView: View {
         //Ladder Teams sorted by scores
         ScrollView(.horizontal) {
             HStack {
-                ForEach(masterFlowVM.players.sorted(by: { $0.score > $1.score })) { team in
-                    TeamCardView(player: team, showPoints: true)
+                ForEach(masterFlowVM.players.sorted(by: { $0.score > $1.score })) { player in
+                    TeamCardView(player: player, showPoints: true)
                 }
             }
             

@@ -1,5 +1,5 @@
 //
-//  TeamFlowViewModel.swift
+//  PlayerFlowViewModel.swift
 //  BuzzPlay
 //
 //  Created by Apprenant 102 on 13/11/2025.
@@ -9,7 +9,7 @@ import Foundation
 import Observation
 
 @Observable
-class TeamFlowViewModel {
+class PlayerFlowViewModel {
     //MARK: - Persistence
     private let savedPlayerKey = "buzzplay.savedPlayer.v1"
 
@@ -49,7 +49,7 @@ class TeamFlowViewModel {
     /// Reset only the in-memory session.
     /// If you pass clearPersistence=true, it also deletes the saved player.
     func resetLocalSession(clearPersistence: Bool = false) {
-        teamGameVM = nil
+        playerGameVM = nil
         mpc = nil
         player = nil
         // On garde éventuellement le draft (proposition) mais on ne doit rien connecter.
@@ -67,7 +67,7 @@ class TeamFlowViewModel {
             print("TeamFlow: failed to persist player: \(error)")
         }
     }
-    var teamGameVM: TeamGameViewModel?
+    var playerGameVM: PlayerGameViewModel?
     var mpc: MPCService?
 
     var player: Player?
@@ -81,7 +81,7 @@ class TeamFlowViewModel {
 
             // Si une ancienne session existe (retour arrière, relance, etc.),
             // on la reset pour permettre de créer/rejoindre une nouvelle player.
-            if self.teamGameVM != nil || self.mpc != nil {
+            if self.playerGameVM != nil || self.mpc != nil {
                 print("TeamFlow: existing session detected, resetting before creating a new player")
                 self.resetLocalSession(clearPersistence: false)
             }
@@ -103,9 +103,9 @@ class TeamFlowViewModel {
             let mpc = MPCService(peerName: newPlayer.name, role: .team)
             self.mpc = mpc
 
-            // Le TeamGameVM doit recevoir LE MÊME PLAYER
-            let gameVM = TeamGameViewModel(player: newPlayer, mpc: mpc)
-            self.teamGameVM = gameVM
+            // Le PlayerGameVM doit recevoir LE MÊME PLAYER
+            let gameVM = PlayerGameViewModel(player: newPlayer, mpc: mpc)
+            self.playerGameVM = gameVM
 
             // On lance le browsing après que tout soit en place
             gameVM.startBrowsing()
@@ -118,12 +118,12 @@ class TeamFlowViewModel {
 
 
     func makeBuzzerViewModel(for mode: BuzzerGameMode) -> BuzzerViewModel {
-        guard let teamVM = teamGameVM else {
+        guard let playerVM = playerGameVM else {
             fatalError("Pas de player défini")
         }
 
-        let vm = BuzzerViewModel(player: teamVM.player, mode: mode)
-        teamVM.currentBuzzerVM = vm
+        let vm = BuzzerViewModel(player: playerVM.player, mode: mode)
+        playerVM.currentBuzzerVM = vm
 
         // buzz -> envoi MPC
         vm.onBuzz = { [weak self] player, mode in
@@ -131,7 +131,7 @@ class TeamFlowViewModel {
             vm.isEnabled = false
 
             guard let mpc = self?.mpc else {
-                print("ERREUR MPC: pas de MPCService dans TeamFlowViewModel")
+                print("ERREUR MPC: pas de MPCService dans PlayerFlowViewModel")
                 return
             }
 

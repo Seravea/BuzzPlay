@@ -18,7 +18,7 @@ class CoinsViewModel {
     var selectedMoney: Int?
     var isSendingOpen: Bool = false
     var masterFlowViewModel: MasterFlowViewModel?
-    var teamFlowViewModel: TeamFlowViewModel?
+    var playerFlowViewModel: PlayerFlowViewModel?
     
     var errorMessage: String?
     
@@ -26,12 +26,12 @@ class CoinsViewModel {
     
     init(masterFlowVM: MasterFlowViewModel) {
         self.masterFlowViewModel = masterFlowVM
-        self.teamFlowViewModel = nil
+        self.playerFlowViewModel = nil
     }
     
-    init(teamFlowVM: TeamFlowViewModel) {
+    init(playerFlowVM: PlayerFlowViewModel) {
         self.masterFlowViewModel = nil
-        self.teamFlowViewModel = teamFlowVM
+        self.playerFlowViewModel = playerFlowVM
     }
    
     
@@ -106,16 +106,16 @@ extension CoinsViewModel {
     }
     
     func buyGift(_ gift: Gift) {
-        guard let team = teamFlowViewModel?.player else {
-            errorMessage = "Pas de team trouvé"
+        guard let player = playerFlowViewModel?.player else {
+            errorMessage = "Pas de joueur trouvé"
             return
         }
-        guard team.accountAmount >= gift.price else {
+        guard player.accountAmount >= gift.price else {
             errorMessage = "Tu n'as pas assez d'argent"
             return
         }
         
-        onBuyGift?(team, gift)
+        onBuyGift?(player, gift)
     }
     
 }

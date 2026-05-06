@@ -6,10 +6,10 @@
 import SwiftUI
 
 struct ScorePlayerView: View {
-    var teamGameVM: TeamGameViewModel
+    var playerGameVM: PlayerGameViewModel
     @Environment(\.horizontalSizeClass) private var sizeClass
 
-    private var currentPlayer: Player { teamGameVM.player }
+    private var currentPlayer: Player { playerGameVM.player }
     private var teamColor: Color { Color(currentPlayer.teamColor.rawValue) }
 
     var body: some View {
@@ -32,7 +32,7 @@ struct ScorePlayerView: View {
             VStack(spacing: 20) {
                 scoreHero
                 playersCard
-                if !teamGameVM.openGames.filter({ $0 != .score }).isEmpty {
+                if !playerGameVM.openGames.filter({ $0 != .score }).isEmpty {
                     nextGamesCard
                 }
             }
@@ -51,7 +51,7 @@ struct ScorePlayerView: View {
             }
             .frame(maxWidth: .infinity)
 
-            if !teamGameVM.openGames.filter({ $0 != .score }).isEmpty {
+            if !playerGameVM.openGames.filter({ $0 != .score }).isEmpty {
                 nextGamesCard
                     .frame(maxWidth: 320)
             }
@@ -133,7 +133,6 @@ struct ScorePlayerView: View {
                 .foregroundStyle(.white.opacity(0.4))
                 .tracking(0.8)
 
-//            let validPlayers = player.players.filter { !$0.name.isEmpty }
 //            if validPlayers.isEmpty {
 //                Text("Aucun joueur")
 //                    .font(.nohemi(.subheadline, weight: .regular))
@@ -169,7 +168,7 @@ struct ScorePlayerView: View {
     // MARK: - Next Games
 
     private var nextGamesCard: some View {
-        let available = teamGameVM.openGames.filter { $0 != .score }
+        let available = playerGameVM.openGames.filter { $0 != .score }
         return VStack(alignment: .leading, spacing: 12) {
             Text("JEUX DISPONIBLES")
                 .font(.nohemi(.caption2, weight: .bold))
@@ -260,7 +259,7 @@ private struct FlowLayout: Layout {
 
 #Preview {
     ScorePlayerView(
-        teamGameVM: TeamGameViewModel(
+        playerGameVM: PlayerGameViewModel(
             player: samplePlayers[0],
             mpc: MPCService(peerName: samplePlayers[0].name, role: .team)
         )
