@@ -8,23 +8,26 @@
 import SwiftUI
 
 struct ButtonGameCardView: View {
-//    var geo: GeometryProxy
     var gameTitle: String
     var action: () -> Void
+
     var body: some View {
         Button {
             action()
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
         } label: {
             Text(gameTitle)
+                .font(.nohemi(.title2, weight: .bold))
                 .foregroundStyle(.black)
                 .padding()
                 .frame(width: 300, height: 500)
-//                .frame(width: geo.size.width * 0.25, height: geo.size.height * 0.5)
                 .background {
                     RoundedRectangle(cornerRadius: 12)
                         .foregroundStyle(Color.mustardYellow)
                 }
+                .shadow(color: Color.mustardYellow.opacity(0.4), radius: 16, y: 8)
         }
+        .buttonStyle(.plain)
     }
 }
 

@@ -13,32 +13,46 @@ struct PublicBlindTestView: View {
     let timer: String
 
     var body: some View {
-        VStack {
-
+        VStack(spacing: 0) {
             // Header + Timer
-            HStack {
+            HStack(alignment: .top, spacing: 20) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Blind Test")
-                        .font(.nohemi(.largeTitle, weight: .bold))
+                        .font(.custom("Nohemi-ExtraBold", size: 48))
 
-                    Text(state.isPlaying ? "🎵 En cours" : "⏸️ En pause")
-                        .font(.nohemi(.title3))
-                        .opacity(0.8)
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(state.isPlaying ? Color.mustardYellow : .white.opacity(0.3))
+                            .frame(width: 8, height: 8)
+
+                        Text(state.isPlaying ? "En cours" : "En pause")
+                            .font(.nohemi(.subheadline, weight: .semiBold))
+                            .opacity(0.7)
+                    }
                 }
 
                 Spacer()
 
-                VStack(alignment: .trailing, spacing: 6) {
-                    Text("Temps")
-                        .font(.nohemi(.title3, weight: .bold))
-                        .opacity(0.8)
+                VStack(spacing: 4) {
+                    Text("TEMPS")
+                        .font(.nohemi(.caption, weight: .bold))
+                        .opacity(0.5)
+                        .tracking(0.8)
 
                     Text(timer)
-                        .font(.nohemi(.largeTitle, weight: .bold))
+                        .font(.custom("Nohemi-Black", size: 44))
+                        .monospacedDigit()
+                        .foregroundStyle(Color.mustardYellow)
                 }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(Color.darkestPurple, in: RoundedRectangle(cornerRadius: 16))
             }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 20)
 
             Divider()
+                .opacity(0.2)
 
             // Song info (revealed or hidden)
             VStack(spacing: 12) {
@@ -57,36 +71,66 @@ struct PublicBlindTestView: View {
                 }()
 
                 Text(displayTitle)
-                    .font(.nohemi(.largeTitle, weight: .bold))
+                    .font(.custom("Nohemi-Black", size: 56))
                     .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 0.8).combined(with: .opacity),
+                        removal: .opacity
+                    ))
 
                 if let displaySubtitle {
                     Text(displaySubtitle)
-                        .font(.nohemi(.title3))
-                        .opacity(0.9)
+                        .font(.custom("Nohemi-Bold", size: 28))
+                        .opacity(0.8)
+                        .transition(.opacity)
                 } else {
                     Text("…")
-                        .font(.nohemi(.title3))
-                        .opacity(0.7)
+                        .font(.custom("Nohemi-Medium", size: 28))
+                        .opacity(0.4)
                 }
             }
             .frame(maxWidth: .infinity)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 24)
 
             Spacer()
 
             // Buzz result
             if let team = state.buzzingTeam {
-                TeamCardView(team: team, buzzTime: state.formattedTime, showPoints: false)
+                VStack(spacing: 12) {
+                    Text("A BUZZÉ")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .opacity(0.5)
+                        .tracking(0.8)
+
+                    TeamCardView(team: team, buzzTime: state.formattedTime, showPoints: false)
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 20)
+                .frame(maxWidth: .infinity)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             } else {
-                Text("En attente d’un buzz…")
-                    .font(.nohemi(.title3))
-                    .opacity(0.8)
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(Color.mustardYellow.opacity(0.3))
+                        .frame(width: 12, height: 12)
+
+                    Text("En attente d’un buzz…")
+                        .font(.nohemi(.title3, weight: .medium))
+                        .opacity(0.6)
+
+                    Spacer()
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 16)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             Spacer()
         }
-        .padding()
-        .animation(.default, value: state)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .animation(.spring(duration: 0.4), value: state)
     }
 }
 

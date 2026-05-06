@@ -258,6 +258,7 @@ private struct QuizQuestionRow: View {
 struct QuizValidationOverlay: View {
     let points: Int
     let teamName: String
+    @State private var scale: CGFloat = 0.8
 
     var body: some View {
         ZStack {
@@ -265,17 +266,36 @@ struct QuizValidationOverlay: View {
                 .ignoresSafeArea()
                 .background(.ultraThinMaterial)
 
-            VStack(spacing: 10) {
-                Text("✅")
-                    .font(.system(size: 52))
-                Text("+\(points)")
-                    .font(.nohemi(.largeTitle, weight: .black))
-                    .foregroundStyle(Color(hex: "#7DFFA0"))
-                    .tracking(1)
+            VStack(spacing: 16) {
+                ZStack {
+                    // Glow circles
+                    Circle()
+                        .fill(Color(hex: "#7DFFA0").opacity(0.15))
+                        .frame(width: 120, height: 120)
+                        .blur(radius: 16)
+
+                    VStack(spacing: 12) {
+                        Text("✅")
+                            .font(.system(size: 56))
+                        Text("+\(points)")
+                            .font(.nohemi(.largeTitle, weight: .black))
+                            .foregroundStyle(Color(hex: "#7DFFA0"))
+                            .tracking(1)
+                    }
+                }
+                .scaleEffect(scale)
+                .onAppear {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.65)) {
+                        scale = 1.0
+                    }
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                }
+
                 Text(teamName)
                     .font(.nohemi(.body, weight: .semiBold))
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(.white.opacity(0.7))
             }
+            .padding(32)
         }
     }
 }

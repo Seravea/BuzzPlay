@@ -25,11 +25,11 @@ struct QuizActiveQuestionScreen: View {
             }
             .padding(.horizontal, 20)
 
-            // Dimmed overlay quand une équipe a buzzé
+            // Dimmed overlay quand une équipe a buzzé — bloque les interactions avec l'écran derrière
             if buzzedTeam != nil {
                 Color.black.opacity(0.5)
                     .ignoresSafeArea()
-                    .onTapGesture { } // bloque le tap en dessous
+                    .contentShape(Rectangle())
                     .transition(.opacity)
             }
 
@@ -151,6 +151,7 @@ struct QuizActiveQuestionScreen: View {
 struct QuizScoreRow: View {
     let team: Team
     let maxScore: Int
+    @State private var scoreChanged = false
 
     var body: some View {
         HStack(spacing: 10) {
@@ -171,7 +172,7 @@ struct QuizScoreRow: View {
                     Capsule()
                         .fill(team.teamColor.gradient)
                         .frame(width: w, height: 4)
-                        .animation(.spring(), value: team.score)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: team.score)
                 }
             }
             .frame(width: 80, height: 4)
@@ -180,11 +181,23 @@ struct QuizScoreRow: View {
                 .font(.nohemi(.subheadline, weight: .bold))
                 .foregroundStyle(.white.opacity(0.9))
                 .frame(minWidth: 50, alignment: .trailing)
+                .scaleEffect(scoreChanged ? 1.1 : 1.0)
+                .animation(.easeInOut(duration: 0.3), value: scoreChanged)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
         .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.white.opacity(0.07), lineWidth: 1))
+        .shadow(color: team.teamColor.color.opacity(0.15), radius: 8, y: 3)
+        .onChange(of: team.score) { oldScore, newScore in
+            if newScore > oldScore {
+                scoreChanged = true
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    scoreChanged = false
+                }
+            }
+        }
     }
 }
 
@@ -290,7 +303,10 @@ struct QuizBuzzSheet: View {
     @ViewBuilder
     private func validationButton(points: Int, scale: CGFloat, highlighted: Bool = false) -> some View {
         let responses = points / 10
-        Button { onValidate(points) } label: {
+        Button {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            onValidate(points)
+        } label: {
             VStack(spacing: 2) {
                 Text("+\(points)")
                     .font(.nohemi(.title3, weight: .extraBold))
@@ -307,7 +323,7 @@ struct QuizBuzzSheet: View {
                 in: RoundedRectangle(cornerRadius: 14)
             )
             .opacity(highlighted ? 1 : (scale < 0.9 ? 0.65 : 0.82))
-            .shadow(color: highlighted ? Color.greenButtonLeading.opacity(0.35) : .clear, radius: 8)
+            .shadow(color: highlighted ? Color.greenButtonLeading.opacity(0.4) : Color.greenButtonLeading.opacity(0.15), radius: 12, y: 4)
             .scaleEffect(scale)
         }
         .buttonStyle(.plain)
@@ -361,5 +377,19 @@ extension GameColor {
         case .yellowGame: return LinearGradient(colors: [Color(hex: "#F0B100"), Color(hex: "#FF6900")], startPoint: .leading, endPoint: .trailing)
         case .purpleGame: return LinearGradient(colors: [Color(hex: "#AD46FF"), Color(hex: "#F6339A")], startPoint: .leading, endPoint: .trailing)
         }
+    }
+}
+
+#Preview {
+    ZStack {
+        BackgroundAppView().ignoresSafeArea()
+        QuizActiveQuestionScreen(
+            quizMasterVM: QuizMasterViewModel(
+                gameVM: MasterFlowViewModel(),
+                quizSet: QuizSamples.music2000s
+            ),
+            onValidate: { _ in },
+            onReject: {}
+        )
     }
 }
