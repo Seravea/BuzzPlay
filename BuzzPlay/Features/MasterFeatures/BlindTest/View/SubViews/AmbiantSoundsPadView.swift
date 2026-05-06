@@ -33,3 +33,14 @@ struct AmbiantSoundsPadView: View {
         }
     }
 }
+
+#Preview {
+    ZStack {
+        BackgroundAppView().ignoresSafeArea()
+        AmbiantSoundsPadView(
+            ambiantAudioPlayerVM: AmbiantSoundViewModel(),
+            blindTestVM: BlindTestMasterViewModel(gameVM: MasterFlowViewModel())
+        )
+        .padding()
+    }
+}

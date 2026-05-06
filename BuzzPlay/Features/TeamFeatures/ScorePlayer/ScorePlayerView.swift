@@ -89,7 +89,7 @@ struct ScorePlayerView: View {
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("\(team.score)")
-                        .font(.nohemi(.system(size: 56), weight: .black))
+                        .font(.custom("Nohemi-Black", size: 56))
                         .foregroundStyle(teamColor)
                     Text("points")
                         .font(.nohemi(.subheadline, weight: .regular))

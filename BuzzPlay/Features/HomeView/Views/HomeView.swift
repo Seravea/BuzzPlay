@@ -18,14 +18,14 @@ struct HomeView: View {
                     Text("BUZZ · QUIZ · BLIND TEST")
                         .font(.nohemi(.caption2, weight: .bold))
                         .tracking(0.8)
-                        .foregroundStyle(.white.opacity(0.40))
+                        .foregroundStyle(.white.opacity(0.55))
                         .padding(.bottom, 12)
 
                     BPWordmarkView(size: 64)
 
                     Text("Le party-game qui transforme tes potes en équipe.")
                         .font(.nohemi(.body))
-                        .foregroundStyle(.white.opacity(0.70))
+                        .foregroundStyle(.white.opacity(0.85))
                         .lineSpacing(3)
                         .padding(.top, 14)
                 }
