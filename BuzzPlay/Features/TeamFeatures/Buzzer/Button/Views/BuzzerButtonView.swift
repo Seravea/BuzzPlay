@@ -13,14 +13,17 @@ struct BuzzerButtonView: View {
     private var ourTeamBuzzed: Bool { buzzerVM.playerNameHasBuzz == buzzerVM.player.name }
     private var hasBuzzed: Bool { buzzerVM.playerNameHasBuzz != nil }
 
+    // Couleur personnalisée du joueur (depuis ses assets GameColor)
+    private var playerColor: Color { Color(buzzerVM.player.teamColor.rawValue) }
+
     var body: some View {
         VStack(spacing: 20) {
             ZStack {
                 // Pulse rings — uniquement quand actif et pas encore buzzé
                 if buzzerVM.isEnabled && !hasBuzzed {
-                    PulseRingView(delay: 0.0, color: Color(hex: "FB2C36"))
-                    PulseRingView(delay: 0.7, color: Color(hex: "FB2C36"))
-                    PulseRingView(delay: 1.4, color: Color(hex: "FB2C36"))
+                    PulseRingView(delay: 0.0, color: playerColor)
+                    PulseRingView(delay: 0.7, color: playerColor)
+                    PulseRingView(delay: 1.4, color: playerColor)
                 }
 
                 // Halo radial
@@ -28,7 +31,7 @@ struct BuzzerButtonView: View {
                     .fill(
                         RadialGradient(
                             colors: [
-                                Color(hex: "FB2C36").opacity(buzzerVM.isEnabled ? 0.45 : 0.08),
+                                playerColor.opacity(buzzerVM.isEnabled ? 0.45 : 0.08),
                                 .clear,
                             ],
                             center: .center,
@@ -45,9 +48,9 @@ struct BuzzerButtonView: View {
                         .fill(
                             RadialGradient(
                                 stops: [
-                                    .init(color: Color(hex: "FF5060"), location: 0),
-                                    .init(color: Color(hex: "FB2C36"), location: 0.50),
-                                    .init(color: Color(hex: "B10018"), location: 1),
+                                    .init(color: playerColor.opacity(0.95), location: 0),
+                                    .init(color: playerColor, location: 0.50),
+                                    .init(color: playerColor.opacity(0.72), location: 1),
                                 ],
                                 center: .init(x: 0.5, y: 0.35),
                                 startRadius: 0,
@@ -55,11 +58,9 @@ struct BuzzerButtonView: View {
                             )
                         )
                         .frame(width: 220, height: 220)
-                        // Ring shadows
-                        .shadow(color: Color(hex: "FB2C36").opacity(0.18), radius: 0)
-                        .shadow(color: Color(hex: "FB2C36").opacity(0.08), radius: 8)
-                        // Bottom glow
-                        .shadow(color: Color(hex: "FB2C36").opacity(0.40), radius: 30, y: 15)
+                        .shadow(color: playerColor.opacity(0.18), radius: 0)
+                        .shadow(color: playerColor.opacity(0.08), radius: 8)
+                        .shadow(color: playerColor.opacity(0.40), radius: 30, y: 15)
                         .opacity(buzzerVM.isEnabled ? 1 : (ourTeamBuzzed ? 0.65 : 0.30))
 
                     VStack(spacing: 4) {
@@ -101,7 +102,7 @@ struct BuzzerButtonView: View {
                 if teamName == buzzerVM.player.name {
                     Text("Tu as buzzé !")
                         .font(.nohemi(.headline, weight: .bold))
-                        .foregroundStyle(Color(hex: "F6339A"))
+                        .foregroundStyle(playerColor)
                 } else {
                     Text("\(teamName) a buzzé")
                         .font(.nohemi(.headline, weight: .regular))
