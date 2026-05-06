@@ -15,7 +15,7 @@ struct ScoreMasterView: View {
         ScrollView(.horizontal) {
             HStack {
                 ForEach(masterFlowVM.players.sorted(by: { $0.score > $1.score })) { team in
-                    TeamCardView(team: team, showPoints: true)
+                    TeamCardView(player: team, showPoints: true)
                 }
             }
             

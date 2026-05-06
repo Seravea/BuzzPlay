@@ -192,8 +192,8 @@ extension BlindTestMasterViewModel {
         stopReactionTimer()
         isPlaying = false
         isGameActive = false
-        teamHasBuzz = nil
-        gameVM.currentBuzzTeam = nil
+        playerHasBuzz = nil
+        gameVM.currentBuzzPlayer = nil
         gameVM.isBuzzLocked = false
         state = .idle
         gameVM.broadcastPublicStateFromCurrentGame()

@@ -29,7 +29,7 @@ struct TeamCardView: View {
             }
             .font(.nohemi(.title2, weight: .bold))
             
-        }
+        
             .padding()
             .foregroundStyle(.black)
             .background(

@@ -97,14 +97,14 @@ struct PublicBlindTestView: View {
             Spacer()
 
             // Buzz result
-            if let team = state.buzzingPlayer {
+            if let player = state.buzzingPlayer {
                 VStack(spacing: 12) {
                     Text("A BUZZÉ")
                         .font(.nohemi(.caption2, weight: .bold))
                         .opacity(0.5)
                         .tracking(0.8)
 
-                    TeamCardView(team: team, buzzTime: state.formattedTime, showPoints: false)
+                    TeamCardView(player: player,buzzTime: state.formattedTime, showPoints: false)
                 }
                 .padding(.horizontal, 24)
                 .padding(.vertical, 20)
@@ -139,7 +139,7 @@ struct PublicBlindTestView: View {
         title: "🎵 Blind Test en cours",
         artist: nil,
         formattedTime: "00:12",
-        buzzingTeam: nil,
+        buzzingPlayer: nil,
         isAnswerRevealed: false,
         isPlaying: true
     )

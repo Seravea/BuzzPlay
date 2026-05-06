@@ -22,7 +22,7 @@ class CoinsViewModel {
     
     var errorMessage: String?
     
-    var onBuyGift: ((Team, Gift) -> Void)?
+    var onBuyGift: ((Player, Gift) -> Void)?
     
     init(masterFlowVM: MasterFlowViewModel) {
         self.masterFlowViewModel = masterFlowVM
@@ -110,7 +110,7 @@ extension CoinsViewModel {
             errorMessage = "Pas de team trouvé"
             return
         }
-        guard player.accountAmount >= gift.price else {
+        guard team.accountAmount >= gift.price else {
             errorMessage = "Tu n'as pas assez d'argent"
             return
         }

@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct BlindTestBuzzSheet: View {
-    let player: Team
+    let player: Player
     let reactionTime: String
     let onValidate: (Int) -> Void
     let onReject: () -> Void
@@ -37,10 +37,7 @@ struct BlindTestBuzzSheet: View {
                     Text(player.name)
                         .font(.nohemi(.body, weight: .bold))
                         .foregroundStyle(.white)
-                    Text(player.players.map(\.name).joined(separator: " · "))
-                        .font(.nohemi(.caption2, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.45))
-                        .lineLimit(1)
+                    
                 }
 
                 Spacer()
@@ -132,7 +129,7 @@ struct BlindTestBuzzSheet: View {
     ZStack {
         BackgroundAppView().ignoresSafeArea()
         BlindTestBuzzSheet(
-            player: Player(name: "L'équipe", teamColor: .blueGame, players: [Player(name: "Romain")]),
+            player: Player(name: "L'équipe", teamColor: .blueGame),
             reactionTime: "0.45s",
             onValidate: { _ in },
             onReject: {}

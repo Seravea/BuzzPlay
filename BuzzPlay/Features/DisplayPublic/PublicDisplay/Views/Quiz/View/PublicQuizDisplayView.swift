@@ -56,7 +56,7 @@ struct PublicQuizDisplayView: View {
                         .opacity(0.5)
                         .tracking(0.8)
 
-                    TeamCardView(team: teamHasBuzz, buzzTime: state.formattedTime, showPoints: false)
+                    TeamCardView(player: teamHasBuzz, buzzTime: state.formattedTime, showPoints: false)
                 }
                 .padding(.horizontal, 24)
                 .padding(.vertical, 20)
@@ -77,7 +77,7 @@ struct PublicQuizDisplayView: View {
             question: QuizSamples.music2000s.questions[3],
             setTitle: QuizSamples.music2000s.title,
             formattedTime: "00:00",
-            buzzingTeam: samplePlayers[1],
+            buzzingPlayer: samplePlayers[1],
             isAnswerRevealed: false,
             isHintVisible: false
         ),

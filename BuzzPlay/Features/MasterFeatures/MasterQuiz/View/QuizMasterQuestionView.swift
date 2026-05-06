@@ -12,7 +12,7 @@ struct QuizActiveQuestionScreen: View {
     let onValidate: (Int) -> Void
     let onReject: () -> Void
 
-    var buzzedPlayer: Team? { quizMasterVM.teamHasBuzz }
+    var buzzedPlayer: Player? { quizMasterVM.playerHasBuzz }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -149,7 +149,7 @@ struct QuizActiveQuestionScreen: View {
 // MARK: - Score Row
 
 struct QuizScoreRow: View {
-    let player: Team
+    let player: Player
     let maxScore: Int
     @State private var scoreChanged = false
 
@@ -204,7 +204,7 @@ struct QuizScoreRow: View {
 // MARK: - Buzz Bottom Sheet
 
 struct QuizBuzzSheet: View {
-    let player: Team
+    let player: Player
     let reactionTime: String
     let onValidate: (Int) -> Void
     let onReject: () -> Void

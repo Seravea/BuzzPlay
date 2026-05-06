@@ -42,7 +42,7 @@ struct CoinsMasterView: View {
                                     }
                                 }
                             } label: {
-                                PrimaryButtonView(title: player.name, action: {}, style: .filled(buttonStyle: .neutral), fontSize: Typography.body)
+                                PrimaryButtonView(title: team.name, action: {}, style: .filled(buttonStyle: .neutral), fontSize: Typography.body)
                                     .frame(maxWidth: 120)
                                 
                             }

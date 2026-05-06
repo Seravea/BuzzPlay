@@ -11,7 +11,7 @@ struct BlindTestActiveScreen: View {
     let onValidate: (Int) -> Void
     let onReject: () -> Void
 
-    var buzzedPlayer: Team? { blindTestVM.teamHasBuzz }
+    var buzzedPlayer: Player? { blindTestVM.playerHasBuzz }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -34,7 +34,7 @@ struct BlindTestActiveScreen: View {
             // Bottom sheet buzz
             if let team = buzzedPlayer {
                 BlindTestBuzzSheet(
-                    team: team,
+                    player: team,
                     reactionTime: blindTestVM.formattedTime,
                     onValidate: onValidate,
                     onReject: onReject
@@ -119,7 +119,7 @@ struct BlindTestActiveScreen: View {
                 .padding(.leading, 2)
 
             ForEach(teams) { team in
-                QuizScoreRow(team: team, maxScore: maxScore)
+                QuizScoreRow(player: team, maxScore: maxScore)
             }
 
             if blindTestVM.isPlaying && buzzedPlayer == nil {

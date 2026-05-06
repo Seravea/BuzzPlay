@@ -85,7 +85,7 @@ struct BuzzerPlayerView: View {
 #Preview {
     BuzzerPlayerView(
         teamGameVM: TeamGameViewModel(
-            team: samplePlayers[0],
+            player: samplePlayers[0],
             mpc: MPCService(peerName: "Team1", role: .team)
         ),
         gameType: .blindTest

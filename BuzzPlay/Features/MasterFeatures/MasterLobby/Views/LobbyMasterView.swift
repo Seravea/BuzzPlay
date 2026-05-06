@@ -137,7 +137,7 @@ struct LobbyMasterView: View {
 // MARK: - Team row
 
 private struct LobbyTeamRow: View {
-    let player: Team
+    let player: Player
 
     var body: some View {
         HStack(spacing: 12) {

@@ -15,7 +15,7 @@ struct CreateTeamView: View {
     }
 
     private var teamGradient: LinearGradient {
-        createTeamVM.teamColor.gradient
+        createTeamVM.playerColor.gradient
     }
 
     var body: some View {
@@ -77,7 +77,7 @@ struct CreateTeamView: View {
                             .font(.custom("Nohemi-Black", size: 52))
                             .foregroundStyle(.white.opacity(initial.isEmpty ? 0.30 : 1))
                     )
-                    .shadow(color: createTeamVM.teamColor.color.opacity(0.40), radius: 20, y: 8)
+                    .shadow(color: createTeamVM.playerColor.color.opacity(0.40), radius: 20, y: 8)
             }
 
             Text("Visible par tout le monde dans le lobby.")
@@ -121,7 +121,7 @@ struct CreateTeamView: View {
                 RoundedRectangle(cornerRadius: 16)
                     .strokeBorder(
                         pseudoFocused
-                            ? createTeamVM.teamColor.color.opacity(0.70)
+                            ? createTeamVM.playerColor.color.opacity(0.70)
                             : .white.opacity(0.12),
                         lineWidth: 1.5
                     )
@@ -141,7 +141,7 @@ struct CreateTeamView: View {
 
             HStack(spacing: 14) {
                 ForEach(GameColor.allCases, id: \.self) { color in
-                    let isSelected = createTeamVM.teamColor == color
+                    let isSelected = createTeamVM.playerColor == color
                     Button {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                             createTeamVM.teamColor = color

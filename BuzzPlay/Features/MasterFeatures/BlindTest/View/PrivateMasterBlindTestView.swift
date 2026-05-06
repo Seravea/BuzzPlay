@@ -80,7 +80,7 @@ struct PrivateMasterBlindTestView: View {
 
     private func handleValidate(points: Int) {
         validationPoints = points
-        validationTeamName = blindTestVM.teamHasBuzz?.name ?? ""
+        validationTeamName = blindTestVM.playerHasBuzz?.name ?? ""
         withAnimation(.spring(duration: 0.3, bounce: 0.2)) { showValidationOverlay = true }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             blindTestVM.validateAnswer(points: points)

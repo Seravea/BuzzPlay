@@ -133,16 +133,16 @@ struct ScorePlayerView: View {
                 .foregroundStyle(.white.opacity(0.4))
                 .tracking(0.8)
 
-            let validPlayers = player.players.filter { !$0.name.isEmpty }
-            if validPlayers.isEmpty {
-                Text("Aucun joueur")
-                    .font(.nohemi(.subheadline, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.25))
-            } else {
+//            let validPlayers = player.players.filter { !$0.name.isEmpty }
+//            if validPlayers.isEmpty {
+//                Text("Aucun joueur")
+//                    .font(.nohemi(.subheadline, weight: .regular))
+//                    .foregroundStyle(.white.opacity(0.25))
+//            } else {
                 FlowLayout(spacing: 8) {
-                    ForEach(validPlayers) { player in
+//                    ForEach(validPlayers) { player in
                         HStack(spacing: 6) {
-                            Text(String(player.name.prefix(1).uppercased()))
+                            Text(String(currentPlayer.name.prefix(1).uppercased()))
                                 .font(.nohemi(.caption2, weight: .bold))
                                 .foregroundStyle(teamColor)
                                 .frame(width: 22, height: 22)
@@ -156,13 +156,14 @@ struct ScorePlayerView: View {
                         .background(.white.opacity(0.06), in: Capsule())
                         .overlay(Capsule().strokeBorder(.white.opacity(0.08), lineWidth: 1))
                     }
-                }
-            }
-        }
+//                }
+//            }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 18))
         .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+        }
+        
     }
 
     // MARK: - Next Games
