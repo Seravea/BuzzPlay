@@ -11,7 +11,7 @@ struct BlindTestActiveScreen: View {
     let onValidate: (Int) -> Void
     let onReject: () -> Void
 
-    var buzzedTeam: Team? { blindTestVM.teamHasBuzz }
+    var buzzedPlayer: Team? { blindTestVM.teamHasBuzz }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -24,7 +24,7 @@ struct BlindTestActiveScreen: View {
             .padding(.horizontal, 20)
 
             // Assombrissement quand buzzé — bloque les interactions avec l'écran derrière
-            if buzzedTeam != nil {
+            if buzzedPlayer != nil {
                 Color.black.opacity(0.5)
                     .ignoresSafeArea()
                     .contentShape(Rectangle())
@@ -32,7 +32,7 @@ struct BlindTestActiveScreen: View {
             }
 
             // Bottom sheet buzz
-            if let team = buzzedTeam {
+            if let team = buzzedPlayer {
                 BlindTestBuzzSheet(
                     team: team,
                     reactionTime: blindTestVM.formattedTime,
@@ -42,17 +42,17 @@ struct BlindTestActiveScreen: View {
                 .transition(.move(edge: .bottom))
             }
         }
-        .animation(.spring(duration: 0.4, bounce: 0.05), value: buzzedTeam != nil)
+        .animation(.spring(duration: 0.4, bounce: 0.05), value: buzzedPlayer != nil)
     }
 
     private var timerHero: some View {
         HStack {
             Text(blindTestVM.formattedTime)
                 .font(.nohemi(.largeTitle, weight: .extraBold))
-                .foregroundStyle(buzzedTeam != nil ? Color(hex: "#F6339A") : .mustardYellow)
+                .foregroundStyle(buzzedPlayer != nil ? Color(hex: "#F6339A") : .mustardYellow)
                 .tracking(3)
             Spacer()
-            Text(buzzedTeam != nil ? "PAUSÉ" : (blindTestVM.isPlaying ? "EN COURS" : "TERMINÉ"))
+            Text(buzzedPlayer != nil ? "PAUSÉ" : (blindTestVM.isPlaying ? "EN COURS" : "TERMINÉ"))
                 .font(.nohemi(.caption, weight: .bold))
                 .foregroundStyle(.white.opacity(0.6))
                 .padding(.horizontal, 10)
@@ -108,7 +108,7 @@ struct BlindTestActiveScreen: View {
     }
 
     private var scoresSection: some View {
-        let teams = blindTestVM.gameVM.teams.sorted { $0.score > $1.score }
+        let teams = blindTestVM.gameVM.players.sorted { $0.score > $1.score }
         let maxScore = max(teams.map(\.score).max() ?? 1, 1)
 
         return VStack(alignment: .leading, spacing: 8) {
@@ -122,7 +122,7 @@ struct BlindTestActiveScreen: View {
                 QuizScoreRow(team: team, maxScore: maxScore)
             }
 
-            if blindTestVM.isPlaying && buzzedTeam == nil {
+            if blindTestVM.isPlaying && buzzedPlayer == nil {
                 HStack(spacing: 10) {
                     RadarPulseView()
                     Text("En attente d'un buzz…")

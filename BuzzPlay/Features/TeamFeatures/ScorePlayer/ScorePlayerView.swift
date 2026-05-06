@@ -9,8 +9,8 @@ struct ScorePlayerView: View {
     var teamGameVM: TeamGameViewModel
     @Environment(\.horizontalSizeClass) private var sizeClass
 
-    private var team: Team { teamGameVM.team }
-    private var teamColor: Color { Color(team.teamColor.rawValue) }
+    private var currentPlayer: Player { teamGameVM.player }
+    private var teamColor: Color { Color(currentPlayer.teamColor.rawValue) }
 
     var body: some View {
         ZStack {
@@ -81,14 +81,14 @@ struct ScorePlayerView: View {
                         .font(.nohemi(.caption2, weight: .bold))
                         .foregroundStyle(.white.opacity(0.4))
                         .tracking(0.8)
-                    Text(team.name)
+                    Text(currentPlayer.name)
                         .font(.nohemi(.title, weight: .extraBold))
                         .foregroundStyle(.white)
                         .lineLimit(2)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text("\(team.score)")
+                    Text("\(currentPlayer.score)")
                         .font(.custom("Nohemi-Black", size: 56))
                         .foregroundStyle(teamColor)
                     Text("points")
@@ -110,8 +110,8 @@ struct ScorePlayerView: View {
                                 startPoint: .leading, endPoint: .trailing
                             )
                         )
-                        .frame(width: team.score > 0 ? geo.size.width : 8, height: 8)
-                        .animation(.spring(duration: 0.8, bounce: 0.2), value: team.score)
+                        .frame(width: currentPlayer.score > 0 ? geo.size.width : 8, height: 8)
+                        .animation(.spring(duration: 0.8, bounce: 0.2), value: currentPlayer.score)
                 }
             }
             .frame(height: 8)
@@ -133,7 +133,7 @@ struct ScorePlayerView: View {
                 .foregroundStyle(.white.opacity(0.4))
                 .tracking(0.8)
 
-            let validPlayers = team.players.filter { !$0.name.isEmpty }
+            let validPlayers = player.players.filter { !$0.name.isEmpty }
             if validPlayers.isEmpty {
                 Text("Aucun joueur")
                     .font(.nohemi(.subheadline, weight: .regular))
@@ -147,7 +147,7 @@ struct ScorePlayerView: View {
                                 .foregroundStyle(teamColor)
                                 .frame(width: 22, height: 22)
                                 .background(teamColor.opacity(0.15), in: Circle())
-                            Text(player.name)
+                            Text(currentPlayer.name)
                                 .font(.nohemi(.subheadline, weight: .semiBold))
                                 .foregroundStyle(.white)
                         }
@@ -260,8 +260,8 @@ private struct FlowLayout: Layout {
 #Preview {
     ScorePlayerView(
         teamGameVM: TeamGameViewModel(
-            team: sampleTeams[0],
-            mpc: MPCService(peerName: sampleTeams[0].name, role: .team)
+            player: samplePlayers[0],
+            mpc: MPCService(peerName: samplePlayers[0].name, role: .team)
         )
     )
 }

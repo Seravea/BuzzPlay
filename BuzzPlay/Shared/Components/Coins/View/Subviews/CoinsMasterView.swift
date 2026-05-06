@@ -31,7 +31,7 @@ struct CoinsMasterView: View {
                     
                     
                     HStack {
-                        ForEach(masterFlowVM.teams) { team in
+                        ForEach(masterFlowVM.players) { team in
                             Menu {
                                 ForEach(coinsVM.moneyCanSend, id: \.self) { money in
                                     
@@ -42,7 +42,7 @@ struct CoinsMasterView: View {
                                     }
                                 }
                             } label: {
-                                PrimaryButtonView(title: team.name, action: {}, style: .filled(buttonStyle: .neutral), fontSize: Typography.body)
+                                PrimaryButtonView(title: player.name, action: {}, style: .filled(buttonStyle: .neutral), fontSize: Typography.body)
                                     .frame(maxWidth: 120)
                                 
                             }

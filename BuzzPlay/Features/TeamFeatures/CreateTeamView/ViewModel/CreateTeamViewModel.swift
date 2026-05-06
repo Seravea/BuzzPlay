@@ -11,25 +11,25 @@ class CreateTeamViewModel {
 
     // MARK: - Données
 
-    /// Pseudo du joueur (= team.name pour le MPC)
+    /// Pseudo du joueur (= player.name pour le MPC)
     var pseudo: String = ""
 
     /// Couleur choisie
-    var teamColor: GameColor = .redGame
+    var playerColor: GameColor = .redGame
 
     /// Draft sauvegardé (pseudo + couleur de la session précédente)
-    var savedTeamDraft: Team? = nil
+    var savedPlayerDraft: Player? = nil
 
     /// Callback déclenché après validate()
-    var onTeamCreated: ((Team) -> Void)?
+    var onPlayerCreated: ((Player) -> Void)?
 
     // MARK: - Init
 
     init() {
-        self.savedTeamDraft = Self.loadSavedTeam()
-        if let saved = savedTeamDraft {
+        self.savedPlayerDraft = Self.loadSavedPlayer()
+        if let saved = savedPlayerDraft {
             pseudo = saved.name
-            teamColor = saved.teamColor
+            playerColor = saved.teamColor
         }
     }
 
@@ -42,27 +42,26 @@ class CreateTeamViewModel {
 
     func validate() {
         let trimmed = pseudo.trimmingCharacters(in: .whitespacesAndNewlines)
-        let player = Player(name: trimmed)
-        let team = Team(name: trimmed, teamColor: teamColor, players: [player])
-        Self.saveSavedTeam(team)
-        onTeamCreated?(team)
+        let player = Player(name: trimmed, teamColor: playerColor)
+        Self.saveSavedPlayer(player)
+        onPlayerCreated?(player)
     }
 
     // MARK: - Persistance locale
 
-    private static let savedTeamKey = "buzzplay.savedTeam"
+    private static let savedPlayerKey = "buzzplay.savedPlayer"
 
-    static func loadSavedTeam() -> Team? {
-        guard let data = UserDefaults.standard.data(forKey: savedTeamKey) else { return nil }
-        return try? JSONDecoder().decode(Team.self, from: data)
+    static func loadSavedPlayer() -> Player? {
+        guard let data = UserDefaults.standard.data(forKey: savedPlayerKey) else { return nil }
+        return try? JSONDecoder().decode(Player.self, from: data)
     }
 
-    static func saveSavedTeam(_ team: Team) {
-        guard let data = try? JSONEncoder().encode(team) else { return }
-        UserDefaults.standard.set(data, forKey: savedTeamKey)
+    static func saveSavedPlayer(_ player: Player) {
+        guard let data = try? JSONEncoder().encode(player) else { return }
+        UserDefaults.standard.set(data, forKey: savedPlayerKey)
     }
 
-    static func clearSavedTeam() {
-        UserDefaults.standard.removeObject(forKey: savedTeamKey)
+    static func clearSavedPlayer() {
+        UserDefaults.standard.removeObject(forKey: savedPlayerKey)
     }
 }

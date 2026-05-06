@@ -25,7 +25,7 @@ struct LobbyMasterView: View {
             .padding(.horizontal, 22)
             .padding(.top, 12)
 
-            if masterGameVM.teams.isEmpty {
+            if masterGameVM.players.isEmpty {
                 emptyState
             } else {
                 teamList
@@ -37,8 +37,8 @@ struct LobbyMasterView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
-                    connected: masterGameVM.connectedTeamsCount,
-                    total: masterGameVM.totalTeamsCount
+                    connected: masterGameVM.connectedPlayersCount,
+                    total: masterGameVM.totalPlayersCount
                 )
             }
         }
@@ -82,7 +82,7 @@ struct LobbyMasterView: View {
                     .font(.nohemi(.caption2, weight: .bold))
                     .tracking(0.8)
                     .foregroundStyle(.white.opacity(0.40))
-                Text("· \(masterGameVM.teams.count)")
+                Text("· \(masterGameVM.players.count)")
                     .font(.nohemi(.caption2, weight: .bold))
                     .foregroundStyle(.white.opacity(0.40))
                 Rectangle()
@@ -95,7 +95,7 @@ struct LobbyMasterView: View {
 
             ScrollView {
                 VStack(spacing: 10) {
-                    ForEach(masterGameVM.teams) { team in
+                    ForEach(masterGameVM.players) { team in
                         LobbyTeamRow(team: team)
                     }
                 }
@@ -137,24 +137,24 @@ struct LobbyMasterView: View {
 // MARK: - Team row
 
 private struct LobbyTeamRow: View {
-    let team: Team
+    let player: Team
 
     var body: some View {
         HStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 12)
-                .fill(team.teamColor.gradient)
+                .fill(player.teamColor.gradient)
                 .frame(width: 44, height: 44)
                 .overlay(
-                    Text(String(team.name.prefix(1)).uppercased())
+                    Text(String(player.name.prefix(1)).uppercased())
                         .font(.nohemi(.body, weight: .extraBold))
                         .foregroundStyle(.white)
                 )
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(team.name)
+                Text(player.name)
                     .font(.nohemi(.body, weight: .bold))
-                if !team.players.isEmpty {
-                    Text(team.players.map(\.name).filter { !$0.isEmpty }.joined(separator: " · "))
+                if !player.players.isEmpty {
+                    Text(player.players.map(\.name).filter { !$0.isEmpty }.joined(separator: " · "))
                         .font(.nohemi(.caption, weight: .medium))
                         .foregroundStyle(.white.opacity(0.50))
                         .lineLimit(1)

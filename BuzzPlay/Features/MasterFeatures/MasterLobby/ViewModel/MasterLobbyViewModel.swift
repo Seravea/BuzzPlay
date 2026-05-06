@@ -19,10 +19,10 @@ class MasterLobbyViewModel {
         gameVM.setupMPC()
     }
     
-    var teams: [Team] {
-        gameVM.teams
+    var players: [Player] {
+        gameVM.players
     }
 
-    var connectedTeamsCount: Int { gameVM.connectedTeamsCount }
-    var totalTeamsCount: Int { gameVM.totalTeamsCount }
+    var connectedPlayersCount: Int { gameVM.connectedPlayersCount }
+    var totalPlayersCount: Int { gameVM.totalPlayersCount }
 }

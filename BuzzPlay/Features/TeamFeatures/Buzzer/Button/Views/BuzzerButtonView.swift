@@ -10,7 +10,7 @@ struct BuzzerButtonView: View {
     @State private var isTapped: Bool = false
     @Bindable var buzzerVM: BuzzerViewModel
 
-    private var ourTeamBuzzed: Bool { buzzerVM.teamNameHasBuzz == buzzerVM.team.name }
+    private var ourTeamBuzzed: Bool { buzzerVM.teamNameHasBuzz == buzzerVM.player.name }
     private var hasBuzzed: Bool { buzzerVM.teamNameHasBuzz != nil }
 
     var body: some View {
@@ -98,7 +98,7 @@ struct BuzzerButtonView: View {
     private var stateLabel: some View {
         VStack(spacing: 4) {
             if let teamName = buzzerVM.teamNameHasBuzz {
-                if teamName == buzzerVM.team.name {
+                if teamName == buzzerVM.player.name {
                     Text("Tu as buzzé !")
                         .font(.nohemi(.headline, weight: .bold))
                         .foregroundStyle(Color(hex: "F6339A"))
@@ -154,7 +154,7 @@ private struct PulseRingView: View {
 #Preview {
     BuzzerButtonView(
         buzzerVM: BuzzerViewModel(
-            team: Team(name: "L'équipe 1", teamColor: .blueGame),
+            player: Player(name: "L'équipe 1", teamColor: .blueGame),
             mode: .blindTest
         )
     )

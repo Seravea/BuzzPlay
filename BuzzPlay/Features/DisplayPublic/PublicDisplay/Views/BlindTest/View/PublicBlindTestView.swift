@@ -97,7 +97,7 @@ struct PublicBlindTestView: View {
             Spacer()
 
             // Buzz result
-            if let team = state.buzzingTeam {
+            if let team = state.buzzingPlayer {
                 VStack(spacing: 12) {
                     Text("A BUZZÉ")
                         .font(.nohemi(.caption2, weight: .bold))

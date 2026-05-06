@@ -25,8 +25,8 @@ struct MasterChooseGameView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
-                    connected: masterChooseGameVM.connectedTeamsCount,
-                    total: masterChooseGameVM.totalTeamsCount
+                    connected: masterChooseGameVM.connectedPlayersCount,
+                    total: masterChooseGameVM.totalPlayersCount
                 )
             }
         }

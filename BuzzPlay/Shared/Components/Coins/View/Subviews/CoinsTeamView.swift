@@ -13,7 +13,7 @@ struct CoinsTeamView: View {
     var body: some View {
         VStack {
             HStack {
-                Text("\(coinsVM.teamFlowViewModel?.team?.score ?? 0)")
+                Text("\(coinsVM.teamFlowViewModel?.player?.score ?? 0)")
                 
                 Image(systemName: "dollarsign.bank.building.fill")
                     .foregroundStyle(Color.mustardYellow)

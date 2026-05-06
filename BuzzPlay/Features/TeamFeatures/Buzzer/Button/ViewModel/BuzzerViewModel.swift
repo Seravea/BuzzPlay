@@ -14,17 +14,17 @@ enum BuzzerGameMode {
 
 @Observable
 class BuzzerViewModel {
-    
-    var team: Team
-    let mode: BuzzerGameMode
-    
-    var isEnabled: Bool = false
-    var teamNameHasBuzz: String?
-    
-    var onBuzz: ((Team, BuzzerGameMode) -> Void)?
 
-    init(team: Team, mode: BuzzerGameMode) {
-        self.team = team
+    var player: Player
+    let mode: BuzzerGameMode
+
+    var isEnabled: Bool = false
+    var playerNameHasBuzz: String?
+
+    var onBuzz: ((Player, BuzzerGameMode) -> Void)?
+
+    init(player: Player, mode: BuzzerGameMode) {
+        self.player = player
         self.mode = mode
     }
 
@@ -38,23 +38,23 @@ extension BuzzerViewModel {
         guard isEnabled/*, !hasBuzzed*/ else { return }
 //        hasBuzzed = true
         //MARK: le TeamGameVM gère l'envoi du buzz au Master
-        onBuzz?(team, mode)
+        onBuzz?(player, mode)
     }
-    
-    
+
+
     func unLockBuzz() {
         isEnabled = true
-        teamNameHasBuzz = nil
-        
+        playerNameHasBuzz = nil
+
     }
-    
+
     func lockBuzz(teamNameHasBuzz: String) {
-        self.teamNameHasBuzz = teamNameHasBuzz
+        self.playerNameHasBuzz = teamNameHasBuzz
         isEnabled = false
     }
 
     func clearBuzzState() {
-        teamNameHasBuzz = nil
+        playerNameHasBuzz = nil
         isEnabled = false
     }
 }

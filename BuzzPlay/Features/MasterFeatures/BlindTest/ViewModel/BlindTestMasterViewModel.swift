@@ -30,15 +30,15 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var nowPlayingSongIndex: Int = 0
     var isCorrect: Bool = false
     
-    var teamHasBuzz: Team? = nil
+    var playerHasBuzz: Player? = nil
     var playedSongs: [BlindTestSong] = []
 
     var state: RoundState = .idle
-    
+
     //MARK: Timer's datas
     var reactionTimeMs: Int = 0
     var timer: Timer?
-    
+
     //MARK: UI alert (abonnement requis — affiché une seule fois via UserDefaults)
     var showSubscriptionAlert: Bool = false
     var subscriptionAlertMessage: String = "Pour lire le morceau en entier, un abonnement Apple Music est requis. Lecture de l'extrait à la place."
@@ -56,11 +56,11 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
 
     // Badge/Disponibilité lecture catalogue
     var canPlayCatalogContent: Bool = false
-    
+
     enum RoundState {
         case idle // next song and master hasn't lunch round/music
         case playing // in game and music playing
-        case buzzed(Team) // response receive
+        case buzzed(Player) // response receive
         case finished // state finished when Master validate response
     }
     
@@ -82,17 +82,17 @@ extension BlindTestMasterViewModel {
     }
     
     @MainActor func validateAnswer(points: Int) {
-        guard let teamAnswers = teamHasBuzz else { return }
+        guard let playerAnswers = playerHasBuzz else { return }
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         if let song = selectedMusic, !playedSongs.contains(song) {
             playedSongs.append(song)
         }
-        
+
         isCorrect = true
         state = .finished
-        
+
         // MARK: mise à jour du score via gameVM.addPoints(...)
-        gameVM.addPointToTeam(teamAnswers, points: points)
+        gameVM.addPointToPlayer(playerAnswers, points: points)
        
         // on fige définitivement la manche
         stopReactionTimer()
@@ -110,9 +110,9 @@ extension BlindTestMasterViewModel {
     @MainActor func rejectAnswer() {
         guard case .buzzed = state else { return }
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
-        
+
         isCorrect = false
-        teamHasBuzz = nil
+        playerHasBuzz = nil
         state = .playing
         
         // on redémarre le timer sans reset (reprise de la manche) et autorise les buzz
@@ -167,7 +167,7 @@ extension BlindTestMasterViewModel {
                     isFetching = false
                     
                     self.reactionTimeMs = 0
-                    self.teamHasBuzz = nil
+                    self.playerHasBuzz = nil
                     self.isCorrect = false
                     self.state = .playing
                     
@@ -210,12 +210,12 @@ extension BlindTestMasterViewModel {
 //MARK: BuzzDrivenGame conformance
 extension BlindTestMasterViewModel {
     @MainActor
-    func handleBuzz(from team: Team) {
+    func handleBuzz(from player: Player) {
         // Ignorer les buzz si la manche n'est pas en cours
         guard case .playing = state else { return }
-        
-        teamHasBuzz = team
-        state = .buzzed(team)
+
+        playerHasBuzz = player
+        state = .buzzed(player)
         
         // Pause uniquement: timer + musique (ne pas reset, pour pouvoir reprendre)
         pause()
@@ -237,19 +237,19 @@ extension BlindTestMasterViewModel {
                         title: "🎵 Blind Test en cours",
                         artist: nil,
                         formattedTime: formattedTime,
-                        buzzingTeam: nil,
+                        buzzingPlayer: nil,
                         isAnswerRevealed: false,
                         isPlaying: true
                     )
                 )
 
-           case .buzzed(let team):
+           case .buzzed(let player):
                return .blindTest(
                    PublicBlindTestState(
                        title: nil,
                        artist: nil,
                        formattedTime: formattedTime,
-                       buzzingTeam: team,
+                       buzzingPlayer: player,
                        isAnswerRevealed: false, isPlaying: false
                    )
                )
@@ -260,7 +260,7 @@ extension BlindTestMasterViewModel {
                        title: selectedMusic?.title,
                        artist: selectedMusic?.artist,
                        formattedTime: formattedTime,
-                       buzzingTeam: teamHasBuzz,
+                       buzzingPlayer: playerHasBuzz,
                        isAnswerRevealed: true, isPlaying: false
                    )
                )

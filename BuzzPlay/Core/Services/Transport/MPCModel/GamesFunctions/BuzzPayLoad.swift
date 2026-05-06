@@ -9,5 +9,5 @@ import Foundation
 
 
 struct BuzzPayload: Codable {
-    let teamID: UUID
+    let playerID: UUID
 }

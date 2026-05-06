@@ -83,8 +83,8 @@ struct BlindTestMasterView: View {
 
                 ToolbarItem(placement: .topBarTrailing) {
                     ConnectionStatusBadge(
-                        connected: blindTestViewModel.gameVM.connectedTeamsCount,
-                        total: blindTestViewModel.gameVM.totalTeamsCount
+                        connected: blindTestViewModel.gameVM.connectedPlayersCount,
+                        total: blindTestViewModel.gameVM.totalPlayersCount
                     )
                 }
             }
