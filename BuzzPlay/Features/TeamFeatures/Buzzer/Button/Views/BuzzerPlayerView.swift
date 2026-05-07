@@ -27,6 +27,12 @@ struct BuzzerPlayerView: View {
                         .transition(.scale(scale: 0.7).combined(with: .opacity))
                         .zIndex(100)
                 }
+
+                if buzzerVM.countdownBeforeBuzzer > 0 {
+                    CountdownOverlay(countdown: buzzerVM.countdownBeforeBuzzer)
+                        .transition(.scale(scale: 0.5).combined(with: .opacity))
+                        .zIndex(99)
+                }
             }
 
             if !playerGameVM.isConnectedToMaster {
@@ -182,6 +188,44 @@ private struct AnswerFeedbackOverlay: View {
                     )
             )
             .padding(.horizontal, 36)
+        }
+    }
+}
+
+// MARK: - Countdown Overlay
+
+private struct CountdownOverlay: View {
+    let countdown: Int
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.55)
+                .ignoresSafeArea()
+
+            VStack(spacing: 30) {
+                Text("Prochain buzz")
+                    .font(.nohemi(.title3, weight: .regular))
+                    .foregroundStyle(.white.opacity(0.7))
+
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.1))
+                        .frame(width: 120, height: 120)
+
+                    Text("\(countdown)")
+                        .font(.custom("Nohemi-Black", size: 64))
+                        .foregroundStyle(.white)
+                        .scaleEffect(countdown == 0 ? 1.2 : 1.0)
+                        .animation(.spring(response: 0.4, dampingFraction: 0.5), value: countdown)
+                }
+
+                if countdown == 0 {
+                    Text("Buzzer activé !")
+                        .font(.nohemi(.title2, weight: .bold))
+                        .foregroundStyle(Color(hex: "#7DFFA0"))
+                }
+            }
+            .padding(40)
         }
     }
 }
