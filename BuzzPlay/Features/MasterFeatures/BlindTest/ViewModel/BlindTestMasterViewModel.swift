@@ -184,6 +184,7 @@ extension BlindTestMasterViewModel {
             }
 
             startRoundCountdown {
+                self.gameVM.unlockBuzz()
                 self.playMusicAfterCountdown(song: selectedMusic)
             }
         }
