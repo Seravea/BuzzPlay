@@ -42,13 +42,6 @@ struct BuzzerButtonView: View {
                     .frame(width: 240, height: 240)
                     .blur(radius: 20)
 
-                // Retour visuel réponse correcte/incorrecte
-                if let result = buzzerVM.answerResult {
-                    AnswerResultView(result: result)
-                        .transition(.scale.combined(with: .opacity))
-                        .zIndex(10)
-                }
-
                 // Bouton principal
                 ZStack {
                     Circle()
@@ -159,44 +152,6 @@ private struct PulseRingView: View {
     }
 }
 
-// MARK: - Answer Result View (Retour visuel)
-
-private struct AnswerResultView: View {
-    @State private var scale: CGFloat = 0.3
-    @State private var opacity: Double = 0
-
-    let result: AnswerResult
-
-    var body: some View {
-        ZStack {
-            VStack(spacing: 24) {
-                Image(systemName: result == .correct ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .font(.system(size: 80, weight: .semibold))
-                    .foregroundColor(result == .correct ? .green : .red)
-
-                VStack(spacing: 8) {
-                    Text(result == .correct ? "RÉPONSE CORRECTE" : "MAUVAISE RÉPONSE")
-                        .font(.custom("Nohemi-Black", size: 28))
-                        .tracking(1.5)
-
-                    Text(result == .correct ? "+10 points" : "+0 points")
-                        .font(.custom("Nohemi-SemiBold", size: 20))
-                        .opacity(0.9)
-                }
-            }
-            .foregroundStyle(.white)
-        }
-        .frame(width: 220, height: 220)
-        .scaleEffect(scale)
-        .opacity(opacity)
-        .onAppear {
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) {
-                scale = 1.0
-                opacity = 1.0
-            }
-        }
-    }
-}
 
 #Preview {
     BuzzerButtonView(

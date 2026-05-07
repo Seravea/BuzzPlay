@@ -103,7 +103,7 @@ extension BlindTestMasterViewModel {
         gameVM.broadcastPublicStateFromCurrentGame()
 
         // ✅ Envoyer le résultat aux Players
-        let resultPayload = AnswerResultPayload(isCorrect: true, points: points)
+        let resultPayload = AnswerResultPayload(isCorrect: true, points: points, correctAnswer: nil)
         gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
         // (optionnel) on nettoie ensuite la sélection
@@ -120,7 +120,7 @@ extension BlindTestMasterViewModel {
         state = .playing
 
         // ✅ Envoyer le résultat incorrect aux Players (0 points)
-        let resultPayload = AnswerResultPayload(isCorrect: false, points: 0)
+        let resultPayload = AnswerResultPayload(isCorrect: false, points: 0, correctAnswer: nil)
         gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
         // on redémarre le timer sans reset (reprise de la manche) et autorise les buzz

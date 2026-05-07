@@ -140,7 +140,9 @@ extension PlayerGameViewModel {
             startLocalReactionTimer(masterTimestamp: payload.masterTimestamp)
 
         case .answerResult(let payload):
-            let result: AnswerResult = payload.isCorrect ? .correct : .incorrect
+            let result: AnswerResult = payload.isCorrect
+                ? .correct(points: payload.points, answer: payload.correctAnswer)
+                : .incorrect
             currentBuzzerVM?.showAnswerResult(result)
 
         default:

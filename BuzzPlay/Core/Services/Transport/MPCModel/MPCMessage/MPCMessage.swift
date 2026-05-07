@@ -13,6 +13,7 @@ import Foundation
 struct AnswerResultPayload: Codable {
     let isCorrect: Bool
     let points: Int
+    let correctAnswer: String?
 }
 
 struct TimerStartPayload: Codable {
