@@ -85,23 +85,18 @@ struct PublicBlindTestView: View {
                     .padding(.vertical, 16)
                     .transition(.scale(scale: 0.8).combined(with: .opacity))
             } else {
-                VStack(spacing: 12) {
-                    Image(systemName: "music.note")
-                        .font(.system(size: 36, weight: .medium))
-                        .foregroundStyle(Color.mustardYellow.opacity(0.7))
+                HStack(spacing: 8) {
+                    Image(systemName: "waveform")
+                        .font(.body)
+                        .foregroundStyle(Color.mustardYellow.opacity(0.6))
 
-                    Text("Le Master joue une musique")
-                        .font(.custom("Nohemi-Black", size: 26))
-                        .multilineTextAlignment(.center)
-
-                    Text("Écoute et buzzez le premier !")
-                        .font(.nohemi(.subheadline, weight: .medium))
-                        .opacity(0.5)
-                        .multilineTextAlignment(.center)
+                    Text("Écoute bien… et buzze le premier !")
+                        .font(.nohemi(.body, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.6))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 24)
-                .padding(.vertical, 24)
+                .padding(.vertical, 16)
                 .transition(.opacity)
             }
 
