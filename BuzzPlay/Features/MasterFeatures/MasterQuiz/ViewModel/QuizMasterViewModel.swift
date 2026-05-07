@@ -62,7 +62,7 @@ extension QuizMasterViewModel {
             gameVM.addPointToPlayer(player, points: points)
 
             // ✅ Envoyer le résultat aux Players
-            let resultPayload = AnswerResultPayload(isCorrect: true, points: points)
+            let resultPayload = AnswerResultPayload(isCorrect: true, points: points, correctAnswer: currentQuestion?.answers.first)
             gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
             goToSelectNewQuestion()
@@ -75,7 +75,7 @@ extension QuizMasterViewModel {
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
 
         // ✅ Envoyer le résultat incorrect aux Players (0 points)
-        let resultPayload = AnswerResultPayload(isCorrect: false, points: 0)
+        let resultPayload = AnswerResultPayload(isCorrect: false, points: 0, correctAnswer: nil)
         gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
         gameVM.unlockBuzz()

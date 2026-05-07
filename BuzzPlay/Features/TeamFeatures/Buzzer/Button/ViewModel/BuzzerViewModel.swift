@@ -13,7 +13,7 @@ enum BuzzerGameMode {
 }
 
 enum AnswerResult {
-    case correct
+    case correct(points: Int, answer: String?)
     case incorrect
 }
 
@@ -67,18 +67,11 @@ extension BuzzerViewModel {
         answerResult = nil
     }
 
-    // MARK: - TODO: Bug timing à corriger
-    // Le timing du retour visuel (correct/incorrect) dépend de quand le Master valide la réponse.
-    // Actuellement, il faut identifier:
-    // 1. Quand le Master envoie la validation (AnswerResult)
-    // 2. Comment cette info arrive au Player (via MPC PublicDisplay?)
-    // 3. Ajouter un délai optionnel avant d'afficher le retour (pour le suspense)
     func showAnswerResult(_ result: AnswerResult) {
         answerResult = result
-        // TODO: Implémenter le timing pour masquer automatiquement le retour après 2-3s
-        // DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-        //     self.answerResult = nil
-        // }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) { [weak self] in
+            self?.answerResult = nil
+        }
     }
 }
 
