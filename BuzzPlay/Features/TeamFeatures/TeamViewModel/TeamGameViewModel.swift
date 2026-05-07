@@ -210,6 +210,7 @@ extension PlayerGameViewModel {
 
     private func syncBuzzerState(buzzingPlayer: Player?) {
         if let player = buzzingPlayer {
+            stopUITimer()  // ✅ Arrêter le timer quand quelqu'un a buzzé
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: player.name)
         } else {
             currentBuzzerVM?.unLockBuzz()
