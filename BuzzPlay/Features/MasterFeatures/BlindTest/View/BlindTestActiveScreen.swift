@@ -56,6 +56,8 @@ struct BlindTestActiveScreen: View {
                 .font(.nohemi(.largeTitle, weight: .extraBold))
                 .foregroundStyle(buzzedPlayer != nil ? Color(hex: "#F6339A") : .mustardYellow)
                 .tracking(3)
+                .contentTransition(.numericText())
+                .animation(.default, value: blindTestVM.formattedTime)
             Spacer()
             Text(buzzedPlayer != nil ? "PAUSÉ" : (blindTestVM.isPlaying ? "EN COURS" : "TERMINÉ"))
                 .font(.nohemi(.caption, weight: .bold))

@@ -60,6 +60,8 @@ struct QuizActiveQuestionScreen: View {
                 .font(.nohemi(.largeTitle, weight: .extraBold))
                 .foregroundStyle(buzzedPlayer != nil ? Color(hex: "#F6339A") : Color.mustardYellow)
                 .tracking(3)
+                .contentTransition(.numericText())
+                .animation(.default, value: quizMasterVM.formattedTime)
             Spacer()
             Text(buzzedPlayer != nil ? "PAUSÉ" : "EN COURS")
                 .font(.nohemi(.caption, weight: .bold))
@@ -254,6 +256,8 @@ struct QuizBuzzSheet: View {
                     Text(reactionTime)
                         .font(.nohemi(.body, weight: .extraBold))
                         .foregroundStyle(Color.mustardYellow)
+                        .contentTransition(.numericText())
+                        .animation(.default, value: reactionTime)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)

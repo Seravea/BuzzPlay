@@ -83,6 +83,10 @@ struct BuzzerPlayerView: View {
                 .foregroundStyle(Color.mustardYellow)
                 .tracking(2)
                 .monospacedDigit()
+                .contentTransition(.numericText())
+                .animation(.default, value: playerGameVM.formattedTime)
+                .contentTransition(.numericText())
+                .animation(.default, value: playerGameVM.formattedTime)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
