@@ -45,6 +45,7 @@ struct BuzzerPlayerView: View {
         .animation(.spring(response: 0.45, dampingFraction: 0.65), value: playerGameVM.currentBuzzerVM?.answerResult != nil)
         .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
         .navigationBarBackButtonHidden()
+        .onAppear { playerGameVM.syncBuzzerWithCurrentPublicState() }
     }
 
     // MARK: - iPhone Layout

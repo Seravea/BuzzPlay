@@ -167,13 +167,17 @@ extension PlayerGameViewModel {
                 stopUITimer()
                 currentBuzzerVM?.clearBuzzState()
             } else {
-                syncBuzzerState(buzzingPlayer: quizState.buzzingPlayer)
+                syncBuzzerState(buzzingPlayer: quizState.buzzingPlayer, isRoundActive: true)
             }
         case .blindTest(let blindTestState):
             formattedTime = blindTestState.formattedTime
             lastMasterFormattedTime = blindTestState.formattedTime
-            syncBuzzerState(buzzingPlayer: blindTestState.buzzingPlayer)
+            syncBuzzerState(buzzingPlayer: blindTestState.buzzingPlayer, isRoundActive: blindTestState.isPlaying)
         }
+    }
+
+    func syncBuzzerWithCurrentPublicState() {
+        handlePublicStateChange(publicState)
     }
 
     // ✅ Démarrer le timer local quand le Master lance le sien
@@ -218,12 +222,14 @@ extension PlayerGameViewModel {
         timer = nil
     }
 
-    private func syncBuzzerState(buzzingPlayer: Player?) {
+    private func syncBuzzerState(buzzingPlayer: Player?, isRoundActive: Bool) {
         if let player = buzzingPlayer {
-            stopUITimer()  // ✅ Arrêter le timer quand quelqu'un a buzzé
+            stopUITimer()
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: player.name)
-        } else {
+        } else if isRoundActive {
             currentBuzzerVM?.unLockBuzz()
+        } else {
+            currentBuzzerVM?.lockBuzz(teamNameHasBuzz: "")
         }
     }
 }
