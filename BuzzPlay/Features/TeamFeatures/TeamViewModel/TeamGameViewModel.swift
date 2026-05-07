@@ -136,8 +136,8 @@ extension PlayerGameViewModel {
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
 
-        case .timerStarted:
-            startLocalReactionTimer()
+        case .timerStarted(let payload):
+            startLocalReactionTimer(masterTimestamp: payload.masterTimestamp)
 
         case .answerResult(let payload):
             let result: AnswerResult = payload.isCorrect ? .correct : .incorrect
@@ -175,8 +175,16 @@ extension PlayerGameViewModel {
     }
 
     // ✅ Démarrer le timer local quand le Master lance le sien
-    private func startLocalReactionTimer() {
+    private func startLocalReactionTimer(masterTimestamp: TimeInterval) {
         guard timer == nil else { return }
+
+        // ✅ Synchronisation: calculer le temps écoulé depuis le démarrage du Master
+        let now = Date().timeIntervalSince1970
+        let elapsedSeconds = Int(now - masterTimestamp)
+        let elapsedCentiseconds = Int((now - masterTimestamp).truncatingRemainder(dividingBy: 1) * 100)
+        
+        // Initialiser le timer avec le temps écoulé
+        formattedTime = String(format: "%02d:%02d", elapsedSeconds, elapsedCentiseconds)
 
         // Timer à 100ms d'intervalle (comme le Master)
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
@@ -210,6 +218,7 @@ extension PlayerGameViewModel {
 
     private func syncBuzzerState(buzzingPlayer: Player?) {
         if let player = buzzingPlayer {
+            stopUITimer()  // ✅ Arrêter le timer quand quelqu'un a buzzé
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: player.name)
         } else {
             currentBuzzerVM?.unLockBuzz()

@@ -12,54 +12,52 @@ struct PublicQuizDisplayView: View {
     var timer: String
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Header avec timer
-            HStack(alignment: .top, spacing: 20) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(state.setTitle)
-                        .font(.nohemi(.subheadline, weight: .semiBold))
-                        .opacity(0.6)
+        VStack(spacing: 14) {
+            // Question Card
+            VStack(alignment: .leading, spacing: 8) {
+                Text("QUESTION")
+                    .font(.nohemi(.caption2, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.4))
+                    .tracking(0.8)
+
+                Text(state.question.title)
+                    .font(.nohemi(.title3, weight: .bold))
+                    .foregroundStyle(.white)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(18)
+            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
+            .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.1), lineWidth: 1))
+
+            // Answers Section (only if revealed)
+            if state.isAnswerRevealed {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("RÉPONSE")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.4))
                         .tracking(0.8)
 
-                    Text(state.question.title)
-                        .font(.custom("Nohemi-ExtraBold", size: 48))
-                        .lineLimit(3)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                VStack(spacing: 4) {
-                    Text("TEMPS")
-                        .font(.nohemi(.caption, weight: .bold))
-                        .opacity(0.5)
-                        .tracking(0.8)
-
-                    Text(timer)
-                        .font(.custom("Nohemi-Black", size: 44))
-                        .monospacedDigit()
+                    Text(state.question.answers.first ?? "N/A")
+                        .font(.nohemi(.title3, weight: .bold))
                         .foregroundStyle(Color.mustardYellow)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(Color.darkestPurple, in: RoundedRectangle(cornerRadius: 16))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(18)
+                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
+                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(Color.mustardYellow.opacity(0.3), lineWidth: 1))
+                .transition(.scale.combined(with: .opacity))
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 20)
 
-            Divider()
-                .opacity(0.2)
-
-            // Buzzing team highlight
-            if let teamHasBuzz = state.buzzingPlayer {
-                VStack(spacing: 12) {
+            // Buzzing team
+            if let player = state.buzzingPlayer {
+                VStack(spacing: 8) {
                     Text("A BUZZÉ")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .opacity(0.5)
+                        .foregroundStyle(.white.opacity(0.5))
                         .tracking(0.8)
 
-                    TeamCardView(player: teamHasBuzz, buzzTime: state.formattedTime, showPoints: false)
+                    TeamCardView(player: player, buzzTime: state.formattedTime, showPoints: false)
                 }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 20)
                 .frame(maxWidth: .infinity)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
@@ -67,6 +65,8 @@ struct PublicQuizDisplayView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(.horizontal, 20)
+        .padding(.top, 0)
         .animation(.spring(duration: 0.4), value: state)
     }
 }

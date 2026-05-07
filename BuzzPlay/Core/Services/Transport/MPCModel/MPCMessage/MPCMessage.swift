@@ -15,6 +15,10 @@ struct AnswerResultPayload: Codable {
     let points: Int
 }
 
+struct TimerStartPayload: Codable {
+    let masterTimestamp: TimeInterval  // Unix timestamp when Master started timer
+}
+
 enum MPCMessage: Codable {
     // PLAYER -> MASTER
     case playerJoin(Player)
@@ -36,8 +40,8 @@ enum MPCMessage: Codable {
     // Master -> Team : le Master lance une partie (invite les joueurs à rejoindre)
     case masterLaunchedGame(GameType)
 
-    // Master -> Team : le timer du Master a démarré (Player doit démarrer son timer local)
-    case timerStarted
+    // Master -> Team : le timer du Master a démarré avec timestamp pour synchronisation
+    case timerStarted(TimerStartPayload)
 
     // Master -> Team : résultat de la réponse (correct/incorrect + points)
     case answerResult(AnswerResultPayload)

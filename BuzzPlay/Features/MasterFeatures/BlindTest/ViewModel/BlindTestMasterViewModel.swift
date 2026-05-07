@@ -366,11 +366,12 @@ extension BlindTestMasterViewModel {
             newPlayer.seek(to: time)
             newPlayer.play()
 
+            // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
+            let timestamp = Date().timeIntervalSince1970
+            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+            
             // ✅ Démarrer le timer IMMÉDIATEMENT avec le son
             self.startReactionTimer()
-
-            // ✅ Notifier les Players que le timer a démarré
-            self.gameVM.mpcService.sendMessage(.timerStarted)
 
             previewEndObserver = NotificationCenter.default.addObserver(
                 forName: .AVPlayerItemDidPlayToEndTime,
@@ -409,14 +410,16 @@ extension BlindTestMasterViewModel {
         musicPlayer.playbackTime = seconds
         try await musicPlayer.play()
 
-        // ✅ Démarrer le timer IMMÉDIATEMENT avec le son
+        // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
         await MainActor.run {
             isFetching = false
             self.isPlaying = true
+            
+            let timestamp = Date().timeIntervalSince1970
+            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+            
+            // ✅ Démarrer le timer IMMÉDIATEMENT avec le son
             self.startReactionTimer()
-
-            // ✅ Notifier les Players que le timer a démarré
-            self.gameVM.mpcService.sendMessage(.timerStarted)
         }
     }
     

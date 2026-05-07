@@ -48,10 +48,12 @@ extension QuizMasterViewModel {
 
         gameVM.broadcastPublicStateFromCurrentGame()
         gameVM.unlockBuzz()
+        
+        // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
+        let timestamp = Date().timeIntervalSince1970
+        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+        
         startReactionTimer()
-
-        // ✅ Notifier les Players que le timer a démarré
-        gameVM.mpcService.sendMessage(.timerStarted)
     }
     
     func validateAnswer(points: Int) {
@@ -81,10 +83,12 @@ extension QuizMasterViewModel {
         gameVM.currentBuzzPlayer = nil
         let state = makePublicState()
         gameVM.sendPublicState(state)
+        
+        // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
+        let timestamp = Date().timeIntervalSince1970
+        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+        
         startReactionTimer()
-
-        // ✅ Notifier les Players que le timer a démarré
-        gameVM.mpcService.sendMessage(.timerStarted)
     }
     
     func handleBuzz(from player: Player) {
