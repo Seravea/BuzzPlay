@@ -159,7 +159,12 @@ extension PlayerGameViewModel {
             stopUITimer()
             formattedTime = "00:00"
             lastMasterFormattedTime = "00:00"
-            currentBuzzerVM?.clearBuzzState()
+            if currentBuzzerVM?.answerResult != nil {
+                // Overlay en cours — juste désactiver le buzzer sans effacer l'overlay
+                currentBuzzerVM?.lockBuzz(teamNameHasBuzz: "")
+            } else {
+                currentBuzzerVM?.clearBuzzState()
+            }
         case .quiz(let quizState):
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
