@@ -21,6 +21,9 @@ class QuizMasterViewModel: BuzzDrivenGame {
 
     var questionsPassed: [QuizQuestion] = []
 
+    var roundCountdownPhase: RoundCountdownPhase = .hidden
+    private var roundCountdownTimer: Timer?
+
     //MARK: Timer's datas
     var reactionTimeMs: Int = 0
     var timer: Timer?
@@ -74,21 +77,49 @@ extension QuizMasterViewModel {
     func rejectAnswer() {
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
 
-        // ✅ Envoyer le résultat incorrect aux Players (0 points)
         let resultPayload = AnswerResultPayload(isCorrect: false, points: 0, correctAnswer: nil)
         gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
-        gameVM.unlockBuzz()
         playerHasBuzz = nil
         gameVM.currentBuzzPlayer = nil
         let state = makePublicState()
         gameVM.sendPublicState(state)
-        
-        // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
-        let timestamp = Date().timeIntervalSince1970
-        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-        
-        startReactionTimer()
+
+        startRoundCountdown {
+            self.gameVM.unlockBuzz()
+            let timestamp = Date().timeIntervalSince1970
+            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+            self.startReactionTimer()
+            let newState = self.makePublicState()
+            self.gameVM.sendPublicState(newState)
+        }
+    }
+
+    private func startRoundCountdown(onComplete: @escaping @MainActor () -> Void) {
+        roundCountdownPhase = .hidden
+        roundCountdownTimer?.invalidate()
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(2))
+            guard let self else { return }
+            var count = 3
+            self.roundCountdownPhase = .counting(count)
+            self.roundCountdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    count -= 1
+                    if count > 0 {
+                        self.roundCountdownPhase = .counting(count)
+                    } else {
+                        self.roundCountdownTimer?.invalidate()
+                        self.roundCountdownTimer = nil
+                        self.roundCountdownPhase = .go
+                        try? await Task.sleep(for: .seconds(0.8))
+                        self.roundCountdownPhase = .hidden
+                        onComplete()
+                    }
+                }
+            }
+        }
     }
     
     func handleBuzz(from player: Player) {

@@ -28,9 +28,9 @@ struct BuzzerPlayerView: View {
                         .zIndex(100)
                 }
 
-                if buzzerVM.countdownBeforeBuzzer > 0 {
-                    CountdownOverlay(countdown: buzzerVM.countdownBeforeBuzzer)
-                        .transition(.scale(scale: 0.5).combined(with: .opacity))
+                if buzzerVM.countdownPhase != .hidden {
+                    CountdownOverlay(phase: buzzerVM.countdownPhase)
+                        .transition(.opacity)
                         .zIndex(99)
                 }
             }
@@ -195,37 +195,48 @@ private struct AnswerFeedbackOverlay: View {
 // MARK: - Countdown Overlay
 
 private struct CountdownOverlay: View {
-    let countdown: Int
+    let phase: RoundCountdownPhase
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.55)
+            Color.black.opacity(0.65)
                 .ignoresSafeArea()
 
-            VStack(spacing: 30) {
-                Text("Prochain buzz")
-                    .font(.nohemi(.title3, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.7))
+            VStack(spacing: 32) {
+                switch phase {
+                case .counting(let n):
+                    Text("Préparez-vous…")
+                        .font(.nohemi(.title3, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.65))
 
-                ZStack {
-                    Circle()
-                        .fill(Color.white.opacity(0.1))
-                        .frame(width: 120, height: 120)
+                    ZStack {
+                        Circle()
+                            .stroke(Color.white.opacity(0.12), lineWidth: 3)
+                            .frame(width: 150, height: 150)
+                        Circle()
+                            .fill(Color.white.opacity(0.07))
+                            .frame(width: 150, height: 150)
+                        Text("\(n)")
+                            .font(.custom("Nohemi-Black", size: 90))
+                            .foregroundStyle(.white)
+                            .id(n)
+                            .transition(.scale(scale: 1.4).combined(with: .opacity))
+                    }
+                    .animation(.spring(response: 0.35, dampingFraction: 0.55), value: n)
 
-                    Text("\(countdown)")
-                        .font(.custom("Nohemi-Black", size: 64))
-                        .foregroundStyle(.white)
-                        .scaleEffect(countdown == 0 ? 1.2 : 1.0)
-                        .animation(.spring(response: 0.4, dampingFraction: 0.5), value: countdown)
-                }
-
-                if countdown == 0 {
-                    Text("Buzzer activé !")
-                        .font(.nohemi(.title2, weight: .bold))
+                case .go:
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 56, weight: .bold))
                         .foregroundStyle(Color(hex: "#7DFFA0"))
+                    Text("À VOS BUZZERS !")
+                        .font(.custom("Nohemi-Black", size: 26))
+                        .tracking(2)
+                        .foregroundStyle(Color(hex: "#7DFFA0"))
+
+                case .hidden:
+                    EmptyView()
                 }
             }
-            .padding(40)
         }
     }
 }

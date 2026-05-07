@@ -34,6 +34,8 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var playedSongs: [BlindTestSong] = []
 
     var state: RoundState = .idle
+    var roundCountdownPhase: RoundCountdownPhase = .hidden
+    private var roundCountdownTimer: Timer?
 
     //MARK: Timer's datas
     var reactionTimeMs: Int = 0
@@ -119,20 +121,45 @@ extension BlindTestMasterViewModel {
         playerHasBuzz = nil
         state = .playing
 
-        // ✅ Envoyer le résultat incorrect aux Players (0 points)
         let resultPayload = AnswerResultPayload(isCorrect: false, points: 0, correctAnswer: nil)
         gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
-        // on redémarre le timer sans reset (reprise de la manche) et autorise les buzz
-        gameVM.unlockBuzz()
-        startReactionTimer()
-
-        // on relance la musique à partir de là où elle avait été mise en pause
-        resume()
-        isPlaying = true
-
-        // ✅ update public display (resume round)
         gameVM.broadcastPublicStateFromCurrentGame()
+
+        startRoundCountdown {
+            self.gameVM.unlockBuzz()
+            self.resume()
+            self.isPlaying = true
+            self.startReactionTimer()
+            self.gameVM.broadcastPublicStateFromCurrentGame()
+        }
+    }
+
+    @MainActor private func startRoundCountdown(onComplete: @escaping @MainActor () -> Void) {
+        roundCountdownPhase = .hidden
+        roundCountdownTimer?.invalidate()
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(2))
+            guard let self else { return }
+            var count = 3
+            self.roundCountdownPhase = .counting(count)
+            self.roundCountdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    count -= 1
+                    if count > 0 {
+                        self.roundCountdownPhase = .counting(count)
+                    } else {
+                        self.roundCountdownTimer?.invalidate()
+                        self.roundCountdownTimer = nil
+                        self.roundCountdownPhase = .go
+                        try? await Task.sleep(for: .seconds(0.8))
+                        self.roundCountdownPhase = .hidden
+                        onComplete()
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -108,11 +108,11 @@ struct BuzzerButtonView: View {
                         .font(.nohemi(.headline, weight: .regular))
                         .foregroundStyle(.white.opacity(0.40))
                 }
-            } else if buzzerVM.countdownBeforeBuzzer > 0 {
-                Text("Prochain buzz…")
+            } else if case .counting(let n) = buzzerVM.countdownPhase {
+                Text("Prochain buzz dans…")
                     .font(.nohemi(.headline, weight: .bold))
                     .foregroundStyle(.white)
-                Text("\(buzzerVM.countdownBeforeBuzzer)")
+                Text("\(n)")
                     .font(.custom("Nohemi-Black", size: 28))
                     .foregroundStyle(playerColor)
             } else if buzzerVM.isEnabled {

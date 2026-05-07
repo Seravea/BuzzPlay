@@ -28,7 +28,7 @@ class BuzzerViewModel {
 
     // MARK: - Retour visuel de réponse
     var answerResult: AnswerResult? = nil
-    var countdownBeforeBuzzer: Int = 0
+    var countdownPhase: RoundCountdownPhase = .hidden
     private var countdownTimer: Timer?
 
     var onBuzz: ((Player, BuzzerGameMode) -> Void)?
@@ -80,14 +80,21 @@ extension BuzzerViewModel {
 
     func startCountdownBeforeBuzzer() {
         lockBuzz(teamNameHasBuzz: "")
-        countdownBeforeBuzzer = 3
         countdownTimer?.invalidate()
+        var count = 3
+        countdownPhase = .counting(count)
         countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
-            self?.countdownBeforeBuzzer -= 1
-            if (self?.countdownBeforeBuzzer ?? 0) <= 0 {
+            count -= 1
+            if count > 0 {
+                self?.countdownPhase = .counting(count)
+            } else {
                 timer.invalidate()
                 self?.countdownTimer = nil
-                self?.unLockBuzz()
+                self?.countdownPhase = .go
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    self?.countdownPhase = .hidden
+                    self?.unLockBuzz()
+                }
             }
         }
     }
@@ -95,7 +102,7 @@ extension BuzzerViewModel {
     private func stopCountdown() {
         countdownTimer?.invalidate()
         countdownTimer = nil
-        countdownBeforeBuzzer = 0
+        countdownPhase = .hidden
     }
 }
 
