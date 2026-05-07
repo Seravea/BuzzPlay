@@ -79,7 +79,7 @@ struct BuzzerPlayerView: View {
             Spacer()
 
             Text(playerGameVM.formattedTime)
-                .font(.nohemi(.title3, weight: .extraBold))
+                .font(.nohemi(.callout, weight: .extraBold))
                 .foregroundStyle(Color.mustardYellow)
                 .tracking(2)
                 .monospacedDigit()
