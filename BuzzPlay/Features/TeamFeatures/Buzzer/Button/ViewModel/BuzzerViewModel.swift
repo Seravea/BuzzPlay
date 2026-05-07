@@ -28,6 +28,8 @@ class BuzzerViewModel {
 
     // MARK: - Retour visuel de réponse
     var answerResult: AnswerResult? = nil
+    var countdownPhase: RoundCountdownPhase = .hidden
+    private var countdownTimer: Timer?
 
     var onBuzz: ((Player, BuzzerGameMode) -> Void)?
 
@@ -65,13 +67,49 @@ extension BuzzerViewModel {
         playerNameHasBuzz = nil
         isEnabled = false
         answerResult = nil
+        stopCountdown()
     }
 
     func showAnswerResult(_ result: AnswerResult) {
         answerResult = result
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
             self?.answerResult = nil
+            switch result {
+            case .incorrect:
+                // Reprise de la manche — countdown puis buzzer actif
+                self?.startCountdownBeforeBuzzer()
+            case .correct:
+                // Bonne réponse — buzzer reste désactivé, attend la prochaine question du Master
+                self?.lockBuzz(teamNameHasBuzz: "")
+            }
         }
+    }
+
+    func startCountdownBeforeBuzzer() {
+        lockBuzz(teamNameHasBuzz: "")
+        countdownTimer?.invalidate()
+        var count = 3
+        countdownPhase = .counting(count)
+        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
+            count -= 1
+            if count > 0 {
+                self?.countdownPhase = .counting(count)
+            } else {
+                timer.invalidate()
+                self?.countdownTimer = nil
+                self?.countdownPhase = .go
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    self?.countdownPhase = .hidden
+                    self?.unLockBuzz()
+                }
+            }
+        }
+    }
+
+    private func stopCountdown() {
+        countdownTimer?.invalidate()
+        countdownTimer = nil
+        countdownPhase = .hidden
     }
 }
 

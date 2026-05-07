@@ -27,6 +27,12 @@ struct BuzzerPlayerView: View {
                         .transition(.scale(scale: 0.7).combined(with: .opacity))
                         .zIndex(100)
                 }
+
+                if buzzerVM.countdownPhase != .hidden {
+                    CountdownOverlay(phase: buzzerVM.countdownPhase)
+                        .transition(.opacity)
+                        .zIndex(99)
+                }
             }
 
             if !playerGameVM.isConnectedToMaster {
@@ -39,6 +45,7 @@ struct BuzzerPlayerView: View {
         .animation(.spring(response: 0.45, dampingFraction: 0.65), value: playerGameVM.currentBuzzerVM?.answerResult != nil)
         .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
         .navigationBarBackButtonHidden()
+        .onAppear { playerGameVM.syncBuzzerWithCurrentPublicState() }
     }
 
     // MARK: - iPhone Layout
@@ -66,33 +73,21 @@ struct BuzzerPlayerView: View {
                     .foregroundStyle(.white)
             }
 
-            VStack(alignment: .leading, spacing: 2) {
-                if let title = playerGameVM.publicState.displayTitle {
-                    Text(title)
-                        .font(.nohemi(.caption, weight: .bold))
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                }
-                if let subtitle = playerGameVM.publicState.displaySubtitle {
-                    Text(subtitle)
-                        .font(.nohemi(.caption2, weight: .regular))
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .opacity(0.6)
-                }
-            }
+            Text(gameType.gameTitle)
+                .font(.nohemi(.subheadline, weight: .bold))
+                .foregroundStyle(.white)
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("TEMPS")
-                    .font(.nohemi(.caption2, weight: .thin))
-                    .tracking(0.5)
-                    .opacity(0.5)
-                Text(playerGameVM.formattedTime)
-                    .font(.nohemi(.subheadline, weight: .bold))
-                    .monospacedDigit()
-            }
+            Text(playerGameVM.formattedTime)
+                .font(.nohemi(.callout, weight: .extraBold))
+                .foregroundStyle(Color.mustardYellow)
+                .tracking(2)
+                .monospacedDigit()
+                .contentTransition(.numericText())
+                .animation(.default, value: playerGameVM.formattedTime)
+                .contentTransition(.numericText())
+                .animation(.default, value: playerGameVM.formattedTime)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
@@ -182,6 +177,55 @@ private struct AnswerFeedbackOverlay: View {
                     )
             )
             .padding(.horizontal, 36)
+        }
+    }
+}
+
+// MARK: - Countdown Overlay
+
+private struct CountdownOverlay: View {
+    let phase: RoundCountdownPhase
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.65)
+                .ignoresSafeArea()
+
+            VStack(spacing: 32) {
+                switch phase {
+                case .counting(let n):
+                    Text("Préparez-vous…")
+                        .font(.nohemi(.title3, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.65))
+
+                    ZStack {
+                        Circle()
+                            .stroke(Color.white.opacity(0.12), lineWidth: 3)
+                            .frame(width: 150, height: 150)
+                        Circle()
+                            .fill(Color.white.opacity(0.07))
+                            .frame(width: 150, height: 150)
+                        Text("\(n)")
+                            .font(.custom("Nohemi-Black", size: 90))
+                            .foregroundStyle(.white)
+                            .id(n)
+                            .transition(.scale(scale: 1.4).combined(with: .opacity))
+                    }
+                    .animation(.spring(response: 0.35, dampingFraction: 0.55), value: n)
+
+                case .go:
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 56, weight: .bold))
+                        .foregroundStyle(Color(hex: "#7DFFA0"))
+                    Text("À VOS BUZZERS !")
+                        .font(.custom("Nohemi-Black", size: 26))
+                        .tracking(2)
+                        .foregroundStyle(Color(hex: "#7DFFA0"))
+
+                case .hidden:
+                    EmptyView()
+                }
+            }
         }
     }
 }

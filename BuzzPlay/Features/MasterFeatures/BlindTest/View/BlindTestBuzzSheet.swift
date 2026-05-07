@@ -50,6 +50,8 @@ struct BlindTestBuzzSheet: View {
                     Text(reactionTime)
                         .font(.nohemi(.body, weight: .extraBold))
                         .foregroundStyle(Color.mustardYellow)
+                        .contentTransition(.numericText())
+                        .animation(.default, value: reactionTime)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)

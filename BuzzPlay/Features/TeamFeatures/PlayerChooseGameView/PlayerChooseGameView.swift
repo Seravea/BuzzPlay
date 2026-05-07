@@ -11,8 +11,7 @@ struct PlayerChooseGameView: View {
     @Bindable var playerFlowVM: PlayerFlowViewModel
     @Environment(\.horizontalSizeClass) private var sizeClass
 
-    // Couleur personnalisée du joueur — cohérente avec le buzzer
-    private var playerColor: Color { Color(playerGameVM.player.teamColor.rawValue) }
+    private let accentColor = Color.white
 
     var body: some View {
         ZStack {
@@ -36,7 +35,7 @@ struct PlayerChooseGameView: View {
             if let game = playerGameVM.pendingGameInvite {
                 GameInviteOverlay(
                     game: game,
-                    accentColor: playerColor,
+                    accentColor: accentColor,
                     onJoin: { joinGame(game) },
                     onDismiss: { playerGameVM.pendingGameInvite = nil }
                 )
@@ -52,7 +51,7 @@ struct PlayerChooseGameView: View {
     private var playerHeader: some View {
         HStack(spacing: 14) {
             Circle()
-                .fill(playerColor)
+                .fill(accentColor)
                 .frame(width: 12, height: 12)
 
             Text(playerGameVM.player.name)
@@ -66,7 +65,7 @@ struct PlayerChooseGameView: View {
             VStack(alignment: .trailing, spacing: 1) {
                 Text("\(playerGameVM.player.score)")
                     .font(.nohemi(.title2, weight: .extraBold))
-                    .foregroundStyle(playerColor)
+                    .foregroundStyle(accentColor)
                 Text("points")
                     .font(.nohemi(.caption2, weight: .regular))
                     .foregroundStyle(.white.opacity(0.4))
@@ -74,10 +73,10 @@ struct PlayerChooseGameView: View {
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 14)
-        .background(playerColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 18))
+        .background(accentColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 18))
         .overlay(
             RoundedRectangle(cornerRadius: 18)
-                .strokeBorder(playerColor.opacity(0.35), lineWidth: 1.5)
+                .strokeBorder(accentColor.opacity(0.35), lineWidth: 1.5)
         )
     }
 
@@ -118,10 +117,10 @@ struct PlayerChooseGameView: View {
 
                 Image(systemName: game.iconName)
                     .font(.system(size: 30, weight: .medium))
-                    .foregroundStyle(isOpen ? playerColor : .white.opacity(0.25))
+                    .foregroundStyle(isOpen ? accentColor : .white.opacity(0.25))
                     .frame(width: 60, height: 60)
                     .background(
-                        isOpen ? playerColor.opacity(0.15) : .white.opacity(0.06),
+                        isOpen ? accentColor.opacity(0.15) : .white.opacity(0.06),
                         in: RoundedRectangle(cornerRadius: 16)
                     )
 
@@ -134,13 +133,13 @@ struct PlayerChooseGameView: View {
             .padding(16)
             .frame(maxWidth: .infinity, minHeight: 160)
             .background(
-                isOpen ? playerColor.opacity(0.08) : .white.opacity(0.04),
+                isOpen ? accentColor.opacity(0.08) : .white.opacity(0.04),
                 in: RoundedRectangle(cornerRadius: 20)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
                     .strokeBorder(
-                        isOpen ? playerColor.opacity(0.4) : .white.opacity(0.07),
+                        isOpen ? accentColor.opacity(0.4) : .white.opacity(0.07),
                         lineWidth: isOpen ? 1.5 : 1
                     )
             )
@@ -159,10 +158,10 @@ struct PlayerChooseGameView: View {
             HStack(spacing: 14) {
                 Image(systemName: GameType.score.iconName)
                     .font(.system(size: 22, weight: .medium))
-                    .foregroundStyle(isOpen ? playerColor : .white.opacity(0.25))
+                    .foregroundStyle(isOpen ? accentColor : .white.opacity(0.25))
                     .frame(width: 46, height: 46)
                     .background(
-                        isOpen ? playerColor.opacity(0.15) : .white.opacity(0.06),
+                        isOpen ? accentColor.opacity(0.15) : .white.opacity(0.06),
                         in: RoundedRectangle(cornerRadius: 12)
                     )
 
@@ -177,19 +176,19 @@ struct PlayerChooseGameView: View {
                 if isOpen {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(playerColor.opacity(0.6))
+                        .foregroundStyle(accentColor.opacity(0.6))
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
             .background(
-                isOpen ? playerColor.opacity(0.08) : .white.opacity(0.04),
+                isOpen ? accentColor.opacity(0.08) : .white.opacity(0.04),
                 in: RoundedRectangle(cornerRadius: 18)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 18)
                     .strokeBorder(
-                        isOpen ? playerColor.opacity(0.4) : .white.opacity(0.07),
+                        isOpen ? accentColor.opacity(0.4) : .white.opacity(0.07),
                         lineWidth: isOpen ? 1.5 : 1
                     )
             )
@@ -215,7 +214,7 @@ struct PlayerChooseGameView: View {
     private func statusBadge(isOpen: Bool) -> some View {
         HStack(spacing: 4) {
             Circle()
-                .fill(isOpen ? playerColor.opacity(0.9) : .white.opacity(0.2))
+                .fill(isOpen ? accentColor.opacity(0.9) : .white.opacity(0.2))
                 .frame(width: 5, height: 5)
             Text(isOpen ? "Ouvert" : "Fermé")
                 .font(.nohemi(.caption2, weight: .bold))
@@ -224,7 +223,7 @@ struct PlayerChooseGameView: View {
         .padding(.horizontal, 9)
         .padding(.vertical, 4)
         .background(
-            isOpen ? playerColor.opacity(0.15) : .white.opacity(0.05),
+            isOpen ? accentColor.opacity(0.15) : .white.opacity(0.05),
             in: Capsule()
         )
     }

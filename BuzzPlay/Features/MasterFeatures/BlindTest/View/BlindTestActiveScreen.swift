@@ -23,7 +23,6 @@ struct BlindTestActiveScreen: View {
             }
             .padding(.horizontal, 20)
 
-            // Assombrissement quand buzzé — bloque les interactions avec l'écran derrière
             if buzzedPlayer != nil {
                 Color.black.opacity(0.5)
                     .ignoresSafeArea()
@@ -31,7 +30,6 @@ struct BlindTestActiveScreen: View {
                     .transition(.opacity)
             }
 
-            // Bottom sheet buzz
             if let player = buzzedPlayer {
                 BlindTestBuzzSheet(
                     player: player,
@@ -41,8 +39,15 @@ struct BlindTestActiveScreen: View {
                 )
                 .transition(.move(edge: .bottom))
             }
+
+            if blindTestVM.roundCountdownPhase != .hidden {
+                MasterCountdownOverlay(phase: blindTestVM.roundCountdownPhase)
+                    .transition(.opacity)
+                    .zIndex(100)
+            }
         }
         .animation(.spring(duration: 0.4, bounce: 0.05), value: buzzedPlayer != nil)
+        .animation(.easeInOut(duration: 0.25), value: blindTestVM.roundCountdownPhase)
     }
 
     private var timerHero: some View {
@@ -51,6 +56,8 @@ struct BlindTestActiveScreen: View {
                 .font(.nohemi(.largeTitle, weight: .extraBold))
                 .foregroundStyle(buzzedPlayer != nil ? Color(hex: "#F6339A") : .mustardYellow)
                 .tracking(3)
+                .contentTransition(.numericText())
+                .animation(.default, value: blindTestVM.formattedTime)
             Spacer()
             Text(buzzedPlayer != nil ? "PAUSÉ" : (blindTestVM.isPlaying ? "EN COURS" : "TERMINÉ"))
                 .font(.nohemi(.caption, weight: .bold))

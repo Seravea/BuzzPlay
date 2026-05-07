@@ -7,6 +7,13 @@
 
 import Foundation
 
+// Phase du compte à rebours avant réactivation du buzzer — partagé Player et Master
+enum RoundCountdownPhase: Equatable {
+    case hidden
+    case counting(Int)
+    case go
+}
+
 @MainActor
 protocol BuzzDrivenGame: AnyObject {
     // Timer
