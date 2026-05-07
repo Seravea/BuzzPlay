@@ -90,7 +90,7 @@ struct PublicBlindTestView: View {
                         .font(.body)
                         .foregroundStyle(Color.mustardYellow.opacity(0.6))
 
-                    Text("Écoute bien… et buzze le premier !")
+                    Text("Tu connais ce son ?")
                         .font(.nohemi(.body, weight: .medium))
                         .foregroundStyle(.white.opacity(0.6))
                 }
