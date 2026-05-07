@@ -72,21 +72,9 @@ struct BuzzerPlayerView: View {
                     .foregroundStyle(.white)
             }
 
-            VStack(alignment: .leading, spacing: 2) {
-                if let title = playerGameVM.publicState.displayTitle {
-                    Text(title)
-                        .font(.nohemi(.caption, weight: .bold))
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                }
-                if let subtitle = playerGameVM.publicState.displaySubtitle {
-                    Text(subtitle)
-                        .font(.nohemi(.caption2, weight: .regular))
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .opacity(0.6)
-                }
-            }
+            Text(gameType.gameTitle)
+                .font(.nohemi(.subheadline, weight: .bold))
+                .foregroundStyle(.white)
 
             Spacer()
 
