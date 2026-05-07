@@ -9,6 +9,12 @@ import Foundation
 
 //TODO: message to send or receive from master / to player // from player / to master
 //using it in MPCService and MAster/Player-FlowVM // refactor and scalable code
+
+struct AnswerResultPayload: Codable {
+    let isCorrect: Bool
+    let points: Int
+}
+
 enum MPCMessage: Codable {
     // PLAYER -> MASTER
     case playerJoin(Player)
@@ -29,6 +35,12 @@ enum MPCMessage: Codable {
 
     // Master -> Team : le Master lance une partie (invite les joueurs à rejoindre)
     case masterLaunchedGame(GameType)
+
+    // Master -> Team : le timer du Master a démarré (Player doit démarrer son timer local)
+    case timerStarted
+
+    // Master -> Team : résultat de la réponse (correct/incorrect + points)
+    case answerResult(AnswerResultPayload)
 
     //TEST
     case pong

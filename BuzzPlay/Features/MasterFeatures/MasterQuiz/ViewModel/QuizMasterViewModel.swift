@@ -45,16 +45,24 @@ extension QuizMasterViewModel {
     func startRound() {
         //SI pas de question ne peu pas commencer la manche
         guard currentQuestion != nil else { return }
-        
+
         gameVM.broadcastPublicStateFromCurrentGame()
         gameVM.unlockBuzz()
         startReactionTimer()
+
+        // ✅ Notifier les Players que le timer a démarré
+        gameVM.mpcService.sendMessage(.timerStarted)
     }
     
     func validateAnswer(points: Int) {
         if let player = gameVM.currentBuzzPlayer {
             UINotificationFeedbackGenerator().notificationOccurred(.success)
             gameVM.addPointToPlayer(player, points: points)
+
+            // ✅ Envoyer le résultat aux Players
+            let resultPayload = AnswerResultPayload(isCorrect: true, points: points)
+            gameVM.mpcService.sendMessage(.answerResult(resultPayload))
+
             goToSelectNewQuestion()
             playerHasBuzz = nil
             gameVM.currentBuzzPlayer = nil
@@ -63,12 +71,20 @@ extension QuizMasterViewModel {
     
     func rejectAnswer() {
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
+
+        // ✅ Envoyer le résultat incorrect aux Players (0 points)
+        let resultPayload = AnswerResultPayload(isCorrect: false, points: 0)
+        gameVM.mpcService.sendMessage(.answerResult(resultPayload))
+
         gameVM.unlockBuzz()
         playerHasBuzz = nil
         gameVM.currentBuzzPlayer = nil
         let state = makePublicState()
         gameVM.sendPublicState(state)
         startReactionTimer()
+
+        // ✅ Notifier les Players que le timer a démarré
+        gameVM.mpcService.sendMessage(.timerStarted)
     }
     
     func handleBuzz(from player: Player) {

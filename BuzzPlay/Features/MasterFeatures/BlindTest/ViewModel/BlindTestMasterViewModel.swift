@@ -93,7 +93,7 @@ extension BlindTestMasterViewModel {
 
         // MARK: mise à jour du score via gameVM.addPoints(...)
         gameVM.addPointToPlayer(playerAnswers, points: points)
-       
+
         // on fige définitivement la manche
         stopReactionTimer()
         pause()
@@ -101,6 +101,10 @@ extension BlindTestMasterViewModel {
 
         // ✅ update public display (answer revealed)
         gameVM.broadcastPublicStateFromCurrentGame()
+
+        // ✅ Envoyer le résultat aux Players
+        let resultPayload = AnswerResultPayload(isCorrect: true, points: points)
+        gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
         // (optionnel) on nettoie ensuite la sélection
         selectedMusic = nil
@@ -114,15 +118,19 @@ extension BlindTestMasterViewModel {
         isCorrect = false
         playerHasBuzz = nil
         state = .playing
-        
+
+        // ✅ Envoyer le résultat incorrect aux Players (0 points)
+        let resultPayload = AnswerResultPayload(isCorrect: false, points: 0)
+        gameVM.mpcService.sendMessage(.answerResult(resultPayload))
+
         // on redémarre le timer sans reset (reprise de la manche) et autorise les buzz
         gameVM.unlockBuzz()
         startReactionTimer()
-        
+
         // on relance la musique à partir de là où elle avait été mise en pause
         resume()
         isPlaying = true
-        
+
         // ✅ update public display (resume round)
         gameVM.broadcastPublicStateFromCurrentGame()
     }
@@ -133,18 +141,28 @@ extension BlindTestMasterViewModel {
     func startRound() {
         // si aucune musique selectionné, on ne fait rien
         guard let selectedMusic = selectedMusic else { return }
-        
+
         Task {
             do {
                 isFetching = true
                 configureAudioSession()
+
+                // Initialiser les variables avant le play
+                await MainActor.run {
+                    self.reactionTimeMs = 0
+                    self.playerHasBuzz = nil
+                    self.isCorrect = false
+                    self.state = .playing
+                    self.gameVM.unlockBuzz()
+                }
+
                 if await canPlayFullCatalog() {
                     do {
                         try await playFullTrackFromFiveSeconds(song: selectedMusic, startAt: 5)
                     } catch {
                         await MainActor.run {
                             if !self.hasShownSubscriptionInfo {
-                                self.subscriptionAlertMessage = "Impossible de lire le titre complet. Lecture de l'extrait à la place."
+                                self.subscriptionAlertMessage = "Impossible de lire le titre complet. Lecture de l’extrait à la place."
                                 self.showSubscriptionAlert = true
                                 self.hasShownSubscriptionInfo = true
                             }
@@ -154,7 +172,7 @@ extension BlindTestMasterViewModel {
                 } else {
                     await MainActor.run {
                         if !self.hasShownSubscriptionInfo {
-                            self.subscriptionAlertMessage = "Pour lire le morceau en entier, un abonnement Apple Music est requis. Lecture de l'extrait à la place."
+                            self.subscriptionAlertMessage = "Pour lire le morceau en entier, un abonnement Apple Music est requis. Lecture de l’extrait à la place."
                             self.showSubscriptionAlert = true
                             self.hasShownSubscriptionInfo = true
                         }
@@ -162,19 +180,10 @@ extension BlindTestMasterViewModel {
                     try await playRandomPreview(song: selectedMusic)
                 }
                 isGameActive = true
-                // IMPORTANT: tout ce qui touche l’UI + démarrage du timer sur le MainActor
+
+                // ✅ update public display immediately when the round starts
                 await MainActor.run {
                     isFetching = false
-                    
-                    self.reactionTimeMs = 0
-                    self.playerHasBuzz = nil
-                    self.isCorrect = false
-                    self.state = .playing
-                    
-                    self.gameVM.unlockBuzz()
-                    self.startReactionTimer()
-                    
-                    // ✅ update public display immediately when the round starts
                     self.gameVM.broadcastPublicStateFromCurrentGame()
                 }
             } catch {
@@ -339,7 +348,7 @@ extension BlindTestMasterViewModel {
         maxDuration: TimeInterval = 30
     ) async throws {
         guard let url = song.previewURL else { return }
-        
+
         await MainActor.run {
             player?.pause()
             player = nil
@@ -356,6 +365,12 @@ extension BlindTestMasterViewModel {
             let time = CMTime(seconds: randomStart, preferredTimescale: 600)
             newPlayer.seek(to: time)
             newPlayer.play()
+
+            // ✅ Démarrer le timer IMMÉDIATEMENT avec le son
+            self.startReactionTimer()
+
+            // ✅ Notifier les Players que le timer a démarré
+            self.gameVM.mpcService.sendMessage(.timerStarted)
 
             previewEndObserver = NotificationCenter.default.addObserver(
                 forName: .AVPlayerItemDidPlayToEndTime,
@@ -382,21 +397,26 @@ extension BlindTestMasterViewModel {
             player?.pause()
             player = nil
         }
-        
+
         // Récupère l'objet Song à partir de son ID
         let catalogSong = try await appleMusicService.fetchSong(by: song.appleMusicID)
-        
+
         // Construit la queue avec le Song (et non pas l'ID)
         musicPlayer.queue = .init(for: [catalogSong])
-        
+
         // Prépare, positionne le temps de lecture, puis joue
         try await musicPlayer.prepareToPlay()
         musicPlayer.playbackTime = seconds
         try await musicPlayer.play()
-        
+
+        // ✅ Démarrer le timer IMMÉDIATEMENT avec le son
         await MainActor.run {
             isFetching = false
             self.isPlaying = true
+            self.startReactionTimer()
+
+            // ✅ Notifier les Players que le timer a démarré
+            self.gameVM.mpcService.sendMessage(.timerStarted)
         }
     }
     
