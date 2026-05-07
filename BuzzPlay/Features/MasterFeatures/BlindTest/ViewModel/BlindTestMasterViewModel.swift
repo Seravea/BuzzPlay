@@ -272,6 +272,8 @@ extension BlindTestMasterViewModel {
                     PublicBlindTestState(
                         title: "🎵 Blind Test en cours",
                         artist: nil,
+                        postertURLString: nil,
+                        releaseYear: nil,
                         formattedTime: formattedTime,
                         buzzingPlayer: nil,
                         isAnswerRevealed: false,
@@ -284,6 +286,8 @@ extension BlindTestMasterViewModel {
                    PublicBlindTestState(
                        title: nil,
                        artist: nil,
+                       postertURLString: nil,
+                       releaseYear: nil,
                        formattedTime: formattedTime,
                        buzzingPlayer: player,
                        isAnswerRevealed: false, isPlaying: false
@@ -295,6 +299,8 @@ extension BlindTestMasterViewModel {
                    PublicBlindTestState(
                        title: selectedMusic?.title,
                        artist: selectedMusic?.artist,
+                       postertURLString: selectedMusic?.postertURL?.absoluteString,
+                       releaseYear: selectedMusic?.releaseYearString,
                        formattedTime: formattedTime,
                        buzzingPlayer: playerHasBuzz,
                        isAnswerRevealed: true, isPlaying: false

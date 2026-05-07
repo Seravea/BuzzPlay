@@ -10,6 +10,8 @@ import Foundation
 struct PublicBlindTestState: Codable, Equatable {
     let title: String?
     let artist: String?
+    let postertURLString: String?
+    let releaseYear: String?
     let formattedTime: String
     let buzzingPlayer: Player?
     let isAnswerRevealed: Bool

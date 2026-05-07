@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MusicKit
 
 struct PublicBlindTestView: View {
 
@@ -55,44 +56,47 @@ struct PublicBlindTestView: View {
                 .opacity(0.2)
 
             // Song info (revealed or hidden)
-            VStack(spacing: 12) {
-                let displayTitle: String = {
-                    if state.isAnswerRevealed {
-                        return state.title ?? "Titre inconnu"
-                    }
-                    return state.title ?? "Devinez le titre !"
-                }()
-
-                let displaySubtitle: String? = {
-                    if state.isAnswerRevealed {
-                        return state.artist ?? "Artiste inconnu"
+            if state.isAnswerRevealed {
+                let releaseDate: Date? = {
+                    if let year = state.releaseYear, let yearInt = Int(year) {
+                        var components = DateComponents()
+                        components.year = yearInt
+                        components.month = 1
+                        components.day = 1
+                        return Calendar.current.date(from: components)
                     }
                     return nil
                 }()
 
-                Text(displayTitle)
-                    .font(.custom("Nohemi-Black", size: 56))
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .transition(.asymmetric(
-                        insertion: .scale(scale: 0.8).combined(with: .opacity),
-                        removal: .opacity
-                    ))
+                let song = BlindTestSong(
+                    artist: state.artist ?? "Artiste inconnu",
+                    title: state.title ?? "Titre inconnu",
+                    appleMusicID: MusicItemID(""),
+                    postertURL: state.postertURLString.flatMap { URL(string: $0) },
+                    releaseDate: releaseDate,
+                    previewURL: nil
+                )
 
-                if let displaySubtitle {
-                    Text(displaySubtitle)
-                        .font(.custom("Nohemi-Bold", size: 28))
-                        .opacity(0.8)
-                        .transition(.opacity)
-                } else {
+                SongCard(song: song)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 16)
+                    .transition(.scale(scale: 0.8).combined(with: .opacity))
+            } else {
+                VStack(spacing: 8) {
+                    Text(state.title ?? "Devinez le titre !")
+                        .font(.custom("Nohemi-Black", size: 32))
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+
                     Text("…")
-                        .font(.custom("Nohemi-Medium", size: 28))
+                        .font(.custom("Nohemi-Medium", size: 20))
                         .opacity(0.4)
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 20)
+                .transition(.opacity)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 24)
 
             Spacer()
 
@@ -134,10 +138,12 @@ struct PublicBlindTestView: View {
     }
 }
 
-#Preview {
+#Preview("Playing") {
     let sample = PublicBlindTestState(
         title: "🎵 Blind Test en cours",
         artist: nil,
+        postertURLString: nil,
+        releaseYear: nil,
         formattedTime: "00:12",
         buzzingPlayer: nil,
         isAnswerRevealed: false,
@@ -145,4 +151,21 @@ struct PublicBlindTestView: View {
     )
 
     PublicBlindTestView(state: sample, timer: "00:12")
+        .background(BackgroundAppView())
+}
+
+#Preview("Answer Revealed") {
+    let sample = PublicBlindTestState(
+        title: "Toxic",
+        artist: "Britney Spears",
+        postertURLString: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/c6/80/66/c680662e-7e7f-de5e-87c4-8a6a9f6c2c77/source/600x600bb.jpg",
+        releaseYear: "2003",
+        formattedTime: "00:12",
+        buzzingPlayer: nil,
+        isAnswerRevealed: true,
+        isPlaying: false
+    )
+
+    PublicBlindTestView(state: sample, timer: "00:12")
+        .background(BackgroundAppView())
 }
