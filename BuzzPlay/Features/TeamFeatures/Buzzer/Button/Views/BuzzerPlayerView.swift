@@ -78,15 +78,11 @@ struct BuzzerPlayerView: View {
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("TEMPS")
-                    .font(.nohemi(.caption2, weight: .thin))
-                    .tracking(0.5)
-                    .opacity(0.5)
-                Text(playerGameVM.formattedTime)
-                    .font(.nohemi(.subheadline, weight: .bold))
-                    .monospacedDigit()
-            }
+            Text(playerGameVM.formattedTime)
+                .font(.nohemi(.title3, weight: .extraBold))
+                .foregroundStyle(Color.mustardYellow)
+                .tracking(2)
+                .monospacedDigit()
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
