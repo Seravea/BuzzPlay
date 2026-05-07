@@ -85,19 +85,18 @@ struct PublicBlindTestView: View {
                     .padding(.vertical, 16)
                     .transition(.scale(scale: 0.8).combined(with: .opacity))
             } else {
-                VStack(spacing: 8) {
-                    Text(state.title ?? "Devinez le titre !")
-                        .font(.custom("Nohemi-Black", size: 32))
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
+                HStack(spacing: 8) {
+                    Image(systemName: "waveform")
+                        .font(.body)
+                        .foregroundStyle(Color.mustardYellow.opacity(0.6))
 
-                    Text("…")
-                        .font(.custom("Nohemi-Medium", size: 20))
-                        .opacity(0.4)
+                    Text("Tu connais ce son ?")
+                        .font(.nohemi(.body, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.6))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 24)
-                .padding(.vertical, 20)
+                .padding(.vertical, 16)
                 .transition(.opacity)
             }
 

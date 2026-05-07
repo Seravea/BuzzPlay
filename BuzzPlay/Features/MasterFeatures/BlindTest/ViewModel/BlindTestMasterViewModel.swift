@@ -184,6 +184,7 @@ extension BlindTestMasterViewModel {
             }
 
             startRoundCountdown {
+                self.gameVM.unlockBuzz()
                 self.playMusicAfterCountdown(song: selectedMusic)
             }
         }
@@ -277,7 +278,7 @@ extension BlindTestMasterViewModel {
            case .playing:
             return .blindTest(
                     PublicBlindTestState(
-                        title: "🎵 Blind Test en cours",
+                        title: nil,
                         artist: nil,
                         postertURLString: nil,
                         releaseYear: nil,
