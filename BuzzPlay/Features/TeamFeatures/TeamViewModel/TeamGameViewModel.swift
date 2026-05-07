@@ -135,6 +135,14 @@ extension PlayerGameViewModel {
             print("After receive \(self.player)")
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
+
+        case .timerStarted:
+            startLocalReactionTimer()
+
+        case .answerResult(let payload):
+            let result: AnswerResult = payload.isCorrect ? .correct : .incorrect
+            currentBuzzerVM?.showAnswerResult(result)
+
         default:
             break
         }
@@ -153,8 +161,8 @@ extension PlayerGameViewModel {
         case .quiz(let quizState):
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
-            startUITimerIfNeeded()
             if quizState.isAnswerRevealed {
+                stopUITimer()
                 currentBuzzerVM?.clearBuzzState()
             } else {
                 syncBuzzerState(buzzingPlayer: quizState.buzzingPlayer)
@@ -162,22 +170,35 @@ extension PlayerGameViewModel {
         case .blindTest(let blindTestState):
             formattedTime = blindTestState.formattedTime
             lastMasterFormattedTime = blindTestState.formattedTime
-            startUITimerIfNeeded()
             syncBuzzerState(buzzingPlayer: blindTestState.buzzingPlayer)
         }
     }
 
-    // A lightweight UI timer to keep the display "alive" between master updates.
-    // We don't attempt to compute exact time; we simply keep showing last known value.
-    // If you want it to tick, you can parse mm:ss and increment. For now, we mirror.
-    private func startUITimerIfNeeded() {
+    // ✅ Démarrer le timer local quand le Master lance le sien
+    private func startLocalReactionTimer() {
         guard timer == nil else { return }
-        // Update at ~10Hz to keep UI responsive if you later add smoothing
+
+        // Timer à 100ms d'intervalle (comme le Master)
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self else { return }
-            // Keep formattedTime equal to the last value received from master.
-            // If you want local ticking, parse and adjust here.
-            self.formattedTime = self.lastMasterFormattedTime
+
+            // Parser la valeur actuelle et incrémenter
+            let components = self.formattedTime.split(separator: ":").map { String($0) }
+            guard components.count == 2,
+                  let seconds = Int(components[0]),
+                  let centiseconds = Int(components[1]) else {
+                return
+            }
+
+            var newSeconds = seconds
+            var newCentiseconds = centiseconds + 1
+
+            if newCentiseconds >= 100 {
+                newCentiseconds = 0
+                newSeconds += 1
+            }
+
+            self.formattedTime = String(format: "%02d:%02d", newSeconds, newCentiseconds)
         }
         RunLoop.main.add(timer!, forMode: .common)
     }
