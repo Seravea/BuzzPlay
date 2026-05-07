@@ -8,10 +8,40 @@
 import Foundation
 
 // Phase du compte à rebours avant réactivation du buzzer — partagé Player et Master
-enum RoundCountdownPhase: Equatable {
+enum RoundCountdownPhase: Codable, Equatable {
     case hidden
     case counting(Int)
     case go
+
+    enum CodingKeys: String, CodingKey {
+        case hidden, counting, go
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .hidden:
+            try container.encode(true, forKey: .hidden)
+        case .counting(let n):
+            try container.encode(n, forKey: .counting)
+        case .go:
+            try container.encode(true, forKey: .go)
+        }
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if container.contains(.hidden) {
+            self = .hidden
+        } else if container.contains(.counting) {
+            let n = try container.decode(Int.self, forKey: .counting)
+            self = .counting(n)
+        } else if container.contains(.go) {
+            self = .go
+        } else {
+            self = .hidden
+        }
+    }
 }
 
 @MainActor

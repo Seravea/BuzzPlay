@@ -183,7 +183,7 @@ private struct AnswerFeedbackOverlay: View {
 
 // MARK: - Countdown Overlay
 
-private struct CountdownOverlay: View {
+struct CountdownOverlay: View {
     let phase: RoundCountdownPhase
 
     var body: some View {

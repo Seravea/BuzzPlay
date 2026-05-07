@@ -138,23 +138,28 @@ extension BlindTestMasterViewModel {
     @MainActor private func startRoundCountdown(onComplete: @escaping @MainActor () -> Void) {
         roundCountdownPhase = .hidden
         roundCountdownTimer?.invalidate()
+        gameVM.broadcastPublicStateFromCurrentGame()
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .seconds(2))
             guard let self else { return }
             var count = 3
             self.roundCountdownPhase = .counting(count)
+            self.gameVM.broadcastPublicStateFromCurrentGame()
             self.roundCountdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
                 Task { @MainActor [weak self] in
                     guard let self else { return }
                     count -= 1
                     if count > 0 {
                         self.roundCountdownPhase = .counting(count)
+                        self.gameVM.broadcastPublicStateFromCurrentGame()
                     } else {
                         self.roundCountdownTimer?.invalidate()
                         self.roundCountdownTimer = nil
                         self.roundCountdownPhase = .go
+                        self.gameVM.broadcastPublicStateFromCurrentGame()
                         try? await Task.sleep(for: .seconds(0.8))
                         self.roundCountdownPhase = .hidden
+                        self.gameVM.broadcastPublicStateFromCurrentGame()
                         onComplete()
                     }
                 }
@@ -166,58 +171,60 @@ extension BlindTestMasterViewModel {
 //MARK: Round Funcs
 extension BlindTestMasterViewModel {
     func startRound() {
-        // si aucune musique selectionné, on ne fait rien
         guard let selectedMusic = selectedMusic else { return }
 
         Task {
+            await MainActor.run {
+                self.reactionTimeMs = 0
+                self.playerHasBuzz = nil
+                self.isCorrect = false
+                self.state = .playing
+                self.isFetching = true
+                self.configureAudioSession()
+            }
+
+            startRoundCountdown {
+                self.playMusicAfterCountdown(song: selectedMusic)
+            }
+        }
+    }
+
+    @MainActor private func playMusicAfterCountdown(song: BlindTestSong) {
+        Task {
             do {
-                isFetching = true
-                configureAudioSession()
-
-                // Initialiser les variables avant le play
-                await MainActor.run {
-                    self.reactionTimeMs = 0
-                    self.playerHasBuzz = nil
-                    self.isCorrect = false
-                    self.state = .playing
-                    self.gameVM.unlockBuzz()
-                }
-
                 if await canPlayFullCatalog() {
                     do {
-                        try await playFullTrackFromFiveSeconds(song: selectedMusic, startAt: 5)
+                        try await playFullTrackFromFiveSeconds(song: song, startAt: 5)
                     } catch {
-                        await MainActor.run {
-                            if !self.hasShownSubscriptionInfo {
-                                self.subscriptionAlertMessage = "Impossible de lire le titre complet. Lecture de l’extrait à la place."
-                                self.showSubscriptionAlert = true
-                                self.hasShownSubscriptionInfo = true
-                            }
-                        }
-                        try await playRandomPreview(song: selectedMusic)
-                    }
-                } else {
-                    await MainActor.run {
                         if !self.hasShownSubscriptionInfo {
-                            self.subscriptionAlertMessage = "Pour lire le morceau en entier, un abonnement Apple Music est requis. Lecture de l’extrait à la place."
+                            self.subscriptionAlertMessage = "Impossible de lire le titre complet. Lecture de l’extrait à la place."
                             self.showSubscriptionAlert = true
                             self.hasShownSubscriptionInfo = true
                         }
+                        try await playRandomPreview(song: song)
                     }
-                    try await playRandomPreview(song: selectedMusic)
+                } else {
+                    if !self.hasShownSubscriptionInfo {
+                        self.subscriptionAlertMessage = "Pour lire le morceau en entier, un abonnement Apple Music est requis. Lecture de l’extrait à la place."
+                        self.showSubscriptionAlert = true
+                        self.hasShownSubscriptionInfo = true
+                    }
+                    try await playRandomPreview(song: song)
                 }
-                isGameActive = true
 
-                // ✅ update public display immediately when the round starts
                 await MainActor.run {
-                    isFetching = false
+                    self.isGameActive = true
+                    self.isPlaying = true
+                    self.startReactionTimer()
+                    self.isFetching = false
                     self.gameVM.broadcastPublicStateFromCurrentGame()
                 }
             } catch {
                 await MainActor.run {
-                    isGameActive = false
-                    isFetching = false
-                    fetchError = "Impossible de lancer la musique. Vérifie ta connexion et réessaie."
+                    self.isGameActive = false
+                    self.isFetching = false
+                    self.fetchError = "Impossible de lancer la musique. Vérifie ta connexion et réessaie."
+                    self.gameVM.broadcastPublicStateFromCurrentGame()
                 }
             }
         }
@@ -277,7 +284,8 @@ extension BlindTestMasterViewModel {
                         formattedTime: formattedTime,
                         buzzingPlayer: nil,
                         isAnswerRevealed: false,
-                        isPlaying: true
+                        isPlaying: true,
+                        roundCountdownPhase: roundCountdownPhase
                     )
                 )
 
@@ -290,7 +298,9 @@ extension BlindTestMasterViewModel {
                        releaseYear: nil,
                        formattedTime: formattedTime,
                        buzzingPlayer: player,
-                       isAnswerRevealed: false, isPlaying: false
+                       isAnswerRevealed: false,
+                       isPlaying: false,
+                       roundCountdownPhase: nil
                    )
                )
 
@@ -303,7 +313,9 @@ extension BlindTestMasterViewModel {
                        releaseYear: selectedMusic?.releaseYearString,
                        formattedTime: formattedTime,
                        buzzingPlayer: playerHasBuzz,
-                       isAnswerRevealed: true, isPlaying: false
+                       isAnswerRevealed: true,
+                       isPlaying: false,
+                       roundCountdownPhase: nil
                    )
                )
            }
