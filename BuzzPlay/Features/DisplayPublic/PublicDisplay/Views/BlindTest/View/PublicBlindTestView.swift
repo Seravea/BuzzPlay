@@ -85,19 +85,23 @@ struct PublicBlindTestView: View {
                     .padding(.vertical, 16)
                     .transition(.scale(scale: 0.8).combined(with: .opacity))
             } else {
-                VStack(spacing: 8) {
-                    Text(state.title ?? "Devinez le titre !")
-                        .font(.custom("Nohemi-Black", size: 32))
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
+                VStack(spacing: 12) {
+                    Image(systemName: "music.note")
+                        .font(.system(size: 36, weight: .medium))
+                        .foregroundStyle(Color.mustardYellow.opacity(0.7))
 
-                    Text("…")
-                        .font(.custom("Nohemi-Medium", size: 20))
-                        .opacity(0.4)
+                    Text("Le Master joue une musique")
+                        .font(.custom("Nohemi-Black", size: 26))
+                        .multilineTextAlignment(.center)
+
+                    Text("Écoute et buzzez le premier !")
+                        .font(.nohemi(.subheadline, weight: .medium))
+                        .opacity(0.5)
+                        .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 24)
-                .padding(.vertical, 20)
+                .padding(.vertical, 24)
                 .transition(.opacity)
             }
 
