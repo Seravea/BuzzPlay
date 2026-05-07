@@ -74,7 +74,14 @@ extension BuzzerViewModel {
         answerResult = result
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
             self?.answerResult = nil
-            self?.startCountdownBeforeBuzzer()
+            switch result {
+            case .incorrect:
+                // Reprise de la manche — countdown puis buzzer actif
+                self?.startCountdownBeforeBuzzer()
+            case .correct:
+                // Bonne réponse — buzzer reste désactivé, attend la prochaine question du Master
+                self?.lockBuzz(teamNameHasBuzz: "")
+            }
         }
     }
 

@@ -182,7 +182,7 @@ extension PlayerGameViewModel {
 
     // ✅ Démarrer le timer local quand le Master lance le sien
     private func startLocalReactionTimer(masterTimestamp: TimeInterval) {
-        guard timer == nil else { return }
+        stopUITimer()
 
         // ✅ Synchronisation: calculer le temps écoulé depuis le démarrage du Master
         let now = Date().timeIntervalSince1970
