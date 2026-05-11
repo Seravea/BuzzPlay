@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		052E2021AE02DD17FBF5138B /* TeamFlowViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BDC3F1179FAEB45F0085DE4 /* TeamFlowViewModelTests.swift */; };
+		327138FC70162A7E4033E4BD /* SampleBlindTestSongs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F57682BB1D3D7A552C56F /* SampleBlindTestSongs.swift */; };
 		61AECDE7C6A1B45818CEA4B2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5237EAE3CB59DFEB53A2147 /* Foundation.framework */; };
 		86B579AE0E655C732B7CCD1F /* MasterFlowViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D4482D5D75DCE20E7502E /* MasterFlowViewModelTests.swift */; };
 		90675145D0AAFF78E45B98EB /* SampleQuiz.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E14EE51A82ECF7804A45EA /* SampleQuiz.swift */; };
+		A58D537961FB0B6C4DAE433B /* BlindTestMasterViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F197F0AC9DC8F1D8F55ECDD /* BlindTestMasterViewModelTests.swift */; };
 		B5B77047D6A4284FBF8B6936 /* QuizMasterViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBBBE288846D6ACC1B2E8533 /* QuizMasterViewModelTests.swift */; };
 		DAA0F4C6D91E7F113359A6E4 /* MockMasterGameHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C6D6A50F5C16B0650B709E /* MockMasterGameHost.swift */; };
 		E7762CB852C237CCFB208401 /* BuzzPlayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E7763CEE80D2CC8FD0F9B7E /* BuzzPlayTests.swift */; };
@@ -31,8 +33,10 @@
 		1BDC3F1179FAEB45F0085DE4 /* TeamFlowViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TeamFlowViewModelTests.swift; path = BuzzPlayTests/ViewModels/TeamFlowViewModelTests.swift; sourceTree = SOURCE_ROOT; };
 		3E7763CEE80D2CC8FD0F9B7E /* BuzzPlayTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuzzPlayTests.swift; path = BuzzPlayTests/BuzzPlayTests.swift; sourceTree = SOURCE_ROOT; };
 		4B3D4482D5D75DCE20E7502E /* MasterFlowViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MasterFlowViewModelTests.swift; path = BuzzPlayTests/ViewModels/MasterFlowViewModelTests.swift; sourceTree = SOURCE_ROOT; };
+		523F57682BB1D3D7A552C56F /* SampleBlindTestSongs.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SampleBlindTestSongs.swift; path = BuzzPlayTests/Fixtures/SampleBlindTestSongs.swift; sourceTree = SOURCE_ROOT; };
 		71C40BDC2EC224D700EE9976 /* BuzzPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuzzPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76C6D6A50F5C16B0650B709E /* MockMasterGameHost.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MockMasterGameHost.swift; path = BuzzPlayTests/Mocks/MockMasterGameHost.swift; sourceTree = SOURCE_ROOT; };
+		7F197F0AC9DC8F1D8F55ECDD /* BlindTestMasterViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BlindTestMasterViewModelTests.swift; path = BuzzPlayTests/ViewModels/BlindTestMasterViewModelTests.swift; sourceTree = SOURCE_ROOT; };
 		C2417A40E11BC23E1C4C7D47 /* BuzzPlayTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BuzzPlayTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5237EAE3CB59DFEB53A2147 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		C9E14EE51A82ECF7804A45EA /* SampleQuiz.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SampleQuiz.swift; path = BuzzPlayTests/Fixtures/SampleQuiz.swift; sourceTree = SOURCE_ROOT; };
@@ -99,6 +103,8 @@
 				71C40BDD2EC224D700EE9976 /* Products */,
 				9B5A2E693082A6ADA8C5B5EB /* Frameworks */,
 				18030835825B2E91F0A19DD0 /* BuzzPlayTests */,
+				523F57682BB1D3D7A552C56F /* SampleBlindTestSongs.swift */,
+				7F197F0AC9DC8F1D8F55ECDD /* BlindTestMasterViewModelTests.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -269,6 +275,8 @@
 				052E2021AE02DD17FBF5138B /* TeamFlowViewModelTests.swift in Sources */,
 				B5B77047D6A4284FBF8B6936 /* QuizMasterViewModelTests.swift in Sources */,
 				86B579AE0E655C732B7CCD1F /* MasterFlowViewModelTests.swift in Sources */,
+				327138FC70162A7E4033E4BD /* SampleBlindTestSongs.swift in Sources */,
+				A58D537961FB0B6C4DAE433B /* BlindTestMasterViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

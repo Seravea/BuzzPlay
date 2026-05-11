@@ -79,10 +79,21 @@ final class AppleMusicService {
         return song
     }
     
+    /// Demande l'autorisation MusicKit ET vérifie le droit de lecture catalogue
+    /// en un seul aller-retour réseau. Retourne true si l'abonnement permet la lecture complète.
     @MainActor
-    func setupAppleMusic() async {
+    func setupAppleMusic() async -> Bool {
         let status = await MusicAuthorization.request()
         Logger.debug("MusicKit status: \(status)", category: "MUSIC")
+        guard status == .authorized else { return false }
+        do {
+            let subscription = try await MusicSubscription.current
+            Logger.debug("Subscription canPlayCatalog: \(subscription.canPlayCatalogContent)", category: "MUSIC")
+            return subscription.canPlayCatalogContent
+        } catch {
+            Logger.warning("MusicSubscription check failed: \(error)", category: "MUSIC")
+            return false
+        }
     }
     
     
