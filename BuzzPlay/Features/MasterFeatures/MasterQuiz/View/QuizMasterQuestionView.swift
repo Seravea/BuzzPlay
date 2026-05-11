@@ -126,7 +126,7 @@ struct QuizActiveQuestionScreen: View {
     // MARK: Scores + Waiting Radar
 
     private var scoresSection: some View {
-        let players = quizMasterVM.gameVM.players.sorted { $0.score > $1.score }
+        let players = (quizMasterVM.gameVM?.players ?? []).sorted { $0.score > $1.score }
         let maxScore = max(players.map(\.score).max() ?? 1, 1)
 
         return VStack(alignment: .leading, spacing: 8) {

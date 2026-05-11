@@ -202,9 +202,13 @@ struct PlayerChooseGameView: View {
     private func joinGame(_ game: GameType) {
         playerGameVM.pendingGameInvite = nil
         if game != .score {
-            playerGameVM.currentBuzzerVM = playerFlowVM.makeBuzzerViewModel(
+            guard let buzzerVM = playerFlowVM.makeBuzzerViewModel(
                 for: game == .quiz ? .quiz : .blindTest
-            )
+            ) else {
+                Logger.error("Cannot join game: buzzer not ready", category: "PLAYER")
+                return
+            }
+            playerGameVM.currentBuzzerVM = buzzerVM
         }
         router.push(game.destinationPlayer)
     }

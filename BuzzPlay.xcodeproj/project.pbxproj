@@ -6,8 +6,38 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		052E2021AE02DD17FBF5138B /* TeamFlowViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BDC3F1179FAEB45F0085DE4 /* TeamFlowViewModelTests.swift */; };
+		61AECDE7C6A1B45818CEA4B2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5237EAE3CB59DFEB53A2147 /* Foundation.framework */; };
+		86B579AE0E655C732B7CCD1F /* MasterFlowViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D4482D5D75DCE20E7502E /* MasterFlowViewModelTests.swift */; };
+		90675145D0AAFF78E45B98EB /* SampleQuiz.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E14EE51A82ECF7804A45EA /* SampleQuiz.swift */; };
+		B5B77047D6A4284FBF8B6936 /* QuizMasterViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBBBE288846D6ACC1B2E8533 /* QuizMasterViewModelTests.swift */; };
+		DAA0F4C6D91E7F113359A6E4 /* MockMasterGameHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C6D6A50F5C16B0650B709E /* MockMasterGameHost.swift */; };
+		E7762CB852C237CCFB208401 /* BuzzPlayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E7763CEE80D2CC8FD0F9B7E /* BuzzPlayTests.swift */; };
+		FE3478E42698FA2C2E78E8CA /* SamplePlayers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF67390AA437582FBF041590 /* SamplePlayers.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		955D48B74D76188D49FD115B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 71C40BD42EC224D700EE9976 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 71C40BDB2EC224D700EE9976;
+			remoteInfo = BuzzPlay;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		1BDC3F1179FAEB45F0085DE4 /* TeamFlowViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TeamFlowViewModelTests.swift; path = BuzzPlayTests/ViewModels/TeamFlowViewModelTests.swift; sourceTree = SOURCE_ROOT; };
+		3E7763CEE80D2CC8FD0F9B7E /* BuzzPlayTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuzzPlayTests.swift; path = BuzzPlayTests/BuzzPlayTests.swift; sourceTree = SOURCE_ROOT; };
+		4B3D4482D5D75DCE20E7502E /* MasterFlowViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MasterFlowViewModelTests.swift; path = BuzzPlayTests/ViewModels/MasterFlowViewModelTests.swift; sourceTree = SOURCE_ROOT; };
 		71C40BDC2EC224D700EE9976 /* BuzzPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuzzPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		76C6D6A50F5C16B0650B709E /* MockMasterGameHost.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MockMasterGameHost.swift; path = BuzzPlayTests/Mocks/MockMasterGameHost.swift; sourceTree = SOURCE_ROOT; };
+		C2417A40E11BC23E1C4C7D47 /* BuzzPlayTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BuzzPlayTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C5237EAE3CB59DFEB53A2147 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		C9E14EE51A82ECF7804A45EA /* SampleQuiz.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SampleQuiz.swift; path = BuzzPlayTests/Fixtures/SampleQuiz.swift; sourceTree = SOURCE_ROOT; };
+		CF67390AA437582FBF041590 /* SamplePlayers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SamplePlayers.swift; path = BuzzPlayTests/Fixtures/SamplePlayers.swift; sourceTree = SOURCE_ROOT; };
+		FBBBE288846D6ACC1B2E8533 /* QuizMasterViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = QuizMasterViewModelTests.swift; path = BuzzPlayTests/ViewModels/QuizMasterViewModelTests.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -39,14 +69,36 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9CA9F2C6AA0E518F6D5678A0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				61AECDE7C6A1B45818CEA4B2 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18030835825B2E91F0A19DD0 /* BuzzPlayTests */ = {
+			isa = PBXGroup;
+			children = (
+				3E7763CEE80D2CC8FD0F9B7E /* BuzzPlayTests.swift */,
+				88B3213D3411F27355A29E51 /* Mocks */,
+				A22802F1C23BDB3046DE530C /* Fixtures */,
+				CB063F982C7259AC0032BE5B /* ViewModels */,
+			);
+			name = BuzzPlayTests;
+			path = BuzzPlayTests;
+			sourceTree = "<group>";
+		};
 		71C40BD32EC224D700EE9976 = {
 			isa = PBXGroup;
 			children = (
 				71C40BDE2EC224D700EE9976 /* BuzzPlay */,
 				71C40BDD2EC224D700EE9976 /* Products */,
+				9B5A2E693082A6ADA8C5B5EB /* Frameworks */,
+				18030835825B2E91F0A19DD0 /* BuzzPlayTests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -54,8 +106,55 @@
 			isa = PBXGroup;
 			children = (
 				71C40BDC2EC224D700EE9976 /* BuzzPlay.app */,
+				C2417A40E11BC23E1C4C7D47 /* BuzzPlayTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		88B3213D3411F27355A29E51 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				76C6D6A50F5C16B0650B709E /* MockMasterGameHost.swift */,
+			);
+			name = Mocks;
+			path = Mocks;
+			sourceTree = "<group>";
+		};
+		9B5A2E693082A6ADA8C5B5EB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F9A545F0CD14B0DEB8CFCF1D /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A22802F1C23BDB3046DE530C /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				C9E14EE51A82ECF7804A45EA /* SampleQuiz.swift */,
+				CF67390AA437582FBF041590 /* SamplePlayers.swift */,
+			);
+			name = Fixtures;
+			path = Fixtures;
+			sourceTree = "<group>";
+		};
+		CB063F982C7259AC0032BE5B /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				1BDC3F1179FAEB45F0085DE4 /* TeamFlowViewModelTests.swift */,
+				FBBBE288846D6ACC1B2E8533 /* QuizMasterViewModelTests.swift */,
+				4B3D4482D5D75DCE20E7502E /* MasterFlowViewModelTests.swift */,
+			);
+			name = ViewModels;
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		F9A545F0CD14B0DEB8CFCF1D /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				C5237EAE3CB59DFEB53A2147 /* Foundation.framework */,
+			);
+			name = iOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -77,11 +176,27 @@
 				71C40BDE2EC224D700EE9976 /* BuzzPlay */,
 			);
 			name = BuzzPlay;
-			packageProductDependencies = (
-			);
 			productName = BuzzPlay;
 			productReference = 71C40BDC2EC224D700EE9976 /* BuzzPlay.app */;
 			productType = "com.apple.product-type.application";
+		};
+		FD565FBFD5D4EDC7D0A65103 /* BuzzPlayTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DB826A812A458C693E59FC04 /* Build configuration list for PBXNativeTarget "BuzzPlayTests" */;
+			buildPhases = (
+				D34B4E30C2DEE31B55BD3B10 /* Sources */,
+				9CA9F2C6AA0E518F6D5678A0 /* Frameworks */,
+				F51E69398499F9AA80BE2971 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4A5D4338AF0B7CBB0DA9AED0 /* PBXTargetDependency */,
+			);
+			name = BuzzPlayTests;
+			productName = BuzzPlayTests;
+			productReference = C2417A40E11BC23E1C4C7D47 /* BuzzPlayTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -113,12 +228,20 @@
 			projectRoot = "";
 			targets = (
 				71C40BDB2EC224D700EE9976 /* BuzzPlay */,
+				FD565FBFD5D4EDC7D0A65103 /* BuzzPlayTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		71C40BDA2EC224D700EE9976 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F51E69398499F9AA80BE2971 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -135,7 +258,30 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D34B4E30C2DEE31B55BD3B10 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E7762CB852C237CCFB208401 /* BuzzPlayTests.swift in Sources */,
+				DAA0F4C6D91E7F113359A6E4 /* MockMasterGameHost.swift in Sources */,
+				90675145D0AAFF78E45B98EB /* SampleQuiz.swift in Sources */,
+				FE3478E42698FA2C2E78E8CA /* SamplePlayers.swift in Sources */,
+				052E2021AE02DD17FBF5138B /* TeamFlowViewModelTests.swift in Sources */,
+				B5B77047D6A4284FBF8B6936 /* QuizMasterViewModelTests.swift in Sources */,
+				86B579AE0E655C732B7CCD1F /* MasterFlowViewModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4A5D4338AF0B7CBB0DA9AED0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BuzzPlay;
+			target = 71C40BDB2EC224D700EE9976 /* BuzzPlay */;
+			targetProxy = 955D48B74D76188D49FD115B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		71C40BE52EC224D800EE9976 /* Debug */ = {
@@ -339,6 +485,49 @@
 			};
 			name = Release;
 		};
+		A440B42D436D8D851D008B11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4FK7MWFCFZ;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.RomainPoyard.BuzzPlayTests;
+				PRODUCT_NAME = BuzzPlayTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BuzzPlay.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BuzzPlay";
+			};
+			name = Debug;
+		};
+		DD6BE42213DCC2D5B8BB4DA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4FK7MWFCFZ;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.RomainPoyard.BuzzPlayTests;
+				PRODUCT_NAME = BuzzPlayTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BuzzPlay.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BuzzPlay";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -356,6 +545,15 @@
 			buildConfigurations = (
 				71C40BE82EC224D800EE9976 /* Debug */,
 				71C40BE92EC224D800EE9976 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DB826A812A458C693E59FC04 /* Build configuration list for PBXNativeTarget "BuzzPlayTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD6BE42213DCC2D5B8BB4DA1 /* Release */,
+				A440B42D436D8D851D008B11 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

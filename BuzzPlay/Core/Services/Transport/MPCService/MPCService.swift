@@ -59,7 +59,7 @@ extension MPCService {
         )
         advertiser?.delegate = self
         advertiser?.startAdvertisingPeer()
-        print("OK MPC: hosting(MASTER) started as \(myPeerID.displayName)")
+        Logger.debug("hosting(MASTER) started as \(myPeerID.displayName)", category: "MPC")
     }
     
     //MARK: Master stop advertise
@@ -121,12 +121,12 @@ extension MPCService {
         browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
         browser?.delegate = self
         browser?.startBrowsingForPeers()
-        print("OK MPC: browsing(TEAM) started as \(myPeerID.displayName)")
+        Logger.debug("browsing(TEAM) started as \(myPeerID.displayName)", category: "MPC")
     }
     
    //send player to Hosting
     func sendPlayer(_ player: Player) {
-        print("PLAYER: sending playerJoin for \(player.name)")
+        Logger.debug("sending playerJoin for \(player.name)", category: "PLAYER")
             sendMessage(.playerJoin(player))
     }
     
@@ -163,13 +163,13 @@ extension MPCService: MCSessionDelegate {
         DispatchQueue.main.async {
             switch state {
             case .connected:
-                print("OK MPC: connected to : \(peerID.displayName)")
+                Logger.debug("connected to : \(peerID.displayName)", category: "MPC")
                 self.onPeerConnected?(peerID)
             case .notConnected:
-                print("PAS OK MPC: disconnected from \(peerID.displayName)")
+                Logger.debug("disconnected from \(peerID.displayName)", category: "MPC")
                 self.onPeerDisconnected?(peerID)
             case .connecting:
-                print("LOAD MPC: is connecting to \(peerID.displayName)")
+                Logger.debug("is connecting to \(peerID.displayName)", category: "MPC")
             @unknown default:
                 break
             }
@@ -183,7 +183,7 @@ extension MPCService: MCSessionDelegate {
         }
 
         // Optional debug log (avoid assuming the payload is UTF-8).
-        print("MPC received \(data.count) bytes from \(peerID.displayName)")
+        Logger.debug("received \(data.count) bytes from \(peerID.displayName)", category: "MPC")
     }
     
     func session(_ session: MCSession,
@@ -210,7 +210,7 @@ extension MPCService: MCNearbyServiceAdvertiserDelegate {
                     didReceiveInvitationFromPeer peerID: MCPeerID,
                     withContext context: Data?,
                     invitationHandler: @escaping (Bool, MCSession?) -> Void) {
-        print("📨 MPC: invitation from \(peerID.displayName)")
+        Logger.debug("invitation from \(peerID.displayName)", category: "MPC")
         invitationHandler(true, session) // on accepte toujours pour l'instant
     }
 }
@@ -228,24 +228,24 @@ extension MPCService: MCNearbyServiceBrowserDelegate {
 
         // 👉 N'inviter QUE le Master
         guard peerRole == "master" else {
-            print("⚠️ MPC: ignoring non-master peer \(name) (role=\(peerRole))")
+            Logger.debug("ignoring non-master peer \(name) (role=\(peerRole))", category: "MPC")
             return
         }
 
         guard !invitedPeers.contains(name) else {
-            print("⚠️ MPC: already invited \(name)")
+            Logger.debug("already invited \(name)", category: "MPC")
             return
         }
 
         invitedPeers.insert(name)
-        print("👀 MPC: found master \(name), inviting…")
+        Logger.debug("found master \(name), inviting…", category: "MPC")
         browser.invitePeer(peerID, to: session, withContext: nil, timeout: 10)
     }
 
         func browser(_ browser: MCNearbyServiceBrowser,
                      lostPeer peerID: MCPeerID) {
             invitedPeers.remove(peerID.displayName)
-            print("❌ MPC: lost peer \(peerID.displayName)")
+            Logger.debug("lost peer \(peerID.displayName)", category: "MPC")
         }
 }
 
@@ -279,7 +279,7 @@ extension MPCService {
 extension MPCService {
     func sendMessage(_ message: MPCMessage) {
         guard !session.connectedPeers.isEmpty else {
-            print("MPC: no connected peers, can't send \(message)")
+            Logger.error("no connected peers, can't send \(message)", category: "MPC")
             return
         }
 
@@ -288,13 +288,13 @@ extension MPCService {
             try session.send(data, toPeers: session.connectedPeers, with: .reliable)
         } catch {
             let mpcError = MPCError.sendFailed(underlying: error)
-            print("MPC error: \(mpcError), underlying: \(error)")
+            Logger.error("\(mpcError), underlying: \(error)", category: "MPC")
         }
     }
-    
+
     func sendMessagetoOnePlayer(message: MPCMessage, player: Player) {
         guard let targetPeer = session.connectedPeers.first(where: { $0.displayName == player.name }) else {
-            print("MPC: no connected peer found for player \(player.name)")
+            Logger.error("no connected peer found for player \(player.name)", category: "MPC")
             return
         }
 
@@ -303,7 +303,7 @@ extension MPCService {
             try session.send(data, toPeers: [targetPeer], with: .reliable)
         } catch {
             let mpcError = MPCError.sendFailed(underlying: error)
-            print("MPC error: \(mpcError), underlying: \(error)")
+            Logger.error("\(mpcError), underlying: \(error)", category: "MPC")
         }
     }
 }

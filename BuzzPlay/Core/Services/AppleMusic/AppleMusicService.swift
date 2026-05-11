@@ -8,8 +8,6 @@
 import MusicKit
 import AVFoundation
 
-import MusicKit
-
 final class AppleMusicService {
     
     var playlists: [Playlist] = []
@@ -35,7 +33,7 @@ final class AppleMusicService {
               let tracks = musicPlaylist.tracks else {
             return []
         }
-        print("Playlist tracks count:", tracks.count)
+        Logger.debug("Playlist tracks count: \(tracks.count)", category: "MUSIC")
         return tracks.compactMap { track in
             BlindTestSong(
                 artist: track.artistName,
@@ -84,7 +82,7 @@ final class AppleMusicService {
     @MainActor
     func setupAppleMusic() async {
         let status = await MusicAuthorization.request()
-        print("MusicKit status:", status)
+        Logger.debug("MusicKit status: \(status)", category: "MUSIC")
     }
     
     
@@ -100,9 +98,9 @@ final class AppleMusicService {
 
             try session.setActive(true)
 
-            print("🔊 AudioSession ready")
+            Logger.debug("AudioSession ready", category: "AUDIO")
         } catch {
-            print("❌ AudioSession error:", error)
+            Logger.error("AudioSession error: \(error)", category: "AUDIO")
         }
     }
     

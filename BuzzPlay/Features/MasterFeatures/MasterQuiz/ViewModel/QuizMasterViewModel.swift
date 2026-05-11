@@ -12,7 +12,7 @@ import UIKit
 @Observable
 class QuizMasterViewModel: BuzzDrivenGame {
 
-    let gameVM: MasterFlowViewModel
+    weak var gameVM: MasterGameHost?
     let quizSet: QuizSet
 
     var questions: [QuizQuestion]
@@ -28,7 +28,7 @@ class QuizMasterViewModel: BuzzDrivenGame {
     var reactionTimeMs: Int = 0
     var timer: Timer?
 
-    init(gameVM: MasterFlowViewModel, quizSet: QuizSet) {
+    init(gameVM: MasterGameHost, quizSet: QuizSet) {
         self.gameVM = gameVM
         self.quizSet = quizSet
         self.questions = quizSet.questions
@@ -41,57 +41,54 @@ extension QuizMasterViewModel {
         currentQuestion = question
         playerHasBuzz = nil
 
-        gameVM.unlockBuzz()
+        gameVM?.unlockBuzz()
         startRound()
     }
-    
+
     func startRound() {
-        //SI pas de question ne peu pas commencer la manche
         guard currentQuestion != nil else { return }
 
-        gameVM.broadcastPublicStateFromCurrentGame()
-        gameVM.unlockBuzz()
-        
-        // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
+        gameVM?.broadcastPublicStateFromCurrentGame()
+        gameVM?.unlockBuzz()
+
         let timestamp = Date().timeIntervalSince1970
-        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-        
+        gameVM?.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+
         startReactionTimer()
     }
-    
-    func validateAnswer(points: Int) {
-        if let player = gameVM.currentBuzzPlayer {
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
-            gameVM.addPointToPlayer(player, points: points)
 
-            // ✅ Envoyer le résultat aux Players
+    func validateAnswer(points: Int) {
+        if let player = gameVM?.currentBuzzPlayer {
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            gameVM?.addPointToPlayer(player, points: points)
+
             let resultPayload = AnswerResultPayload(isCorrect: true, points: points, correctAnswer: currentQuestion?.answers.first)
-            gameVM.mpcService.sendMessage(.answerResult(resultPayload))
+            gameVM?.mpcService.sendMessage(.answerResult(resultPayload))
 
             goToSelectNewQuestion()
             playerHasBuzz = nil
-            gameVM.currentBuzzPlayer = nil
+            gameVM?.resetBuzzState()
         }
     }
-    
+
     func rejectAnswer() {
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
 
         let resultPayload = AnswerResultPayload(isCorrect: false, points: 0, correctAnswer: nil)
-        gameVM.mpcService.sendMessage(.answerResult(resultPayload))
+        gameVM?.mpcService.sendMessage(.answerResult(resultPayload))
 
         playerHasBuzz = nil
-        gameVM.currentBuzzPlayer = nil
+        gameVM?.resetBuzzState()
         let state = makePublicState()
-        gameVM.sendPublicState(state)
+        gameVM?.sendPublicState(state)
 
         startRoundCountdown {
-            self.gameVM.unlockBuzz()
+            self.gameVM?.unlockBuzz()
             let timestamp = Date().timeIntervalSince1970
-            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+            self.gameVM?.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
             self.startReactionTimer()
             let newState = self.makePublicState()
-            self.gameVM.sendPublicState(newState)
+            self.gameVM?.sendPublicState(newState)
         }
     }
 
@@ -121,17 +118,16 @@ extension QuizMasterViewModel {
             }
         }
     }
-    
+
     func handleBuzz(from player: Player) {
-        gameVM.currentBuzzPlayer = player
+        gameVM?.setBuzzPlayer(player)
         playerHasBuzz = player
         pauseReactionTimer()
     }
-    
+
     func skipQuestion() {
         playerHasBuzz = nil
-        gameVM.currentBuzzPlayer = nil
-        gameVM.isBuzzLocked = false
+        gameVM?.resetBuzzState()
         goToSelectNewQuestion()
     }
 
@@ -143,7 +139,7 @@ extension QuizMasterViewModel {
         stopReactionTimer()
 
         let state = makePublicState()
-        gameVM.sendPublicState(state)
+        gameVM?.sendPublicState(state)
     }
 }
 
@@ -153,7 +149,7 @@ extension QuizMasterViewModel {
     func questionButtonStyle(_ question: QuizQuestion) -> Style {
         let isSelected = (question == currentQuestion)
         let isAlreadyPassed = questionsPassed.contains(question)
-        
+
         if isSelected {
             return .filled(buttonStyle: .neutral)
         } else if isAlreadyPassed {
@@ -162,11 +158,11 @@ extension QuizMasterViewModel {
             return .outlined(buttonStyle: .neutral)
         }
     }
-    
+
     func questionButtonBCKStyle(_ question: QuizQuestion) -> ButtonStyleE {
         let isSelected = (question == currentQuestion)
         let isAlreadyPassed = questionsPassed.contains(question)
-        
+
         if isSelected {
             return .positive
         } else if isAlreadyPassed {
@@ -175,8 +171,8 @@ extension QuizMasterViewModel {
             return .neutral
         }
     }
-    
-    
+
+
     func quizButtonDisabled(question: QuizQuestion) -> Bool {
         if isPlaying {
             return true
@@ -186,15 +182,15 @@ extension QuizMasterViewModel {
             return false
         }
     }
-    
+
     var isPlaying: Bool {
         currentQuestion != nil
     }
-    
+
     var validateRejectDisabled: Bool {
         playerHasBuzz == nil
     }
-    
+
     func UIDisabledValidateRejectButtonOpacity() -> Double {
         validateRejectDisabled ? 0.7 : 1
     }

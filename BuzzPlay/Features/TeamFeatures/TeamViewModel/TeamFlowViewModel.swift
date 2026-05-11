@@ -35,7 +35,7 @@ class PlayerFlowViewModel {
         do {
             savedPlayerDraft = try JSONDecoder().decode(Player.self, from: data)
         } catch {
-            print("TeamFlow: failed to decode saved player draft: \(error)")
+            Logger.error("failed to decode saved player draft: \(error)", category: "TEAM")
             savedPlayerDraft = nil
         }
     }
@@ -64,7 +64,7 @@ class PlayerFlowViewModel {
             let data = try JSONEncoder().encode(player)
             UserDefaults.standard.set(data, forKey: savedPlayerKey)
         } catch {
-            print("TeamFlow: failed to persist player: \(error)")
+            Logger.error("failed to persist player: \(error)", category: "TEAM")
         }
     }
     var playerGameVM: PlayerGameViewModel?
@@ -82,7 +82,7 @@ class PlayerFlowViewModel {
             // Si une ancienne session existe (retour arrière, relance, etc.),
             // on la reset pour permettre de créer/rejoindre une nouvelle player.
             if self.playerGameVM != nil || self.mpc != nil {
-                print("TeamFlow: existing session detected, resetting before creating a new player")
+                Logger.debug("existing session detected, resetting before creating a new player", category: "TEAM")
                 self.resetLocalSession(clearPersistence: false)
             }
 
@@ -115,29 +115,39 @@ class PlayerFlowViewModel {
     func makeCreateTeamViewModel() -> CreateTeamViewModel {
         return createTeamVM
     }
+}
 
+//MARK: TeamGameHost conformance
+extension PlayerFlowViewModel: TeamGameHost {
+    var mpcService: MPCService? { mpc }
 
-    func makeBuzzerViewModel(for mode: BuzzerGameMode) -> BuzzerViewModel {
+    func sendBuzz(playerID: UUID) {
+        mpc?.sendMessage(.buzz(BuzzPayload(playerID: playerID)))
+    }
+}
+
+//MARK: Buzzer creation
+extension PlayerFlowViewModel {
+    func makeBuzzerViewModel(for mode: BuzzerGameMode) -> BuzzerViewModel? {
         guard let playerVM = playerGameVM else {
-            fatalError("Pas de player défini")
+            Logger.error("Cannot create buzzer: player not initialized", category: "TEAM")
+            return nil
         }
 
         let vm = BuzzerViewModel(player: playerVM.player, mode: mode)
         playerVM.currentBuzzerVM = vm
 
-        // buzz -> envoi MPC
         vm.onBuzz = { [weak self] player, mode in
-            print("Buzz de \(player.name) sur mode \(mode)")
+            Logger.debug("Buzz de \(player.name) sur mode \(mode)", category: "BUZZ")
             vm.isEnabled = false
 
             guard let mpc = self?.mpc else {
-                print("ERREUR MPC: pas de MPCService dans PlayerFlowViewModel")
+                Logger.error("no MPCService to send buzz", category: "TEAM")
                 return
             }
 
             mpc.sendMessage(.buzz(BuzzPayload(playerID: player.id)))
         }
-
 
         return vm
     }

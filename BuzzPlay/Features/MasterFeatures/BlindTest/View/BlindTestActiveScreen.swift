@@ -115,7 +115,7 @@ struct BlindTestActiveScreen: View {
     }
 
     private var scoresSection: some View {
-        let players = blindTestVM.gameVM.players.sorted { $0.score > $1.score }
+        let players = (blindTestVM.gameVM?.players ?? []).sorted { $0.score > $1.score }
         let maxScore = max(players.map(\.score).max() ?? 1, 1)
 
         return VStack(alignment: .leading, spacing: 8) {

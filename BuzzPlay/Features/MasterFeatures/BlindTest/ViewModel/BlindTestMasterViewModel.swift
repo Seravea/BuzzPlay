@@ -15,7 +15,7 @@ import MusicKit
 @Observable
 class BlindTestMasterViewModel: BuzzDrivenGame {
     
-    let gameVM: MasterFlowViewModel
+    weak var gameVM: MasterGameHost?
     let appleMusicService = AppleMusicService()
     var isFetching: Bool = false
     
@@ -67,7 +67,7 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     }
     
     //MARK: données de jeu
-    init(gameVM: MasterFlowViewModel) {
+    init(gameVM: MasterGameHost) {
         self.gameVM = gameVM
     }
     
@@ -94,7 +94,7 @@ extension BlindTestMasterViewModel {
         state = .finished
 
         // MARK: mise à jour du score via gameVM.addPoints(...)
-        gameVM.addPointToPlayer(playerAnswers, points: points)
+        gameVM?.addPointToPlayer(playerAnswers, points: points)
 
         // on fige définitivement la manche
         stopReactionTimer()
@@ -102,11 +102,11 @@ extension BlindTestMasterViewModel {
         isPlaying = false
 
         // ✅ update public display (answer revealed)
-        gameVM.broadcastPublicStateFromCurrentGame()
+        gameVM?.broadcastPublicStateFromCurrentGame()
 
         // ✅ Envoyer le résultat aux Players
         let resultPayload = AnswerResultPayload(isCorrect: true, points: points, correctAnswer: nil)
-        gameVM.mpcService.sendMessage(.answerResult(resultPayload))
+        gameVM?.mpcService.sendMessage(.answerResult(resultPayload))
 
         // (optionnel) on nettoie ensuite la sélection
         selectedMusic = nil
@@ -122,44 +122,44 @@ extension BlindTestMasterViewModel {
         state = .playing
 
         let resultPayload = AnswerResultPayload(isCorrect: false, points: 0, correctAnswer: nil)
-        gameVM.mpcService.sendMessage(.answerResult(resultPayload))
+        gameVM?.mpcService.sendMessage(.answerResult(resultPayload))
 
-        gameVM.broadcastPublicStateFromCurrentGame()
+        gameVM?.broadcastPublicStateFromCurrentGame()
 
         startRoundCountdown {
-            self.gameVM.unlockBuzz()
+            self.gameVM?.unlockBuzz()
             self.resume()
             self.isPlaying = true
             self.startReactionTimer()
-            self.gameVM.broadcastPublicStateFromCurrentGame()
+            self.gameVM?.broadcastPublicStateFromCurrentGame()
         }
     }
 
     @MainActor private func startRoundCountdown(onComplete: @escaping @MainActor () -> Void) {
         roundCountdownPhase = .hidden
         roundCountdownTimer?.invalidate()
-        gameVM.broadcastPublicStateFromCurrentGame()
+        gameVM?.broadcastPublicStateFromCurrentGame()
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .seconds(2))
             guard let self else { return }
             var count = 3
             self.roundCountdownPhase = .counting(count)
-            self.gameVM.broadcastPublicStateFromCurrentGame()
+            self.gameVM?.broadcastPublicStateFromCurrentGame()
             self.roundCountdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
                 Task { @MainActor [weak self] in
                     guard let self else { return }
                     count -= 1
                     if count > 0 {
                         self.roundCountdownPhase = .counting(count)
-                        self.gameVM.broadcastPublicStateFromCurrentGame()
+                        self.gameVM?.broadcastPublicStateFromCurrentGame()
                     } else {
                         self.roundCountdownTimer?.invalidate()
                         self.roundCountdownTimer = nil
                         self.roundCountdownPhase = .go
-                        self.gameVM.broadcastPublicStateFromCurrentGame()
+                        self.gameVM?.broadcastPublicStateFromCurrentGame()
                         try? await Task.sleep(for: .seconds(0.8))
                         self.roundCountdownPhase = .hidden
-                        self.gameVM.broadcastPublicStateFromCurrentGame()
+                        self.gameVM?.broadcastPublicStateFromCurrentGame()
                         onComplete()
                     }
                 }
@@ -185,7 +185,7 @@ extension BlindTestMasterViewModel {
             }
 
             startRoundCountdown {
-                self.gameVM.unlockBuzz()
+                self.gameVM?.unlockBuzz()
                 self.playMusicAfterCountdown(song: selectedMusic)
             }
         }
@@ -219,14 +219,14 @@ extension BlindTestMasterViewModel {
                     self.isPlaying = true
                     self.startReactionTimer()
                     self.isFetching = false
-                    self.gameVM.broadcastPublicStateFromCurrentGame()
+                    self.gameVM?.broadcastPublicStateFromCurrentGame()
                 }
             } catch {
                 await MainActor.run {
                     self.isGameActive = false
                     self.isFetching = false
                     self.fetchError = "Impossible de lancer la musique. Vérifie ta connexion et réessaie."
-                    self.gameVM.broadcastPublicStateFromCurrentGame()
+                    self.gameVM?.broadcastPublicStateFromCurrentGame()
                 }
             }
         }
@@ -238,17 +238,16 @@ extension BlindTestMasterViewModel {
         isPlaying = false
         isGameActive = false
         playerHasBuzz = nil
-        gameVM.currentBuzzPlayer = nil
-        gameVM.isBuzzLocked = false
+        gameVM?.resetBuzzState()
         state = .idle
-        gameVM.broadcastPublicStateFromCurrentGame()
+        gameVM?.broadcastPublicStateFromCurrentGame()
     }
 
     @MainActor func handlePreviewEnd() {
         guard case .playing = state else { return }
         isPlaying = false
         stopReactionTimer()
-        gameVM.broadcastPublicStateFromCurrentGame()
+        gameVM?.broadcastPublicStateFromCurrentGame()
     }
 }
 
@@ -267,7 +266,7 @@ extension BlindTestMasterViewModel {
         isPlaying = false
 
         // ✅ update public display (buzz received)
-        gameVM.broadcastPublicStateFromCurrentGame()
+        gameVM?.broadcastPublicStateFromCurrentGame()
     }
     
     func makePublicState() -> PublicState {
@@ -412,7 +411,7 @@ extension BlindTestMasterViewModel {
 
             // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
             let timestamp = Date().timeIntervalSince1970
-            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+            self.gameVM?.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
             
             // ✅ Démarrer le timer IMMÉDIATEMENT avec le son
             self.startReactionTimer()
@@ -460,7 +459,7 @@ extension BlindTestMasterViewModel {
             self.isPlaying = true
             
             let timestamp = Date().timeIntervalSince1970
-            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+            self.gameVM?.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
             
             // ✅ Démarrer le timer IMMÉDIATEMENT avec le son
             self.startReactionTimer()
@@ -494,7 +493,7 @@ extension BlindTestMasterViewModel {
             try session.setCategory(.playback, mode: .default)
             try session.setActive(true)
         } catch {
-            print("AudioSession error:", error)
+            Logger.error("AudioSession error: \(error)", category: "AUDIO")
         }
     }
 }
