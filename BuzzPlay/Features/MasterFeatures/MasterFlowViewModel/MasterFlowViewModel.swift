@@ -270,3 +270,16 @@ extension MasterFlowViewModel {
         mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(players[index]), player: players[index])
     }
 }
+
+
+//MARK: MasterGameHost conformance
+extension MasterFlowViewModel: MasterGameHost {
+    func setBuzzPlayer(_ player: Player) {
+        currentBuzzPlayer = player
+    }
+
+    func resetBuzzState() {
+        currentBuzzPlayer = nil
+        isBuzzLocked = false
+    }
+}

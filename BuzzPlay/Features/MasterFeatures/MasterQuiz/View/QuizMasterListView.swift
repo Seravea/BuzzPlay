@@ -59,8 +59,8 @@ struct QuizMasterListView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
-                    connected: quizMasterVM.gameVM.connectedPlayersCount,
-                    total: quizMasterVM.gameVM.totalPlayersCount
+                    connected: quizMasterVM.gameVM?.connectedPlayersCount ?? 0,
+                    total: quizMasterVM.gameVM?.totalPlayersCount ?? 0
                 )
             }
         }
@@ -68,7 +68,7 @@ struct QuizMasterListView: View {
 
     private func handleValidate(points: Int) {
         validationPoints = points
-        validationPlayerName = quizMasterVM.gameVM.currentBuzzPlayer?.name ?? ""
+        validationPlayerName = quizMasterVM.gameVM?.currentBuzzPlayer?.name ?? ""
 
         withAnimation(.spring(duration: 0.3, bounce: 0.2)) {
             showValidationOverlay = true
@@ -103,7 +103,7 @@ private struct QuizQuestionListScreen: View {
             // Bouton "Lancer" — visible avant la 1ère question uniquement
             if quizMasterVM.questionsPassed.isEmpty {
                 Button {
-                    quizMasterVM.gameVM.broadcastGameLaunch(.quiz)
+                    quizMasterVM.gameVM?.broadcastGameLaunch(.quiz)
                 } label: {
                     HStack(spacing: 8) {
                         Image(systemName: "play.fill")
@@ -136,7 +136,7 @@ private struct QuizQuestionListScreen: View {
                     Text(quizMasterVM.quizSet.title)
                         .font(.nohemi(.title2, weight: .extraBold))
                         .foregroundStyle(.white)
-                    Text("\(quizMasterVM.questions.count) questions · \(quizMasterVM.gameVM.players.count) équipes")
+                    Text("\(quizMasterVM.questions.count) questions · \(quizMasterVM.gameVM?.players.count ?? 0) équipes")
                         .font(.nohemi(.subheadline, weight: .regular))
                         .foregroundStyle(.white.opacity(0.5))
                 }

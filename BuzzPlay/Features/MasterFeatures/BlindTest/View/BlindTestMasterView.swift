@@ -58,7 +58,7 @@ struct BlindTestMasterView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     if !blindTestViewModel.allSongs.isEmpty && !blindTestViewModel.isGameActive {
                         Button {
-                            blindTestViewModel.gameVM.broadcastGameLaunch(.blindTest)
+                            blindTestViewModel.gameVM?.broadcastGameLaunch(.blindTest)
                         } label: {
                             HStack(spacing: 6) {
                                 Image(systemName: "play.fill")
@@ -83,8 +83,8 @@ struct BlindTestMasterView: View {
 
                 ToolbarItem(placement: .topBarTrailing) {
                     ConnectionStatusBadge(
-                        connected: blindTestViewModel.gameVM.connectedPlayersCount,
-                        total: blindTestViewModel.gameVM.totalPlayersCount
+                        connected: blindTestViewModel.gameVM?.connectedPlayersCount ?? 0,
+                        total: blindTestViewModel.gameVM?.totalPlayersCount ?? 0
                     )
                 }
             }

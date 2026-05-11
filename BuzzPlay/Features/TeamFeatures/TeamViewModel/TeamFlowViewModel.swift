@@ -115,8 +115,19 @@ class PlayerFlowViewModel {
     func makeCreateTeamViewModel() -> CreateTeamViewModel {
         return createTeamVM
     }
+}
 
+//MARK: TeamGameHost conformance
+extension PlayerFlowViewModel: TeamGameHost {
+    var mpcService: MPCService? { mpc }
 
+    func sendBuzz(playerID: UUID) {
+        mpc?.sendMessage(.buzz(BuzzPayload(playerID: playerID)))
+    }
+}
+
+//MARK: Buzzer creation
+extension PlayerFlowViewModel {
     func makeBuzzerViewModel(for mode: BuzzerGameMode) -> BuzzerViewModel? {
         guard let playerVM = playerGameVM else {
             Logger.error("Cannot create buzzer: player not initialized", category: "TEAM")
@@ -126,7 +137,6 @@ class PlayerFlowViewModel {
         let vm = BuzzerViewModel(player: playerVM.player, mode: mode)
         playerVM.currentBuzzerVM = vm
 
-        // buzz -> envoi MPC
         vm.onBuzz = { [weak self] player, mode in
             Logger.debug("Buzz de \(player.name) sur mode \(mode)", category: "BUZZ")
             vm.isEnabled = false
