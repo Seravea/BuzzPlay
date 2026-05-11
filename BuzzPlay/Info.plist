@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleGetInfoString</key>
 	<string></string>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_buzzplay-game._tcp</string>

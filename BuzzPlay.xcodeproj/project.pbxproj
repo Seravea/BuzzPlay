@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		052E2021AE02DD17FBF5138B /* TeamFlowViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BDC3F1179FAEB45F0085DE4 /* TeamFlowViewModelTests.swift */; };
+		1ECFD80E90D8AEF8739072E8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66AFF04A3116B1D1357786DC /* LaunchScreen.storyboard */; };
 		327138FC70162A7E4033E4BD /* SampleBlindTestSongs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F57682BB1D3D7A552C56F /* SampleBlindTestSongs.swift */; };
 		61AECDE7C6A1B45818CEA4B2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5237EAE3CB59DFEB53A2147 /* Foundation.framework */; };
 		86B579AE0E655C732B7CCD1F /* MasterFlowViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D4482D5D75DCE20E7502E /* MasterFlowViewModelTests.swift */; };
@@ -34,6 +35,7 @@
 		3E7763CEE80D2CC8FD0F9B7E /* BuzzPlayTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuzzPlayTests.swift; path = BuzzPlayTests/BuzzPlayTests.swift; sourceTree = SOURCE_ROOT; };
 		4B3D4482D5D75DCE20E7502E /* MasterFlowViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MasterFlowViewModelTests.swift; path = BuzzPlayTests/ViewModels/MasterFlowViewModelTests.swift; sourceTree = SOURCE_ROOT; };
 		523F57682BB1D3D7A552C56F /* SampleBlindTestSongs.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SampleBlindTestSongs.swift; path = BuzzPlayTests/Fixtures/SampleBlindTestSongs.swift; sourceTree = SOURCE_ROOT; };
+		66AFF04A3116B1D1357786DC /* LaunchScreen.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = BuzzPlay/Ressources/LaunchScreen.storyboard; sourceTree = SOURCE_ROOT; };
 		71C40BDC2EC224D700EE9976 /* BuzzPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuzzPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76C6D6A50F5C16B0650B709E /* MockMasterGameHost.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MockMasterGameHost.swift; path = BuzzPlayTests/Mocks/MockMasterGameHost.swift; sourceTree = SOURCE_ROOT; };
 		7F197F0AC9DC8F1D8F55ECDD /* BlindTestMasterViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BlindTestMasterViewModelTests.swift; path = BuzzPlayTests/ViewModels/BlindTestMasterViewModelTests.swift; sourceTree = SOURCE_ROOT; };
@@ -105,6 +107,7 @@
 				18030835825B2E91F0A19DD0 /* BuzzPlayTests */,
 				523F57682BB1D3D7A552C56F /* SampleBlindTestSongs.swift */,
 				7F197F0AC9DC8F1D8F55ECDD /* BlindTestMasterViewModelTests.swift */,
+				66AFF04A3116B1D1357786DC /* LaunchScreen.storyboard */,
 			);
 			sourceTree = "<group>";
 		};
@@ -244,6 +247,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1ECFD80E90D8AEF8739072E8 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -432,7 +436,6 @@
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "BuzzPlay utilise le réseau local pour connecter l’iPad maître et les iPads joueurs.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -471,7 +474,6 @@
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "BuzzPlay utilise le réseau local pour connecter l’iPad maître et les iPads joueurs.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
