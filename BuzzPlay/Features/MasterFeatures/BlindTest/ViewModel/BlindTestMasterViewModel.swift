@@ -179,6 +179,7 @@ extension BlindTestMasterViewModel {
                 self.playerHasBuzz = nil
                 self.isCorrect = false
                 self.state = .playing
+                self.isGameActive = true   // ← Master bascule sur BlindTestActiveScreen immédiatement
                 self.isFetching = true
                 self.configureAudioSession()
             }
@@ -285,8 +286,7 @@ extension BlindTestMasterViewModel {
                         formattedTime: formattedTime,
                         buzzingPlayer: nil,
                         isAnswerRevealed: false,
-                        isPlaying: true,
-                        roundCountdownPhase: roundCountdownPhase
+                        isPlaying: true
                     )
                 )
 
@@ -300,8 +300,7 @@ extension BlindTestMasterViewModel {
                        formattedTime: formattedTime,
                        buzzingPlayer: player,
                        isAnswerRevealed: false,
-                       isPlaying: false,
-                       roundCountdownPhase: nil
+                       isPlaying: false
                    )
                )
 
@@ -315,8 +314,7 @@ extension BlindTestMasterViewModel {
                        formattedTime: formattedTime,
                        buzzingPlayer: playerHasBuzz,
                        isAnswerRevealed: true,
-                       isPlaying: false,
-                       roundCountdownPhase: nil
+                       isPlaying: false
                    )
                )
            }
