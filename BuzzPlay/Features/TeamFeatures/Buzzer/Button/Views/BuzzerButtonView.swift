@@ -26,21 +26,23 @@ struct BuzzerButtonView: View {
                     PulseRingView(delay: 1.4, color: playerColor)
                 }
 
-                // Halo radial
+                // Halo radial — gradient multi-stops simule le blur sans convolution CPU
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [
-                                playerColor.opacity(buzzerVM.isEnabled ? 0.45 : 0.08),
-                                .clear,
+                            stops: [
+                                .init(color: playerColor.opacity(buzzerVM.isEnabled ? 0.40 : 0.07), location: 0.00),
+                                .init(color: playerColor.opacity(buzzerVM.isEnabled ? 0.28 : 0.05), location: 0.35),
+                                .init(color: playerColor.opacity(buzzerVM.isEnabled ? 0.14 : 0.02), location: 0.65),
+                                .init(color: playerColor.opacity(buzzerVM.isEnabled ? 0.04 : 0.01), location: 0.88),
+                                .init(color: .clear,                                                 location: 1.00),
                             ],
                             center: .center,
                             startRadius: 0,
-                            endRadius: 120
+                            endRadius: 150
                         )
                     )
-                    .frame(width: 240, height: 240)
-                    .blur(radius: 20)
+                    .frame(width: 300, height: 300)
 
                 // Bouton principal
                 ZStack {
@@ -77,6 +79,7 @@ struct BuzzerButtonView: View {
                 .animation(.spring(response: 0.35, dampingFraction: 0.65), value: ourTeamBuzzed)
             }
             .frame(width: 300, height: 300)
+            .drawingGroup()  // rasterise tout le bouton en texture Metal — réduit le re-rendu des PulseRings
             .onTapGesture {
                 if buzzerVM.isEnabled {
                     UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
