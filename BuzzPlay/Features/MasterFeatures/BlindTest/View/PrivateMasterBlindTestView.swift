@@ -57,11 +57,13 @@ struct PrivateMasterBlindTestView: View {
             }
         }
         .animation(.spring(duration: 0.45, bounce: 0.05), value: currentScreen)
-        .onAppear {
-            Task {
-                await blindTestVM.appleMusicService.setupAppleMusic()
-                await blindTestVM.updateCatalogPlaybackCapability()
-            }
+        .task {
+            // Un seul appel réseau MusicKit au lieu de deux appels séquentiels
+            let t0 = Date()
+            Logger.debug("MusicKit setup — start", category: "PERF")
+            let canPlay = await blindTestVM.appleMusicService.setupAppleMusic()
+            blindTestVM.canPlayCatalogContent = canPlay
+            Logger.debug("MusicKit setup — done in \(Int(Date().timeIntervalSince(t0) * 1000))ms", category: "PERF")
         }
         .alert("Information", isPresented: $blindTestVM.showSubscriptionAlert) {
             Button("OK", role: .cancel) {}
