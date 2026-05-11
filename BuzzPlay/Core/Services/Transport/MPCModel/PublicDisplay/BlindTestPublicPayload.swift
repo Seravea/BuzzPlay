@@ -16,5 +16,4 @@ struct PublicBlindTestState: Codable, Equatable {
     let buzzingPlayer: Player?
     let isAnswerRevealed: Bool
     let isPlaying: Bool
-    let roundCountdownPhase: RoundCountdownPhase?
 }

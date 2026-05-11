@@ -14,51 +14,8 @@ struct PublicBlindTestView: View {
     let timer: String
 
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                // Header + Timer (hidden when playing)
-                if state.isAnswerRevealed {
-                    HStack(alignment: .top, spacing: 20) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Blind Test")
-                                .font(.custom("Nohemi-ExtraBold", size: 48))
-
-                            HStack(spacing: 6) {
-                                Circle()
-                                    .fill(state.isPlaying ? Color.mustardYellow : .white.opacity(0.3))
-                                    .frame(width: 8, height: 8)
-
-                                Text(state.isPlaying ? "En cours" : "En pause")
-                                    .font(.nohemi(.subheadline, weight: .semiBold))
-                                    .opacity(0.7)
-                            }
-                        }
-
-                        Spacer()
-
-                        VStack(spacing: 4) {
-                            Text("TEMPS")
-                                .font(.nohemi(.caption, weight: .bold))
-                                .opacity(0.5)
-                                .tracking(0.8)
-
-                            Text(timer)
-                                .font(.custom("Nohemi-Black", size: 44))
-                                .monospacedDigit()
-                                .foregroundStyle(Color.mustardYellow)
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(Color.darkestPurple, in: RoundedRectangle(cornerRadius: 16))
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 20)
-
-                    Divider()
-                        .opacity(0.2)
-                }
-
-            // Song info (revealed or hidden)
+        VStack(spacing: 0) {
+            // Song info
             if state.isAnswerRevealed {
                 let releaseDate: Date? = {
                     if let year = state.releaseYear, let yearInt = Int(year) {
@@ -110,7 +67,7 @@ struct PublicBlindTestView: View {
                         .opacity(0.5)
                         .tracking(0.8)
 
-                    TeamCardView(player: player,buzzTime: state.formattedTime, showPoints: false)
+                    TeamCardView(player: player, buzzTime: state.formattedTime, showPoints: false)
                 }
                 .padding(.horizontal, 24)
                 .padding(.vertical, 20)
@@ -133,34 +90,24 @@ struct PublicBlindTestView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .animation(.spring(duration: 0.4), value: state)
-
-            // Countdown overlay
-            if let phase = state.roundCountdownPhase, phase != .hidden {
-                CountdownOverlay(phase: phase)
-                    .transition(.opacity)
-                    .zIndex(100)
-            }
+            Spacer()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .animation(.spring(duration: 0.4), value: state)
     }
 }
 
 #Preview("Playing") {
     let sample = PublicBlindTestState(
-        title: "🎵 Blind Test en cours",
+        title: nil,
         artist: nil,
         postertURLString: nil,
         releaseYear: nil,
         formattedTime: "00:12",
         buzzingPlayer: nil,
         isAnswerRevealed: false,
-        isPlaying: true,
-        roundCountdownPhase: nil
+        isPlaying: true
     )
-
     PublicBlindTestView(state: sample, timer: "00:12")
         .background(BackgroundAppView())
 }
@@ -174,10 +121,8 @@ struct PublicBlindTestView: View {
         formattedTime: "00:12",
         buzzingPlayer: nil,
         isAnswerRevealed: true,
-        isPlaying: false,
-        roundCountdownPhase: nil
+        isPlaying: false
     )
-
     PublicBlindTestView(state: sample, timer: "00:12")
         .background(BackgroundAppView())
 }
