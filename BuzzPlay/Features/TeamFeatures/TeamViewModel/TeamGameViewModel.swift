@@ -85,7 +85,7 @@ extension PlayerGameViewModel {
                     self.handleMessage(message)
                 }
             } catch {
-                print("Message received but unknown in MPCMessage: \(error)")
+                Logger.error("Message received but unknown in MPCMessage: \(error)", category: "PLAYER")
             }
         }
 
@@ -95,7 +95,7 @@ extension PlayerGameViewModel {
     func startBrowsing() {
         guard !hasStartedBrowsing else { return }
         hasStartedBrowsing = true
-        print("PLAYER Starting MPC browsing...")
+        Logger.debug("Starting MPC browsing...", category: "PLAYER")
         mpc.startBrowsingIfNeeded()
     }
 
@@ -130,9 +130,9 @@ extension PlayerGameViewModel {
             currentBuzzerVM?.unLockBuzz()
 
         case .updatedPlayer(let updatedPlayer):
-            print("Before receive \(self.player)")
+            Logger.debug("Before receive \(self.player)", category: "PLAYER")
             self.player = updatedPlayer
-            print("After receive \(self.player)")
+            Logger.debug("After receive \(self.player)", category: "PLAYER")
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
 

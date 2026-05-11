@@ -147,11 +147,11 @@ extension MasterFlowViewModel {
         case .buzz(let payload):
             handleBuzzReceive(data: payload, from: peer)
         case .buyGiftRequest(let request):
-            print("TODO: Func handle and send gift request \(request)")
+            Logger.debug("TODO: Func handle and send gift request \(request)", category: "MASTER")
         case .publicUpdate(let update):
             sendPublicState(update)
         case .pong:
-            print("pong reçus")
+            Logger.debug("pong reçus", category: "MASTER")
         case .updatedPlayer(let player):
             sendUpdatedPlayer(player: player)
         default:
@@ -183,11 +183,11 @@ extension MasterFlowViewModel {
                 let message = try JSONDecoder().decode(MPCMessage.self, from: data)
                 self.handle(message: message, from: peer)
             } catch {
-                print("MASTER: message reçus inconnu de : \(peer.displayName)")
+                Logger.error("message reçus inconnu de : \(peer.displayName)", category: "MASTER")
             }
         }
-        
-        print("Master start advertising")
+
+        Logger.debug("Master start advertising", category: "MASTER")
         mpcService.startHostingIfNeeded()
         hasStartedHosting = true
     }
@@ -231,12 +231,12 @@ extension MasterFlowViewModel {
 extension MasterFlowViewModel {
     func handleBuzzReceive(data: BuzzPayload, from peer: MCPeerID) {
         guard !isBuzzLocked else {
-            print("MASTER: buzz ignoré car déjà locké")
+            Logger.debug("buzz ignoré car déjà locké", category: "MASTER")
             return
         }
 
         guard let player = players.first(where: { $0.id == data.playerID }) else {
-            print("MASTER: buzz reçu mais player introuvable")
+            Logger.error("buzz reçu mais player introuvable", category: "MASTER")
             return
         }
 

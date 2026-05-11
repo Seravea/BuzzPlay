@@ -27,7 +27,7 @@ class AmbiantSoundViewModel {
             player = try AVAudioPlayer(contentsOf: soundURL)
             isPlaying = player.play()
         } catch {
-            print("Error playing sound: \(error)")
+            Logger.error("Error playing sound: \(error)", category: "AUDIO")
             isPlaying = false
         }
     }

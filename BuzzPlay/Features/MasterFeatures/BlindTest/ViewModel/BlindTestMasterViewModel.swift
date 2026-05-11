@@ -494,7 +494,7 @@ extension BlindTestMasterViewModel {
             try session.setCategory(.playback, mode: .default)
             try session.setActive(true)
         } catch {
-            print("AudioSession error:", error)
+            Logger.error("AudioSession error: \(error)", category: "AUDIO")
         }
     }
 }
