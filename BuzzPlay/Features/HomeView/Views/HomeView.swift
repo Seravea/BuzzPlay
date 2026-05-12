@@ -68,6 +68,7 @@ struct HomeView: View {
                 .padding(.horizontal, 18)
                 .padding(.bottom, 32)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(BackgroundAppView())
             .foregroundStyle(.white)
             .appDefaultTextStyle(Typography.body)
