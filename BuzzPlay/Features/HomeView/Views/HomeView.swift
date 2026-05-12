@@ -12,7 +12,9 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack(path: $router.path) {
-            VStack(spacing: 0) {
+            ZStack {
+                BackgroundAppView()
+                VStack(spacing: 0) {
                 // Hero section
                 VStack(alignment: .leading, spacing: 0) {
                     Text("BUZZ · QUIZ · BLIND TEST")
@@ -69,7 +71,8 @@ struct HomeView: View {
                 .padding(.bottom, 32)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(BackgroundAppView())
+            } // ZStack
+            .ignoresSafeArea()
             .foregroundStyle(.white)
             .appDefaultTextStyle(Typography.body)
             .navigationDestination(for: Route.self) { route in
