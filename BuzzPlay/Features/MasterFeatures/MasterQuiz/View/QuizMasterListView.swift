@@ -268,11 +268,22 @@ struct QuizValidationOverlay: View {
 
             VStack(spacing: 16) {
                 ZStack {
-                    // Glow circles
+                    // Glow — gradient multi-stops, sans blur kernel
                     Circle()
-                        .fill(Color(hex: "#7DFFA0").opacity(0.15))
-                        .frame(width: 120, height: 120)
-                        .blur(radius: 16)
+                        .fill(
+                            RadialGradient(
+                                stops: [
+                                    .init(color: Color(hex: "#7DFFA0").opacity(0.28), location: 0.0),
+                                    .init(color: Color(hex: "#7DFFA0").opacity(0.15), location: 0.4),
+                                    .init(color: Color(hex: "#7DFFA0").opacity(0.05), location: 0.75),
+                                    .init(color: .clear,                              location: 1.0),
+                                ],
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 75
+                            )
+                        )
+                        .frame(width: 150, height: 150)
 
                     VStack(spacing: 12) {
                         Text("✅")
