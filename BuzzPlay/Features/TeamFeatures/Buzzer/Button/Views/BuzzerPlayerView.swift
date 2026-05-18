@@ -8,8 +8,15 @@ import SwiftUI
 struct BuzzerPlayerView: View {
     @Bindable var playerGameVM: PlayerGameViewModel
     var gameType: GameType
+    @State private var coinsVM: CoinsViewModel
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(\.dismiss) private var dismiss
+
+    init(playerGameVM: PlayerGameViewModel, gameType: GameType) {
+        self._playerGameVM = Bindable(playerGameVM)
+        self.gameType = gameType
+        self._coinsVM = State(initialValue: CoinsViewModel(playerGameVM: playerGameVM))
+    }
 
     var body: some View {
         ZStack {
@@ -35,6 +42,12 @@ struct BuzzerPlayerView: View {
                 }
             }
 
+            if let hint = playerGameVM.currentBuzzerVM?.activeHint {
+                HintBadgeView(hint: hint)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .zIndex(50)
+            }
+
             if !playerGameVM.isConnectedToMaster {
                 ConnectionLostOverlay()
                     .transition(.opacity)
@@ -43,6 +56,7 @@ struct BuzzerPlayerView: View {
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.spring(response: 0.45, dampingFraction: 0.65), value: playerGameVM.currentBuzzerVM?.answerResult != nil)
+        .animation(.spring(response: 0.5, dampingFraction: 0.75), value: playerGameVM.currentBuzzerVM?.activeHint)
         .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
         .navigationBarBackButtonHidden()
         .onAppear { playerGameVM.syncBuzzerWithCurrentPublicState() }
@@ -79,13 +93,13 @@ struct BuzzerPlayerView: View {
 
             Spacer()
 
+            CoinsTeamView(coinsVM: coinsVM)
+
             Text(playerGameVM.formattedTime)
                 .font(.nohemi(.callout, weight: .extraBold))
                 .foregroundStyle(Color.mustardYellow)
                 .tracking(2)
                 .monospacedDigit()
-                .contentTransition(.numericText())
-                .animation(.default, value: playerGameVM.formattedTime)
                 .contentTransition(.numericText())
                 .animation(.default, value: playerGameVM.formattedTime)
         }
@@ -111,6 +125,36 @@ struct BuzzerPlayerView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(36)
         }
+    }
+}
+
+// MARK: - Hint Badge (gift showIndicies)
+
+private struct HintBadgeView: View {
+    let hint: String
+
+    var body: some View {
+        VStack {
+            Spacer()
+            HStack(spacing: 10) {
+                Image(systemName: "lightbulb.fill")
+                    .foregroundStyle(Color.mustardYellow)
+                Text(hint)
+                    .font(.nohemi(.caption, weight: .semiBold))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.leading)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .strokeBorder(Color.mustardYellow.opacity(0.4), lineWidth: 1)
+            )
+            .padding(.horizontal, 20)
+            .padding(.bottom, 12)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
     }
 }
 
@@ -231,9 +275,10 @@ struct CountdownOverlay: View {
 }
 
 #Preview {
-    BuzzerPlayerView(
+    let samplePlayer = Player(name: "Team 1", teamColor: .greenGame, score: 240)
+    return BuzzerPlayerView(
         playerGameVM: PlayerGameViewModel(
-            player: samplePlayers[0],
+            player: samplePlayer,
             mpc: MPCService(peerName: "Team1", role: .team)
         ),
         gameType: .blindTest

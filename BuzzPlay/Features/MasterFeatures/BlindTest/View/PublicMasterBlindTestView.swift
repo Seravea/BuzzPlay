@@ -12,13 +12,13 @@ struct PublicMasterBlindTestView: View {
     
     var body: some View {
         VStack {
-           
+
             Image(systemName: blindTestVM.isPlaying == true ? "play.circle.fill" : "stop.circle.fill")
                 .font(.title3)
                 .padding(.leading)
                 .foregroundStyle(Color.darkPink)
                 .symbolEffectsRemoved(!blindTestVM.isPlaying)
-                .symbolEffect(.bounce)
+                .modifier(BounceSymbolEffectCompatible(isPlaying: blindTestVM.isPlaying))
                     
             Spacer()
             if let playerBuzzing = blindTestVM.playerHasBuzz {
@@ -40,7 +40,22 @@ struct PublicMasterBlindTestView: View {
     }
 }
 
+// MARK: - iOS 18 Compatibility Modifier
+struct BounceSymbolEffectCompatible: ViewModifier {
+    let isPlaying: Bool
+
+    func body(content: Content) -> some View {
+        if #available(iOS 18.0, *) {
+            content.symbolEffect(.bounce)
+        } else {
+            content
+                .scaleEffect(isPlaying ? 1.0 : 0.95)
+                .animation(.spring(duration: 0.4, bounce: 0.05), value: isPlaying)
+        }
+    }
+}
+
 #Preview {
     PublicMasterBlindTestView(blindTestVM: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()))
-      
+
 }

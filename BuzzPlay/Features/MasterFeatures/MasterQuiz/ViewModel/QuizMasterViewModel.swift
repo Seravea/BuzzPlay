@@ -24,6 +24,9 @@ class QuizMasterViewModel: BuzzDrivenGame {
     var roundCountdownPhase: RoundCountdownPhase = .hidden
     private var roundCountdownTimer: Timer?
 
+    private var doubledScorePlayers: Set<UUID> = []
+    private var usedQuestionHintIndex: [UUID: Int] = [:]  // questionID -> next hint index
+
     //MARK: Timer's datas
     var reactionTimeMs: Int = 0
     var timer: Timer?
@@ -62,10 +65,10 @@ extension QuizMasterViewModel {
     func validateAnswer(points: Int) {
         if let player = gameVM.currentBuzzPlayer {
             UINotificationFeedbackGenerator().notificationOccurred(.success)
-            gameVM.addPointToPlayer(player, points: points)
+            let finalPoints = doubledScorePlayers.remove(player.id) != nil ? points * 2 : points
+            gameVM.addPointToPlayer(player, points: finalPoints)
 
-            // ✅ Envoyer le résultat aux Players
-            let resultPayload = AnswerResultPayload(isCorrect: true, points: points, correctAnswer: currentQuestion?.answers.first)
+            let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: currentQuestion?.answers.first)
             gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
             goToSelectNewQuestion()
@@ -197,6 +200,44 @@ extension QuizMasterViewModel {
     
     func UIDisabledValidateRejectButtonOpacity() -> Double {
         validateRejectDisabled ? 0.7 : 1
+    }
+}
+
+
+//MARK: Gift effects
+extension QuizMasterViewModel {
+    func applyGiftEffect(_ gift: CoinsViewModel.Gift, to player: Player) {
+        switch gift {
+        case .scoreDoubled:
+            doubledScorePlayers.insert(player.id)
+
+        case .showIndicies:
+            guard let question = currentQuestion else { return }
+            let nextIdx = usedQuestionHintIndex[question.id, default: 0]
+            guard nextIdx < question.indices.count else {
+                if let lastHint = question.indices.last {
+                    gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(lastHint), player: player)
+                }
+                return
+            }
+            let hint = question.indices[nextIdx]
+            usedQuestionHintIndex[question.id] = nextIdx + 1
+            gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(hint), player: player)
+
+        case .changeBuzzColor:
+            guard let idx = gameVM.players.firstIndex(where: { $0.id == player.id }) else { return }
+            let colors = GameColor.allCases.filter { $0 != gameVM.players[idx].teamColor }
+            gameVM.players[idx].customBuzzColor = colors.randomElement()
+            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[idx]))
+
+        case .changeBuzzSound:
+            guard let idx = gameVM.players.firstIndex(where: { $0.id == player.id }) else { return }
+            gameVM.players[idx].customBuzzSound = buzzSoundNames.randomElement()
+            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[idx]))
+
+        default:
+            break
+        }
     }
 }
 

@@ -36,7 +36,7 @@ struct CoinsMasterView: View {
                                 ForEach(coinsVM.moneyCanSend, id: \.self) { money in
 
                                     Button {
-                                        //SEND money to player
+                                        coinsVM.sendCoinsToPlayer(player, amount: money)
                                     } label: {
                                         Text("\(money) $")
                                     }

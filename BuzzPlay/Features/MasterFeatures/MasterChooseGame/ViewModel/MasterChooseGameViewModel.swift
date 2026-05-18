@@ -12,15 +12,18 @@ import SwiftUI
 @MainActor
 class MasterChooseGameViewModel {
     private let gameVM: MasterFlowViewModel
-    
+    let coinsVM: CoinsViewModel
+
     init(gameVM: MasterFlowViewModel) {
         self.gameVM = gameVM
+        self.coinsVM = CoinsViewModel(masterFlowVM: gameVM)
     }
-    
+
     var availableGames: [GameType] = []
 
     var connectedPlayersCount: Int { gameVM.connectedPlayersCount }
     var totalPlayersCount: Int { gameVM.totalPlayersCount }
+    var players: [Player] { gameVM.players }
     
     
     //MARK: Datas en functions for views

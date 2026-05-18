@@ -24,17 +24,17 @@ enum MPCMessage: Codable {
     // PLAYER -> MASTER
     case playerJoin(Player)
     case buzz(BuzzPayload)
-    case buyGiftRequest(CoinsViewModel.Gift)
+    case buyGiftRequest(GiftRequestPayload)
 
     // MASTER -> PLAYER
     case gameAvailability([GameType])
     case buyGiftResult(CoinsViewModel.Gift)
     case updatedPlayer(Player)
-    
+    case hintRevealedToPlayer(String)   // indice envoyé uniquement à l'acheteur
 
     case buzzLock(BuzzLockPayload)   // master dit "X a gagné, buzzer lock"
     case buzzUnlock                  // master dit "nouvelle manche, vous pouvez rebuzzer"
-    
+
     //Master -> Team : état courant du jeu (affiché côté Team)
     case publicUpdate(PublicState)
 

@@ -72,7 +72,11 @@ struct PublicQuizDisplayView: View {
 }
 
 #Preview {
-    PublicQuizDisplayView(
+    let samplePlayers = [
+        Player(name: "Team 1", teamColor: .greenGame, score: 240),
+        Player(name: "Team 2", teamColor: .blueGame, score: 240),
+    ]
+    return PublicQuizDisplayView(
         state: PublicQuizState(
             question: QuizSamples.music2000s.questions[3],
             setTitle: QuizSamples.music2000s.title,

@@ -25,8 +25,9 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var allSongs: [BlindTestSong] = []
     var playlists: [BlindTestPlaylist] = []
     var selectedMusic: BlindTestSong? = nil
+    var currentHintIndex: Int = 0  // Hint displayed for the current song
     var isGameActive: Bool = false
-    
+
     var nowPlayingSongIndex: Int = 0
     var isCorrect: Bool = false
     
@@ -66,6 +67,9 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
         case finished // state finished when Master validate response
     }
     
+    private var doubledScorePlayers: Set<UUID> = []
+
+
     //MARK: données de jeu
     init(gameVM: MasterFlowViewModel) {
         self.gameVM = gameVM
@@ -93,8 +97,8 @@ extension BlindTestMasterViewModel {
         isCorrect = true
         state = .finished
 
-        // MARK: mise à jour du score via gameVM.addPoints(...)
-        gameVM.addPointToPlayer(playerAnswers, points: points)
+        let finalPoints = doubledScorePlayers.remove(playerAnswers.id) != nil ? points * 2 : points
+        gameVM.addPointToPlayer(playerAnswers, points: finalPoints)
 
         // on fige définitivement la manche
         stopReactionTimer()
@@ -105,7 +109,7 @@ extension BlindTestMasterViewModel {
         gameVM.broadcastPublicStateFromCurrentGame()
 
         // ✅ Envoyer le résultat aux Players
-        let resultPayload = AnswerResultPayload(isCorrect: true, points: points, correctAnswer: nil)
+        let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: nil)
         gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
         // (optionnel) on nettoie ensuite la sélection
@@ -175,6 +179,9 @@ extension BlindTestMasterViewModel {
 
         Task {
             await MainActor.run {
+                // Generate random hint for this song
+                self.currentHintIndex = Int.random(in: 0..<BlindTestHints.phrases.count)
+
                 self.reactionTimeMs = 0
                 self.playerHasBuzz = nil
                 self.isCorrect = false
@@ -252,6 +259,49 @@ extension BlindTestMasterViewModel {
     }
 }
 
+//MARK: Gift effects
+extension BlindTestMasterViewModel {
+    @MainActor
+    func applyGiftEffect(_ gift: CoinsViewModel.Gift, to player: Player) {
+        switch gift {
+        case .scoreDoubled:
+            doubledScorePlayers.insert(player.id)
+
+        case .showIndicies:
+            guard let song = selectedMusic else { return }
+            let hint = buildBlindTestHint(song: song)
+            gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(hint), player: player)
+
+        case .changeBuzzColor:
+            guard let idx = gameVM.players.firstIndex(where: { $0.id == player.id }) else { return }
+            let colors = GameColor.allCases.filter { $0 != gameVM.players[idx].teamColor }
+            gameVM.players[idx].customBuzzColor = colors.randomElement()
+            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[idx]))
+
+        case .changeBuzzSound:
+            guard let idx = gameVM.players.firstIndex(where: { $0.id == player.id }) else { return }
+            gameVM.players[idx].customBuzzSound = buzzSoundNames.randomElement()
+            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[idx]))
+
+        default:
+            break
+        }
+    }
+
+    private func buildBlindTestHint(song: BlindTestSong) -> String {
+        let t = song.title
+        let a = song.artist
+        let titleHint = t.count > 2
+            ? "\(t.prefix(1))\(String(repeating: "-", count: t.count - 2))\(t.last!) (\(t.count) lettres)"
+            : "\(t.prefix(1))... (\(t.count) lettres)"
+        let artistHint = a.count > 2
+            ? "\(a.prefix(1))\(String(repeating: "-", count: a.count - 2))\(a.last!) (\(a.count) lettres)"
+            : "\(a.prefix(1))... (\(a.count) lettres)"
+        return "Titre : \(titleHint)\nArtiste : \(artistHint)"
+    }
+}
+
+
 //MARK: BuzzDrivenGame conformance
 extension BlindTestMasterViewModel {
     @MainActor
@@ -286,7 +336,8 @@ extension BlindTestMasterViewModel {
                         formattedTime: formattedTime,
                         buzzingPlayer: nil,
                         isAnswerRevealed: false,
-                        isPlaying: true
+                        isPlaying: true,
+                        hintIndex: currentHintIndex
                     )
                 )
 
@@ -300,7 +351,8 @@ extension BlindTestMasterViewModel {
                        formattedTime: formattedTime,
                        buzzingPlayer: player,
                        isAnswerRevealed: false,
-                       isPlaying: false
+                       isPlaying: false,
+                       hintIndex: currentHintIndex
                    )
                )
 
@@ -314,7 +366,8 @@ extension BlindTestMasterViewModel {
                        formattedTime: formattedTime,
                        buzzingPlayer: playerHasBuzz,
                        isAnswerRevealed: true,
-                       isPlaying: false
+                       isPlaying: false,
+                       hintIndex: currentHintIndex
                    )
                )
            }

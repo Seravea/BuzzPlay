@@ -54,6 +54,16 @@ protocol BuzzDrivenGame: AnyObject {
     func handleBuzz(from player: Player)
 
     func makePublicState() -> PublicState
+
+    // Apply single-use gift effects to the game
+    func applyGiftEffect(_ gift: CoinsViewModel.Gift, to player: Player)
+}
+
+// Default gift effect implementation (no-op, games can override)
+extension BuzzDrivenGame {
+    func applyGiftEffect(_ gift: CoinsViewModel.Gift, to player: Player) {
+        // Games override this to implement specific gift effects
+    }
 }
 
 // Timer functions

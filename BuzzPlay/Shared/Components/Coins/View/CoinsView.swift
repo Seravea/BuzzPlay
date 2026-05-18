@@ -31,8 +31,7 @@ struct CoinsView: View {
 #Preview {
     VStack {
         CoinsView(coinsVM: CoinsViewModel(masterFlowVM: MasterFlowViewModel()))
-        CoinsView(coinsVM: CoinsViewModel(playerFlowVM: PlayerFlowViewModel()))
-        
+        // Player preview would need a real MPCService instance, skipping for now
     }
 }
 

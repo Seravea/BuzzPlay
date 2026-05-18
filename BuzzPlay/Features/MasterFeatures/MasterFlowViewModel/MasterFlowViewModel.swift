@@ -9,14 +9,6 @@ import Foundation
 import Observation
 import MultipeerConnectivity
 
-//TEST DATA  PLAYERS
-var samplePlayers: [Player] = [
-    Player(name: "L'équipe", teamColor: .greenGame, score: 240),
-    Player(name: "L'équipe", teamColor: .blueGame, score: 240),
-    Player(name: "L'équipe", teamColor: .redGame, score: 240),
-    Player(name: "L'équipe", teamColor: .purpleGame, score: 240),
-    Player(name: "L'équipe", teamColor: .yellowGame, score: 240),
-]
 
 //MARK: - Master Flow ViewModel
 
@@ -146,8 +138,8 @@ extension MasterFlowViewModel {
             addPlayer(player)
         case .buzz(let payload):
             handleBuzzReceive(data: payload, from: peer)
-        case .buyGiftRequest(let request):
-            print("TODO: Func handle and send gift request \(request)")
+        case .buyGiftRequest(let payload):
+            handleGiftPurchase(payload, from: peer)
         case .publicUpdate(let update):
             sendPublicState(update)
         case .pong:
@@ -206,9 +198,14 @@ extension MasterFlowViewModel {
     func unlockBuzz() {
         isBuzzLocked = false
         currentBuzzPlayer = nil
-        mpcService.sendMessage(.buzzUnlock)
 
-        // Important: met à jour l'écran public au moment où on relance/autorise les buzz
+        // Reset du blocage buzzer (single-use, se remet à 0 à chaque nouvelle manche)
+        for i in players.indices where players[i].blockedFromBuzzing {
+            players[i].blockedFromBuzzing = false
+            mpcService.sendMessage(.updatedPlayer(players[i]))
+        }
+
+        mpcService.sendMessage(.buzzUnlock)
         broadcastPublicStateFromCurrentGame()
     }
     
@@ -240,6 +237,11 @@ extension MasterFlowViewModel {
             return
         }
 
+        guard !player.blockedFromBuzzing else {
+            print("MASTER: buzz ignoré — \(player.name) est bloqué par un cadeau")
+            return
+        }
+
         currentBuzzPlayer = player
         isBuzzLocked = true
 
@@ -268,5 +270,84 @@ extension MasterFlowViewModel {
         }
 
         mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(players[index]), player: players[index])
+    }
+}
+
+//MARK: Player coin/money management
+extension MasterFlowViewModel {
+    func addCoinsToPlayer(_ player: Player, amount: Int) {
+        guard let index = players.firstIndex(of: player) else { return }
+        players[index].accountAmount += amount
+
+        // Sync allRegisteredPlayers for persistence on reconnection
+        if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == players[index].name }) {
+            allRegisteredPlayers[savedIndex].accountAmount = players[index].accountAmount
+        }
+
+        // Send updated player to all peers
+        mpcService.sendMessage(.updatedPlayer(players[index]))
+        print("MASTER: gave \(amount) coins to \(player.name) (total: \(players[index].accountAmount))")
+    }
+}
+
+//MARK: Gift purchase handling
+extension MasterFlowViewModel {
+    func handleGiftPurchase(_ payload: GiftRequestPayload, from peer: MCPeerID) {
+        guard let player = players.first(where: { $0.name == peer.displayName }) else {
+            print("MASTER: gift request from unknown player \(peer.displayName)")
+            return
+        }
+
+        let gift = payload.gift
+        guard player.accountAmount >= gift.price else {
+            print("MASTER: player \(player.name) tried to buy \(gift.title) but has insufficient coins (\(player.accountAmount) < \(gift.price))")
+            return
+        }
+
+        guard let playerIndex = players.firstIndex(of: player) else { return }
+        players[playerIndex].accountAmount -= gift.price
+
+        activateGiftEffect(payload, for: players[playerIndex])
+
+        mpcService.sendMessage(.updatedPlayer(players[playerIndex]))
+        mpcService.sendMessagetoOnePlayer(message: .buyGiftResult(gift), player: players[playerIndex])
+
+        if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == players[playerIndex].name }) {
+            allRegisteredPlayers[savedIndex].accountAmount = players[playerIndex].accountAmount
+        }
+
+        print("MASTER: \(player.name) bought \(gift.title) for \(gift.price) coins")
+    }
+
+    private func activateGiftEffect(_ payload: GiftRequestPayload, for buyer: Player) {
+        let gift = payload.gift
+        switch gift {
+        case .scoreDoubled:
+            currentBuzzGame?.applyGiftEffect(.scoreDoubled, to: buyer)
+
+        case .enemyCanNotBuzz:
+            guard let targetID = payload.targetPlayerID,
+                  let targetIndex = players.firstIndex(where: { $0.id == targetID }) else {
+                print("MASTER: enemyCanNotBuzz missing target")
+                return
+            }
+            players[targetIndex].blockedFromBuzzing = true
+            mpcService.sendMessage(.updatedPlayer(players[targetIndex]))
+
+        case .allEnemiesCanNotBuzz:
+            for i in players.indices where players[i].id != buyer.id {
+                players[i].blockedFromBuzzing = true
+                mpcService.sendMessage(.updatedPlayer(players[i]))
+            }
+
+        case .showIndicies:
+            currentBuzzGame?.applyGiftEffect(.showIndicies, to: buyer)
+
+        case .changeBuzzColor:
+            currentBuzzGame?.applyGiftEffect(.changeBuzzColor, to: buyer)
+
+        case .changeBuzzSound:
+            currentBuzzGame?.applyGiftEffect(.changeBuzzSound, to: buyer)
+        }
     }
 }

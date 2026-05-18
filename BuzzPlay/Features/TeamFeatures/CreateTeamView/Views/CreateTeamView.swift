@@ -197,7 +197,6 @@ struct CreateTeamView: View {
         .padding(.horizontal, 22)
         .padding(.bottom, 32)
         .padding(.top, 12)
-        .background(.ultraThinMaterial)
     }
 }
 

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AVFoundation
 
 enum BuzzerGameMode {
     case blindTest
@@ -31,6 +32,12 @@ class BuzzerViewModel {
     var countdownPhase: RoundCountdownPhase = .hidden
     private var countdownTimer: Timer?
 
+    // MARK: - Indice (gift showIndicies)
+    var activeHint: String? = nil
+
+    // MARK: - Son custom (gift changeBuzzSound)
+    private var customSoundPlayer: AVAudioPlayer?
+
     var onBuzz: ((Player, BuzzerGameMode) -> Void)?
 
     init(player: Player, mode: BuzzerGameMode) {
@@ -45,10 +52,17 @@ class BuzzerViewModel {
 //MARK: buzzFunctions
 extension BuzzerViewModel {
     func buzz() {
-        guard isEnabled/*, !hasBuzzed*/ else { return }
-//        hasBuzzed = true
-        //MARK: le TeamGameVM gère l'envoi du buzz au Master
+        guard isEnabled else { return }
+        playCustomSoundIfNeeded()
         onBuzz?(player, mode)
+    }
+
+    private func playCustomSoundIfNeeded() {
+        guard let soundName = player.customBuzzSound,
+              let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return }
+        customSoundPlayer?.stop()
+        customSoundPlayer = try? AVAudioPlayer(contentsOf: url)
+        customSoundPlayer?.play()
     }
 
 
@@ -67,7 +81,12 @@ extension BuzzerViewModel {
         playerNameHasBuzz = nil
         isEnabled = false
         answerResult = nil
+        activeHint = nil
         stopCountdown()
+    }
+
+    func showHint(_ hint: String) {
+        activeHint = hint
     }
 
     func showAnswerResult(_ result: AnswerResult) {

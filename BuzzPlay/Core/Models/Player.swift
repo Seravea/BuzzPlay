@@ -17,4 +17,8 @@ struct Player: Identifiable, Hashable, Codable, Equatable {
     var teamColor: GameColor = .purpleGame
     var score: Int = 0
     var accountAmount: Int = 0
+    var customBuzzColor: GameColor? = nil
+    var customBuzzSound: String? = nil
+    var hasScoreDoubled: Bool = false
+    var blockedFromBuzzing: Bool = false
 }
