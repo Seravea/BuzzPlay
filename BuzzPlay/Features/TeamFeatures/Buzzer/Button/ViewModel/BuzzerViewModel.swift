@@ -69,7 +69,7 @@ extension BuzzerViewModel {
     func unLockBuzz() {
         isEnabled = true
         playerNameHasBuzz = nil
-
+        activeHint = nil  // reset l'indice à chaque nouvelle manche
     }
 
     func lockBuzz(teamNameHasBuzz: String) {

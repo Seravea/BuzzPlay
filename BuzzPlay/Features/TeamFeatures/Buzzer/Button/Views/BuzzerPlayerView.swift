@@ -102,6 +102,7 @@ struct BuzzerPlayerView: View {
                 .monospacedDigit()
                 .contentTransition(.numericText())
                 .animation(.default, value: playerGameVM.formattedTime)
+                .frame(minWidth: 52, alignment: .trailing)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
