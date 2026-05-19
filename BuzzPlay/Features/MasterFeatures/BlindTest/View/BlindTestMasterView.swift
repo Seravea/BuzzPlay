@@ -88,6 +88,7 @@ struct BlindTestMasterView: View {
                     )
                 }
             }
+            .navigationBarBackButtonHidden(blindTestViewModel.isGameActive)
     }
 }
 

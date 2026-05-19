@@ -32,6 +32,8 @@ struct BlindTestSearchScreen: View {
                     .font(.nohemi(.body))
                     .foregroundStyle(.white)
                     .focused($searchFocused)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
                     .padding(12)
                     .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 14))
                     .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.white.opacity(0.12), lineWidth: 1))
