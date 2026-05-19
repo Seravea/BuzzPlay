@@ -264,11 +264,18 @@ extension BlindTestMasterViewModel {
     }
 
     @MainActor func handlePreviewEnd() {
-        guard case .playing = state else { return }
-        isPlaying = false
-        musicHasEnded = true
-        stopReactionTimer()
-        gameVM.broadcastPublicStateFromCurrentGame()
+        switch state {
+        case .playing:
+            // Musique terminée → reboucle depuis le début, timer continue
+            restartMusicFromBeginning()
+            gameVM.broadcastPublicStateFromCurrentGame()
+        case .buzzed:
+            // Race condition : musique terminée exactement au moment du buzz
+            // → rejectAnswer devra relancer depuis le début au lieu de resume()
+            musicHasEnded = true
+        default:
+            break
+        }
     }
 }
 

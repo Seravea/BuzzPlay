@@ -195,41 +195,58 @@ extension PlayerGameViewModel {
         handlePublicStateChange(publicState)
     }
 
-    // ✅ Démarrer le timer local quand le Master lance le sien
+    // Démarre le timer local en miroir du Master.
+    // Initialise reactionTimeMs depuis le timestamp du Master pour compenser la latence réseau.
     private func startLocalReactionTimer(masterTimestamp: TimeInterval) {
         stopUITimer()
 
-        // ✅ Synchronisation: calculer le temps écoulé depuis le démarrage du Master
-        let now = Date().timeIntervalSince1970
-        let elapsedSeconds = Int(now - masterTimestamp)
-        let elapsedCentiseconds = Int((now - masterTimestamp).truncatingRemainder(dividingBy: 1) * 100)
-        
-        // Initialiser le timer avec le temps écoulé
-        formattedTime = String(format: "%02d:%02d", elapsedSeconds, elapsedCentiseconds)
+        // Temps déjà écoulé depuis que le Master a lancé son timer
+        let initialElapsedMs = max(0, Int((Date().timeIntervalSince1970 - masterTimestamp) * 1000))
+        // On utilise la même unité que le Master : reactionTimeMs en ms, incrémenté de 100 toutes les 0.1s
+        var reactionTimeMs = initialElapsedMs
 
-        // Timer à 100ms d'intervalle (comme le Master)
-        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+        let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self else { return }
-
-            // Parser la valeur actuelle et incrémenter
-            let components = self.formattedTime.split(separator: ":").map { String($0) }
-            guard components.count == 2,
-                  let seconds = Int(components[0]),
-                  let centiseconds = Int(components[1]) else {
-                return
+            reactionTimeMs += 100
+            Task { @MainActor in
+                self.formattedTime = Self.formatReactionTime(reactionTimeMs)
             }
-
-            var newSeconds = seconds
-            var newCentiseconds = centiseconds + 1
-
-            if newCentiseconds >= 100 {
-                newCentiseconds = 0
-                newSeconds += 1
-            }
-
-            self.formattedTime = String(format: "%02d:%02d", newSeconds, newCentiseconds)
         }
-        RunLoop.main.add(timer!, forMode: .common)
+        RunLoop.main.add(newTimer, forMode: .common)
+        timer = newTimer
+        // Affichage immédiat sans attendre le premier tick
+        formattedTime = Self.formatReactionTime(reactionTimeMs)
+    }
+
+    // Reprend le timer local à partir de la valeur affichée actuellement (après un buzz rejeté).
+    // Appelé quand la manche reprend sans relancer un timerStarted côté Master.
+    private func resumeUITimerIfNeeded() {
+        guard timer == nil else { return }  // déjà actif
+
+        // Reconstruire reactionTimeMs depuis formattedTime "SS:CS"
+        let components = formattedTime.split(separator: ":").compactMap { Int($0) }
+        guard components.count == 2 else { return }
+        // formattedTime est produit par formatReactionTime : ss = displayUnits/100, cs = displayUnits%100
+        // displayUnits = reactionTimeMs/10 → reactionTimeMs = (ss*100 + cs) * 10
+        var reactionTimeMs = (components[0] * 100 + components[1]) * 10
+
+        let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            reactionTimeMs += 100
+            Task { @MainActor in
+                self.formattedTime = Self.formatReactionTime(reactionTimeMs)
+            }
+        }
+        RunLoop.main.add(newTimer, forMode: .common)
+        timer = newTimer
+    }
+
+    // Miroir exact de BuzzDrivenGame.formattedTime
+    private static func formatReactionTime(_ reactionTimeMs: Int) -> String {
+        let displayUnits = reactionTimeMs / 10
+        let seconds = displayUnits / 100
+        let cs = displayUnits % 100
+        return String(format: "%02d:%02d", seconds, cs)
     }
 
     private func stopUITimer() {
@@ -239,11 +256,16 @@ extension PlayerGameViewModel {
 
     private func syncBuzzerState(buzzingPlayer: Player?, isRoundActive: Bool) {
         if let player = buzzingPlayer {
+            // Buzzer actif : on gèle le timer local (le Master aussi est pausé)
             stopUITimer()
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: player.name)
         } else if isRoundActive {
+            // Manche active sans buzz (démarrage ou reprise après rejection)
+            // formattedTime vient d'être mis à jour par le publicUpdate → on repart de là
+            resumeUITimerIfNeeded()
             currentBuzzerVM?.unLockBuzz()
         } else {
+            stopUITimer()
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: "")
         }
     }
