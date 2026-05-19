@@ -38,6 +38,10 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var roundCountdownPhase: RoundCountdownPhase = .hidden
     private var roundCountdownTimer: Timer?
 
+    // true quand le preview/titre s'est terminé naturellement (timer expiré)
+    // → rejectAnswer doit relancer la musique depuis le début au lieu de resume()
+    private var musicHasEnded = false
+
     //MARK: Timer's datas
     var reactionTimeMs: Int = 0
     var timer: Timer?
@@ -132,7 +136,14 @@ extension BlindTestMasterViewModel {
 
         startRoundCountdown {
             self.gameVM.unlockBuzz()
-            self.resume()
+            if self.musicHasEnded {
+                // Le timer avait expiré avant le buzz → on relance depuis le début
+                self.restartMusicFromBeginning()
+                self.musicHasEnded = false
+            } else {
+                // Timer encore en cours → on reprend là où on s'était arrêté
+                self.resume()
+            }
             self.isPlaying = true
             self.startReactionTimer()
             self.gameVM.broadcastPublicStateFromCurrentGame()
@@ -176,6 +187,7 @@ extension BlindTestMasterViewModel {
 extension BlindTestMasterViewModel {
     func startRound() {
         guard let selectedMusic = selectedMusic else { return }
+        isFetching = true  // synchrone : le bouton affiche le spinner dès le tap
 
         Task {
             await MainActor.run {
@@ -185,9 +197,9 @@ extension BlindTestMasterViewModel {
                 self.reactionTimeMs = 0
                 self.playerHasBuzz = nil
                 self.isCorrect = false
+                self.musicHasEnded = false
                 self.state = .playing
                 self.isGameActive = true   // ← Master bascule sur BlindTestActiveScreen immédiatement
-                self.isFetching = true
                 self.configureAudioSession()
             }
 
@@ -254,6 +266,7 @@ extension BlindTestMasterViewModel {
     @MainActor func handlePreviewEnd() {
         guard case .playing = state else { return }
         isPlaying = false
+        musicHasEnded = true
         stopReactionTimer()
         gameVM.broadcastPublicStateFromCurrentGame()
     }
@@ -520,6 +533,22 @@ extension BlindTestMasterViewModel {
         }
     }
     
+    /// Relance la musique depuis le début (preview AVPlayer → seek to .zero / MusicKit → playbackTime = 5s)
+    /// Appelé par rejectAnswer() quand le preview s'était terminé avant le buzz.
+    @MainActor func restartMusicFromBeginning() {
+        if let player = player {
+            // Mode preview (AVPlayer) : rembobine au début de l'extrait
+            player.seek(to: .zero)
+            player.play()
+        } else {
+            // Mode catalogue Apple Music (MusicKit) : repositionne à 5s
+            Task {
+                musicPlayer.playbackTime = 5
+                try? await musicPlayer.play()
+            }
+        }
+    }
+
     func pause() {
         // Pause le timer (sans reset) et la musique
         pauseReactionTimer()
