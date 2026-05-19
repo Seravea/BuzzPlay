@@ -9,6 +9,7 @@ struct BuzzerPlayerView: View {
     @Bindable var playerGameVM: PlayerGameViewModel
     var gameType: GameType
     @State private var coinsVM: CoinsViewModel
+    @State private var isGiftSheetOpen = false
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(\.dismiss) private var dismiss
 
@@ -60,6 +61,12 @@ struct BuzzerPlayerView: View {
         .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
         .navigationBarBackButtonHidden()
         .onAppear { playerGameVM.syncBuzzerWithCurrentPublicState() }
+        .sheet(isPresented: $isGiftSheetOpen) {
+            GiftShopSheet(coinsVM: coinsVM, isPresented: $isGiftSheetOpen)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.hidden)
+                .presentationBackground(.clear)
+        }
     }
 
     // MARK: - iPhone Layout
@@ -75,7 +82,10 @@ struct BuzzerPlayerView: View {
             Spacer()
 
             BuzzerButtonView(buzzerVM: buzzerVM)
-                .padding(.bottom, 36)
+                .padding(.bottom, 20)
+
+            GiftBottomBar(coinsVM: coinsVM, isSheetOpen: $isGiftSheetOpen)
+                .padding(.bottom, 24)
         }
     }
 
@@ -93,7 +103,16 @@ struct BuzzerPlayerView: View {
 
             Spacer()
 
-            CoinsTeamView(coinsVM: coinsVM)
+            // Solde coins — compact, sans le bouton Cadeaux (déplacé en bottom bar)
+            HStack(spacing: 4) {
+                Text("\(playerGameVM.player.accountAmount)")
+                    .font(.nohemi(.callout, weight: .extraBold))
+                    .foregroundStyle(.white)
+                    .monospacedDigit()
+                Image(systemName: "dollarsign.bank.building.fill")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.mustardYellow)
+            }
 
             Text(playerGameVM.formattedTime)
                 .font(.nohemi(.callout, weight: .extraBold))
