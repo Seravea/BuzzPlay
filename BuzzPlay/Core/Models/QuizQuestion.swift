@@ -15,6 +15,7 @@ struct QuizQuestion: Identifiable, Codable, Hashable {
     let theme: String?
     let difficulty: Int?
     let tone: String?
+    var indices: [String] = []
 }
 
 

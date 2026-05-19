@@ -61,7 +61,8 @@ struct TeamCardView: View {
 }
 
 #Preview {
-    TeamCardView(player: samplePlayers[0], showPoints: true)
+    let samplePlayer = Player(name: "Team 1", teamColor: .greenGame, score: 240)
+    return TeamCardView(player: samplePlayer, showPoints: true)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
          BackgroundAppView()

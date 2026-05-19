@@ -258,10 +258,11 @@ private struct FlowLayout: Layout {
 }
 
 #Preview {
-    ScorePlayerView(
+    let samplePlayer = Player(name: "Team 1", teamColor: .greenGame, score: 240)
+    return ScorePlayerView(
         playerGameVM: PlayerGameViewModel(
-            player: samplePlayers[0],
-            mpc: MPCService(peerName: samplePlayers[0].name, role: .team)
+            player: samplePlayer,
+            mpc: MPCService(peerName: samplePlayer.name, role: .team)
         )
     )
 }

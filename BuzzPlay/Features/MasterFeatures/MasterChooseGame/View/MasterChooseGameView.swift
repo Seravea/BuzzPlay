@@ -22,6 +22,7 @@ struct MasterChooseGameView: View {
                 VStack(spacing: 20) {
                     sessionHeader
                     gamesSection
+                    coinsSection
                 }
                 .padding(.horizontal, sizeClass == .regular ? 0 : 20)
                 .padding(.top, 20)
@@ -254,6 +255,82 @@ struct MasterChooseGameView: View {
                 )
         )
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isOpen)
+    }
+
+    // MARK: - Coins Section
+
+    private var coinsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 10) {
+                Image(systemName: "dollarsign.bank.building.fill")
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundStyle(accentColor)
+                    .frame(width: 46, height: 46)
+                    .background(accentColor.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
+
+                Text("Cadeaux")
+                    .font(.nohemi(.body, weight: .bold))
+                    .foregroundStyle(.white)
+
+                Spacer()
+
+                Text("Envoyer des coins")
+                    .font(.nohemi(.caption2, weight: .regular))
+                    .foregroundStyle(.white.opacity(0.4))
+            }
+
+            if masterChooseGameVM.players.isEmpty {
+                Text("Aucun joueur connecté")
+                    .font(.nohemi(.caption, weight: .regular))
+                    .foregroundStyle(.white.opacity(0.3))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 8)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(masterChooseGameVM.players) { player in
+                            Menu {
+                                ForEach(masterChooseGameVM.coinsVM.moneyCanSend, id: \.self) { amount in
+                                    Button {
+                                        masterChooseGameVM.coinsVM.sendCoinsToPlayer(player, amount: amount)
+                                    } label: {
+                                        Label("\(amount) coins", systemImage: "dollarsign.circle")
+                                    }
+                                }
+                            } label: {
+                                VStack(spacing: 4) {
+                                    Circle()
+                                        .fill(Color(player.teamColor.color).opacity(0.3))
+                                        .frame(width: 36, height: 36)
+                                        .overlay(
+                                            Text(String(player.name.prefix(1)).uppercased())
+                                                .font(.nohemi(.callout, weight: .bold))
+                                                .foregroundStyle(.white)
+                                        )
+                                    Text(player.name)
+                                        .font(.nohemi(.caption2, weight: .medium))
+                                        .foregroundStyle(.white.opacity(0.8))
+                                        .lineLimit(1)
+                                }
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 8)
+                                .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .strokeBorder(.white.opacity(0.12), lineWidth: 1)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .padding(16)
+        .background(accentColor.opacity(0.06), in: RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .strokeBorder(accentColor.opacity(0.2), lineWidth: 1.5)
+        )
     }
 
     // MARK: - Status Badge

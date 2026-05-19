@@ -13,8 +13,10 @@ struct BuzzerButtonView: View {
     private var ourTeamBuzzed: Bool { buzzerVM.playerNameHasBuzz == buzzerVM.player.name }
     private var hasBuzzed: Bool { buzzerVM.playerNameHasBuzz != nil }
 
-    // Couleur personnalisée du joueur (depuis ses assets GameColor)
-    private var playerColor: Color { Color(buzzerVM.player.teamColor.rawValue) }
+    private var playerColor: Color {
+        let gameColor = buzzerVM.player.customBuzzColor ?? buzzerVM.player.teamColor
+        return Color(gameColor.rawValue)
+    }
 
     var body: some View {
         VStack(spacing: 20) {

@@ -25,15 +25,14 @@ final class PlayerGameViewModel {
     var allGames: [GameType] = [.blindTest, .quiz]
     var openGames: [GameType] = [.score]
     var publicState: PublicState = .waiting
+    var knownPlayers: [Player] = []  // tous les joueurs connus (soi inclus)
 
     // Invite reçue du Master (jeu qu'il vient de lancer)
     var pendingGameInvite: GameType? = nil
 
     // MARK: - Public display timer mirroring
-    // Expose a formatted time string for UI
     var formattedTime: String = "00:00"
     private var timer: Timer?
-    // Keep the last known formatted time from master to display immediately
     private var lastMasterFormattedTime: String = "00:00"
 
     init(player: Player, mpc: MPCService) {
@@ -130,9 +129,14 @@ extension PlayerGameViewModel {
             currentBuzzerVM?.unLockBuzz()
 
         case .updatedPlayer(let updatedPlayer):
-            print("Before receive \(self.player)")
-            self.player = updatedPlayer
-            print("After receive \(self.player)")
+            if updatedPlayer.id == self.player.id {
+                self.player = updatedPlayer
+            }
+            if let idx = knownPlayers.firstIndex(where: { $0.id == updatedPlayer.id }) {
+                knownPlayers[idx] = updatedPlayer
+            } else {
+                knownPlayers.append(updatedPlayer)
+            }
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
 
@@ -144,6 +148,12 @@ extension PlayerGameViewModel {
                 ? .correct(points: payload.points, answer: payload.correctAnswer)
                 : .incorrect
             currentBuzzerVM?.showAnswerResult(result)
+
+        case .buyGiftResult(let gift):
+            print("PLAYER: received gift purchase confirmation for \(gift.title)")
+
+        case .hintRevealedToPlayer(let hint):
+            currentBuzzerVM?.showHint(hint)
 
         default:
             break

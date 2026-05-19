@@ -129,7 +129,6 @@ struct LobbyMasterView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 32)
             .padding(.top, 12)
-            .background(.ultraThinMaterial)
         }
     }
 }

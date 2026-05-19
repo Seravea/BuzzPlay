@@ -47,7 +47,7 @@ struct PublicBlindTestView: View {
                         .font(.body)
                         .foregroundStyle(Color.mustardYellow.opacity(0.6))
 
-                    Text("Tu connais ce son ?")
+                    Text(BlindTestHints.phrases[state.hintIndex % BlindTestHints.phrases.count])
                         .font(.nohemi(.body, weight: .medium))
                         .foregroundStyle(.white.opacity(0.6))
                 }
@@ -106,7 +106,8 @@ struct PublicBlindTestView: View {
         formattedTime: "00:12",
         buzzingPlayer: nil,
         isAnswerRevealed: false,
-        isPlaying: true
+        isPlaying: true,
+        hintIndex: 0
     )
     PublicBlindTestView(state: sample, timer: "00:12")
         .background(BackgroundAppView())
@@ -121,7 +122,8 @@ struct PublicBlindTestView: View {
         formattedTime: "00:12",
         buzzingPlayer: nil,
         isAnswerRevealed: true,
-        isPlaying: false
+        isPlaying: false,
+        hintIndex: 2
     )
     PublicBlindTestView(state: sample, timer: "00:12")
         .background(BackgroundAppView())
