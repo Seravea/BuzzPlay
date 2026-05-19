@@ -36,7 +36,8 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
 
     var state: RoundState = .idle
     var roundCountdownPhase: RoundCountdownPhase = .hidden
-    private var roundCountdownTimer: Timer?
+    // Task du countdown en cours — annulable via cancelRound()
+    private var countdownTask: Task<Void, Never>?
 
     // true quand le preview/titre s'est terminé naturellement (timer expiré)
     // → rejectAnswer doit relancer la musique depuis le début au lieu de resume()
@@ -128,130 +129,91 @@ extension BlindTestMasterViewModel {
         isCorrect = false
         playerHasBuzz = nil
         state = .playing
+        // isPlaying reste false → makePublicState émet isPlaying:false → Player ne relance pas son timer
 
         let resultPayload = AnswerResultPayload(isCorrect: false, points: 0, correctAnswer: nil)
         gameVM.mpcService.sendMessage(.answerResult(resultPayload))
-
         gameVM.broadcastPublicStateFromCurrentGame()
 
-        startRoundCountdown {
-            self.gameVM.unlockBuzz()
-            if self.musicHasEnded {
-                // Le timer avait expiré avant le buzz → on relance depuis le début
-                self.restartMusicFromBeginning()
-                self.musicHasEnded = false
+        countdownTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            await runCountdownAsync()
+            guard !Task.isCancelled else { return }
+            gameVM.unlockBuzz()
+            if musicHasEnded {
+                restartMusicFromBeginning()
+                musicHasEnded = false
             } else {
-                // Timer encore en cours → on reprend là où on s'était arrêté
-                self.resume()
+                resume()
             }
-            self.isPlaying = true
-            self.startReactionTimer()
-            self.gameVM.broadcastPublicStateFromCurrentGame()
+            isPlaying = true
+            startReactionTimer()
+            gameVM.broadcastPublicStateFromCurrentGame()
         }
     }
 
-    @MainActor private func startRoundCountdown(onComplete: @escaping @MainActor () -> Void) {
+    // Countdown async pur — interleave coopératif avec prepareMusicForPlayback via async let
+    @MainActor private func runCountdownAsync() async {
         roundCountdownPhase = .hidden
-        roundCountdownTimer?.invalidate()
         gameVM.broadcastPublicStateFromCurrentGame()
-        Task { @MainActor [weak self] in
-            try? await Task.sleep(for: .seconds(2))
-            guard let self else { return }
-            var count = 3
-            self.roundCountdownPhase = .counting(count)
-            self.gameVM.broadcastPublicStateFromCurrentGame()
-            self.roundCountdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                Task { @MainActor [weak self] in
-                    guard let self else { return }
-                    count -= 1
-                    if count > 0 {
-                        self.roundCountdownPhase = .counting(count)
-                        self.gameVM.broadcastPublicStateFromCurrentGame()
-                    } else {
-                        self.roundCountdownTimer?.invalidate()
-                        self.roundCountdownTimer = nil
-                        self.roundCountdownPhase = .go
-                        self.gameVM.broadcastPublicStateFromCurrentGame()
-                        try? await Task.sleep(for: .seconds(0.8))
-                        self.roundCountdownPhase = .hidden
-                        self.gameVM.broadcastPublicStateFromCurrentGame()
-                        onComplete()
-                    }
-                }
-            }
+
+        try? await Task.sleep(for: .seconds(2))
+        guard !Task.isCancelled else { roundCountdownPhase = .hidden; return }
+
+        for count in stride(from: 3, through: 1, by: -1) {
+            roundCountdownPhase = .counting(count)
+            gameVM.broadcastPublicStateFromCurrentGame()
+            try? await Task.sleep(for: .seconds(1))
+            guard !Task.isCancelled else { roundCountdownPhase = .hidden; return }
         }
+
+        roundCountdownPhase = .go
+        gameVM.broadcastPublicStateFromCurrentGame()
+        try? await Task.sleep(for: .milliseconds(800))
+        guard !Task.isCancelled else { roundCountdownPhase = .hidden; return }
+
+        roundCountdownPhase = .hidden
+        gameVM.broadcastPublicStateFromCurrentGame()
     }
 }
 
 //MARK: Round Funcs
 extension BlindTestMasterViewModel {
+
+    // Lance countdown ET chargement musique EN PARALLÈLE (async let).
+    // La musique est prête avant la fin du countdown → play() sans latence.
     func startRound() {
         guard let selectedMusic = selectedMusic else { return }
-        isFetching = true  // synchrone : le bouton affiche le spinner dès le tap
+        isFetching = true  // spinner immédiat
 
-        Task {
-            await MainActor.run {
-                // Generate random hint for this song
-                self.currentHintIndex = Int.random(in: 0..<BlindTestHints.phrases.count)
+        countdownTask = Task { @MainActor [weak self] in
+            guard let self else { return }
 
-                self.reactionTimeMs = 0
-                self.playerHasBuzz = nil
-                self.isCorrect = false
-                self.musicHasEnded = false
-                self.state = .playing
-                self.isGameActive = true   // ← Master bascule sur BlindTestActiveScreen immédiatement
-                self.configureAudioSession()
-            }
+            currentHintIndex = Int.random(in: 0..<BlindTestHints.phrases.count)
+            reactionTimeMs = 0
+            playerHasBuzz = nil
+            isCorrect = false
+            musicHasEnded = false
+            state = .playing
+            isGameActive = true
+            configureAudioSession()
 
-            startRoundCountdown {
-                self.gameVM.unlockBuzz()
-                self.playMusicAfterCountdown(song: selectedMusic)
-            }
-        }
-    }
+            // Countdown (5.8 s) ET chargement musique en parallèle
+            async let countdown: Void = runCountdownAsync()
+            async let musicPrep: Void = prepareMusicForPlayback(song: selectedMusic)
+            _ = await (countdown, musicPrep)
 
-    @MainActor private func playMusicAfterCountdown(song: BlindTestSong) {
-        Task {
-            do {
-                if await canPlayFullCatalog() {
-                    do {
-                        try await playFullTrackFromFiveSeconds(song: song, startAt: 5)
-                    } catch {
-                        if !self.hasShownSubscriptionInfo {
-                            self.subscriptionAlertMessage = "Impossible de lire le titre complet. Lecture de l’extrait à la place."
-                            self.showSubscriptionAlert = true
-                            self.hasShownSubscriptionInfo = true
-                        }
-                        try await playRandomPreview(song: song)
-                    }
-                } else {
-                    if !self.hasShownSubscriptionInfo {
-                        self.subscriptionAlertMessage = "Pour lire le morceau en entier, un abonnement Apple Music est requis. Lecture de l’extrait à la place."
-                        self.showSubscriptionAlert = true
-                        self.hasShownSubscriptionInfo = true
-                    }
-                    try await playRandomPreview(song: song)
-                }
+            guard !Task.isCancelled else { return }
 
-                await MainActor.run {
-                    self.isGameActive = true
-                    self.isPlaying = true
-                    self.startReactionTimer()
-                    self.isFetching = false
-                    self.gameVM.broadcastPublicStateFromCurrentGame()
-                }
-            } catch {
-                await MainActor.run {
-                    self.isGameActive = false
-                    self.isFetching = false
-                    self.fetchError = "Impossible de lancer la musique. Vérifie ta connexion et réessaie."
-                    self.gameVM.broadcastPublicStateFromCurrentGame()
-                }
-            }
+            gameVM.unlockBuzz()
+            playPreparedMusicNow()
         }
     }
 
     @MainActor func cancelRound() {
+        countdownTask?.cancel()
+        countdownTask = nil
+        roundCountdownPhase = .hidden
         stop()
         stopReactionTimer()
         isPlaying = false
@@ -356,7 +318,7 @@ extension BlindTestMasterViewModel {
                         formattedTime: formattedTime,
                         buzzingPlayer: nil,
                         isAnswerRevealed: false,
-                        isPlaying: true,
+                        isPlaying: isPlaying,   // false pendant le countdown → Player ne relance pas son timer trop tôt
                         hintIndex: currentHintIndex
                     )
                 )
@@ -460,84 +422,83 @@ extension BlindTestMasterViewModel {
         }
     }
     
-    func playRandomPreview(
-        song: BlindTestSong,
-        maxDuration: TimeInterval = 30
-    ) async throws {
-        guard let url = song.previewURL else { return }
+    // Prépare la musique SANS jouer — appelé en parallèle avec runCountdownAsync().
+    // Détecte catalogue vs preview, charge, prépositionne. Zéro latence au play().
+    @MainActor private func prepareMusicForPlayback(song: BlindTestSong) async {
+        player?.pause()
+        player = nil
+        if let obs = previewEndObserver {
+            NotificationCenter.default.removeObserver(obs)
+            previewEndObserver = nil
+        }
 
-        await MainActor.run {
-            player?.pause()
-            player = nil
-            if let obs = previewEndObserver {
-                NotificationCenter.default.removeObserver(obs)
-                previewEndObserver = nil
-            }
-
-            let item = AVPlayerItem(url: url)
-            let newPlayer = AVPlayer(playerItem: item)
-
-            // Preview ≈ 30s → on démarre aléatoirement
-            let randomStart = Double.random(in: 0...max(0, maxDuration - 10))
-            let time = CMTime(seconds: randomStart, preferredTimescale: 600)
-            newPlayer.seek(to: time)
-            newPlayer.play()
-
-            // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
-            let timestamp = Date().timeIntervalSince1970
-            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-            
-            // ✅ Démarrer le timer IMMÉDIATEMENT avec le son
-            self.startReactionTimer()
-
-            previewEndObserver = NotificationCenter.default.addObserver(
-                forName: .AVPlayerItemDidPlayToEndTime,
-                object: item,
-                queue: .main
-            ) { [weak self] _ in
-                Task { @MainActor in
-                    self?.handlePreviewEnd()
+        if await canPlayFullCatalog() {
+            do {
+                try await prepareFullTrack(song: song)
+            } catch {
+                if !hasShownSubscriptionInfo {
+                    subscriptionAlertMessage = "Impossible de lire le titre complet. Lecture de l'extrait à la place."
+                    showSubscriptionAlert = true
+                    hasShownSubscriptionInfo = true
                 }
+                try? await preparePreviewPlayer(song: song)
             }
-
-            isFetching = false
-            self.player = newPlayer
-            self.isPlaying = true
+        } else {
+            if !hasShownSubscriptionInfo {
+                subscriptionAlertMessage = "Pour lire le morceau en entier, un abonnement Apple Music est requis. Lecture de l'extrait à la place."
+                showSubscriptionAlert = true
+                hasShownSubscriptionInfo = true
+            }
+            try? await preparePreviewPlayer(song: song)
         }
     }
-    
-    // Lecture complète via Apple Music (abonnement requis), démarrage à 5s par défaut
-    func playFullTrackFromFiveSeconds(
-        song: BlindTestSong,
-        startAt seconds: TimeInterval = 5
-    ) async throws {
-        await MainActor.run {
-            player?.pause()
-            player = nil
-        }
 
-        // Récupère l'objet Song à partir de son ID
+    // Prépare le catalogue Apple Music (fetchSong + prepareToPlay + position à 5s).
+    @MainActor private func prepareFullTrack(song: BlindTestSong) async throws {
         let catalogSong = try await appleMusicService.fetchSong(by: song.appleMusicID)
-
-        // Construit la queue avec le Song (et non pas l'ID)
         musicPlayer.queue = .init(for: [catalogSong])
-
-        // Prépare, positionne le temps de lecture, puis joue
         try await musicPlayer.prepareToPlay()
-        musicPlayer.playbackTime = seconds
-        try await musicPlayer.play()
+        musicPlayer.playbackTime = 5
+        // Prêt : il suffira d'appeler musicPlayer.play() dans playPreparedMusicNow()
+    }
 
-        // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
-        await MainActor.run {
-            isFetching = false
-            self.isPlaying = true
-            
-            let timestamp = Date().timeIntervalSince1970
-            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-            
-            // ✅ Démarrer le timer IMMÉDIATEMENT avec le son
-            self.startReactionTimer()
+    // Prépare un AVPlayer preview (crée, seek position aléatoire, observe fin).
+    @MainActor private func preparePreviewPlayer(song: BlindTestSong) async throws {
+        guard let url = song.previewURL else { return }
+        let item = AVPlayerItem(url: url)
+        let newPlayer = AVPlayer(playerItem: item)
+        let randomStart = Double.random(in: 0...20)   // preview ~30s, on démarre dans les 20 premières secondes
+        // completionHandler force la version synchrone (sans await) — on n'a pas besoin d'attendre la fin du seek
+        newPlayer.seek(to: CMTime(seconds: randomStart, preferredTimescale: 600), completionHandler: { _ in })
+        // Pas de play() ici — juste positionnement et buffering
+        previewEndObserver = NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: item,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in self?.handlePreviewEnd() }
         }
+        self.player = newPlayer
+    }
+
+    // Joue immédiatement la musique préparée, envoie timerStarted, démarre le timer.
+    // Appelé juste après que countdown + prep soient tous les deux terminés.
+    @MainActor private func playPreparedMusicNow() {
+        let timestamp = Date().timeIntervalSince1970
+        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+        startReactionTimer()
+        isPlaying = true
+        isFetching = false
+
+        if let player = player {
+            // Mode preview : play synchrone → latence nulle
+            player.play()
+        } else {
+            // Mode catalogue : déjà préparé, play quasi-instantané
+            Task { try? await musicPlayer.play() }
+        }
+
+        gameVM.broadcastPublicStateFromCurrentGame()
     }
     
     /// Relance la musique depuis le début (preview AVPlayer → seek to .zero / MusicKit → playbackTime = 5s)
