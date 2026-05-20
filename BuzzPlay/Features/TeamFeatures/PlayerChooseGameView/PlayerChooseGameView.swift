@@ -9,9 +9,10 @@ struct PlayerChooseGameView: View {
     @Bindable var playerGameVM: PlayerGameViewModel
     @EnvironmentObject var router: Router
     @Bindable var playerFlowVM: PlayerFlowViewModel
-    @Environment(\.horizontalSizeClass) private var sizeClass
 
-    private let accentColor = Color.white
+    private var otherPlayers: [Player] {
+        playerGameVM.knownPlayers.filter { $0.id != playerGameVM.player.id }
+    }
 
     var body: some View {
         ZStack {
@@ -19,13 +20,18 @@ struct PlayerChooseGameView: View {
 
             ScrollView {
                 VStack(spacing: 20) {
-                    playerHeader
-                    gamesSection
+                    headerSection
+                    selfCard
+                    if !otherPlayers.isEmpty { othersSection }
+                    Spacer(minLength: 80)
                 }
-                .padding(.horizontal, sizeClass == .regular ? 0 : 20)
-                .padding(.top, 20)
-                .frame(maxWidth: sizeClass == .regular ? 700 : .infinity)
-                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+            }
+
+            VStack {
+                Spacer()
+                waitingPill
             }
 
             if !playerGameVM.isConnectedToMaster {
@@ -35,166 +41,144 @@ struct PlayerChooseGameView: View {
             if let game = playerGameVM.pendingGameInvite {
                 GameInviteOverlay(
                     game: game,
-                    accentColor: accentColor,
                     onJoin: { joinGame(game) },
                     onDismiss: { playerGameVM.pendingGameInvite = nil }
                 )
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                playerCountBadge
+            }
+        }
         .animation(.spring(duration: 0.45, bounce: 0.05), value: playerGameVM.pendingGameInvite != nil)
         .navigationBarBackButtonHidden()
+        .appDefaultTextStyle(Typography.body)
     }
 
-    // MARK: - Player Header
+    // MARK: - Player count badge
 
-    private var playerHeader: some View {
+    private var playerCountBadge: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(Color.greenLeading)
+                .frame(width: 8, height: 8)
+                .shadow(color: Color.greenLeading.opacity(0.7), radius: 4)
+            Text("\(playerGameVM.knownPlayers.count) joueur\(playerGameVM.knownPlayers.count > 1 ? "s" : "")")
+                .font(.nohemi(.caption, weight: .bold))
+                .foregroundStyle(.white)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(.ultraThinMaterial, in: Capsule())
+    }
+
+    // MARK: - Header
+
+    private var headerSection: some View {
+        VStack(spacing: 4) {
+            Text("EN ATTENTE DU MAÎTRE")
+                .font(.nohemi(.caption2, weight: .bold))
+                .tracking(0.8)
+                .foregroundStyle(.white.opacity(0.40))
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Text("La partie démarre dès\nque l'hôte lance.")
+                .font(.nohemi(.title2, weight: .black))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineSpacing(2)
+        }
+    }
+
+    // MARK: - Self Card
+
+    private var selfCard: some View {
         HStack(spacing: 14) {
             Circle()
-                .fill(accentColor)
-                .frame(width: 12, height: 12)
+                .fill(playerGameVM.player.teamColor.gradient)
+                .frame(width: 52, height: 52)
+                .overlay(
+                    Text(String(playerGameVM.player.name.prefix(1)).uppercased())
+                        .font(.nohemi(.title3, weight: .black))
+                        .foregroundStyle(.white)
+                )
 
-            Text(playerGameVM.player.name)
-                .font(.nohemi(.title2, weight: .extraBold))
-                .foregroundStyle(.white)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(playerGameVM.player.name)
+                    .font(.nohemi(.headline, weight: .bold))
+                    .foregroundStyle(.white)
+                Text("C'est toi")
+                    .font(.nohemi(.caption, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.55))
+            }
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 1) {
-                Text("\(playerGameVM.player.score)")
-                    .font(.nohemi(.title2, weight: .extraBold))
-                    .foregroundStyle(accentColor)
-                Text("points")
-                    .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.4))
-            }
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 22))
+                .foregroundStyle(Color.greenGlow)
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 14)
-        .background(accentColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 18))
+        .padding(14)
+        .background(
+            playerGameVM.player.teamColor.color.opacity(0.18),
+            in: RoundedRectangle(cornerRadius: 18)
+        )
         .overlay(
             RoundedRectangle(cornerRadius: 18)
-                .strokeBorder(accentColor.opacity(0.35), lineWidth: 1.5)
+                .strokeBorder(playerGameVM.player.teamColor.color.opacity(0.45), lineWidth: 1.5)
         )
     }
 
-    // MARK: - Games Grid
+    // MARK: - Others Grid
 
-    @ViewBuilder
-    private var gamesSection: some View {
-        if sizeClass == .regular {
-            HStack(spacing: 16) {
-                ForEach(GameType.allCases, id: \.self) { game in
-                    gameCard(game)
-                }
+    private var othersSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 6) {
+                Text("AUTRES JOUEURS")
+                    .font(.nohemi(.caption2, weight: .bold))
+                    .tracking(0.8)
+                    .foregroundStyle(.white.opacity(0.40))
+                Text("· \(otherPlayers.count)")
+                    .font(.nohemi(.caption2, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.40))
+                Rectangle()
+                    .fill(.white.opacity(0.08))
+                    .frame(height: 1)
             }
-        } else {
-            VStack(spacing: 12) {
-                HStack(spacing: 12) {
-                    gameCard(.quiz)
-                    gameCard(.blindTest)
+
+            LazyVGrid(
+                columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 4),
+                spacing: 16
+            ) {
+                ForEach(otherPlayers) { player in
+                    VStack(spacing: 6) {
+                        Circle()
+                            .fill(player.teamColor.gradient)
+                            .frame(width: 52, height: 52)
+                            .overlay(
+                                Text(String(player.name.prefix(1)).uppercased())
+                                    .font(.nohemi(.subheadline, weight: .black))
+                                    .foregroundStyle(.white)
+                            )
+                        Text(player.name)
+                            .font(.nohemi(.caption2, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.85))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                    }
+                    .transition(.scale(scale: 0.8).combined(with: .opacity))
                 }
-                scoreRow
             }
         }
     }
 
-    // MARK: - Vertical Game Card (Quiz / BlindTest)
+    // MARK: - Waiting Pill
 
-    @ViewBuilder
-    private func gameCard(_ game: GameType) -> some View {
-        let isOpen = playerGameVM.gameIsAvalaible(game)
-        Button {
-            if isOpen { joinGame(game) }
-        } label: {
-            VStack(spacing: 14) {
-                HStack {
-                    Spacer()
-                    statusBadge(isOpen: isOpen)
-                }
-
-                Image(systemName: game.iconName)
-                    .font(.system(size: 30, weight: .medium))
-                    .foregroundStyle(isOpen ? accentColor : .white.opacity(0.25))
-                    .frame(width: 60, height: 60)
-                    .background(
-                        isOpen ? accentColor.opacity(0.15) : .white.opacity(0.06),
-                        in: RoundedRectangle(cornerRadius: 16)
-                    )
-
-                Text(game.gameTitle)
-                    .font(.nohemi(.body, weight: .bold))
-                    .foregroundStyle(isOpen ? .white : .white.opacity(0.3))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-            }
-            .padding(16)
-            .frame(maxWidth: .infinity, minHeight: 160)
-            .background(
-                isOpen ? accentColor.opacity(0.08) : .white.opacity(0.04),
-                in: RoundedRectangle(cornerRadius: 20)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .strokeBorder(
-                        isOpen ? accentColor.opacity(0.4) : .white.opacity(0.07),
-                        lineWidth: isOpen ? 1.5 : 1
-                    )
-            )
-        }
-        .buttonStyle(.plain)
-        .disabled(!isOpen)
-    }
-
-    // MARK: - Horizontal Score Row (iPhone only)
-
-    private var scoreRow: some View {
-        let isOpen = playerGameVM.gameIsAvalaible(.score)
-        return Button {
-            if isOpen { joinGame(.score) }
-        } label: {
-            HStack(spacing: 14) {
-                Image(systemName: GameType.score.iconName)
-                    .font(.system(size: 22, weight: .medium))
-                    .foregroundStyle(isOpen ? accentColor : .white.opacity(0.25))
-                    .frame(width: 46, height: 46)
-                    .background(
-                        isOpen ? accentColor.opacity(0.15) : .white.opacity(0.06),
-                        in: RoundedRectangle(cornerRadius: 12)
-                    )
-
-                Text("Score")
-                    .font(.nohemi(.body, weight: .bold))
-                    .foregroundStyle(isOpen ? .white : .white.opacity(0.3))
-
-                Spacer()
-
-                statusBadge(isOpen: isOpen)
-
-                if isOpen {
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(accentColor.opacity(0.6))
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
-            .background(
-                isOpen ? accentColor.opacity(0.08) : .white.opacity(0.04),
-                in: RoundedRectangle(cornerRadius: 18)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 18)
-                    .strokeBorder(
-                        isOpen ? accentColor.opacity(0.4) : .white.opacity(0.07),
-                        lineWidth: isOpen ? 1.5 : 1
-                    )
-            )
-        }
-        .buttonStyle(.plain)
-        .disabled(!isOpen)
+    private var waitingPill: some View {
+        PulsingPill()
+            .padding(.bottom, 32)
     }
 
     // MARK: - Join Game
@@ -208,24 +192,30 @@ struct PlayerChooseGameView: View {
         }
         router.push(game.destinationPlayer)
     }
+}
 
-    // MARK: - Status Badge
+// MARK: - Pulsing Pill
 
-    private func statusBadge(isOpen: Bool) -> some View {
-        HStack(spacing: 4) {
+private struct PulsingPill: View {
+    @State private var isPulsing = false
+
+    var body: some View {
+        HStack(spacing: 8) {
             Circle()
-                .fill(isOpen ? accentColor.opacity(0.9) : .white.opacity(0.2))
-                .frame(width: 5, height: 5)
-            Text(isOpen ? "Ouvert" : "Fermé")
-                .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(isOpen ? .white.opacity(0.9) : .white.opacity(0.35))
+                .fill(Color.mustardYellow)
+                .frame(width: 8, height: 8)
+                .scaleEffect(isPulsing ? 1.2 : 0.8)
+                .opacity(isPulsing ? 1 : 0.4)
+                .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: isPulsing)
+            Text("Le Maître prépare la partie…")
+                .font(.nohemi(.caption, weight: .bold))
+                .foregroundStyle(.white.opacity(0.7))
         }
-        .padding(.horizontal, 9)
-        .padding(.vertical, 4)
-        .background(
-            isOpen ? accentColor.opacity(0.15) : .white.opacity(0.05),
-            in: Capsule()
-        )
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.white.opacity(0.06), in: Capsule())
+        .overlay(Capsule().strokeBorder(.white.opacity(0.10), lineWidth: 1))
+        .onAppear { isPulsing = true }
     }
 }
 
@@ -233,13 +223,14 @@ struct PlayerChooseGameView: View {
 
 private struct GameInviteOverlay: View {
     let game: GameType
-    let accentColor: Color
     let onJoin: () -> Void
     let onDismiss: () -> Void
 
     @State private var countdown = 3
     @State private var timer: Timer? = nil
     @State private var progress: CGFloat = 1.0
+
+    private let accentColor = Color.white
 
     var body: some View {
         VStack {
@@ -339,10 +330,20 @@ private struct GameInviteOverlay: View {
 
 #Preview {
     PlayerChooseGameView(
-        playerGameVM: PlayerGameViewModel(
-            player: Player(name: "Romain", teamColor: .blueGame),
-            mpc: MPCService(peerName: "Romain", role: .team)
-        ),
+        playerGameVM: {
+            let vm = PlayerGameViewModel(
+                player: Player(name: "Léa", teamColor: .redGame),
+                mpc: MPCService(peerName: "Léa", role: .team)
+            )
+            vm.knownPlayers = [
+                Player(name: "Léa", teamColor: .redGame),
+                Player(name: "Max", teamColor: .greenGame),
+                Player(name: "Tom", teamColor: .blueGame),
+                Player(name: "Iris", teamColor: .yellowGame),
+                Player(name: "Sam", teamColor: .purpleGame),
+            ]
+            return vm
+        }(),
         playerFlowVM: PlayerFlowViewModel()
     )
     .environmentObject(Router())
