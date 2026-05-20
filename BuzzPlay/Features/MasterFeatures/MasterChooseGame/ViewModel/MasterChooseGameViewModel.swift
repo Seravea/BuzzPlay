@@ -24,6 +24,12 @@ class MasterChooseGameViewModel {
     var connectedPlayersCount: Int { gameVM.connectedPlayersCount }
     var totalPlayersCount: Int { gameVM.totalPlayersCount }
     var players: [Player] { gameVM.players }
+
+    // Round progress
+    var currentRound: Int { gameVM.currentRound }
+    var totalRounds: Int { gameVM.totalRounds }
+    var isQuizCardAvailable: Bool { gameVM.isQuizAvailable }
+    var isBlindTestCardAvailable: Bool { gameVM.isBlindTestAvailable }
     
     
     //MARK: Datas en functions for views
@@ -36,6 +42,15 @@ class MasterChooseGameViewModel {
             gameVM.gamesOpen.append(game)
             gameVM.broadcastGameAvailability()
         }
+    }
+
+    func trackAndLaunch(_ game: GameType) {
+        switch game {
+        case .quiz: gameVM.quizRoundsPlayed += 1
+        case .blindTest: gameVM.blindTestRoundsPlayed += 1
+        default: break
+        }
+        addGame(game)
     }
 
     
