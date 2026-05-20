@@ -10,7 +10,35 @@ import Observation
 import MultipeerConnectivity
 
 
-//MARK: - Master Flow ViewModel
+// MARK: - Game Config Enums
+
+enum GameDuration: CaseIterable {
+    case rapide, normale, longue
+
+    var rounds: Int {
+        switch self { case .rapide: 5; case .normale: 10; case .longue: 20 }
+    }
+    var label: String {
+        switch self { case .rapide: "Rapide"; case .normale: "Normale"; case .longue: "Longue" }
+    }
+    var iconName: String {
+        switch self { case .rapide: "bolt.fill"; case .normale: "timer"; case .longue: "hourglass" }
+    }
+    var subtitle: String { "\(rounds) manches" }
+}
+
+enum GameMode: CaseIterable {
+    case quiz, blindTest, mix
+
+    var label: String {
+        switch self { case .quiz: "Quiz"; case .blindTest: "Blind Test"; case .mix: "Mix" }
+    }
+    var iconName: String {
+        switch self { case .quiz: "brain"; case .blindTest: "music.note"; case .mix: "shuffle" }
+    }
+}
+
+// MARK: - Master Flow ViewModel
 
 @MainActor
 @Observable
@@ -45,6 +73,32 @@ final class MasterFlowViewModel {
 
     /// QuizSet sélectionné par le Master dans l'écran de sélection de thème
     var selectedQuizSet: QuizSet?
+
+    // MARK: Game Config (set from Lobby)
+    var gameDuration: GameDuration = .normale
+    var gameMode: GameMode = .quiz
+    var quizRoundsPlayed: Int = 0
+    var blindTestRoundsPlayed: Int = 0
+
+    var totalRounds: Int { gameDuration.rounds }
+    var currentRound: Int { quizRoundsPlayed + blindTestRoundsPlayed }
+
+    var quizRoundsTotal: Int {
+        switch gameMode {
+        case .quiz: return totalRounds
+        case .blindTest: return 0
+        case .mix: return totalRounds / 2
+        }
+    }
+    var blindTestRoundsTotal: Int {
+        switch gameMode {
+        case .quiz: return 0
+        case .blindTest: return totalRounds
+        case .mix: return totalRounds - quizRoundsTotal
+        }
+    }
+    var isQuizAvailable: Bool { quizRoundsPlayed < quizRoundsTotal }
+    var isBlindTestAvailable: Bool { blindTestRoundsPlayed < blindTestRoundsTotal }
 
     /// Jeu courant qui réagit aux buzz (BlindTest, Quiz, etc.)
     weak var currentBuzzGame: BuzzDrivenGame?

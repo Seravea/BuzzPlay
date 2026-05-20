@@ -25,4 +25,16 @@ class MasterLobbyViewModel {
 
     var connectedPlayersCount: Int { gameVM.connectedPlayersCount }
     var totalPlayersCount: Int { gameVM.totalPlayersCount }
+
+    var gameDuration: GameDuration {
+        get { gameVM.gameDuration }
+        set { gameVM.gameDuration = newValue }
+    }
+    var gameMode: GameMode {
+        get { gameVM.gameMode }
+        set { gameVM.gameMode = newValue }
+    }
+    var totalRounds: Int { gameVM.totalRounds }
+    var quizRoundsTotal: Int { gameVM.quizRoundsTotal }
+    var blindTestRoundsTotal: Int { gameVM.blindTestRoundsTotal }
 }

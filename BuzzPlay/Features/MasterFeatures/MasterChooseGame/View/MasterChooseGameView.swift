@@ -70,7 +70,15 @@ struct MasterChooseGameView: View {
 
     private var launchSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            eyebrow("Lancer une manche")
+            HStack {
+                eyebrow("Lancer une manche")
+                Spacer()
+                if masterChooseGameVM.currentRound >= 1 {
+                    Text("Manche \(masterChooseGameVM.currentRound)/\(masterChooseGameVM.totalRounds)")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.40))
+                }
+            }
             HStack(spacing: 12) {
                 gameCard(.quiz, gradient: quizGradient)
                 gameCard(.blindTest, gradient: blindTestGradient)
@@ -80,17 +88,21 @@ struct MasterChooseGameView: View {
 
     @ViewBuilder
     private func gameCard(_ game: GameType, gradient: LinearGradient) -> some View {
+        let isAvailable: Bool = game == .quiz
+            ? masterChooseGameVM.isQuizCardAvailable
+            : masterChooseGameVM.isBlindTestCardAvailable
+
         VStack(spacing: 0) {
             VStack(spacing: 10) {
                 Image(systemName: game.iconName)
                     .font(.system(size: 26, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(width: 56, height: 56)
-                    .background(gradient.opacity(0.25), in: RoundedRectangle(cornerRadius: 16))
+                    .background(gradient.opacity(isAvailable ? 0.25 : 0.10), in: RoundedRectangle(cornerRadius: 16))
 
                 Text(game.gameTitle)
                     .font(.nohemi(.headline, weight: .bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(isAvailable ? .white : .white.opacity(0.35))
                     .lineLimit(1)
             }
             .padding(.top, 18)
@@ -102,31 +114,34 @@ struct MasterChooseGameView: View {
                 .frame(height: 1)
 
             Button {
-                if !masterChooseGameVM.gameIsAvailable(game) {
-                    masterChooseGameVM.addGame(game)
-                }
+                masterChooseGameVM.trackAndLaunch(game)
                 router.push(game.destinationMaster)
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: game.iconName)
+                    Image(systemName: isAvailable ? game.iconName : "checkmark")
                         .font(.system(size: 12, weight: .semibold))
-                    Text("Lancer")
+                    Text(isAvailable ? "Lancer" : "Terminé")
                         .font(.nohemi(.subheadline, weight: .bold))
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(isAvailable ? .white : .white.opacity(0.40))
                 .frame(maxWidth: .infinity)
                 .frame(height: 40)
-                .background(gradient, in: RoundedRectangle(cornerRadius: 12))
+                .background(
+                    isAvailable ? AnyShapeStyle(gradient) : AnyShapeStyle(Color.white.opacity(0.06)),
+                    in: RoundedRectangle(cornerRadius: 12)
+                )
             }
             .buttonStyle(.plain)
+            .disabled(!isAvailable)
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
         }
         .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 20))
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(.white.opacity(0.10), lineWidth: 1)
+                .strokeBorder(.white.opacity(isAvailable ? 0.10 : 0.04), lineWidth: 1)
         )
+        .opacity(isAvailable ? 1 : 0.55)
     }
 
     // MARK: - Ranking Section
