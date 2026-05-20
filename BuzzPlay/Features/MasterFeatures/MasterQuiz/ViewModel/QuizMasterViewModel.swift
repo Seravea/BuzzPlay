@@ -67,6 +67,7 @@ extension QuizMasterViewModel {
             UINotificationFeedbackGenerator().notificationOccurred(.success)
             let finalPoints = doubledScorePlayers.remove(player.id) != nil ? points * 2 : points
             gameVM.addPointToPlayer(player, points: finalPoints)
+            gameVM.quizRoundsPlayed += 1
 
             let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: currentQuestion?.answers.first)
             gameVM.mpcService.sendMessage(.answerResult(resultPayload))

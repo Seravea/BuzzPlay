@@ -99,6 +99,17 @@ final class MasterFlowViewModel {
     }
     var isQuizAvailable: Bool { quizRoundsPlayed < quizRoundsTotal }
     var isBlindTestAvailable: Bool { blindTestRoundsPlayed < blindTestRoundsTotal }
+    var isGameComplete: Bool { quizRoundsPlayed >= quizRoundsTotal && blindTestRoundsPlayed >= blindTestRoundsTotal }
+
+    func finishGameSection(_ gameType: GameType) {
+        switch gameType {
+        case .quiz: quizRoundsPlayed = quizRoundsTotal
+        case .blindTest: blindTestRoundsPlayed = blindTestRoundsTotal
+        default: break
+        }
+        mpcService.sendMessage(.masterLaunchedGame(.score))
+        broadcastGameAvailability()
+    }
 
     /// Jeu courant qui réagit aux buzz (BlindTest, Quiz, etc.)
     weak var currentBuzzGame: BuzzDrivenGame?
