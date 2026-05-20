@@ -2,17 +2,30 @@
 //  MasterGameView.swift
 //  BuzzPlay
 //
-//  Created by Apprenant 102 on 11/11/2025.
-//
 
 import SwiftUI
 
 struct MasterChooseGameView: View {
     @Bindable var masterChooseGameVM: MasterChooseGameViewModel
     @EnvironmentObject private var router: Router
-    @Environment(\.horizontalSizeClass) private var sizeClass
 
-    private let accentColor = Color.white
+    private var hasScores: Bool {
+        masterChooseGameVM.players.map(\.score).max() ?? 0 > 0
+    }
+
+    private var quizGradient: LinearGradient {
+        LinearGradient(
+            colors: [Color.purpleLeading, Color.purpleTrailing],
+            startPoint: .topLeading, endPoint: .bottomTrailing
+        )
+    }
+
+    private var blindTestGradient: LinearGradient {
+        LinearGradient(
+            colors: [Color.blueLeading, Color.blueTrailing],
+            startPoint: .topLeading, endPoint: .bottomTrailing
+        )
+    }
 
     var body: some View {
         ZStack {
@@ -20,17 +33,19 @@ struct MasterChooseGameView: View {
 
             ScrollView {
                 VStack(spacing: 20) {
-                    sessionHeader
-                    gamesSection
-                    coinsSection
+                    launchSection
+                    if hasScores { rankingSection }
+                    notesSection
                 }
-                .padding(.horizontal, sizeClass == .regular ? 0 : 20)
-                .padding(.top, 20)
-                .frame(maxWidth: sizeClass == .regular ? 700 : .infinity)
-                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .padding(.bottom, 32)
             }
         }
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                BPWordmarkView(size: 28)
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
                     connected: masterChooseGameVM.connectedPlayersCount,
@@ -38,245 +53,184 @@ struct MasterChooseGameView: View {
                 )
             }
         }
+        .navigationBarBackButtonHidden()
         .appDefaultTextStyle(Typography.body)
     }
 
-    // MARK: - Session Header
+    // MARK: - Eyebrow
 
-    private var sessionHeader: some View {
-        HStack(spacing: 14) {
-            Circle()
-                .fill(accentColor)
-                .frame(width: 12, height: 12)
-
-            Text("Maître du jeu")
-                .font(.nohemi(.title2, weight: .extraBold))
-                .foregroundStyle(.white)
-
-            Spacer()
-
-            VStack(alignment: .trailing, spacing: 1) {
-                Text("\(masterChooseGameVM.connectedPlayersCount)/\(masterChooseGameVM.totalPlayersCount)")
-                    .font(.nohemi(.title2, weight: .extraBold))
-                    .foregroundStyle(accentColor)
-                Text("joueurs")
-                    .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.4))
-            }
-        }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 14)
-        .background(accentColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 18))
-        .overlay(
-            RoundedRectangle(cornerRadius: 18)
-                .strokeBorder(accentColor.opacity(0.35), lineWidth: 1.5)
-        )
+    private func eyebrow(_ text: String) -> some View {
+        Text(text.uppercased())
+            .font(.nohemi(.caption2, weight: .bold))
+            .tracking(0.8)
+            .foregroundStyle(.white.opacity(0.40))
     }
 
-    // MARK: - Games Section
+    // MARK: - Launch Section
 
-    @ViewBuilder
-    private var gamesSection: some View {
-        if sizeClass == .regular {
-            HStack(spacing: 16) {
-                ForEach([GameType.quiz, GameType.blindTest], id: \.self) { game in
-                    gameCard(game)
-                }
-                scoreManageRow
-            }
-        } else {
-            VStack(spacing: 12) {
-                HStack(spacing: 12) {
-                    gameCard(.quiz)
-                    gameCard(.blindTest)
-                }
-                scoreManageRow
+    private var launchSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            eyebrow("Lancer une manche")
+            HStack(spacing: 12) {
+                gameCard(.quiz, gradient: quizGradient)
+                gameCard(.blindTest, gradient: blindTestGradient)
             }
         }
     }
 
-    // MARK: - Game Card
-
     @ViewBuilder
-    private func gameCard(_ game: GameType) -> some View {
-        let isOpen = masterChooseGameVM.gameIsAvailable(game)
-
+    private func gameCard(_ game: GameType, gradient: LinearGradient) -> some View {
         VStack(spacing: 0) {
-            Button {
-                if isOpen { router.push(game.destinationMaster) }
-            } label: {
-                VStack(spacing: 14) {
-                    HStack {
-                        Spacer()
-                        statusBadge(isOpen: isOpen)
-                    }
+            VStack(spacing: 10) {
+                Image(systemName: game.iconName)
+                    .font(.system(size: 26, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 56, height: 56)
+                    .background(gradient.opacity(0.25), in: RoundedRectangle(cornerRadius: 16))
 
-                    Image(systemName: game.iconName)
-                        .font(.system(size: 30, weight: .medium))
-                        .foregroundStyle(isOpen ? accentColor : .white.opacity(0.25))
-                        .frame(width: 60, height: 60)
-                        .background(
-                            isOpen ? accentColor.opacity(0.15) : .white.opacity(0.06),
-                            in: RoundedRectangle(cornerRadius: 16)
-                        )
-
-                    Text(game.gameTitle)
-                        .font(.nohemi(.body, weight: .bold))
-                        .foregroundStyle(isOpen ? .white : .white.opacity(0.3))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                }
-                .padding(16)
-                .frame(maxWidth: .infinity, minHeight: 140)
+                Text(game.gameTitle)
+                    .font(.nohemi(.headline, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
             }
-            .buttonStyle(.plain)
-            .disabled(!isOpen)
+            .padding(.top, 18)
+            .padding(.bottom, 14)
+            .frame(maxWidth: .infinity)
 
             Rectangle()
                 .fill(.white.opacity(0.06))
                 .frame(height: 1)
 
-            HStack(spacing: 8) {
-                Button {
+            Button {
+                if !masterChooseGameVM.gameIsAvailable(game) {
                     masterChooseGameVM.addGame(game)
-                } label: {
-                    Text("Ouvrir")
-                        .font(.nohemi(.caption, weight: .bold))
-                        .foregroundStyle(isOpen ? .white.opacity(0.3) : .white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(
-                            isOpen ? .white.opacity(0.04) : .green.opacity(0.2),
-                            in: RoundedRectangle(cornerRadius: 10)
-                        )
                 }
-                .buttonStyle(.plain)
-                .disabled(isOpen)
-
-                Button {
-                    masterChooseGameVM.removeGame(game)
-                } label: {
-                    Text("Fermer")
-                        .font(.nohemi(.caption, weight: .bold))
-                        .foregroundStyle(!isOpen ? .white.opacity(0.3) : .white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(
-                            !isOpen ? .white.opacity(0.04) : Color(red: 1, green: 0.2, blue: 0.3).opacity(0.25),
-                            in: RoundedRectangle(cornerRadius: 10)
-                        )
+                router.push(game.destinationMaster)
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: game.iconName)
+                        .font(.system(size: 12, weight: .semibold))
+                    Text("Lancer")
+                        .font(.nohemi(.subheadline, weight: .bold))
                 }
-                .buttonStyle(.plain)
-                .disabled(!isOpen)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 40)
+                .background(gradient, in: RoundedRectangle(cornerRadius: 12))
             }
-            .padding(12)
+            .buttonStyle(.plain)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
         }
-        .background(
-            isOpen ? accentColor.opacity(0.08) : .white.opacity(0.04),
-            in: RoundedRectangle(cornerRadius: 20)
-        )
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 20))
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(
-                    isOpen ? accentColor.opacity(0.4) : .white.opacity(0.07),
-                    lineWidth: isOpen ? 1.5 : 1
-                )
+                .strokeBorder(.white.opacity(0.10), lineWidth: 1)
         )
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isOpen)
     }
 
-    // MARK: - Score Row (Master controls)
+    // MARK: - Ranking Section
 
-    private var scoreManageRow: some View {
-        let isOpen = masterChooseGameVM.gameIsAvailable(.score)
-        return HStack(spacing: 14) {
-            Image(systemName: GameType.score.iconName)
-                .font(.system(size: 22, weight: .medium))
-                .foregroundStyle(isOpen ? accentColor : .white.opacity(0.25))
-                .frame(width: 46, height: 46)
-                .background(
-                    isOpen ? accentColor.opacity(0.15) : .white.opacity(0.06),
-                    in: RoundedRectangle(cornerRadius: 12)
-                )
+    private var rankingSection: some View {
+        let sorted = masterChooseGameVM.players.sorted { $0.score > $1.score }
+        let maxScore = max(sorted.first?.score ?? 1, 1)
 
-            Text("Score")
-                .font(.nohemi(.body, weight: .bold))
-                .foregroundStyle(isOpen ? .white : .white.opacity(0.3))
-
-            Spacer()
-
-            statusBadge(isOpen: isOpen)
-
-            HStack(spacing: 6) {
-                Button {
-                    masterChooseGameVM.addGame(.score)
-                } label: {
-                    Text("Ouvrir")
-                        .font(.nohemi(.caption, weight: .bold))
-                        .foregroundStyle(isOpen ? .white.opacity(0.3) : .white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(
-                            isOpen ? .white.opacity(0.04) : .green.opacity(0.2),
-                            in: RoundedRectangle(cornerRadius: 8)
-                        )
-                }
-                .buttonStyle(.plain)
-                .disabled(isOpen)
-
-                Button {
-                    masterChooseGameVM.removeGame(.score)
-                } label: {
-                    Text("Fermer")
-                        .font(.nohemi(.caption, weight: .bold))
-                        .foregroundStyle(!isOpen ? .white.opacity(0.3) : .white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(
-                            !isOpen ? .white.opacity(0.04) : Color(red: 1, green: 0.2, blue: 0.3).opacity(0.25),
-                            in: RoundedRectangle(cornerRadius: 8)
-                        )
-                }
-                .buttonStyle(.plain)
-                .disabled(!isOpen)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .background(
-            isOpen ? accentColor.opacity(0.08) : .white.opacity(0.04),
-            in: RoundedRectangle(cornerRadius: 18)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 18)
-                .strokeBorder(
-                    isOpen ? accentColor.opacity(0.4) : .white.opacity(0.07),
-                    lineWidth: isOpen ? 1.5 : 1
-                )
-        )
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isOpen)
-    }
-
-    // MARK: - Coins Section
-
-    private var coinsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 10) {
-                Image(systemName: "dollarsign.bank.building.fill")
-                    .font(.system(size: 22, weight: .medium))
-                    .foregroundStyle(accentColor)
-                    .frame(width: 46, height: 46)
-                    .background(accentColor.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
-
-                Text("Cadeaux")
-                    .font(.nohemi(.body, weight: .bold))
-                    .foregroundStyle(.white)
-
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                eyebrow("Classement")
                 Spacer()
-
-                Text("Envoyer des coins")
+                Text("mi-partie")
                     .font(.nohemi(.caption2, weight: .regular))
                     .foregroundStyle(.white.opacity(0.4))
+            }
+
+            VStack(spacing: 6) {
+                ForEach(Array(sorted.enumerated()), id: \.element.id) { index, player in
+                    rankingRow(rank: index + 1, player: player, maxScore: maxScore)
+                }
+            }
+        }
+        .padding(14)
+        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .strokeBorder(.white.opacity(0.07), lineWidth: 1)
+        )
+    }
+
+    private func rankingRow(rank: Int, player: Player, maxScore: Int) -> some View {
+        HStack(spacing: 10) {
+            ZStack {
+                Circle()
+                    .fill(rank == 1 ? Color.mustardYellow : .white.opacity(0.10))
+                    .frame(width: 24, height: 24)
+                Text("\(rank)")
+                    .font(.nohemi(.caption2, weight: .black))
+                    .foregroundStyle(rank == 1 ? Color(hex: "1A0535") : .white.opacity(0.6))
+            }
+
+            Circle()
+                .fill(player.teamColor.gradient)
+                .frame(width: 36, height: 36)
+                .overlay(
+                    Text(String(player.name.prefix(1)).uppercased())
+                        .font(.nohemi(.callout, weight: .bold))
+                        .foregroundStyle(.white)
+                )
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(player.name)
+                        .font(.nohemi(.subheadline, weight: .bold))
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                    Spacer()
+                    Text("\(player.score)")
+                        .font(.nohemi(.subheadline, weight: .black))
+                        .foregroundStyle(.white)
+                        .monospacedDigit()
+                }
+
+                GeometryReader { geo in
+                    RoundedRectangle(cornerRadius: 999)
+                        .fill(.white.opacity(0.10))
+                        .overlay(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 999)
+                                .fill(player.teamColor.gradient)
+                                .frame(width: geo.size.width * CGFloat(player.score) / CGFloat(maxScore))
+                        }
+                }
+                .frame(height: 4)
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(
+            rank == 1 ? Color.mustardYellow.opacity(0.08) : Color.clear,
+            in: RoundedRectangle(cornerRadius: 12)
+        )
+    }
+
+    // MARK: - Notes Section
+
+    private var notesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 10) {
+                Image(systemName: "music.note")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(Color.mustardYellow)
+                    .frame(width: 42, height: 42)
+                    .background(Color.mustardYellow.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Notes ♪")
+                        .font(.nohemi(.body, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text("Envoyer aux joueurs")
+                        .font(.nohemi(.caption2, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.4))
+                }
+                Spacer()
             }
 
             if masterChooseGameVM.players.isEmpty {
@@ -294,14 +248,14 @@ struct MasterChooseGameView: View {
                                     Button {
                                         masterChooseGameVM.coinsVM.sendCoinsToPlayer(player, amount: amount)
                                     } label: {
-                                        Label("\(amount) coins", systemImage: "dollarsign.circle")
+                                        Label("\(amount) notes", systemImage: "music.note")
                                     }
                                 }
                             } label: {
                                 VStack(spacing: 4) {
                                     Circle()
-                                        .fill(Color(player.teamColor.color).opacity(0.3))
-                                        .frame(width: 36, height: 36)
+                                        .fill(player.teamColor.gradient)
+                                        .frame(width: 42, height: 42)
                                         .overlay(
                                             Text(String(player.name.prefix(1)).uppercased())
                                                 .font(.nohemi(.callout, weight: .bold))
@@ -311,6 +265,9 @@ struct MasterChooseGameView: View {
                                         .font(.nohemi(.caption2, weight: .medium))
                                         .foregroundStyle(.white.opacity(0.8))
                                         .lineLimit(1)
+                                    Image(systemName: "music.note")
+                                        .font(.system(size: 11, weight: .medium))
+                                        .foregroundStyle(Color.mustardYellow.opacity(0.7))
                                 }
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 8)
@@ -326,34 +283,19 @@ struct MasterChooseGameView: View {
             }
         }
         .padding(16)
-        .background(accentColor.opacity(0.06), in: RoundedRectangle(cornerRadius: 20))
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 20))
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(accentColor.opacity(0.2), lineWidth: 1.5)
-        )
-    }
-
-    // MARK: - Status Badge
-
-    private func statusBadge(isOpen: Bool) -> some View {
-        HStack(spacing: 4) {
-            Circle()
-                .fill(isOpen ? .white.opacity(0.9) : .white.opacity(0.2))
-                .frame(width: 5, height: 5)
-            Text(isOpen ? "Ouvert" : "Fermé")
-                .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(isOpen ? .white.opacity(0.9) : .white.opacity(0.35))
-        }
-        .padding(.horizontal, 9)
-        .padding(.vertical, 4)
-        .background(
-            isOpen ? .white.opacity(0.12) : .white.opacity(0.05),
-            in: Capsule()
+                .strokeBorder(.white.opacity(0.10), lineWidth: 1.5)
         )
     }
 }
 
 #Preview {
-    MasterChooseGameView(masterChooseGameVM: MasterChooseGameViewModel(gameVM: MasterFlowViewModel()))
+    NavigationStack {
+        MasterChooseGameView(
+            masterChooseGameVM: MasterChooseGameViewModel(gameVM: MasterFlowViewModel())
+        )
         .environmentObject(Router())
+    }
 }
