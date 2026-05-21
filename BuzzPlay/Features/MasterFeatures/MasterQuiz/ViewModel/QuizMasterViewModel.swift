@@ -23,6 +23,7 @@ class QuizMasterViewModel: BuzzDrivenGame {
 
     var shouldAutoFinish: Bool = false
     var hasInvitedPlayers: Bool = false
+    var isQuestionRevealed: Bool = false
 
     var roundCountdownPhase: RoundCountdownPhase = .hidden
     private var countdownTask: Task<Void, Never>?
@@ -47,6 +48,7 @@ extension QuizMasterViewModel {
     func selectQuestion(_ question: QuizQuestion) {
         currentQuestion = question
         playerHasBuzz = nil
+        isQuestionRevealed = false
         // Reset état buzz sans broadcaster (la question serait visible avant le countdown)
         gameVM.currentBuzzPlayer = nil
         gameVM.isBuzzLocked = false
@@ -64,9 +66,9 @@ extension QuizMasterViewModel {
         // Pas de broadcast ici — la question serait visible avant le countdown
         startRoundCountdown { [weak self] in
             guard let self else { return }
+            self.isQuestionRevealed = true
             self.gameVM.unlockBuzz()
 
-            // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
             let timestamp = Date().timeIntervalSince1970
             self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
 
@@ -249,7 +251,8 @@ extension QuizMasterViewModel {
                 buzzingPlayer: playerHasBuzz,
                 isAnswerRevealed: false,
                 isHintVisible: false,
-                countdownPhase: roundCountdownPhase
+                countdownPhase: roundCountdownPhase,
+                isQuestionRevealed: isQuestionRevealed
             )
         )
     }

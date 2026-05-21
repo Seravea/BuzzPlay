@@ -13,8 +13,8 @@ struct PublicQuizDisplayView: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            // Question Card — masquée pendant le countdown pour ne pas spoiler
-            if state.countdownPhase == .hidden {
+            // Question Card — masquée jusqu'à la fin du premier countdown
+            if state.isQuestionRevealed {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("QUESTION")
                         .font(.nohemi(.caption2, weight: .bold))
@@ -93,7 +93,7 @@ struct PublicQuizDisplayView: View {
         Player(name: "Team 1", teamColor: .greenGame, score: 240),
         Player(name: "Team 2", teamColor: .blueGame, score: 240),
     ]
-    return PublicQuizDisplayView(
+    PublicQuizDisplayView(
         state: PublicQuizState(
             question: QuizSamples.music2000s.questions[3],
             setTitle: QuizSamples.music2000s.title,
@@ -101,7 +101,8 @@ struct PublicQuizDisplayView: View {
             buzzingPlayer: samplePlayers[1],
             isAnswerRevealed: false,
             isHintVisible: false,
-            countdownPhase: .hidden
+            countdownPhase: .hidden,
+            isQuestionRevealed: true
         ),
         timer: "00:00"
     )
