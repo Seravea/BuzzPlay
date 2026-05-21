@@ -29,8 +29,6 @@ struct BlindTestMasterView: View {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 16, weight: .semibold))
                                 .foregroundStyle(.white)
-                                .frame(width: 36, height: 36)
-                                .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
                         }
                     } else {
                         // Entre deux chansons → terminer la session Blind Test
@@ -56,9 +54,9 @@ struct BlindTestMasterView: View {
                     }
                 }
 
-                // Abonnement Apple Music (affiché quand pas de catalogue et pas de manche active)
+                // Abonnement Apple Music (affiché sur écran recherche uniquement quand pas de catalogue)
                 ToolbarItem(placement: .topBarLeading) {
-                    if !blindTestViewModel.isGameActive && !blindTestViewModel.canPlayCatalogContent {
+                    if blindTestViewModel.allSongs.isEmpty && !blindTestViewModel.canPlayCatalogContent {
                         Button {
                             showSubscriptionOffer = true
                         } label: {
@@ -81,33 +79,6 @@ struct BlindTestMasterView: View {
                     }
                 }
 
-                // Bouton Lancer — visible quand la liste est prête, avant la 1ère manche
-                ToolbarItem(placement: .topBarTrailing) {
-                    if !blindTestViewModel.allSongs.isEmpty && !blindTestViewModel.isGameActive {
-                        Button {
-                            blindTestViewModel.gameVM.broadcastGameLaunch(.blindTest)
-                        } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: "play.fill")
-                                    .font(.system(size: 11, weight: .bold))
-                                Text("Lancer")
-                                    .font(.nohemi(.subheadline, weight: .bold))
-                            }
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(
-                                LinearGradient(
-                                    colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
-                                    startPoint: .leading, endPoint: .trailing
-                                ),
-                                in: Capsule()
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-
                 ToolbarItem(placement: .topBarTrailing) {
                     ConnectionStatusBadge(
                         connected: blindTestViewModel.gameVM.connectedPlayersCount,
@@ -115,7 +86,7 @@ struct BlindTestMasterView: View {
                     )
                 }
             }
-            .navigationBarBackButtonHidden(true)
+            .navigationBarBackButtonHidden(!blindTestViewModel.allSongs.isEmpty || blindTestViewModel.isGameActive)
     }
 }
 
