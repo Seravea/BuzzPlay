@@ -138,43 +138,26 @@ extension BlindTestMasterViewModel {
 
         countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
-            await runCountdownAsync()
-            guard !Task.isCancelled else { return }
-            gameVM.unlockBuzz()
-            if musicHasEnded {
-                restartMusicFromBeginning()
-                musicHasEnded = false
-            } else {
-                resume()
-            }
-            isPlaying = true
-            startReactionTimer()
-            gameVM.broadcastPublicStateFromCurrentGame()
+            await runCountdown(
+                onPhaseChange: { [weak self] phase in
+                    self?.roundCountdownPhase = phase
+                    self?.gameVM.broadcastPublicStateFromCurrentGame()
+                },
+                onComplete: { [weak self] in
+                    guard let self else { return }
+                    self.gameVM.unlockBuzz()
+                    if self.musicHasEnded {
+                        self.restartMusicFromBeginning()
+                        self.musicHasEnded = false
+                    } else {
+                        self.resume()
+                    }
+                    self.isPlaying = true
+                    self.startReactionTimer()
+                    self.gameVM.broadcastPublicStateFromCurrentGame()
+                }
+            )
         }
-    }
-
-    // Countdown async pur — interleave coopératif avec prepareMusicForPlayback via async let
-    @MainActor private func runCountdownAsync() async {
-        roundCountdownPhase = .hidden
-        gameVM.broadcastPublicStateFromCurrentGame()
-
-        try? await Task.sleep(for: .seconds(2))
-        guard !Task.isCancelled else { roundCountdownPhase = .hidden; return }
-
-        for count in stride(from: 3, through: 1, by: -1) {
-            roundCountdownPhase = .counting(count)
-            gameVM.broadcastPublicStateFromCurrentGame()
-            try? await Task.sleep(for: .seconds(1))
-            guard !Task.isCancelled else { roundCountdownPhase = .hidden; return }
-        }
-
-        roundCountdownPhase = .go
-        gameVM.broadcastPublicStateFromCurrentGame()
-        try? await Task.sleep(for: .milliseconds(800))
-        guard !Task.isCancelled else { roundCountdownPhase = .hidden; return }
-
-        roundCountdownPhase = .hidden
-        gameVM.broadcastPublicStateFromCurrentGame()
     }
 }
 
@@ -200,7 +183,13 @@ extension BlindTestMasterViewModel {
             configureAudioSession()
 
             // Countdown (5.8 s) ET chargement musique en parallèle
-            async let countdown: Void = runCountdownAsync()
+            async let countdown: Void = runCountdown(
+                onPhaseChange: { [weak self] phase in
+                    self?.roundCountdownPhase = phase
+                    self?.gameVM.broadcastPublicStateFromCurrentGame()
+                },
+                onComplete: {}
+            )
             async let musicPrep: Void = prepareMusicForPlayback(song: selectedMusic)
             _ = await (countdown, musicPrep)
 
