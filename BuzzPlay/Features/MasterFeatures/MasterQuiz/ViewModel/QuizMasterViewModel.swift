@@ -24,7 +24,7 @@ class QuizMasterViewModel: BuzzDrivenGame {
     var shouldAutoFinish: Bool = false
 
     var roundCountdownPhase: RoundCountdownPhase = .hidden
-    private var roundCountdownTimer: Timer?
+    private var countdownTask: Task<Void, Never>?
 
     private var doubledScorePlayers: Set<UUID> = []
     private var usedQuestionHintIndex: [UUID: Int] = [:]  // questionID -> next hint index
@@ -113,34 +113,16 @@ extension QuizMasterViewModel {
     }
 
     private func startRoundCountdown(onComplete: @escaping @MainActor () -> Void) {
-        roundCountdownPhase = .hidden
-        roundCountdownTimer?.invalidate()
-        Task { @MainActor [weak self] in
-            try? await Task.sleep(for: .seconds(2))
+        countdownTask?.cancel()
+        countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
-            var count = 3
-            self.roundCountdownPhase = .counting(count)
-            self.gameVM.broadcastPublicStateFromCurrentGame()  // ✅ Broadcast countdown start
-
-            self.roundCountdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                Task { @MainActor [weak self] in
-                    guard let self else { return }
-                    count -= 1
-                    if count > 0 {
-                        self.roundCountdownPhase = .counting(count)
-                        self.gameVM.broadcastPublicStateFromCurrentGame()  // ✅ Broadcast each tick
-                    } else {
-                        self.roundCountdownTimer?.invalidate()
-                        self.roundCountdownTimer = nil
-                        self.roundCountdownPhase = .go
-                        self.gameVM.broadcastPublicStateFromCurrentGame()  // ✅ Broadcast GO
-                        try? await Task.sleep(for: .seconds(0.8))
-                        self.roundCountdownPhase = .hidden
-                        self.gameVM.broadcastPublicStateFromCurrentGame()  // ✅ Broadcast hidden
-                        onComplete()
-                    }
-                }
-            }
+            await runCountdown(
+                onPhaseChange: { [weak self] phase in
+                    self?.roundCountdownPhase = phase
+                    self?.gameVM.broadcastPublicStateFromCurrentGame()
+                },
+                onComplete: onComplete
+            )
         }
     }
     
