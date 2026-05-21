@@ -259,17 +259,6 @@ extension BlindTestMasterViewModel {
             let hint = buildBlindTestHint(song: song)
             gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(hint), player: player)
 
-        case .changeBuzzColor:
-            guard let idx = gameVM.players.firstIndex(where: { $0.id == player.id }) else { return }
-            let colors = GameColor.allCases.filter { $0 != gameVM.players[idx].teamColor }
-            gameVM.players[idx].customBuzzColor = colors.randomElement()
-            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[idx]))
-
-        case .changeBuzzSound:
-            guard let idx = gameVM.players.firstIndex(where: { $0.id == player.id }) else { return }
-            gameVM.players[idx].customBuzzSound = buzzSoundNames.randomElement()
-            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[idx]))
-
         default:
             break
         }

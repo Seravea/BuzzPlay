@@ -127,6 +127,7 @@ extension PlayerGameViewModel {
         case .updatedPlayer(let updatedPlayer):
             if updatedPlayer.id == self.player.id {
                 self.player = updatedPlayer
+                currentBuzzerVM?.player = updatedPlayer
             }
             if let idx = knownPlayers.firstIndex(where: { $0.id == updatedPlayer.id }) {
                 knownPlayers[idx] = updatedPlayer
