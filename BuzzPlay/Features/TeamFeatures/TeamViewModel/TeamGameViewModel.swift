@@ -208,8 +208,9 @@ extension PlayerGameViewModel {
         let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self else { return }
             reactionTimeMs += 100
+            let snapshot = reactionTimeMs
             Task { @MainActor in
-                self.formattedTime = Self.formatReactionTime(reactionTimeMs)
+                self.formattedTime = Self.formatReactionTime(snapshot)
             }
         }
         RunLoop.main.add(newTimer, forMode: .common)
@@ -233,8 +234,9 @@ extension PlayerGameViewModel {
         let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self else { return }
             reactionTimeMs += 100
+            let snapshot = reactionTimeMs
             Task { @MainActor in
-                self.formattedTime = Self.formatReactionTime(reactionTimeMs)
+                self.formattedTime = Self.formatReactionTime(snapshot)
             }
         }
         RunLoop.main.add(newTimer, forMode: .common)
