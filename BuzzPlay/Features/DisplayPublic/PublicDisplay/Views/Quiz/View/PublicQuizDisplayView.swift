@@ -13,21 +13,38 @@ struct PublicQuizDisplayView: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            // Question Card
-            VStack(alignment: .leading, spacing: 8) {
-                Text("QUESTION")
-                    .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.4))
-                    .tracking(0.8)
+            // Question Card — masquée pendant le countdown pour ne pas spoiler
+            if state.countdownPhase == .hidden {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("QUESTION")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.4))
+                        .tracking(0.8)
 
-                Text(state.question.title)
-                    .font(.nohemi(.title3, weight: .bold))
-                    .foregroundStyle(.white)
+                    Text(state.question.title)
+                        .font(.nohemi(.title3, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(18)
+                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
+                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.1), lineWidth: 1))
+                .transition(.opacity)
+            } else {
+                VStack(spacing: 8) {
+                    Image(systemName: "hourglass")
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.35))
+                    Text("Préparez-vous…")
+                        .font(.nohemi(.title3, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(18)
+                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 20))
+                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.06), lineWidth: 1))
+                .transition(.opacity)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(18)
-            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
-            .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.1), lineWidth: 1))
 
             // Answers Section (only if revealed)
             if state.isAnswerRevealed {
