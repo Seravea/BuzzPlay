@@ -104,9 +104,8 @@ extension QuizMasterViewModel {
         gameVM.sendPublicState(state)
 
         startRoundCountdown {
-            self.gameVM.unlockBuzz()
-            // ⚠️ DO NOT send new .timerStarted() — timer should RESUME from where it stopped, not restart at 0
-            // Player will call resumeUITimerIfNeeded() when buzzUnlock message arrives
+            self.startReactionTimer()          // reprend le timer Master depuis reactionTimeMs (pause, pas reset)
+            self.gameVM.unlockBuzz()           // envoie .buzzUnlock → Player appelle resumeUITimerIfNeeded()
             let newState = self.makePublicState()
             self.gameVM.sendPublicState(newState)
         }

@@ -33,24 +33,6 @@ struct ScoreMasterView: View {
                 footerButtons
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button { router.path.removeLast() } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold))
-                        Text("Retour")
-                            .font(.nohemi(.subheadline, weight: .semiBold))
-                    }
-                    .foregroundStyle(.white)
-                }
-            }
-            ToolbarItem(placement: .principal) {
-                Text("Manche \(sorted.count > 0 ? "finale" : "")")
-                    .font(.nohemi(.subheadline, weight: .bold))
-                    .foregroundStyle(.white)
-            }
-        }
         .navigationBarBackButtonHidden()
         .appDefaultTextStyle(Typography.body)
     }
