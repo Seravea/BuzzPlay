@@ -120,6 +120,8 @@ extension PlayerGameViewModel {
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: payload.playerName)
 
         case .buzzUnlock:
+            // Resume timer if it was paused (e.g., after rejected answer in Quiz)
+            resumeUITimerIfNeeded()
             currentBuzzerVM?.unLockBuzz()
 
         case .updatedPlayer(let updatedPlayer):

@@ -98,9 +98,8 @@ extension QuizMasterViewModel {
 
         startRoundCountdown {
             self.gameVM.unlockBuzz()
-            let timestamp = Date().timeIntervalSince1970
-            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-            self.startReactionTimer()
+            // ⚠️ DO NOT send new .timerStarted() — timer should RESUME from where it stopped, not restart at 0
+            // Player will call resumeUITimerIfNeeded() when buzzUnlock message arrives
             let newState = self.makePublicState()
             self.gameVM.sendPublicState(newState)
         }
