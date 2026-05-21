@@ -47,18 +47,21 @@ extension QuizMasterViewModel {
     func selectQuestion(_ question: QuizQuestion) {
         currentQuestion = question
         playerHasBuzz = nil
-
-        gameVM.unlockBuzz()
+        // Reset état buzz sans broadcaster (la question serait visible avant le countdown)
+        gameVM.currentBuzzPlayer = nil
+        gameVM.isBuzzLocked = false
+        for i in gameVM.players.indices where gameVM.players[i].blockedFromBuzzing {
+            gameVM.players[i].blockedFromBuzzing = false
+            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[i]))
+        }
         startRound()
     }
     
     func startRound() {
-        //SI pas de question ne peu pas commencer la manche
         guard currentQuestion != nil else { return }
 
-        gameVM.broadcastPublicStateFromCurrentGame()
-
         // Lance countdown 3-2-1-GO avant d'activer le buzzer
+        // Pas de broadcast ici — la question serait visible avant le countdown
         startRoundCountdown { [weak self] in
             guard let self else { return }
             self.gameVM.unlockBuzz()
@@ -119,7 +122,9 @@ extension QuizMasterViewModel {
             await runCountdown(
                 onPhaseChange: { [weak self] phase in
                     self?.roundCountdownPhase = phase
-                    self?.gameVM.broadcastPublicStateFromCurrentGame()
+                    if phase != .hidden {
+                        self?.gameVM.broadcastPublicStateFromCurrentGame()
+                    }
                 },
                 onComplete: onComplete
             )
