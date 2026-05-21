@@ -58,13 +58,7 @@ struct PrivateMasterBlindTestView: View {
             }
         }
         .animation(.spring(duration: 0.45, bounce: 0.05), value: currentScreen)
-        .onAppear {
-            blindTestVM.observeSubscriptionUpdates()
-            Task {
-                await blindTestVM.appleMusicService.setupAppleMusic()
-                await blindTestVM.updateCatalogPlaybackCapability()
-            }
-        }
+        .task { await blindTestVM.setupMusicOnAppear() }
         .alert("Information", isPresented: $blindTestVM.showSubscriptionAlert) {
             Button("OK", role: .cancel) {}
         } message: {

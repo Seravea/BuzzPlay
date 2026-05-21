@@ -426,7 +426,7 @@ extension BlindTestMasterViewModel {
     
     //MARK: functions Song playing
     
-    // Autorisation + éligibilité
+    // Autorisation + éligibilité (utilisé pendant la lecture pour décider preview vs catalogue)
     func canPlayFullCatalog() async -> Bool {
         let status = await MusicAuthorization.request()
         guard status == .authorized else { return false }
@@ -437,16 +437,24 @@ extension BlindTestMasterViewModel {
             return false
         }
     }
-    
-    // Met à jour le booléen (pour le badge)
+
+    // Appelé à l'onAppear : autorise + vérifie abonnement en un seul aller-retour réseau.
+    // Lance aussi le stream de mises à jour pour les changements futurs.
     @MainActor
-    func updateCatalogPlaybackCapability() async {
-        let can = await canPlayFullCatalog()
-        self.canPlayCatalogContent = can
+    func setupMusicOnAppear() async {
+        observeSubscriptionUpdates()
+        let status = await MusicAuthorization.request()
+        guard status == .authorized else { return }
+        do {
+            let subscription = try await MusicSubscription.current
+            canPlayCatalogContent = subscription.canPlayCatalogContent
+        } catch {
+            canPlayCatalogContent = false
+        }
     }
 
     // Écoute les changements d'abonnement en temps réel
-    func observeSubscriptionUpdates() {
+    private func observeSubscriptionUpdates() {
         Task {
             for await subscription in MusicSubscription.subscriptionUpdates {
                 await MainActor.run {
@@ -454,6 +462,13 @@ extension BlindTestMasterViewModel {
                 }
             }
         }
+    }
+
+    // Recheck après fermeture de l'offre d'abonnement
+    @MainActor
+    func updateCatalogPlaybackCapability() async {
+        let can = await canPlayFullCatalog()
+        canPlayCatalogContent = can
     }
     
     // Prépare la musique SANS jouer — appelé en parallèle avec runCountdownAsync().
