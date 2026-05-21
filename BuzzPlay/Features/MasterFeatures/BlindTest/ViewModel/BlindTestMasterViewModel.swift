@@ -182,6 +182,10 @@ extension BlindTestMasterViewModel {
         guard let selectedMusic = selectedMusic else { return }
         isFetching = true  // spinner immédiat
 
+        // AVAudioSession.setActive(true) peut bloquer plusieurs secondes sur le main thread
+        // (Bluetooth, routing audio). On le lance en background avant le countdownTask.
+        Task.detached(priority: .userInitiated) { Self.configureAudioSession() }
+
         countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
 
@@ -192,7 +196,6 @@ extension BlindTestMasterViewModel {
             musicHasEnded = false
             state = .playing
             isGameActive = true
-            configureAudioSession()
 
             // Countdown (5.8 s) ET chargement musique en parallèle
             async let countdown: Void = runCountdown(
@@ -589,7 +592,7 @@ extension BlindTestMasterViewModel {
         musicPlayer.stop()
     }
     
-    func configureAudioSession() {
+    nonisolated static func configureAudioSession() {
         do {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playback, mode: .default)
