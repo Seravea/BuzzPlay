@@ -108,7 +108,14 @@ final class MasterFlowViewModel {
         default: break
         }
         mpcService.sendMessage(.masterLaunchedGame(.score))
+        if isGameComplete {
+            mpcService.sendMessage(.masterGameComplete)
+        }
         broadcastGameAvailability()
+    }
+
+    func startParty() {
+        mpcService.sendMessage(.masterStartedParty)
     }
 
     /// Jeu courant qui réagit aux buzz (BlindTest, Quiz, etc.)

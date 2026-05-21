@@ -107,6 +107,10 @@ struct HomeView: View {
                     if let playerGameVM = playerFlowVM.playerGameVM {
                         ScorePlayerView(playerGameVM: playerGameVM)
                     }
+                case .playerGameView:
+                    if let playerGameVM = playerFlowVM.playerGameVM {
+                        PlayerGameView(playerGameVM: playerGameVM, playerFlowVM: playerFlowVM)
+                    }
                 }
             }
             .alert(

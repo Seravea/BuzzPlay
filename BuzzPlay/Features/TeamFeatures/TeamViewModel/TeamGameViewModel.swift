@@ -30,6 +30,12 @@ final class PlayerGameViewModel {
     // Invite reçue du Master (jeu qu'il vient de lancer)
     var pendingGameInvite: GameType? = nil
 
+    // Navigation : le Master a lancé la partie → aller dans PlayerGameView
+    var hasPartyStarted: Bool = false
+
+    // Fin de partie complète → afficher le podium final
+    var isGameComplete: Bool = false
+
     // MARK: - Public display timer mirroring
     var formattedTime: String = "00:00"
     private var timer: Timer?
@@ -139,6 +145,12 @@ extension PlayerGameViewModel {
             }
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
+
+        case .masterStartedParty:
+            hasPartyStarted = true
+
+        case .masterGameComplete:
+            isGameComplete = true
 
         case .timerStarted(let payload):
             startLocalReactionTimer(masterTimestamp: payload.masterTimestamp)

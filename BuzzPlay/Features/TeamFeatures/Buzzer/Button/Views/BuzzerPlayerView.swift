@@ -11,7 +11,6 @@ struct BuzzerPlayerView: View {
     @State private var coinsVM: CoinsViewModel
     @State private var isGiftSheetOpen = false
     @Environment(\.horizontalSizeClass) private var sizeClass
-    @Environment(\.dismiss) private var dismiss
 
     init(playerGameVM: PlayerGameViewModel, gameType: GameType) {
         self._playerGameVM = Bindable(playerGameVM)
@@ -91,12 +90,6 @@ struct BuzzerPlayerView: View {
 
     private var compactHeader: some View {
         HStack(spacing: 12) {
-            Button(action: { dismiss() }) {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white)
-            }
-
             Text(gameType.gameTitle)
                 .font(.nohemi(.subheadline, weight: .bold))
                 .foregroundStyle(.white)

@@ -47,6 +47,12 @@ enum MPCMessage: Codable {
     // Master -> Team : résultat de la réponse (correct/incorrect + points)
     case answerResult(AnswerResultPayload)
 
+    // Master -> Team : le Master démarre la partie (les joueurs vont dans la vue buzzer permanente)
+    case masterStartedParty
+
+    // Master -> Team : toutes les manches sont terminées (afficher le podium final)
+    case masterGameComplete
+
     //TEST
     case pong
 }
