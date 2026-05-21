@@ -251,26 +251,6 @@ extension MPCService: MCNearbyServiceBrowserDelegate {
 
 
 
-//MARK: ChooseGame func
-extension MPCService {
-    func sendGameAvailability(_ openGames: [GameType]) {
-        
-        sendMessage(.gameAvailability(openGames))
-//        guard !session.connectedPeers.isEmpty else {
-//            print("Erreur MPC: pas de peer connecté, can't send")
-//            return
-//        }
-//        
-//        let update = GameAvailability(openGames: openGames)
-//        do {
-//            let data = try JSONEncoder().encode(update)
-//            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
-//            print("MPC sent games List \(openGames)")
-//        } catch {
-//            print("MPC can't sent, there is an error: \(error)")
-//        }
-    }
-}
 
 
 

@@ -275,6 +275,7 @@ struct LobbyMasterView: View {
 
     private var startButton: some View {
         Button {
+            masterGameVM.startParty()
             router.push(.masterChooseGameView)
         } label: {
             HStack(spacing: 10) {

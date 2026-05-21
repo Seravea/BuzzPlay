@@ -22,13 +22,17 @@ final class PlayerGameViewModel {
     var isConnectedToMaster = false
 
     var receivedMessage: String = ""
-    var allGames: [GameType] = [.blindTest, .quiz]
-    var openGames: [GameType] = [.score]
     var publicState: PublicState = .waiting
     var knownPlayers: [Player] = []  // tous les joueurs connus (soi inclus)
 
     // Invite reçue du Master (jeu qu'il vient de lancer)
     var pendingGameInvite: GameType? = nil
+
+    // Navigation : le Master a lancé la partie → aller dans PlayerGameView
+    var hasPartyStarted: Bool = false
+
+    // Fin de partie complète → afficher le podium final
+    var isGameComplete: Bool = false
 
     // MARK: - Public display timer mirroring
     var formattedTime: String = "00:00"
@@ -70,7 +74,6 @@ extension PlayerGameViewModel {
                 self.isConnectedToMaster = false
                 // Reset so player re-announces itself when master comes back
                 self.didSentPlayer = false
-                self.openGames = []
                 // Browser continues running; master will be re-discovered automatically
             }
         }
@@ -102,12 +105,6 @@ extension PlayerGameViewModel {
 
 
 
-//UI properties funcs
-extension PlayerGameViewModel {
-    func gameIsAvalaible(_ game: GameType) -> Bool {
-        openGames.contains(game)
-    }
-}
 
 
 
@@ -118,9 +115,6 @@ extension PlayerGameViewModel {
         case .publicUpdate(let state):
             publicState = state
             handlePublicStateChange(state)
-
-        case .gameAvailability(let games):
-            self.openGames = games
 
         case .buzzLock(let payload):
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: payload.playerName)
@@ -139,6 +133,12 @@ extension PlayerGameViewModel {
             }
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
+
+        case .masterStartedParty:
+            hasPartyStarted = true
+
+        case .masterGameComplete:
+            isGameComplete = true
 
         case .timerStarted(let payload):
             startLocalReactionTimer(masterTimestamp: payload.masterTimestamp)
@@ -208,8 +208,9 @@ extension PlayerGameViewModel {
         let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self else { return }
             reactionTimeMs += 100
+            let snapshot = reactionTimeMs
             Task { @MainActor in
-                self.formattedTime = Self.formatReactionTime(reactionTimeMs)
+                self.formattedTime = Self.formatReactionTime(snapshot)
             }
         }
         RunLoop.main.add(newTimer, forMode: .common)
@@ -233,8 +234,9 @@ extension PlayerGameViewModel {
         let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self else { return }
             reactionTimeMs += 100
+            let snapshot = reactionTimeMs
             Task { @MainActor in
-                self.formattedTime = Self.formatReactionTime(reactionTimeMs)
+                self.formattedTime = Self.formatReactionTime(snapshot)
             }
         }
         RunLoop.main.add(newTimer, forMode: .common)

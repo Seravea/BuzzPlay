@@ -37,4 +37,6 @@ class MasterLobbyViewModel {
     var totalRounds: Int { gameVM.totalRounds }
     var quizRoundsTotal: Int { gameVM.quizRoundsTotal }
     var blindTestRoundsTotal: Int { gameVM.blindTestRoundsTotal }
+
+    func startParty() { gameVM.startParty() }
 }

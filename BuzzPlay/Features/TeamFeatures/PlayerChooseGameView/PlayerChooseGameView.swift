@@ -37,24 +37,17 @@ struct PlayerChooseGameView: View {
             if !playerGameVM.isConnectedToMaster {
                 ConnectionLostOverlay()
             }
-
-            if let game = playerGameVM.pendingGameInvite {
-                GameInviteOverlay(
-                    game: game,
-                    onJoin: { joinGame(game) },
-                    onDismiss: { playerGameVM.pendingGameInvite = nil }
-                )
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 playerCountBadge
             }
         }
-        .animation(.spring(duration: 0.45, bounce: 0.05), value: playerGameVM.pendingGameInvite != nil)
         .navigationBarBackButtonHidden()
         .appDefaultTextStyle(Typography.body)
+        .onChange(of: playerGameVM.hasPartyStarted) { _, started in
+            if started { router.push(.playerGameView) }
+        }
     }
 
     // MARK: - Player count badge
@@ -180,18 +173,6 @@ struct PlayerChooseGameView: View {
         PulsingPill()
             .padding(.bottom, 32)
     }
-
-    // MARK: - Join Game
-
-    private func joinGame(_ game: GameType) {
-        playerGameVM.pendingGameInvite = nil
-        if game != .score {
-            playerGameVM.currentBuzzerVM = playerFlowVM.makeBuzzerViewModel(
-                for: game == .quiz ? .quiz : .blindTest
-            )
-        }
-        router.push(game.destinationPlayer)
-    }
 }
 
 // MARK: - Pulsing Pill
@@ -219,114 +200,6 @@ private struct PulsingPill: View {
     }
 }
 
-// MARK: - Game Invite Overlay
-
-private struct GameInviteOverlay: View {
-    let game: GameType
-    let onJoin: () -> Void
-    let onDismiss: () -> Void
-
-    @State private var countdown = 3
-    @State private var timer: Timer? = nil
-    @State private var progress: CGFloat = 1.0
-
-    private let accentColor = Color.white
-
-    var body: some View {
-        VStack {
-            Spacer()
-            VStack(spacing: 20) {
-                RoundedRectangle(cornerRadius: 99)
-                    .fill(.white.opacity(0.2))
-                    .frame(width: 36, height: 4)
-
-                HStack(spacing: 14) {
-                    Image(systemName: game.iconName)
-                        .font(.system(size: 24, weight: .semibold))
-                        .foregroundStyle(accentColor)
-                        .frame(width: 52, height: 52)
-                        .background(accentColor.opacity(0.15), in: RoundedRectangle(cornerRadius: 14))
-
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("Le Master lance")
-                            .font(.nohemi(.subheadline, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.55))
-                        Text(game.gameTitle)
-                            .font(.nohemi(.title2, weight: .extraBold))
-                            .foregroundStyle(.white)
-                    }
-                    Spacer()
-
-                    ZStack {
-                        Circle()
-                            .stroke(.white.opacity(0.1), lineWidth: 3)
-                        Circle()
-                            .trim(from: 0, to: progress)
-                            .stroke(accentColor, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                            .rotationEffect(.degrees(-90))
-                            .animation(.linear(duration: 1), value: progress)
-                        Text("\(countdown)")
-                            .font(.nohemi(.body, weight: .extraBold))
-                            .foregroundStyle(.white)
-                    }
-                    .frame(width: 44, height: 44)
-                }
-
-                HStack(spacing: 10) {
-                    Button(action: onDismiss) {
-                        Text("Plus tard")
-                            .font(.nohemi(.body, weight: .bold))
-                            .foregroundStyle(.white.opacity(0.5))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
-                    }
-                    .buttonStyle(.plain)
-
-                    Button(action: onJoin) {
-                        Text("Rejoindre !")
-                            .font(.nohemi(.body, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(
-                                LinearGradient(
-                                    colors: [accentColor, accentColor.opacity(0.7)],
-                                    startPoint: .leading, endPoint: .trailing
-                                ),
-                                in: RoundedRectangle(cornerRadius: 14)
-                            )
-                            .shadow(color: accentColor.opacity(0.4), radius: 8, y: 3)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 16)
-            .padding(.bottom, 36)
-            .background(Color(hex: "#1A0535"), in: RoundedRectangle(cornerRadius: 28))
-            .ignoresSafeArea(edges: .bottom)
-        }
-        .ignoresSafeArea(edges: .bottom)
-        .onAppear { startCountdown() }
-        .onDisappear { timer?.invalidate() }
-    }
-
-    private func startCountdown() {
-        progress = 1.0
-        countdown = 3
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { t in
-            if countdown <= 1 {
-                t.invalidate()
-                onJoin()
-            } else {
-                countdown -= 1
-                progress = CGFloat(countdown - 1) / 3.0
-            }
-        }
-    }
-}
 
 #Preview {
     PlayerChooseGameView(

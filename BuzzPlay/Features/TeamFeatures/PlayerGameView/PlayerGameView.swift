@@ -1,0 +1,486 @@
+//
+//  PlayerGameView.swift
+//  BuzzPlay
+//
+
+import SwiftUI
+
+// MARK: - Hub permanent du joueur
+
+struct PlayerGameView: View {
+    @Bindable var playerGameVM: PlayerGameViewModel
+    @Bindable var playerFlowVM: PlayerFlowViewModel
+    @EnvironmentObject var router: Router
+
+    @State private var currentGameType: GameType = .quiz
+    @State private var showGameAnnounce = false
+    @State private var showInterGameScore = false
+    @State private var showPodium = false
+
+    var body: some View {
+        ZStack {
+            BuzzerPlayerView(playerGameVM: playerGameVM, gameType: currentGameType)
+
+            if playerGameVM.currentBuzzerVM == nil {
+                waitingOverlay
+            }
+        }
+        .navigationBarBackButtonHidden()
+        .sheet(isPresented: $showGameAnnounce) {
+            GameAnnounceSheet(game: currentGameType)
+        }
+        .sheet(isPresented: $showInterGameScore) {
+            InterGameScoreSheet(players: playerGameVM.knownPlayers)
+        }
+        .sheet(isPresented: $showPodium) {
+            PlayerPodiumSheet(
+                players: playerGameVM.knownPlayers,
+                currentPlayer: playerGameVM.player,
+                onQuit: { router.popToRoot() }
+            )
+        }
+        .onChange(of: playerGameVM.pendingGameInvite) { _, invite in
+            guard let invite else { return }
+            handleGameInvite(invite)
+        }
+        .onChange(of: playerGameVM.isGameComplete) { _, complete in
+            guard complete else { return }
+            showInterGameScore = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                showPodium = true
+            }
+        }
+    }
+
+    // MARK: - Waiting overlay
+
+    private var waitingOverlay: some View {
+        VStack {
+            Spacer()
+            PlayerPulsingPill(text: "En attente du prochain jeu…")
+                .padding(.bottom, 48)
+        }
+    }
+
+    // MARK: - Game invite handling
+
+    private func handleGameInvite(_ game: GameType) {
+        playerGameVM.pendingGameInvite = nil
+        if game == .score {
+            if !playerGameVM.isGameComplete {
+                showInterGameScore = true
+            }
+        } else {
+            currentGameType = game
+            playerGameVM.currentBuzzerVM = playerFlowVM.makeBuzzerViewModel(
+                for: game == .quiz ? .quiz : .blindTest
+            )
+            if showInterGameScore {
+                showInterGameScore = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    showGameAnnounce = true
+                }
+            } else {
+                showGameAnnounce = true
+            }
+        }
+    }
+}
+
+// MARK: - Pulsing pill réutilisable
+
+struct PlayerPulsingPill: View {
+    let text: String
+    @State private var isPulsing = false
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Circle()
+                .fill(Color.mustardYellow)
+                .frame(width: 8, height: 8)
+                .scaleEffect(isPulsing ? 1.2 : 0.8)
+                .opacity(isPulsing ? 1 : 0.4)
+                .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: isPulsing)
+            Text(text)
+                .font(.nohemi(.caption, weight: .bold))
+                .foregroundStyle(.white.opacity(0.7))
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.white.opacity(0.06), in: Capsule())
+        .overlay(Capsule().strokeBorder(.white.opacity(0.10), lineWidth: 1))
+        .onAppear { isPulsing = true }
+    }
+}
+
+// MARK: - Sheet 1 : Annonce du jeu
+
+private struct GameAnnounceSheet: View {
+    let game: GameType
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var countdown = 3
+    @State private var progress: CGFloat = 1.0
+    @State private var timer: Timer?
+
+    var body: some View {
+        VStack(spacing: 0) {
+            RoundedRectangle(cornerRadius: 99)
+                .fill(.white.opacity(0.2))
+                .frame(width: 36, height: 4)
+                .padding(.top, 16)
+                .padding(.bottom, 24)
+
+            VStack(spacing: 20) {
+                HStack(spacing: 14) {
+                    Image(systemName: game.iconName)
+                        .font(.system(size: 24, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 56, height: 56)
+                        .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 16))
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Le Master lance")
+                            .font(.nohemi(.subheadline, weight: .regular))
+                            .foregroundStyle(.white.opacity(0.55))
+                        Text(game.gameTitle)
+                            .font(.nohemi(.title2, weight: .extraBold))
+                            .foregroundStyle(.white)
+                    }
+
+                    Spacer()
+
+                    ZStack {
+                        Circle()
+                            .stroke(.white.opacity(0.1), lineWidth: 3)
+                        Circle()
+                            .trim(from: 0, to: progress)
+                            .stroke(.white, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
+                            .animation(.linear(duration: 1), value: progress)
+                        Text("\(countdown)")
+                            .font(.nohemi(.body, weight: .extraBold))
+                            .foregroundStyle(.white)
+                    }
+                    .frame(width: 44, height: 44)
+                }
+
+                Text("Prépare-toi à buzzer !")
+                    .font(.nohemi(.callout, weight: .semiBold))
+                    .foregroundStyle(.white.opacity(0.45))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.horizontal, 20)
+
+            Spacer()
+        }
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(hex: "#1A0535"))
+        .presentationDetents([.height(220)])
+        .presentationDragIndicator(.hidden)
+        .presentationBackground(Color(hex: "#1A0535"))
+        .onAppear { startCountdown() }
+        .onDisappear { timer?.invalidate() }
+    }
+
+    private func startCountdown() {
+        countdown = 3
+        progress = 1.0
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { t in
+            if countdown <= 1 {
+                t.invalidate()
+                dismiss()
+            } else {
+                countdown -= 1
+                progress = CGFloat(countdown - 1) / 3.0
+            }
+        }
+    }
+}
+
+// MARK: - Sheet 2 : Score inter-jeux
+
+private struct InterGameScoreSheet: View {
+    let players: [Player]
+
+    private var sortedPlayers: [Player] {
+        players.sorted { $0.score > $1.score }
+    }
+    private var maxScore: Int {
+        sortedPlayers.first?.score ?? 1
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            RoundedRectangle(cornerRadius: 99)
+                .fill(.white.opacity(0.2))
+                .frame(width: 36, height: 4)
+                .padding(.top, 16)
+                .padding(.bottom, 20)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("SCORES")
+                    .font(.nohemi(.caption2, weight: .bold))
+                    .tracking(0.8)
+                    .foregroundStyle(.white.opacity(0.4))
+                Text("Classement actuel")
+                    .font(.nohemi(.title2, weight: .extraBold))
+                    .foregroundStyle(.white)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 16)
+
+            Divider().overlay(Color.white.opacity(0.08))
+
+            ScrollView {
+                VStack(spacing: 8) {
+                    ForEach(Array(sortedPlayers.enumerated()), id: \.element.id) { index, player in
+                        scoreRow(rank: index + 1, player: player)
+                    }
+                }
+                .padding(16)
+            }
+
+            PlayerPulsingPill(text: "En attente du prochain jeu…")
+                .padding(.vertical, 16)
+        }
+        .foregroundStyle(.white)
+        .background(Color(hex: "1A0535"))
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.hidden)
+        .presentationBackground(Color(hex: "1A0535"))
+        .interactiveDismissDisabled()
+    }
+
+    private func scoreRow(rank: Int, player: Player) -> some View {
+        HStack(spacing: 12) {
+            Text("#\(rank)")
+                .font(.nohemi(.caption, weight: .bold))
+                .foregroundStyle(.white.opacity(0.4))
+                .frame(width: 28, alignment: .leading)
+
+            Circle()
+                .fill(player.teamColor.gradient)
+                .frame(width: 38, height: 38)
+                .overlay(
+                    Text(String(player.name.prefix(1)).uppercased())
+                        .font(.nohemi(.callout, weight: .black))
+                        .foregroundStyle(.white)
+                )
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(player.name)
+                    .font(.nohemi(.subheadline, weight: .bold))
+                    .foregroundStyle(.white)
+
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(.white.opacity(0.08)).frame(height: 4)
+                        let ratio = maxScore > 0 ? CGFloat(player.score) / CGFloat(maxScore) : 0
+                        Capsule()
+                            .fill(player.teamColor.color.opacity(0.85))
+                            .frame(width: geo.size.width * ratio, height: 4)
+                    }
+                }
+                .frame(height: 4)
+            }
+
+            Spacer()
+
+            Text("\(player.score) pts")
+                .font(.nohemi(.callout, weight: .extraBold))
+                .foregroundStyle(.white)
+                .monospacedDigit()
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+    }
+}
+
+// MARK: - Sheet 3 : Podium final
+
+private struct PlayerPodiumSheet: View {
+    let players: [Player]
+    let currentPlayer: Player
+    let onQuit: () -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    private var sorted: [Player] {
+        players.sorted { $0.score > $1.score }
+    }
+
+    private func rank(of player: Player) -> Int? {
+        sorted.firstIndex(where: { $0.id == player.id }).map { $0 + 1 }
+    }
+
+    var body: some View {
+        ZStack {
+            BackgroundAppView().ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                // Header
+                VStack(spacing: 4) {
+                    Text("PARTIE TERMINÉE")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .tracking(0.8)
+                        .foregroundStyle(.white.opacity(0.4))
+                    Text("Classement final")
+                        .font(.nohemi(.title, weight: .extraBold))
+                        .foregroundStyle(.white)
+                }
+                .padding(.top, 32)
+                .padding(.bottom, 28)
+
+                // My rank highlight
+                if let myRank = rank(of: currentPlayer) {
+                    myRankCard(rank: myRank, player: currentPlayer)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 20)
+                }
+
+                Divider().overlay(Color.white.opacity(0.08)).padding(.horizontal, 20)
+
+                // Full ranking
+                ScrollView {
+                    VStack(spacing: 8) {
+                        ForEach(Array(sorted.enumerated()), id: \.element.id) { index, player in
+                            podiumRow(rank: index + 1, player: player, isSelf: player.id == currentPlayer.id)
+                        }
+                    }
+                    .padding(20)
+                }
+
+                // Quit button
+                Button(action: { dismiss(); onQuit() }) {
+                    Text("Quitter")
+                        .font(.nohemi(.body, weight: .bold))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                        .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 40)
+            }
+        }
+        .foregroundStyle(.white)
+        .presentationDragIndicator(.hidden)
+        .interactiveDismissDisabled()
+    }
+
+    private func myRankCard(rank: Int, player: Player) -> some View {
+        HStack(spacing: 14) {
+            Text(rankEmoji(rank))
+                .font(.system(size: 32))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Ta position")
+                    .font(.nohemi(.caption, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.55))
+                Text("\(rank)\(rankSuffix(rank)) place")
+                    .font(.nohemi(.title3, weight: .extraBold))
+                    .foregroundStyle(.white)
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("\(player.score)")
+                    .font(.nohemi(.title2, weight: .black))
+                    .foregroundStyle(player.teamColor.color)
+                Text("points")
+                    .font(.nohemi(.caption2, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.5))
+            }
+        }
+        .padding(16)
+        .background(player.teamColor.color.opacity(0.12), in: RoundedRectangle(cornerRadius: 18))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18)
+                .strokeBorder(player.teamColor.color.opacity(0.35), lineWidth: 1.5)
+        )
+    }
+
+    private func podiumRow(rank: Int, player: Player, isSelf: Bool) -> some View {
+        HStack(spacing: 12) {
+            Text(rankEmoji(rank))
+                .font(.system(size: 20))
+                .frame(width: 32)
+
+            Circle()
+                .fill(player.teamColor.gradient)
+                .frame(width: 36, height: 36)
+                .overlay(
+                    Text(String(player.name.prefix(1)).uppercased())
+                        .font(.nohemi(.callout, weight: .black))
+                        .foregroundStyle(.white)
+                )
+
+            Text(player.name)
+                .font(.nohemi(.subheadline, weight: isSelf ? .extraBold : .bold))
+                .foregroundStyle(isSelf ? .white : .white.opacity(0.85))
+
+            if isSelf {
+                Text("(toi)")
+                    .font(.nohemi(.caption, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.4))
+            }
+
+            Spacer()
+
+            Text("\(player.score) pts")
+                .font(.nohemi(.callout, weight: .extraBold))
+                .foregroundStyle(isSelf ? player.teamColor.color : .white.opacity(0.7))
+                .monospacedDigit()
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(isSelf ? player.teamColor.color.opacity(0.08) : .white.opacity(0.04), in: RoundedRectangle(cornerRadius: 14))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .strokeBorder(isSelf ? player.teamColor.color.opacity(0.25) : .white.opacity(0.06), lineWidth: 1)
+        )
+    }
+
+    private func rankEmoji(_ rank: Int) -> String {
+        switch rank {
+        case 1: return "🥇"
+        case 2: return "🥈"
+        case 3: return "🥉"
+        default: return "#\(rank)"
+        }
+    }
+
+    private func rankSuffix(_ rank: Int) -> String {
+        rank == 1 ? "ère" : "ème"
+    }
+}
+
+// MARK: - Preview
+
+#Preview {
+    NavigationStack {
+        PlayerGameView(
+            playerGameVM: {
+                let vm = PlayerGameViewModel(
+                    player: Player(name: "Léa", teamColor: .redGame),
+                    mpc: MPCService(peerName: "Léa", role: .team)
+                )
+                vm.knownPlayers = [
+                    Player(name: "Léa", teamColor: .redGame, score: 240),
+                    Player(name: "Max", teamColor: .greenGame, score: 180),
+                    Player(name: "Tom", teamColor: .blueGame, score: 90),
+                ]
+                return vm
+            }(),
+            playerFlowVM: PlayerFlowViewModel()
+        )
+        .environmentObject(Router())
+    }
+}

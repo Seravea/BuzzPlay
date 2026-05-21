@@ -21,4 +21,5 @@ enum Route: Hashable, Codable {
     case quizPlayer
     case scoreMaster
     case scorePlayer
+    case playerGameView
 }
