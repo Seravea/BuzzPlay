@@ -349,7 +349,8 @@ extension BlindTestMasterViewModel {
                         buzzingPlayer: nil,
                         isAnswerRevealed: false,
                         isPlaying: isPlaying,   // false pendant le countdown → Player ne relance pas son timer trop tôt
-                        hintIndex: currentHintIndex
+                        hintIndex: currentHintIndex,
+                        countdownPhase: roundCountdownPhase
                     )
                 )
 
@@ -364,7 +365,8 @@ extension BlindTestMasterViewModel {
                        buzzingPlayer: player,
                        isAnswerRevealed: false,
                        isPlaying: false,
-                       hintIndex: currentHintIndex
+                       hintIndex: currentHintIndex,
+                       countdownPhase: roundCountdownPhase
                    )
                )
 
@@ -379,7 +381,8 @@ extension BlindTestMasterViewModel {
                        buzzingPlayer: playerHasBuzz,
                        isAnswerRevealed: true,
                        isPlaying: false,
-                       hintIndex: currentHintIndex
+                       hintIndex: currentHintIndex,
+                       countdownPhase: roundCountdownPhase
                    )
                )
            }
