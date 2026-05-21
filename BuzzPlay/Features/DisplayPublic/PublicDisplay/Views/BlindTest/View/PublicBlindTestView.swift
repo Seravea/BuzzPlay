@@ -107,7 +107,8 @@ struct PublicBlindTestView: View {
         buzzingPlayer: nil,
         isAnswerRevealed: false,
         isPlaying: true,
-        hintIndex: 0
+        hintIndex: 0,
+        countdownPhase: .hidden
     )
     PublicBlindTestView(state: sample, timer: "00:12")
         .background(BackgroundAppView())
@@ -123,7 +124,8 @@ struct PublicBlindTestView: View {
         buzzingPlayer: nil,
         isAnswerRevealed: true,
         isPlaying: false,
-        hintIndex: 2
+        hintIndex: 2,
+        countdownPhase: .hidden
     )
     PublicBlindTestView(state: sample, timer: "00:12")
         .background(BackgroundAppView())

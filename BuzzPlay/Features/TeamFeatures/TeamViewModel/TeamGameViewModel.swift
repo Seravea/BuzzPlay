@@ -187,6 +187,7 @@ extension PlayerGameViewModel {
         case .blindTest(let blindTestState):
             formattedTime = blindTestState.formattedTime
             lastMasterFormattedTime = blindTestState.formattedTime
+            currentBuzzerVM?.countdownPhase = blindTestState.countdownPhase
             syncBuzzerState(buzzingPlayer: blindTestState.buzzingPlayer, isRoundActive: blindTestState.isPlaying)
         }
     }
