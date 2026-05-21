@@ -287,6 +287,35 @@ extension BlindTestMasterViewModel {
 
 //MARK: BuzzDrivenGame conformance
 extension BlindTestMasterViewModel {
+
+    // Shadows the protocol extension's startReactionTimer() to add 15s expiry loop (Option B).
+    // When the reaction window expires, music restarts from the beginning and the timer resets.
+    @MainActor func startReactionTimer() {
+        timer?.invalidate()
+        timer = nil
+
+        let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            Task { @MainActor in
+                self.reactionTimeMs += 100
+                if self.reactionTimeMs >= 15_000 {
+                    self.handleTimerExpiry()
+                }
+            }
+        }
+        RunLoop.main.add(newTimer, forMode: .common)
+        timer = newTimer
+    }
+
+    @MainActor private func handleTimerExpiry() {
+        stopReactionTimer()
+        restartMusicFromBeginning()
+        let timestamp = Date().timeIntervalSince1970
+        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+        startReactionTimer()
+        gameVM.broadcastPublicStateFromCurrentGame()
+    }
+
     @MainActor
     func handleBuzz(from player: Player) {
         // Ignorer les buzz si la manche n'est pas en cours
