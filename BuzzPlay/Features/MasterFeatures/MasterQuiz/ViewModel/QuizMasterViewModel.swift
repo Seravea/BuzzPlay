@@ -22,6 +22,7 @@ class QuizMasterViewModel: BuzzDrivenGame {
     var questionsPassed: [QuizQuestion] = []
 
     var shouldAutoFinish: Bool = false
+    var hasInvitedPlayers: Bool = false
 
     var roundCountdownPhase: RoundCountdownPhase = .hidden
     private var countdownTask: Task<Void, Never>?
@@ -181,13 +182,10 @@ extension QuizMasterViewModel {
     
     
     func quizButtonDisabled(question: QuizQuestion) -> Bool {
-        if isPlaying {
-            return true
-        } else if questionsPassed.contains(question) {
-            return true
-        } else {
-            return false
-        }
+        if !hasInvitedPlayers { return true }
+        if isPlaying { return true }
+        if questionsPassed.contains(question) { return true }
+        return false
     }
     
     var isPlaying: Bool {

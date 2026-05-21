@@ -32,6 +32,7 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var isCorrect: Bool = false
     
     var shouldAutoFinish: Bool = false
+    var hasInvitedPlayers: Bool = false
 
     var playerHasBuzz: Player? = nil
     var playedSongs: [BlindTestSong] = []

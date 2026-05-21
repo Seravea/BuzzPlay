@@ -144,38 +144,44 @@ private struct QuizQuestionListScreen: View {
         }
     }
 
+    private var inviteButton: some View {
+        let invited = quizMasterVM.hasInvitedPlayers
+        return Button {
+            quizMasterVM.hasInvitedPlayers = true
+            quizMasterVM.gameVM.broadcastGameLaunch(.quiz)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: invited ? "checkmark.circle.fill" : "person.wave.2.fill")
+                    .font(.system(size: 13, weight: .bold))
+                Text(invited ? "Joueurs invités" : "Inviter les joueurs")
+                    .font(.nohemi(.subheadline, weight: .bold))
+                Spacer()
+                Text(invited ? "Prêts à buzzer" : "Obligatoire avant de jouer")
+                    .font(.nohemi(.caption2, weight: .regular))
+                    .foregroundStyle(.white.opacity(invited ? 0.5 : 0.65))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(invited
+                          ? AnyShapeStyle(Color.white.opacity(0.10))
+                          : AnyShapeStyle(LinearGradient(
+                                colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
+                                startPoint: .leading, endPoint: .trailing)))
+            )
+            .shadow(color: invited ? .clear : Color.greenButtonLeading.opacity(0.35), radius: 8, y: 3)
+        }
+        .buttonStyle(.plain)
+        .animation(.easeInOut(duration: 0.25), value: invited)
+    }
+
     private var listHeader: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Bouton "Lancer" — visible avant la 1ère question uniquement
-            if quizMasterVM.questionsPassed.isEmpty {
-                Button {
-                    quizMasterVM.gameVM.broadcastGameLaunch(.quiz)
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: 13, weight: .bold))
-                        Text("Lancer le Quiz")
-                            .font(.nohemi(.subheadline, weight: .bold))
-                        Spacer()
-                        Text("Notifie les joueurs")
-                            .font(.nohemi(.caption2, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.5))
-                    }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(
-                        LinearGradient(
-                            colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
-                            startPoint: .leading, endPoint: .trailing
-                        ),
-                        in: RoundedRectangle(cornerRadius: 14)
-                    )
-                    .shadow(color: Color.greenButtonLeading.opacity(0.35), radius: 8, y: 3)
-                }
-                .buttonStyle(.plain)
+            // Bouton "Inviter les joueurs" — obligatoire avant de pouvoir sélectionner une question
+            inviteButton
                 .padding(.bottom, 4)
-            }
 
             HStack {
                 VStack(alignment: .leading, spacing: 2) {

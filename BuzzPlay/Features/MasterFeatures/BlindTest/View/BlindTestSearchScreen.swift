@@ -52,6 +52,11 @@ struct BlindTestSearchScreen: View {
             // Apple Music banner
             appleMusicBanner
                 .padding(.horizontal, 20)
+                .padding(.bottom, 12)
+
+            // Lancer le Blind Test — invite les players sur leur buzzer
+            launchButton
+                .padding(.horizontal, 20)
                 .padding(.bottom, 16)
 
             // Inline search bar (slides in from top)
@@ -82,6 +87,40 @@ struct BlindTestSearchScreen: View {
         .animation(.spring(duration: 0.3, bounce: 0.05), value: showSearchBar)
         .animation(.spring(duration: 0.3, bounce: 0.05), value: blindTestVM.playlists.isEmpty)
         .animation(.spring(duration: 0.3, bounce: 0.05), value: blindTestVM.isFetching)
+    }
+
+    // MARK: Launch Button
+
+    private var launchButton: some View {
+        let invited = blindTestVM.hasInvitedPlayers
+        return Button {
+            blindTestVM.hasInvitedPlayers = true
+            blindTestVM.gameVM.broadcastGameLaunch(.blindTest)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: invited ? "checkmark.circle.fill" : "person.wave.2.fill")
+                    .font(.system(size: 13, weight: .bold))
+                Text(invited ? "Joueurs invités" : "Inviter les joueurs")
+                    .font(.nohemi(.subheadline, weight: .bold))
+                Spacer()
+                Text(invited ? "Prêts à buzzer" : "Obligatoire avant de jouer")
+                    .font(.nohemi(.caption2, weight: .regular))
+                    .foregroundStyle(.white.opacity(invited ? 0.5 : 0.65))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(invited
+                          ? AnyShapeStyle(Color.white.opacity(0.10))
+                          : AnyShapeStyle(LinearGradient(colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
+                                                         startPoint: .leading, endPoint: .trailing)))
+            )
+            .shadow(color: invited ? .clear : Color.greenButtonLeading.opacity(0.35), radius: 10, y: 3)
+        }
+        .buttonStyle(.plain)
+        .animation(.easeInOut(duration: 0.25), value: invited)
     }
 
     // MARK: Apple Music Banner

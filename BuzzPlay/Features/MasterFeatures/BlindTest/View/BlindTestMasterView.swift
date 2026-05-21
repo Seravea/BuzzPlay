@@ -81,31 +81,6 @@ struct BlindTestMasterView: View {
                 }
             }
 
-            // Abonnement Apple Music (écran recherche uniquement, sans catalogue disponible)
-            ToolbarItem(placement: .topBarLeading) {
-                if blindTestViewModel.allSongs.isEmpty && !blindTestViewModel.canPlayCatalogContent {
-                    Button {
-                        showSubscriptionOffer = true
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "music.note")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.orange)
-                            Text("Gratuit · ~15 sec")
-                                .font(.nohemi(.subheadline, weight: .medium))
-                                .foregroundStyle(.white)
-                            Image(systemName: "chevron.right")
-                                .font(.caption2.weight(.semibold))
-                                .foregroundStyle(.white.opacity(0.5))
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(.ultraThinMaterial, in: Capsule())
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
                     connected: blindTestViewModel.gameVM.connectedPlayersCount,

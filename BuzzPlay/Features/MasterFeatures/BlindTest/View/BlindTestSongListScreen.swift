@@ -79,8 +79,9 @@ struct BlindTestSongListScreen: View {
                 .padding(.bottom, 20)
             }
 
-            // Bouton Lancer
+            // Bouton Lancer — visible dès qu'un titre est sélectionné
             if blindTestVM.selectedMusic != nil {
+                let notInvited = !blindTestVM.hasInvitedPlayers
                 Button {
                     blindTestVM.startRound()
                 } label: {
@@ -88,25 +89,28 @@ struct BlindTestSongListScreen: View {
                         if blindTestVM.isFetching {
                             ProgressView().tint(.white).scaleEffect(0.9)
                         } else {
-                            Image(systemName: "play.fill")
+                            Image(systemName: notInvited ? "lock.fill" : "play.fill")
                                 .font(.system(size: 15, weight: .semibold))
                         }
-                        Text(blindTestVM.isFetching ? "Chargement…" : "Lancer la manche")
+                        Text(blindTestVM.isFetching ? "Chargement…"
+                             : notInvited ? "Invitez les joueurs d'abord"
+                             : "Lancer la manche")
                             .font(.nohemi(.body, weight: .bold))
                     }
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(
-                        LinearGradient(colors: [.purpleLeading, .purpleTrailing],
+                        LinearGradient(colors: notInvited ? [.white.opacity(0.08), .white.opacity(0.06)]
+                                                          : [.purpleLeading, .purpleTrailing],
                                        startPoint: .leading, endPoint: .trailing),
                         in: RoundedRectangle(cornerRadius: 16)
                     )
-                    .shadow(color: Color.purpleLeading.opacity(0.35), radius: 8)
+                    .shadow(color: notInvited ? .clear : Color.purpleLeading.opacity(0.35), radius: 8)
                     .opacity(blindTestVM.isFetching ? 0.7 : 1)
                 }
                 .buttonStyle(.plain)
-                .disabled(blindTestVM.isFetching)
+                .disabled(blindTestVM.isFetching || notInvited)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 20)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
