@@ -15,5 +15,6 @@ struct PublicQuizState: Codable, Equatable {
     let buzzingPlayer: Player?
     let isAnswerRevealed: Bool
     let isHintVisible: Bool
+    let countdownPhase: RoundCountdownPhase  // Countdown sync Master → Players
 }
 

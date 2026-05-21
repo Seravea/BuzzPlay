@@ -53,13 +53,20 @@ extension QuizMasterViewModel {
         guard currentQuestion != nil else { return }
 
         gameVM.broadcastPublicStateFromCurrentGame()
-        gameVM.unlockBuzz()
-        
-        // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
-        let timestamp = Date().timeIntervalSince1970
-        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-        
-        startReactionTimer()
+
+        // Lance countdown 3-2-1-GO avant d'activer le buzzer
+        startRoundCountdown { [weak self] in
+            guard let self else { return }
+            self.gameVM.unlockBuzz()
+
+            // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
+            let timestamp = Date().timeIntervalSince1970
+            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+
+            self.startReactionTimer()
+            let newState = self.makePublicState()
+            self.gameVM.sendPublicState(newState)
+        }
     }
     
     func validateAnswer(points: Int) {
@@ -91,9 +98,8 @@ extension QuizMasterViewModel {
 
         startRoundCountdown {
             self.gameVM.unlockBuzz()
-            let timestamp = Date().timeIntervalSince1970
-            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-            self.startReactionTimer()
+            // ⚠️ DO NOT send new .timerStarted() — timer should RESUME from where it stopped, not restart at 0
+            // Player will call resumeUITimerIfNeeded() when buzzUnlock message arrives
             let newState = self.makePublicState()
             self.gameVM.sendPublicState(newState)
         }
@@ -107,18 +113,23 @@ extension QuizMasterViewModel {
             guard let self else { return }
             var count = 3
             self.roundCountdownPhase = .counting(count)
+            self.gameVM.broadcastPublicStateFromCurrentGame()  // ✅ Broadcast countdown start
+
             self.roundCountdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
                 Task { @MainActor [weak self] in
                     guard let self else { return }
                     count -= 1
                     if count > 0 {
                         self.roundCountdownPhase = .counting(count)
+                        self.gameVM.broadcastPublicStateFromCurrentGame()  // ✅ Broadcast each tick
                     } else {
                         self.roundCountdownTimer?.invalidate()
                         self.roundCountdownTimer = nil
                         self.roundCountdownPhase = .go
+                        self.gameVM.broadcastPublicStateFromCurrentGame()  // ✅ Broadcast GO
                         try? await Task.sleep(for: .seconds(0.8))
                         self.roundCountdownPhase = .hidden
+                        self.gameVM.broadcastPublicStateFromCurrentGame()  // ✅ Broadcast hidden
                         onComplete()
                     }
                 }
@@ -257,7 +268,8 @@ extension QuizMasterViewModel {
                 formattedTime: formattedTime,
                 buzzingPlayer: playerHasBuzz,
                 isAnswerRevealed: false,
-                isHintVisible: false
+                isHintVisible: false,
+                countdownPhase: roundCountdownPhase
             )
         )
     }

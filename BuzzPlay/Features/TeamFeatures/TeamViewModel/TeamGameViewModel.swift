@@ -120,6 +120,8 @@ extension PlayerGameViewModel {
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: payload.playerName)
 
         case .buzzUnlock:
+            // Resume timer if it was paused (e.g., after rejected answer in Quiz)
+            resumeUITimerIfNeeded()
             currentBuzzerVM?.unLockBuzz()
 
         case .updatedPlayer(let updatedPlayer):
@@ -178,6 +180,7 @@ extension PlayerGameViewModel {
         case .quiz(let quizState):
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
+            currentBuzzerVM?.countdownPhase = quizState.countdownPhase
             if quizState.isAnswerRevealed {
                 stopUITimer()
                 currentBuzzerVM?.clearBuzzState()
