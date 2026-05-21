@@ -10,7 +10,6 @@ struct BuzzerPlayerView: View {
     var gameType: GameType
     @State private var coinsVM: CoinsViewModel
     @State private var isGiftSheetOpen = false
-    @Environment(\.horizontalSizeClass) private var sizeClass
 
     init(playerGameVM: PlayerGameViewModel, gameType: GameType) {
         self._playerGameVM = Bindable(playerGameVM)
@@ -23,11 +22,7 @@ struct BuzzerPlayerView: View {
             BackgroundAppView().ignoresSafeArea()
 
             if let buzzerVM = playerGameVM.currentBuzzerVM {
-                if sizeClass == .regular {
-                    ipadLayout(buzzerVM: buzzerVM)
-                } else {
-                    iphoneLayout(buzzerVM: buzzerVM)
-                }
+                iphoneLayout(buzzerVM: buzzerVM)
 
                 if let result = buzzerVM.answerResult {
                     AnswerFeedbackOverlay(result: result)
@@ -121,24 +116,6 @@ struct BuzzerPlayerView: View {
         .background(Color.black.opacity(0.25))
     }
 
-    // MARK: - iPad Layout
-
-    private func ipadLayout(buzzerVM: BuzzerViewModel) -> some View {
-        HStack(spacing: 0) {
-            PublicDisplayView(playerGameVM: playerGameVM, gameType: gameType)
-                .padding(36)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.white.opacity(0.03))
-
-            VStack {
-                Spacer()
-                BuzzerButtonView(buzzerVM: buzzerVM)
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(36)
-        }
-    }
 }
 
 // MARK: - Hint Badge (gift showIndicies)
