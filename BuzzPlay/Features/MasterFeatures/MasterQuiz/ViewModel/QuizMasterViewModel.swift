@@ -21,6 +21,8 @@ class QuizMasterViewModel: BuzzDrivenGame {
 
     var questionsPassed: [QuizQuestion] = []
 
+    var shouldAutoFinish: Bool = false
+
     var roundCountdownPhase: RoundCountdownPhase = .hidden
     private var roundCountdownTimer: Timer?
 
@@ -34,7 +36,8 @@ class QuizMasterViewModel: BuzzDrivenGame {
     init(gameVM: MasterFlowViewModel, quizSet: QuizSet) {
         self.gameVM = gameVM
         self.quizSet = quizSet
-        self.questions = quizSet.questions
+        let limit = gameVM.quizRoundsTotal
+        self.questions = limit > 0 ? Array(quizSet.questions.prefix(limit)) : quizSet.questions
     }
 }
 
@@ -82,6 +85,10 @@ extension QuizMasterViewModel {
             goToSelectNewQuestion()
             playerHasBuzz = nil
             gameVM.currentBuzzPlayer = nil
+
+            if questionsPassed.count >= questions.count {
+                shouldAutoFinish = true
+            }
         }
     }
     
