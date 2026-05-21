@@ -521,10 +521,9 @@ extension BlindTestMasterViewModel {
         guard let url = song.previewURL else { return }
         let item = AVPlayerItem(url: url)
         let newPlayer = AVPlayer(playerItem: item)
-        // Plage réduite à 0-5s : le player doit bufferer moins de données avant play()
-        // (0-20s causait une latence variable selon le débit réseau)
-        let randomStart = Double.random(in: 0...5)
-        newPlayer.seek(to: CMTime(seconds: randomStart, preferredTimescale: 600), completionHandler: { _ in })
+        // Le clip preview Apple est déjà un extrait curated (refrain/hook) → on démarre à 0
+        // Seek à 0 = pas de buffering réseau avant play(), latence nulle
+        newPlayer.seek(to: .zero, completionHandler: { _ in })
         // Pas de play() ici — juste positionnement et buffering
         previewEndObserver = NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
