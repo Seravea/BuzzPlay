@@ -465,7 +465,9 @@ extension BlindTestMasterViewModel {
             previewEndObserver = nil
         }
 
-        if await canPlayFullCatalog() {
+        // Use cached canPlayCatalogContent (updated on appear + via subscription observer)
+        // to avoid re-running MusicAuthorization.request() before every round.
+        if canPlayCatalogContent {
             do {
                 try await prepareFullTrack(song: song)
             } catch {
