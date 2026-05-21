@@ -68,9 +68,6 @@ final class MasterFlowViewModel {
     /// Nom du dernier joueur déconnecté (nil = pas d'alerte à montrer)
     var disconnectedPlayerName: String? = nil
     
-    /// Liste des jeux ouverts par le maître
-    var gamesOpen: [GameType] = [.score]
-
     /// QuizSet sélectionné par le Master dans l'écran de sélection de thème
     var selectedQuizSet: QuizSet?
 
@@ -111,7 +108,6 @@ final class MasterFlowViewModel {
         if isGameComplete {
             mpcService.sendMessage(.masterGameComplete)
         }
-        broadcastGameAvailability()
     }
 
     func startParty() {
@@ -170,7 +166,6 @@ final class MasterFlowViewModel {
             allRegisteredPlayers[savedIndex] = restored
             players.append(restored)
             mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(restored), player: restored)
-            mpcService.sendMessagetoOnePlayer(message: .gameAvailability(gamesOpen), player: restored)
             // Resync état courant du jeu si une partie est en cours
             if currentBuzzGame != nil {
                 mpcService.sendMessagetoOnePlayer(message: .publicUpdate(currentPublicState()), player: restored)
@@ -182,7 +177,6 @@ final class MasterFlowViewModel {
             // Nouveau player
             players.append(player)
             allRegisteredPlayers.append(player)
-            mpcService.sendMessagetoOnePlayer(message: .gameAvailability(gamesOpen), player: player)
         }
     }
 
@@ -259,10 +253,6 @@ extension MasterFlowViewModel {
        
 //MARK: sending TO Peer connected
 extension MasterFlowViewModel {
-    func broadcastGameAvailability() {
-        mpcService.sendGameAvailability(gamesOpen)
-    }
-
     func broadcastGameLaunch(_ game: GameType) {
         mpcService.sendMessage(.masterLaunchedGame(game))
     }

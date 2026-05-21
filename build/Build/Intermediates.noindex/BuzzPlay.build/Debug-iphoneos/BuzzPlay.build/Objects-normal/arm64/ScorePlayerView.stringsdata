@@ -1,0 +1,56 @@
+{
+  "source": "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/ScorePlayer/ScorePlayerView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "TON SCORE",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 80
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 91
+        }
+      },
+      {
+        "comment": "",
+        "key": "points",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 94
+        }
+      },
+      {
+        "comment": "",
+        "key": "JOUEURS",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 131
+        }
+      },
+      {
+        "comment": "",
+        "key": "JEUX DISPONIBLES",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 173
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ouvert",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 196
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,88 @@
+{
+  "source": "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterChooseGame/View/MasterChooseGameView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Maître du jeu",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 51
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld/%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 58
+        }
+      },
+      {
+        "comment": "",
+        "key": "joueurs",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ouvrir",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 142
+        }
+      },
+      {
+        "comment": "",
+        "key": "Fermer",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 158
+        }
+      },
+      {
+        "comment": "",
+        "key": "Score",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 201
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ouvrir",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 213
+        }
+      },
+      {
+        "comment": "",
+        "key": "Fermer",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 229
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ouvert",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 266
+        }
+      },
+      {
+        "comment": "",
+        "key": "Fermé",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 266
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,56 @@
+{
+  "source": "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/View/BlindTestActiveScreen.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "PAUSÉ",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "EN COURS",
+        "location": {
+          "startingColumn": 76,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "TERMINÉ",
+        "location": {
+          "startingColumn": 89,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "EN COURS",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 91
+        }
+      },
+      {
+        "comment": "",
+        "key": "CLASSEMENT EN DIRECT",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 122
+        }
+      },
+      {
+        "comment": "",
+        "key": "En attente d'un buzz…",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 135
+        }
+      }
+    ]
+  },
+  "version": 1
+}

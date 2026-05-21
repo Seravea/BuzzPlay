@@ -22,8 +22,6 @@ final class PlayerGameViewModel {
     var isConnectedToMaster = false
 
     var receivedMessage: String = ""
-    var allGames: [GameType] = [.blindTest, .quiz]
-    var openGames: [GameType] = [.score]
     var publicState: PublicState = .waiting
     var knownPlayers: [Player] = []  // tous les joueurs connus (soi inclus)
 
@@ -76,7 +74,6 @@ extension PlayerGameViewModel {
                 self.isConnectedToMaster = false
                 // Reset so player re-announces itself when master comes back
                 self.didSentPlayer = false
-                self.openGames = []
                 // Browser continues running; master will be re-discovered automatically
             }
         }
@@ -108,12 +105,6 @@ extension PlayerGameViewModel {
 
 
 
-//UI properties funcs
-extension PlayerGameViewModel {
-    func gameIsAvalaible(_ game: GameType) -> Bool {
-        openGames.contains(game)
-    }
-}
 
 
 
@@ -124,9 +115,6 @@ extension PlayerGameViewModel {
         case .publicUpdate(let state):
             publicState = state
             handlePublicStateChange(state)
-
-        case .gameAvailability(let games):
-            self.openGames = games
 
         case .buzzLock(let payload):
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: payload.playerName)

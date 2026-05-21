@@ -1,0 +1,65 @@
+{
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCService/MPCService.swift" : {
+    "const-values" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/MPCService.swiftconstvalues",
+    "dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/MPCService.d",
+    "diagnostics" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/MPCService.dia",
+    "object" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/MPCService.o",
+    "swift-dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/MPCService.swiftdeps"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/SharedViewModel/AmbiantSoundViewModel.swift" : {
+    "const-values" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/AmbiantSoundViewModel.swiftconstvalues",
+    "dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/AmbiantSoundViewModel.d",
+    "diagnostics" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/AmbiantSoundViewModel.dia",
+    "object" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/AmbiantSoundViewModel.o",
+    "swift-dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/AmbiantSoundViewModel.swiftdeps"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Utils/Clock.swift" : {
+    "const-values" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/Clock.swiftconstvalues",
+    "dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/Clock.d",
+    "diagnostics" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/Clock.dia",
+    "object" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/Clock.o",
+    "swift-dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/Clock.swiftdeps"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Data/QuizSampleSets.swift" : {
+    "const-values" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/QuizSampleSets.swiftconstvalues",
+    "dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/QuizSampleSets.d",
+    "diagnostics" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/QuizSampleSets.dia",
+    "object" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/QuizSampleSets.o",
+    "swift-dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/QuizSampleSets.swiftdeps"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/DisplayPublic/PublicDisplay/Models/PublicState.swift" : {
+    "const-values" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicState.swiftconstvalues",
+    "dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicState.d",
+    "diagnostics" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicState.dia",
+    "object" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicState.o",
+    "swift-dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicState.swiftdeps"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/DisplayPublic/PublicDisplay/Views/BlindTest/View/PublicBlindTestView.swift" : {
+    "const-values" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicBlindTestView.swiftconstvalues",
+    "dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicBlindTestView.d",
+    "diagnostics" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicBlindTestView.dia",
+    "object" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicBlindTestView.o",
+    "swift-dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicBlindTestView.swiftdeps"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/DisplayPublic/PublicDisplay/Views/PublicDisplayView.swift" : {
+    "const-values" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicDisplayView.swiftconstvalues",
+    "dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicDisplayView.d",
+    "diagnostics" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicDisplayView.dia",
+    "object" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicDisplayView.o",
+    "swift-dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicDisplayView.swiftdeps"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/DisplayPublic/PublicDisplay/Views/Quiz/View/PublicQuizDisplayView.swift" : {
+    "const-values" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicQuizDisplayView.swiftconstvalues",
+    "dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicQuizDisplayView.d",
+    "diagnostics" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicQuizDisplayView.dia",
+    "object" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicQuizDisplayView.o",
+    "swift-dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/PublicQuizDisplayView.swiftdeps"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/GameProtocols/BuzzDrivenGame.swift" : {
+    "const-values" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/BuzzDrivenGame.swiftconstvalues",
+    "dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/BuzzDrivenGame.d",
+    "diagnostics" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/BuzzDrivenGame.dia",
+    "object" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/BuzzDrivenGame.o",
+    "swift-dependencies" : "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/build/Build/Intermediates.noindex/BuzzPlay.build/Debug-iphoneos/BuzzPlay.build/Objects-normal/arm64/BuzzDrivenGame.swiftdeps"
+  }
+}

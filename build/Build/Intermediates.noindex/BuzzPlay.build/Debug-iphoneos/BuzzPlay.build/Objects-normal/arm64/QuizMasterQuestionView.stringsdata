@@ -1,0 +1,128 @@
+{
+  "source": "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterQuiz/View/QuizMasterQuestionView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "PAUSÉ",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 66
+        }
+      },
+      {
+        "comment": "",
+        "key": "EN COURS",
+        "location": {
+          "startingColumn": 51,
+          "startingLine": 66
+        }
+      },
+      {
+        "comment": "",
+        "key": "QUESTION",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 82
+        }
+      },
+      {
+        "comment": "",
+        "key": "RÉPONSES",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 102
+        }
+      },
+      {
+        "comment": "",
+        "key": "CLASSEMENT EN DIRECT",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 133
+        }
+      },
+      {
+        "comment": "",
+        "key": "En attente d'un buzz…",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 146
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld pts",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 187
+        }
+      },
+      {
+        "comment": "",
+        "key": "A BUZZÉ !",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 227
+        }
+      },
+      {
+        "comment": "",
+        "key": "RÉACTION",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 252
+        }
+      },
+      {
+        "comment": "",
+        "key": "Refuser la réponse ✕",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 291
+        }
+      },
+      {
+        "comment": "",
+        "key": "+%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 316
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld réponse%@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 318
+        }
+      },
+      {
+        "comment": "",
+        "key": "Prochain buzz dans",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 377
+        }
+      },
+      {
+        "comment": "",
+        "key": "À VOS BUZZERS !",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 400
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 388
+        }
+      }
+    ]
+  },
+  "version": 1
+}

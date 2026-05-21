@@ -1,0 +1,32 @@
+{
+  "source": "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/DisplayPublic/PublicDisplay/Views/Quiz/View/PublicQuizDisplayView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "QUESTION",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 18
+        }
+      },
+      {
+        "comment": "",
+        "key": "RÉPONSE",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 35
+        }
+      },
+      {
+        "comment": "",
+        "key": "A BUZZÉ",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 54
+        }
+      }
+    ]
+  },
+  "version": 1
+}

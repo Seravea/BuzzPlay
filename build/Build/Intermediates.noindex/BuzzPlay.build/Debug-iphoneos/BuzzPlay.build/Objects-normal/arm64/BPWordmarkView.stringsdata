@@ -1,0 +1,24 @@
+{
+  "source": "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/BPWordmarkView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Zik",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 18
+        }
+      },
+      {
+        "comment": "",
+        "key": "jeu",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 32
+        }
+      }
+    ]
+  },
+  "version": 1
+}

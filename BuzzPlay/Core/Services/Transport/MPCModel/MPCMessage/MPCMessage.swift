@@ -27,7 +27,6 @@ enum MPCMessage: Codable {
     case buyGiftRequest(GiftRequestPayload)
 
     // MASTER -> PLAYER
-    case gameAvailability([GameType])
     case buyGiftResult(CoinsViewModel.Gift)
     case updatedPlayer(Player)
     case hintRevealedToPlayer(String)   // indice envoyé uniquement à l'acheteur

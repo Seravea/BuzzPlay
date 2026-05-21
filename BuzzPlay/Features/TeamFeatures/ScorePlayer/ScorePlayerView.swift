@@ -32,9 +32,6 @@ struct ScorePlayerView: View {
             VStack(spacing: 20) {
                 scoreHero
                 playersCard
-                if !playerGameVM.openGames.filter({ $0 != .score }).isEmpty {
-                    nextGamesCard
-                }
             }
             .padding(.horizontal, 20)
             .padding(.top, 20)
@@ -44,17 +41,9 @@ struct ScorePlayerView: View {
     // MARK: - iPad
 
     private var ipadLayout: some View {
-        HStack(spacing: 24) {
-            VStack(spacing: 20) {
-                scoreHero
-                playersCard
-            }
-            .frame(maxWidth: .infinity)
-
-            if !playerGameVM.openGames.filter({ $0 != .score }).isEmpty {
-                nextGamesCard
-                    .frame(maxWidth: 320)
-            }
+        VStack(spacing: 20) {
+            scoreHero
+            playersCard
         }
         .padding(.horizontal, 32)
         .padding(.top, 32)
@@ -165,53 +154,6 @@ struct ScorePlayerView: View {
         
     }
 
-    // MARK: - Next Games
-
-    private var nextGamesCard: some View {
-        let available = playerGameVM.openGames.filter { $0 != .score }
-        return VStack(alignment: .leading, spacing: 12) {
-            Text("JEUX DISPONIBLES")
-                .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.white.opacity(0.4))
-                .tracking(0.8)
-
-            ForEach(available, id: \.self) { game in
-                HStack(spacing: 12) {
-                    Image(systemName: game.iconName)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundStyle(teamColor)
-                        .frame(width: 36, height: 36)
-                        .background(teamColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
-
-                    Text(game.gameTitle)
-                        .font(.nohemi(.subheadline, weight: .bold))
-                        .foregroundStyle(.white)
-
-                    Spacer()
-
-                    HStack(spacing: 4) {
-                        Circle()
-                            .fill(Color(hex: "#00C950"))
-                            .frame(width: 5, height: 5)
-                        Text("Ouvert")
-                            .font(.nohemi(.caption2, weight: .bold))
-                            .foregroundStyle(Color(hex: "#00C950"))
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color(hex: "#00C950").opacity(0.1), in: Capsule())
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 10)
-                .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 14))
-                .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.white.opacity(0.07), lineWidth: 1))
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 18))
-        .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.white.opacity(0.08), lineWidth: 1))
-    }
 }
 
 // MARK: - FlowLayout helper

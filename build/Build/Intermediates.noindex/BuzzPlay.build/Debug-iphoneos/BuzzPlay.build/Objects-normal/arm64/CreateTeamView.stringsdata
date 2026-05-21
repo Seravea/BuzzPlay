@@ -1,0 +1,80 @@
+{
+  "source": "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/CreateTeamView/Views/CreateTeamView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Retour",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 55
+        }
+      },
+      {
+        "comment": "",
+        "key": "CHOISIS TON PERSO",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 66
+        }
+      },
+      {
+        "comment": "",
+        "key": "Visible par tout le monde dans le lobby.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 83
+        }
+      },
+      {
+        "comment": "",
+        "key": "TON PSEUDO",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 94
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ton pseudo",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 103
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld/20",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 111
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 101
+        }
+      },
+      {
+        "comment": "",
+        "key": "COULEUR",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 137
+        }
+      },
+      {
+        "comment": "",
+        "key": "Entrer dans le lobby",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 179
+        }
+      }
+    ]
+  },
+  "version": 1
+}

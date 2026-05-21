@@ -37,31 +37,12 @@ class MasterChooseGameViewModel {
         [.quiz, .blindTest, .score]
     }
     
-    func addGame(_ game: GameType) {
-        if !gameVM.gamesOpen.contains(game) {
-            gameVM.gamesOpen.append(game)
-            gameVM.broadcastGameAvailability()
-        }
-    }
-
-    func trackAndLaunch(_ game: GameType) {
-        addGame(game)
-    }
+    func trackAndLaunch(_ game: GameType) { }
 
     var isGameComplete: Bool { gameVM.isGameComplete }
 
     func finishGameSection(_ gameType: GameType) {
         gameVM.finishGameSection(gameType)
-    }
-
-    
-    func removeGame(_ game: GameType) {
-        gameVM.gamesOpen.removeAll { $0 == game }
-        gameVM.broadcastGameAvailability()
-    }
-    
-    func gameIsAvailable(_ game: GameType) -> Bool {
-        gameVM.gamesOpen.contains(game)
     }
 }
 
