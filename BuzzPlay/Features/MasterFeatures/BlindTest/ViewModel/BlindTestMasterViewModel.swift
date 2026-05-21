@@ -521,8 +521,9 @@ extension BlindTestMasterViewModel {
         guard let url = song.previewURL else { return }
         let item = AVPlayerItem(url: url)
         let newPlayer = AVPlayer(playerItem: item)
-        let randomStart = Double.random(in: 0...20)   // preview ~30s, on démarre dans les 20 premières secondes
-        // completionHandler force la version synchrone (sans await) — on n'a pas besoin d'attendre la fin du seek
+        // Plage réduite à 0-5s : le player doit bufferer moins de données avant play()
+        // (0-20s causait une latence variable selon le débit réseau)
+        let randomStart = Double.random(in: 0...5)
         newPlayer.seek(to: CMTime(seconds: randomStart, preferredTimescale: 600), completionHandler: { _ in })
         // Pas de play() ici — juste positionnement et buffering
         previewEndObserver = NotificationCenter.default.addObserver(
