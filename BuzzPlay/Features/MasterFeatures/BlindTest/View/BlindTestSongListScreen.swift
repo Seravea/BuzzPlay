@@ -35,7 +35,7 @@ struct BlindTestSongListScreen: View {
 
                     Spacer()
 
-                    Text("\(blindTestVM.playedSongs.count)/\(blindTestVM.allSongs.count) ✓")
+                    Text("\(blindTestVM.playedSongs.count)/\(blindTestVM.roundsTotal) ✓")
                         .font(.nohemi(.caption, weight: .semiBold))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
@@ -47,8 +47,8 @@ struct BlindTestSongListScreen: View {
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         Capsule().fill(.white.opacity(0.1)).frame(height: 3)
-                        let progress = blindTestVM.allSongs.isEmpty ? 0.0 :
-                            Double(blindTestVM.playedSongs.count) / Double(blindTestVM.allSongs.count)
+                        let progress = blindTestVM.roundsTotal == 0 ? 0.0 :
+                            Double(blindTestVM.playedSongs.count) / Double(blindTestVM.roundsTotal)
                         Capsule()
                             .fill(LinearGradient(colors: [.greenButtonLeading, .greenButtonTrailing],
                                                   startPoint: .leading, endPoint: .trailing))

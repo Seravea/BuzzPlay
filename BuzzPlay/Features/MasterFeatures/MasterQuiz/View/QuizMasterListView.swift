@@ -14,6 +14,7 @@ struct QuizMasterListView: View {
     @State private var showValidationOverlay = false
     @State private var validationPoints = 0
     @State private var validationPlayerName = ""
+    @State private var showSectionComplete = false
 
     var body: some View {
         ZStack {
@@ -41,8 +42,30 @@ struct QuizMasterListView: View {
                         removal: .opacity
                     ))
             }
+
+            // Section complete overlay — au-dessus de tout
+            if showSectionComplete {
+                SectionCompleteOverlay(
+                    gameTitle: "Quiz",
+                    roundsDone: quizMasterVM.questionsPassed.count,
+                    roundsTotal: quizMasterVM.questions.count
+                )
+                .transition(.opacity)
+                .zIndex(200)
+            }
         }
         .animation(.spring(duration: 0.45, bounce: 0.05), value: quizMasterVM.isPlaying)
+        .onChange(of: quizMasterVM.shouldAutoFinish) { _, done in
+            guard done else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                withAnimation(.easeIn(duration: 0.3)) { showSectionComplete = true }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+                quizMasterVM.gameVM.finishGameSection(.quiz)
+                router.path.removeLast()
+                if quizMasterVM.gameVM.isGameComplete { router.push(.scoreMaster) }
+            }
+        }
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
