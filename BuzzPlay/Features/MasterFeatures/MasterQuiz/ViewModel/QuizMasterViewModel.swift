@@ -53,13 +53,20 @@ extension QuizMasterViewModel {
         guard currentQuestion != nil else { return }
 
         gameVM.broadcastPublicStateFromCurrentGame()
-        gameVM.unlockBuzz()
-        
-        // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
-        let timestamp = Date().timeIntervalSince1970
-        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-        
-        startReactionTimer()
+
+        // Lance countdown 3-2-1-GO avant d'activer le buzzer
+        startRoundCountdown { [weak self] in
+            guard let self else { return }
+            self.gameVM.unlockBuzz()
+
+            // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
+            let timestamp = Date().timeIntervalSince1970
+            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+
+            self.startReactionTimer()
+            let newState = self.makePublicState()
+            self.gameVM.sendPublicState(newState)
+        }
     }
     
     func validateAnswer(points: Int) {
