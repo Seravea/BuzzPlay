@@ -88,15 +88,21 @@ struct BlindTestSearchScreen: View {
 
     private var appleMusicBanner: some View {
         HStack(spacing: 10) {
-            Image(systemName: "music.note")
+            Image(systemName: blindTestVM.canPlayCatalogContent ? "music.note" : "music.note")
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(Color.mustardYellow)
+                .foregroundStyle(blindTestVM.canPlayCatalogContent ? Color.greenButtonLeading : Color.mustardYellow)
 
-            (Text("Preview ").foregroundStyle(.white.opacity(0.55))
-             + Text("15s").foregroundStyle(.white).bold()
-             + Text(" · Titre entier avec ").foregroundStyle(.white.opacity(0.55))
-             + Text("Apple Music").foregroundStyle(.white).bold())
-                .font(.nohemi(.caption, weight: .regular))
+            if blindTestVM.canPlayCatalogContent {
+                (Text("Titre entier · ").foregroundStyle(.white)
+                 + Text("Apple Music").foregroundStyle(.white.opacity(0.55)))
+                    .font(.nohemi(.caption, weight: .bold))
+            } else {
+                (Text("Preview ").foregroundStyle(.white.opacity(0.55))
+                 + Text("15s").foregroundStyle(.white).bold()
+                 + Text(" · Titre entier avec ").foregroundStyle(.white.opacity(0.55))
+                 + Text("Apple Music").foregroundStyle(.white).bold())
+                    .font(.nohemi(.caption, weight: .regular))
+            }
 
             Spacer(minLength: 4)
 
