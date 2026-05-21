@@ -101,6 +101,7 @@ extension BlindTestMasterViewModel {
 
         isCorrect = true
         state = .finished
+        gameVM.blindTestRoundsPlayed += 1
 
         let finalPoints = doubledScorePlayers.remove(playerAnswers.id) != nil ? points * 2 : points
         gameVM.addPointToPlayer(playerAnswers, points: finalPoints)

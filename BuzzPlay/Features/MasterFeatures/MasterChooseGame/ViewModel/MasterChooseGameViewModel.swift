@@ -45,12 +45,13 @@ class MasterChooseGameViewModel {
     }
 
     func trackAndLaunch(_ game: GameType) {
-        switch game {
-        case .quiz: gameVM.quizRoundsPlayed += 1
-        case .blindTest: gameVM.blindTestRoundsPlayed += 1
-        default: break
-        }
         addGame(game)
+    }
+
+    var isGameComplete: Bool { gameVM.isGameComplete }
+
+    func finishGameSection(_ gameType: GameType) {
+        gameVM.finishGameSection(gameType)
     }
 
     

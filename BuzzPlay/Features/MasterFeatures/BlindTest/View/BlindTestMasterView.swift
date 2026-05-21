@@ -8,6 +8,7 @@ import MusicKit
 
 struct BlindTestMasterView: View {
     @Bindable var blindTestViewModel: BlindTestMasterViewModel
+    @EnvironmentObject private var router: Router
     @State private var showSubscriptionOffer = false
 
     var body: some View {
@@ -19,9 +20,9 @@ struct BlindTestMasterView: View {
                 }
             }
             .toolbar {
-                // Bouton retour vers la liste des titres (manche active uniquement)
                 ToolbarItem(placement: .topBarLeading) {
                     if blindTestViewModel.isGameActive {
+                        // Manche active → annuler la chanson en cours
                         Button {
                             withAnimation { blindTestViewModel.cancelRound() }
                         } label: {
@@ -31,7 +32,33 @@ struct BlindTestMasterView: View {
                                 .frame(width: 36, height: 36)
                                 .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
                         }
-                    } else if !blindTestViewModel.canPlayCatalogContent {
+                    } else {
+                        // Entre deux chansons → terminer la session Blind Test
+                        Button {
+                            blindTestViewModel.gameVM.finishGameSection(.blindTest)
+                            router.path.removeLast()
+                            if blindTestViewModel.gameVM.isGameComplete {
+                                router.push(.scoreMaster)
+                            }
+                        } label: {
+                            HStack(spacing: 5) {
+                                Image(systemName: "flag.checkered")
+                                    .font(.system(size: 13, weight: .semibold))
+                                Text("Fin de Blind Test")
+                                    .font(.nohemi(.subheadline, weight: .bold))
+                            }
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(.white.opacity(0.12), in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
+                // Abonnement Apple Music (affiché quand pas de catalogue et pas de manche active)
+                ToolbarItem(placement: .topBarLeading) {
+                    if !blindTestViewModel.isGameActive && !blindTestViewModel.canPlayCatalogContent {
                         Button {
                             showSubscriptionOffer = true
                         } label: {
@@ -88,7 +115,7 @@ struct BlindTestMasterView: View {
                     )
                 }
             }
-            .navigationBarBackButtonHidden(blindTestViewModel.isGameActive)
+            .navigationBarBackButtonHidden(true)
     }
 }
 
