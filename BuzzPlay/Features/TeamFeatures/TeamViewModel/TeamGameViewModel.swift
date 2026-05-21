@@ -178,6 +178,7 @@ extension PlayerGameViewModel {
         case .quiz(let quizState):
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
+            currentBuzzerVM?.countdownPhase = quizState.countdownPhase
             if quizState.isAnswerRevealed {
                 stopUITimer()
                 currentBuzzerVM?.clearBuzzState()

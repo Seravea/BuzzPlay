@@ -83,7 +83,8 @@ struct PublicQuizDisplayView: View {
             formattedTime: "00:00",
             buzzingPlayer: samplePlayers[1],
             isAnswerRevealed: false,
-            isHintVisible: false
+            isHintVisible: false,
+            countdownPhase: .hidden
         ),
         timer: "00:00"
     )

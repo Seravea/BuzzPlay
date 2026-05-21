@@ -257,7 +257,8 @@ extension QuizMasterViewModel {
                 formattedTime: formattedTime,
                 buzzingPlayer: playerHasBuzz,
                 isAnswerRevealed: false,
-                isHintVisible: false
+                isHintVisible: false,
+                countdownPhase: roundCountdownPhase
             )
         )
     }
