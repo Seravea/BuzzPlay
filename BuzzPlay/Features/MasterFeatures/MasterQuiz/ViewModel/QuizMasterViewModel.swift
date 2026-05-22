@@ -85,7 +85,8 @@ extension QuizMasterViewModel {
             gameVM.addPointToPlayer(player, points: finalPoints)
             gameVM.quizRoundsPlayed += 1
 
-            let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: currentQuestion?.answers.first)
+            let allAnswers = currentQuestion.flatMap { $0.answers.isEmpty ? nil : $0.answers.joined(separator: " • ") }
+            let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: allAnswers)
             gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
             goToSelectNewQuestion()

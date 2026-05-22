@@ -44,7 +44,8 @@ struct PrivateMasterBlindTestView: View {
             BlindTestActiveScreen(
                 blindTestVM: blindTestVM,
                 onValidate: handleValidate,
-                onReject: { blindTestVM.rejectAnswer() }
+                onReject: { blindTestVM.rejectAnswer() },
+                onSkip: { withAnimation { blindTestVM.cancelRound() } }
             )
             .offset(x: currentScreen == .playing ? 0 : screenWidth)
             .opacity(currentScreen == .playing ? 1 : 0)

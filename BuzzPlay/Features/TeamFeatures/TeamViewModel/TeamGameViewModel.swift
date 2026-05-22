@@ -193,8 +193,12 @@ extension PlayerGameViewModel {
                                 autoResumeTimer: false)
             }
         case .blindTest(let blindTestState):
-            formattedTime = blindTestState.formattedTime
             lastMasterFormattedTime = blindTestState.formattedTime
+            // Timer piloté par .timerStarted — on ne force la valeur master que si le timer local est inactif
+            // (resync à la reconnexion ou à l'onAppear), évitant les sauts visuels pendant le jeu
+            if timer == nil {
+                formattedTime = blindTestState.formattedTime
+            }
             currentBuzzerVM?.countdownPhase = blindTestState.countdownPhase
             syncBuzzerState(buzzingPlayer: blindTestState.buzzingPlayer, isRoundActive: blindTestState.isPlaying)
         }
