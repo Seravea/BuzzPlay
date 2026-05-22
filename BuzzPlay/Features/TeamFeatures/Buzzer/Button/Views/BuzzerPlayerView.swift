@@ -71,7 +71,7 @@ struct BuzzerPlayerView: View {
         .onAppear { playerGameVM.syncBuzzerWithCurrentPublicState() }
         .sheet(isPresented: $isGiftSheetOpen) {
             GiftShopSheet(coinsVM: coinsVM, isPresented: $isGiftSheetOpen)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.fraction(0.90)])
                 .presentationDragIndicator(.hidden)
                 .presentationBackground(.clear)
         }
