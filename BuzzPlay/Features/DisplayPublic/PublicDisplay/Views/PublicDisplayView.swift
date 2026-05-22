@@ -22,7 +22,7 @@ struct PublicDisplayView: View {
                     Text("En attente du lancement…")
                         .font(.nohemi(.title3, weight: .bold))
                         .foregroundStyle(.white)
-                    Text("Le Master va démarrer la partie")
+                    Text("Le Maître va démarrer la partie")
                         .font(.nohemi(.subheadline, weight: .regular))
                         .foregroundStyle(.white.opacity(0.45))
                 }

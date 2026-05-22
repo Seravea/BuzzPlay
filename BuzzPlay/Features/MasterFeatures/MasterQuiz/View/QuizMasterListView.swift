@@ -98,7 +98,6 @@ struct QuizMasterListView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 7)
-                        .background(.white.opacity(0.12), in: Capsule())
                     }
                     .buttonStyle(.plain)
                 }

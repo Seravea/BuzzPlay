@@ -140,7 +140,7 @@ private struct GameAnnounceSheet: View {
                         .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 16))
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Le Master lance")
+                        Text("Le Maître lance")
                             .font(.nohemi(.subheadline, weight: .regular))
                             .foregroundStyle(.white.opacity(0.55))
                         Text(game.gameTitle)
