@@ -62,6 +62,7 @@ final class MasterFlowViewModel {
 
     //MARK: Datas for games
     var currentBuzzPlayer: Player?
+    var masterNotesBalance: Int = 1000
     var isBuzzLocked: Bool = false
     var gameState: GameState = .lobby
 

@@ -2,8 +2,6 @@
 //  CoinsViewModel.swift
 //  BuzzPlay
 //
-//  Created by Apprenant 102 on 18/11/2025.
-//
 
 import Foundation
 
@@ -59,25 +57,18 @@ class CoinsViewModel {
         )
         mpcService?.sendMessage(.buyGiftRequest(payload))
     }
-    
-    
-    
 
 }
-
-
 
 //Gift enum / actions
 extension CoinsViewModel {
     enum Gift: Codable, Hashable, CaseIterable {
-        // Actions
-        case scoreDoubled           // 30 coins — 2x points prochaine bonne réponse
-        case enemyCanNotBuzz        // 50 coins — bloque 1 joueur choisi (1 manche)
-        case allEnemiesCanNotBuzz   // 100 coins — bloque TOUS les adversaires (1 manche)
-        case showIndicies           // 50 coins — indice sur la chanson/question
-        // Skins
-        case changeBuzzColor        // 20 coins — couleur random surprise 🎨
-        case changeBuzzSound        // 20 coins — son ambiant aléatoire 🔊
+        case scoreDoubled
+        case enemyCanNotBuzz
+        case allEnemiesCanNotBuzz
+        case showIndicies
+        case changeBuzzColor
+        case changeBuzzSound
 
         var title: String {
             switch self {
@@ -101,7 +92,6 @@ extension CoinsViewModel {
             }
         }
 
-        // Indique si ce cadeau nécessite de choisir un joueur cible
         var requiresTargetPlayer: Bool {
             self == .enemyCanNotBuzz
         }
@@ -136,6 +126,24 @@ extension CoinsViewModel {
         }
 
         masterVM.addCoinsToPlayer(player, amount: amount)
+        errorMessage = nil
+    }
+
+    func distributeToAll(_ amount: Int) {
+        guard let masterVM = masterFlowViewModel else {
+            errorMessage = "Pas de Maître"
+            return
+        }
+        
+        guard masterVM.masterNotesBalance >= amount * masterVM.players.count else {
+            errorMessage = "Pas assez de notes pour tous"
+            return
+        }
+
+        for player in masterVM.players {
+            masterVM.addCoinsToPlayer(player, amount: amount)
+        }
+        masterVM.masterNotesBalance -= amount * masterVM.players.count
         errorMessage = nil
     }
 

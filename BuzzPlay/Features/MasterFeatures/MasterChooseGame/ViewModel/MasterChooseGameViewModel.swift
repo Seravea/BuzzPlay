@@ -30,6 +30,7 @@ class MasterChooseGameViewModel {
     var totalRounds: Int { gameVM.totalRounds }
     var isQuizCardAvailable: Bool { gameVM.isQuizAvailable }
     var isBlindTestCardAvailable: Bool { gameVM.isBlindTestAvailable }
+    var masterNotesBalance: Int { gameVM.masterNotesBalance }
     
     
     //MARK: Datas en functions for views
