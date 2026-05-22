@@ -10,7 +10,6 @@ struct BuzzerPlayerView: View {
     var gameType: GameType
     @State private var coinsVM: CoinsViewModel
     @State private var isGiftSheetOpen = false
-    @Environment(\.horizontalSizeClass) private var sizeClass
 
     init(playerGameVM: PlayerGameViewModel, gameType: GameType) {
         self._playerGameVM = Bindable(playerGameVM)
@@ -23,11 +22,7 @@ struct BuzzerPlayerView: View {
             BackgroundAppView().ignoresSafeArea()
 
             if let buzzerVM = playerGameVM.currentBuzzerVM {
-                if sizeClass == .regular {
-                    ipadLayout(buzzerVM: buzzerVM)
-                } else {
-                    iphoneLayout(buzzerVM: buzzerVM)
-                }
+                iphoneLayout(buzzerVM: buzzerVM)
 
                 if let result = buzzerVM.answerResult {
                     AnswerFeedbackOverlay(result: result)
@@ -59,10 +54,24 @@ struct BuzzerPlayerView: View {
         .animation(.spring(response: 0.5, dampingFraction: 0.75), value: playerGameVM.currentBuzzerVM?.activeHint)
         .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
         .navigationBarBackButtonHidden()
+        .overlay(alignment: .top) {
+            if let notes = playerGameVM.pendingNotesToast {
+                NotesToastView(amount: notes)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                            withAnimation(.easeOut(duration: 0.3)) {
+                                playerGameVM.pendingNotesToast = nil
+                            }
+                        }
+                    }
+            }
+        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: playerGameVM.pendingNotesToast != nil)
         .onAppear { playerGameVM.syncBuzzerWithCurrentPublicState() }
         .sheet(isPresented: $isGiftSheetOpen) {
             GiftShopSheet(coinsVM: coinsVM, isPresented: $isGiftSheetOpen)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.fraction(0.90)])
                 .presentationDragIndicator(.hidden)
                 .presentationBackground(.clear)
         }
@@ -121,24 +130,6 @@ struct BuzzerPlayerView: View {
         .background(Color.black.opacity(0.25))
     }
 
-    // MARK: - iPad Layout
-
-    private func ipadLayout(buzzerVM: BuzzerViewModel) -> some View {
-        HStack(spacing: 0) {
-            PublicDisplayView(playerGameVM: playerGameVM, gameType: gameType)
-                .padding(36)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.white.opacity(0.03))
-
-            VStack {
-                Spacer()
-                BuzzerButtonView(buzzerVM: buzzerVM)
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(36)
-        }
-    }
 }
 
 // MARK: - Hint Badge (gift showIndicies)
@@ -168,6 +159,29 @@ private struct HintBadgeView: View {
             .padding(.bottom, 12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+    }
+}
+
+// MARK: - Notes Toast
+
+private struct NotesToastView: View {
+    let amount: Int
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "dollarsign.bank.building.fill")
+                .font(.system(size: 15, weight: .bold))
+                .foregroundStyle(Color.mustardYellow)
+            Text("+\(amount) Notes reçues !")
+                .font(.nohemi(.subheadline, weight: .bold))
+                .foregroundStyle(.white)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(Color.darkPurple, in: Capsule())
+        .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.4), lineWidth: 1.5))
+        .shadow(color: Color.mustardYellow.opacity(0.25), radius: 12, y: 4)
+        .padding(.top, 8)
     }
 }
 
@@ -234,55 +248,6 @@ private struct AnswerFeedbackOverlay: View {
                     )
             )
             .padding(.horizontal, 36)
-        }
-    }
-}
-
-// MARK: - Countdown Overlay
-
-struct CountdownOverlay: View {
-    let phase: RoundCountdownPhase
-
-    var body: some View {
-        ZStack {
-            Color.black.opacity(0.65)
-                .ignoresSafeArea()
-
-            VStack(spacing: 32) {
-                switch phase {
-                case .counting(let n):
-                    Text("Préparez-vous…")
-                        .font(.nohemi(.title3, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.65))
-
-                    ZStack {
-                        Circle()
-                            .stroke(Color.white.opacity(0.12), lineWidth: 3)
-                            .frame(width: 150, height: 150)
-                        Circle()
-                            .fill(Color.white.opacity(0.07))
-                            .frame(width: 150, height: 150)
-                        Text("\(n)")
-                            .font(.custom("Nohemi-Black", size: 90))
-                            .foregroundStyle(.white)
-                            .id(n)
-                            .transition(.scale(scale: 1.4).combined(with: .opacity))
-                    }
-                    .animation(.spring(response: 0.35, dampingFraction: 0.55), value: n)
-
-                case .go:
-                    Image(systemName: "bolt.fill")
-                        .font(.system(size: 56, weight: .bold))
-                        .foregroundStyle(Color(hex: "#7DFFA0"))
-                    Text("À VOS BUZZERS !")
-                        .font(.custom("Nohemi-Black", size: 26))
-                        .tracking(2)
-                        .foregroundStyle(Color(hex: "#7DFFA0"))
-
-                case .hidden:
-                    EmptyView()
-                }
-            }
         }
     }
 }

@@ -22,9 +22,11 @@ class QuizMasterViewModel: BuzzDrivenGame {
     var questionsPassed: [QuizQuestion] = []
 
     var shouldAutoFinish: Bool = false
+    var hasInvitedPlayers: Bool = false
+    var isQuestionRevealed: Bool = false
 
     var roundCountdownPhase: RoundCountdownPhase = .hidden
-    private var roundCountdownTimer: Timer?
+    private var countdownTask: Task<Void, Never>?
 
     private var doubledScorePlayers: Set<UUID> = []
     private var usedQuestionHintIndex: [UUID: Int] = [:]  // questionID -> next hint index
@@ -46,23 +48,34 @@ extension QuizMasterViewModel {
     func selectQuestion(_ question: QuizQuestion) {
         currentQuestion = question
         playerHasBuzz = nil
-
-        gameVM.unlockBuzz()
+        isQuestionRevealed = false
+        // Reset état buzz sans broadcaster (la question serait visible avant le countdown)
+        gameVM.currentBuzzPlayer = nil
+        gameVM.isBuzzLocked = false
+        for i in gameVM.players.indices where gameVM.players[i].blockedFromBuzzing {
+            gameVM.players[i].blockedFromBuzzing = false
+            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[i]))
+        }
         startRound()
     }
     
     func startRound() {
-        //SI pas de question ne peu pas commencer la manche
         guard currentQuestion != nil else { return }
 
-        gameVM.broadcastPublicStateFromCurrentGame()
-        gameVM.unlockBuzz()
-        
-        // ✅ Envoyer le message AVANT de démarrer (pour sync avec timestamp)
-        let timestamp = Date().timeIntervalSince1970
-        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-        
-        startReactionTimer()
+        // Lance countdown 3-2-1-GO avant d'activer le buzzer
+        // Pas de broadcast ici — la question serait visible avant le countdown
+        startRoundCountdown { [weak self] in
+            guard let self else { return }
+            self.isQuestionRevealed = true
+            self.gameVM.unlockBuzz()
+
+            let timestamp = Date().timeIntervalSince1970
+            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+
+            self.startReactionTimer()
+            let newState = self.makePublicState()
+            self.gameVM.sendPublicState(newState)
+        }
     }
     
     func validateAnswer(points: Int) {
@@ -72,7 +85,8 @@ extension QuizMasterViewModel {
             gameVM.addPointToPlayer(player, points: finalPoints)
             gameVM.quizRoundsPlayed += 1
 
-            let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: currentQuestion?.answers.first)
+            let allAnswers = currentQuestion.flatMap { $0.answers.isEmpty ? nil : $0.answers.joined(separator: " • ") }
+            let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: allAnswers)
             gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
             goToSelectNewQuestion()
@@ -97,39 +111,26 @@ extension QuizMasterViewModel {
         gameVM.sendPublicState(state)
 
         startRoundCountdown {
-            self.gameVM.unlockBuzz()
-            let timestamp = Date().timeIntervalSince1970
-            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-            self.startReactionTimer()
+            self.startReactionTimer()          // reprend le timer Master depuis reactionTimeMs (pause, pas reset)
+            self.gameVM.unlockBuzz()           // envoie .buzzUnlock → Player appelle resumeUITimerIfNeeded()
             let newState = self.makePublicState()
             self.gameVM.sendPublicState(newState)
         }
     }
 
     private func startRoundCountdown(onComplete: @escaping @MainActor () -> Void) {
-        roundCountdownPhase = .hidden
-        roundCountdownTimer?.invalidate()
-        Task { @MainActor [weak self] in
-            try? await Task.sleep(for: .seconds(2))
+        countdownTask?.cancel()
+        countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
-            var count = 3
-            self.roundCountdownPhase = .counting(count)
-            self.roundCountdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                Task { @MainActor [weak self] in
-                    guard let self else { return }
-                    count -= 1
-                    if count > 0 {
-                        self.roundCountdownPhase = .counting(count)
-                    } else {
-                        self.roundCountdownTimer?.invalidate()
-                        self.roundCountdownTimer = nil
-                        self.roundCountdownPhase = .go
-                        try? await Task.sleep(for: .seconds(0.8))
-                        self.roundCountdownPhase = .hidden
-                        onComplete()
+            await runCountdown(
+                onPhaseChange: { [weak self] phase in
+                    self?.roundCountdownPhase = phase
+                    if phase != .hidden {
+                        self?.gameVM.broadcastPublicStateFromCurrentGame()
                     }
-                }
-            }
+                },
+                onComplete: onComplete
+            )
         }
     }
     
@@ -189,13 +190,10 @@ extension QuizMasterViewModel {
     
     
     func quizButtonDisabled(question: QuizQuestion) -> Bool {
-        if isPlaying {
-            return true
-        } else if questionsPassed.contains(question) {
-            return true
-        } else {
-            return false
-        }
+        if !hasInvitedPlayers { return true }
+        if isPlaying { return true }
+        if questionsPassed.contains(question) { return true }
+        return false
     }
     
     var isPlaying: Bool {
@@ -232,17 +230,6 @@ extension QuizMasterViewModel {
             usedQuestionHintIndex[question.id] = nextIdx + 1
             gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(hint), player: player)
 
-        case .changeBuzzColor:
-            guard let idx = gameVM.players.firstIndex(where: { $0.id == player.id }) else { return }
-            let colors = GameColor.allCases.filter { $0 != gameVM.players[idx].teamColor }
-            gameVM.players[idx].customBuzzColor = colors.randomElement()
-            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[idx]))
-
-        case .changeBuzzSound:
-            guard let idx = gameVM.players.firstIndex(where: { $0.id == player.id }) else { return }
-            gameVM.players[idx].customBuzzSound = buzzSoundNames.randomElement()
-            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[idx]))
-
         default:
             break
         }
@@ -264,7 +251,9 @@ extension QuizMasterViewModel {
                 formattedTime: formattedTime,
                 buzzingPlayer: playerHasBuzz,
                 isAnswerRevealed: false,
-                isHintVisible: false
+                isHintVisible: false,
+                countdownPhase: roundCountdownPhase,
+                isQuestionRevealed: isQuestionRevealed
             )
         )
     }

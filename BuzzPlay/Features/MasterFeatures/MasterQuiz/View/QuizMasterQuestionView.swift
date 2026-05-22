@@ -11,6 +11,7 @@ struct QuizActiveQuestionScreen: View {
     @Bindable var quizMasterVM: QuizMasterViewModel
     let onValidate: (Int) -> Void
     let onReject: () -> Void
+    let onSkip: () -> Void
 
     var buzzedPlayer: Player? { quizMasterVM.playerHasBuzz }
 
@@ -43,7 +44,7 @@ struct QuizActiveQuestionScreen: View {
             }
 
             if quizMasterVM.roundCountdownPhase != .hidden {
-                MasterCountdownOverlay(phase: quizMasterVM.roundCountdownPhase)
+                CountdownOverlay(phase: quizMasterVM.roundCountdownPhase, label: "Prochain buzz dans")
                     .transition(.opacity)
                     .zIndex(100)
             }
@@ -140,15 +141,32 @@ struct QuizActiveQuestionScreen: View {
                 QuizScoreRow(player: player, maxScore: maxScore)
             }
 
-            // Radar — attente buzz
-            HStack(spacing: 10) {
-                RadarPulseView()
-                Text("En attente d'un buzz…")
-                    .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.4))
+            if quizMasterVM.playerHasBuzz == nil {
+                HStack {
+                    HStack(spacing: 10) {
+                        RadarPulseView()
+                        Text("En attente d'un buzz…")
+                            .font(.nohemi(.caption, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.4))
+                    }
+                    Spacer()
+                    Button(action: onSkip) {
+                        HStack(spacing: 5) {
+                            Text("Passer")
+                                .font(.nohemi(.caption, weight: .bold))
+                            Image(systemName: "forward.end.fill")
+                                .font(.system(size: 11))
+                        }
+                        .foregroundStyle(.white.opacity(0.7))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(.white.opacity(0.08), in: Capsule())
+                        .overlay(Capsule().strokeBorder(.white.opacity(0.12), lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.top, 4)
             }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.top, 4)
         }
     }
 }
@@ -361,79 +379,6 @@ struct RadarPulseView: View {
     }
 }
 
-// MARK: - Master Countdown Overlay (partagé Quiz + BlindTest)
-
-struct MasterCountdownOverlay: View {
-    let phase: RoundCountdownPhase
-
-    var body: some View {
-        ZStack {
-            Color.black.opacity(0.65)
-                .ignoresSafeArea()
-
-            VStack(spacing: 28) {
-                switch phase {
-                case .counting(let n):
-                    Text("Prochain buzz dans")
-                        .font(.nohemi(.title3, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.65))
-
-                    ZStack {
-                        Circle()
-                            .stroke(Color.white.opacity(0.12), lineWidth: 3)
-                            .frame(width: 160, height: 160)
-                        Circle()
-                            .fill(Color.white.opacity(0.06))
-                            .frame(width: 160, height: 160)
-                        Text("\(n)")
-                            .font(.custom("Nohemi-Black", size: 96))
-                            .foregroundStyle(.white)
-                            .id(n)
-                            .transition(.scale(scale: 1.3).combined(with: .opacity))
-                    }
-                    .animation(.spring(response: 0.35, dampingFraction: 0.55), value: n)
-
-                case .go:
-                    Image(systemName: "bolt.fill")
-                        .font(.system(size: 60, weight: .bold))
-                        .foregroundStyle(Color(hex: "#7DFFA0"))
-                    Text("À VOS BUZZERS !")
-                        .font(.custom("Nohemi-Black", size: 28))
-                        .tracking(2)
-                        .foregroundStyle(Color(hex: "#7DFFA0"))
-
-                case .hidden:
-                    EmptyView()
-                }
-            }
-        }
-    }
-}
-
-// MARK: - GameColor helpers
-
-extension GameColor {
-    var color: Color {
-        switch self {
-        case .redGame:    return Color(hex: "#FB2C36")
-        case .greenGame:  return Color(hex: "#00C950")
-        case .blueGame:   return Color(hex: "#2B7FFF")
-        case .yellowGame: return Color(hex: "#FEC260")
-        case .purpleGame: return Color(hex: "#AD46FF")
-        }
-    }
-
-    var gradient: LinearGradient {
-        switch self {
-        case .redGame:    return LinearGradient(colors: [Color(hex: "#FB2C36"), Color(hex: "#F6339A")], startPoint: .leading, endPoint: .trailing)
-        case .greenGame:  return LinearGradient(colors: [Color(hex: "#00C950"), Color(hex: "#009966")], startPoint: .leading, endPoint: .trailing)
-        case .blueGame:   return LinearGradient(colors: [Color(hex: "#2B7FFF"), Color(hex: "#00B8DB")], startPoint: .leading, endPoint: .trailing)
-        case .yellowGame: return LinearGradient(colors: [Color(hex: "#F0B100"), Color(hex: "#FF6900")], startPoint: .leading, endPoint: .trailing)
-        case .purpleGame: return LinearGradient(colors: [Color(hex: "#AD46FF"), Color(hex: "#F6339A")], startPoint: .leading, endPoint: .trailing)
-        }
-    }
-}
-
 #Preview {
     ZStack {
         BackgroundAppView().ignoresSafeArea()
@@ -443,7 +388,8 @@ extension GameColor {
                 quizSet: QuizSamples.music2000s
             ),
             onValidate: { _ in },
-            onReject: {}
+            onReject: {},
+            onSkip: {}
         )
     }
 }

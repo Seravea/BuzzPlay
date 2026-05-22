@@ -8,17 +8,17 @@
 	<array>
 		<string>_buzzplay-game._tcp</string>
 	</array>
-    <key>UIAppFonts</key>
-    <array>
-        <string>Nohemi-Thin.otf</string>
-        <string>Nohemi-ExtraLight.otf</string>
-        <string>Nohemi-Light.otf</string>
-        <string>Nohemi-Regular.otf</string>
-        <string>Nohemi-Medium.otf</string>
-        <string>Nohemi-SemiBold.otf</string>
-        <string>Nohemi-Bold.otf</string>
-        <string>Nohemi-ExtraBold.otf</string>
-        <string>Nohemi-Black.otf</string>
-    </array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Nohemi-Thin.otf</string>
+		<string>Nohemi-ExtraLight.otf</string>
+		<string>Nohemi-Light.otf</string>
+		<string>Nohemi-Regular.otf</string>
+		<string>Nohemi-Medium.otf</string>
+		<string>Nohemi-SemiBold.otf</string>
+		<string>Nohemi-Bold.otf</string>
+		<string>Nohemi-ExtraBold.otf</string>
+		<string>Nohemi-Black.otf</string>
+	</array>
 </dict>
 </plist>

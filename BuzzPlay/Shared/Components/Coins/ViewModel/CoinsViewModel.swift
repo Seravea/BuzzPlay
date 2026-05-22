@@ -131,7 +131,7 @@ extension CoinsViewModel {
 
     func sendCoinsToPlayer(_ player: Player, amount: Int) {
         guard let masterVM = masterFlowViewModel else {
-            errorMessage = "Pas de Master"
+            errorMessage = "Pas de Maître"
             return
         }
 

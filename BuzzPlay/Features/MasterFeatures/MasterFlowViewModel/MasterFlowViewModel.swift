@@ -406,10 +406,15 @@ extension MasterFlowViewModel {
             currentBuzzGame?.applyGiftEffect(.showIndicies, to: buyer)
 
         case .changeBuzzColor:
-            currentBuzzGame?.applyGiftEffect(.changeBuzzColor, to: buyer)
+            guard let idx = players.firstIndex(where: { $0.id == buyer.id }) else { return }
+            let colors = GameColor.allCases.filter { $0 != players[idx].teamColor }
+            players[idx].customBuzzColor = colors.randomElement()
+            mpcService.sendMessage(.updatedPlayer(players[idx]))
 
         case .changeBuzzSound:
-            currentBuzzGame?.applyGiftEffect(.changeBuzzSound, to: buyer)
+            guard let idx = players.firstIndex(where: { $0.id == buyer.id }) else { return }
+            players[idx].customBuzzSound = buzzSoundNames.randomElement()
+            mpcService.sendMessage(.updatedPlayer(players[idx]))
         }
     }
 }

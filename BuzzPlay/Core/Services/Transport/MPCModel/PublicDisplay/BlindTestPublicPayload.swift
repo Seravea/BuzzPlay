@@ -17,4 +17,5 @@ struct PublicBlindTestState: Codable, Equatable {
     let isAnswerRevealed: Bool
     let isPlaying: Bool
     let hintIndex: Int  // Random hint selected for this round
+    let countdownPhase: RoundCountdownPhase  // Countdown sync Master → Players
 }

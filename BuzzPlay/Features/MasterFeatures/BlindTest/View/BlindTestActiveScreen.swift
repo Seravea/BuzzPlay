@@ -10,6 +10,7 @@ struct BlindTestActiveScreen: View {
     @Bindable var blindTestVM: BlindTestMasterViewModel
     let onValidate: (Int) -> Void
     let onReject: () -> Void
+    let onSkip: () -> Void
 
     var buzzedPlayer: Player? { blindTestVM.playerHasBuzz }
 
@@ -41,7 +42,7 @@ struct BlindTestActiveScreen: View {
             }
 
             if blindTestVM.roundCountdownPhase != .hidden {
-                MasterCountdownOverlay(phase: blindTestVM.roundCountdownPhase)
+                CountdownOverlay(phase: blindTestVM.roundCountdownPhase, label: "Prochain buzz dans")
                     .transition(.opacity)
                     .zIndex(100)
             }
@@ -130,13 +131,29 @@ struct BlindTestActiveScreen: View {
             }
 
             if blindTestVM.isPlaying && buzzedPlayer == nil {
-                HStack(spacing: 10) {
-                    RadarPulseView()
-                    Text("En attente d'un buzz…")
-                        .font(.nohemi(.caption, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.4))
+                HStack {
+                    HStack(spacing: 10) {
+                        RadarPulseView()
+                        Text("En attente d'un buzz…")
+                            .font(.nohemi(.caption, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.4))
+                    }
+                    Spacer()
+                    Button(action: onSkip) {
+                        HStack(spacing: 5) {
+                            Text("Passer")
+                                .font(.nohemi(.caption, weight: .bold))
+                            Image(systemName: "forward.end.fill")
+                                .font(.system(size: 11))
+                        }
+                        .foregroundStyle(.white.opacity(0.7))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(.white.opacity(0.08), in: Capsule())
+                        .overlay(Capsule().strokeBorder(.white.opacity(0.12), lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
                 }
-                .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.top, 4)
             }
         }
@@ -149,7 +166,8 @@ struct BlindTestActiveScreen: View {
         BlindTestActiveScreen(
             blindTestVM: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()),
             onValidate: { _ in },
-            onReject: {}
+            onReject: {},
+            onSkip: {}
         )
     }
 }

@@ -29,7 +29,8 @@ struct QuizMasterListView: View {
             QuizActiveQuestionScreen(
                 quizMasterVM: quizMasterVM,
                 onValidate: handleValidate,
-                onReject: { quizMasterVM.rejectAnswer() }
+                onReject: { quizMasterVM.rejectAnswer() },
+                onSkip: { withAnimation { quizMasterVM.skipQuestion() } }
             )
             .offset(x: quizMasterVM.isPlaying ? 0 : UIScreen.main.bounds.width)
             .opacity(quizMasterVM.isPlaying ? 1 : 0)
@@ -66,43 +67,13 @@ struct QuizMasterListView: View {
                 if quizMasterVM.gameVM.isGameComplete { router.push(.scoreMaster) }
             }
         }
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                if quizMasterVM.isPlaying {
-                    // Question active → passer la question
-                    Button {
-                        withAnimation { quizMasterVM.skipQuestion() }
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 36, height: 36)
-                            .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
-                    }
-                } else {
-                    // Entre deux questions → terminer la session Quiz
-                    Button {
-                        quizMasterVM.gameVM.finishGameSection(.quiz)
-                        router.path.removeLast()
-                        if quizMasterVM.gameVM.isGameComplete {
-                            router.push(.scoreMaster)
-                        }
-                    } label: {
-                        HStack(spacing: 5) {
-                            Image(systemName: "flag.checkered")
-                                .font(.system(size: 13, weight: .semibold))
-                            Text("Fin de Quiz")
-                                .font(.nohemi(.subheadline, weight: .bold))
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                        .background(.white.opacity(0.12), in: Capsule())
-                    }
-                    .buttonStyle(.plain)
-                }
+        .navigationBarBackButtonHidden(quizMasterVM.isPlaying)
+        .onDisappear {
+            if !quizMasterVM.shouldAutoFinish {
+                quizMasterVM.gameVM.finishGameSection(.quiz)
             }
+        }
+        .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
                     connected: quizMasterVM.gameVM.connectedPlayersCount,
@@ -144,38 +115,44 @@ private struct QuizQuestionListScreen: View {
         }
     }
 
+    private var inviteButton: some View {
+        let invited = quizMasterVM.hasInvitedPlayers
+        return Button {
+            quizMasterVM.hasInvitedPlayers = true
+            quizMasterVM.gameVM.broadcastGameLaunch(.quiz)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: invited ? "checkmark.circle.fill" : "person.wave.2.fill")
+                    .font(.system(size: 13, weight: .bold))
+                Text(invited ? "Joueurs invités" : "Inviter les joueurs")
+                    .font(.nohemi(.subheadline, weight: .bold))
+                Spacer()
+                Text(invited ? "Prêts à buzzer" : "Obligatoire avant de jouer")
+                    .font(.nohemi(.caption2, weight: .regular))
+                    .foregroundStyle(.white.opacity(invited ? 0.5 : 0.65))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(invited
+                          ? AnyShapeStyle(Color.white.opacity(0.10))
+                          : AnyShapeStyle(LinearGradient(
+                                colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
+                                startPoint: .leading, endPoint: .trailing)))
+            )
+            .shadow(color: invited ? .clear : Color.greenButtonLeading.opacity(0.35), radius: 8, y: 3)
+        }
+        .buttonStyle(.plain)
+        .animation(.easeInOut(duration: 0.25), value: invited)
+    }
+
     private var listHeader: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Bouton "Lancer" — visible avant la 1ère question uniquement
-            if quizMasterVM.questionsPassed.isEmpty {
-                Button {
-                    quizMasterVM.gameVM.broadcastGameLaunch(.quiz)
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: 13, weight: .bold))
-                        Text("Lancer le Quiz")
-                            .font(.nohemi(.subheadline, weight: .bold))
-                        Spacer()
-                        Text("Notifie les joueurs")
-                            .font(.nohemi(.caption2, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.5))
-                    }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(
-                        LinearGradient(
-                            colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
-                            startPoint: .leading, endPoint: .trailing
-                        ),
-                        in: RoundedRectangle(cornerRadius: 14)
-                    )
-                    .shadow(color: Color.greenButtonLeading.opacity(0.35), radius: 8, y: 3)
-                }
-                .buttonStyle(.plain)
+            // Bouton "Inviter les joueurs" — obligatoire avant de pouvoir sélectionner une question
+            inviteButton
                 .padding(.bottom, 4)
-            }
 
             HStack {
                 VStack(alignment: .leading, spacing: 2) {

@@ -29,7 +29,6 @@ struct ConnectionStatusBadge: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-        .background(.ultraThinMaterial, in: Capsule())
     }
 }
 

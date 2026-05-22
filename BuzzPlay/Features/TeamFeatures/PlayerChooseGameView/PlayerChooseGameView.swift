@@ -22,6 +22,7 @@ struct PlayerChooseGameView: View {
                 VStack(spacing: 20) {
                     headerSection
                     selfCard
+                    buzzerHintCard
                     if !otherPlayers.isEmpty { othersSection }
                     Spacer(minLength: 80)
                 }
@@ -122,6 +123,36 @@ struct PlayerChooseGameView: View {
             RoundedRectangle(cornerRadius: 18)
                 .strokeBorder(playerGameVM.player.teamColor.color.opacity(0.45), lineWidth: 1.5)
         )
+    }
+
+    // MARK: - Buzzer Hint Card
+
+    private var buzzerHintCard: some View {
+        HStack(spacing: 16) {
+            ZStack {
+                Circle()
+                    .fill(Color(hex: "#FF2D78").opacity(0.15))
+                    .frame(width: 52, height: 52)
+                Image(systemName: "hand.point.up.left.fill")
+                    .font(.system(size: 24))
+                    .foregroundStyle(Color(hex: "#FF2D78"))
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("C'est un jeu de buzzer !")
+                    .font(.nohemi(.subheadline, weight: .extraBold))
+                    .foregroundStyle(.white)
+                Text("Appuie le plus vite possible\ndès que tu as la réponse.")
+                    .font(.nohemi(.caption, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.55))
+                    .lineSpacing(2)
+            }
+
+            Spacer()
+        }
+        .padding(16)
+        .background(Color(hex: "#FF2D78").opacity(0.07), in: RoundedRectangle(cornerRadius: 18))
+        .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(Color(hex: "#FF2D78").opacity(0.2), lineWidth: 1))
     }
 
     // MARK: - Others Grid

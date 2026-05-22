@@ -13,21 +13,38 @@ struct PublicQuizDisplayView: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            // Question Card
-            VStack(alignment: .leading, spacing: 8) {
-                Text("QUESTION")
-                    .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.4))
-                    .tracking(0.8)
+            // Question Card — masquée jusqu'à la fin du premier countdown
+            if state.isQuestionRevealed {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("QUESTION")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.4))
+                        .tracking(0.8)
 
-                Text(state.question.title)
-                    .font(.nohemi(.title3, weight: .bold))
-                    .foregroundStyle(.white)
+                    Text(state.question.title)
+                        .font(.nohemi(.title3, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(18)
+                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
+                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.1), lineWidth: 1))
+                .transition(.opacity)
+            } else {
+                VStack(spacing: 8) {
+                    Image(systemName: "hourglass")
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.35))
+                    Text("Préparez-vous…")
+                        .font(.nohemi(.title3, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(18)
+                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 20))
+                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.06), lineWidth: 1))
+                .transition(.opacity)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(18)
-            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
-            .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.1), lineWidth: 1))
 
             // Answers Section (only if revealed)
             if state.isAnswerRevealed {
@@ -76,14 +93,16 @@ struct PublicQuizDisplayView: View {
         Player(name: "Team 1", teamColor: .greenGame, score: 240),
         Player(name: "Team 2", teamColor: .blueGame, score: 240),
     ]
-    return PublicQuizDisplayView(
+    PublicQuizDisplayView(
         state: PublicQuizState(
             question: QuizSamples.music2000s.questions[3],
             setTitle: QuizSamples.music2000s.title,
             formattedTime: "00:00",
             buzzingPlayer: samplePlayers[1],
             isAnswerRevealed: false,
-            isHintVisible: false
+            isHintVisible: false,
+            countdownPhase: .hidden,
+            isQuestionRevealed: true
         ),
         timer: "00:00"
     )

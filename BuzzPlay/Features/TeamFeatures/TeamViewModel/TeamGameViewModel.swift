@@ -34,6 +34,9 @@ final class PlayerGameViewModel {
     // Fin de partie complète → afficher le podium final
     var isGameComplete: Bool = false
 
+    // Toast Notes reçues (🎵) — auto-dismiss géré dans la vue
+    var pendingNotesToast: Int? = nil
+
     // MARK: - Public display timer mirroring
     var formattedTime: String = "00:00"
     private var timer: Timer?
@@ -120,11 +123,16 @@ extension PlayerGameViewModel {
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: payload.playerName)
 
         case .buzzUnlock:
+            // Resume timer if it was paused (e.g., after rejected answer in Quiz)
+            resumeUITimerIfNeeded()
             currentBuzzerVM?.unLockBuzz()
 
         case .updatedPlayer(let updatedPlayer):
             if updatedPlayer.id == self.player.id {
+                let delta = updatedPlayer.accountAmount - self.player.accountAmount
+                if delta > 0 { pendingNotesToast = delta }
                 self.player = updatedPlayer
+                currentBuzzerVM?.player = updatedPlayer
             }
             if let idx = knownPlayers.firstIndex(where: { $0.id == updatedPlayer.id }) {
                 knownPlayers[idx] = updatedPlayer
@@ -178,15 +186,25 @@ extension PlayerGameViewModel {
         case .quiz(let quizState):
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
+            currentBuzzerVM?.countdownPhase = quizState.countdownPhase
             if quizState.isAnswerRevealed {
                 stopUITimer()
                 currentBuzzerVM?.clearBuzzState()
             } else {
-                syncBuzzerState(buzzingPlayer: quizState.buzzingPlayer, isRoundActive: true)
+                // Quiz : le timer est géré exclusivement par .timerStarted / .buzzUnlock
+                // syncBuzzerState ne doit PAS appeler resumeUITimerIfNeeded ici
+                syncBuzzerState(buzzingPlayer: quizState.buzzingPlayer,
+                                isRoundActive: quizState.countdownPhase == .hidden,
+                                autoResumeTimer: false)
             }
         case .blindTest(let blindTestState):
-            formattedTime = blindTestState.formattedTime
             lastMasterFormattedTime = blindTestState.formattedTime
+            // Timer piloté par .timerStarted — on ne force la valeur master que si le timer local est inactif
+            // (resync à la reconnexion ou à l'onAppear), évitant les sauts visuels pendant le jeu
+            if timer == nil {
+                formattedTime = blindTestState.formattedTime
+            }
+            currentBuzzerVM?.countdownPhase = blindTestState.countdownPhase
             syncBuzzerState(buzzingPlayer: blindTestState.buzzingPlayer, isRoundActive: blindTestState.isPlaying)
         }
     }
@@ -256,15 +274,12 @@ extension PlayerGameViewModel {
         timer = nil
     }
 
-    private func syncBuzzerState(buzzingPlayer: Player?, isRoundActive: Bool) {
+    private func syncBuzzerState(buzzingPlayer: Player?, isRoundActive: Bool, autoResumeTimer: Bool = true) {
         if let player = buzzingPlayer {
-            // Buzzer actif : on gèle le timer local (le Master aussi est pausé)
             stopUITimer()
             currentBuzzerVM?.lockBuzz(teamNameHasBuzz: player.name)
         } else if isRoundActive {
-            // Manche active sans buzz (démarrage ou reprise après rejection)
-            // formattedTime vient d'être mis à jour par le publicUpdate → on repart de là
-            resumeUITimerIfNeeded()
+            if autoResumeTimer { resumeUITimerIfNeeded() }
             currentBuzzerVM?.unLockBuzz()
         } else {
             stopUITimer()

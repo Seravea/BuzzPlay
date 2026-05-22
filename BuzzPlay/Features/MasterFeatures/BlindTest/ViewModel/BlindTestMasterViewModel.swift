@@ -32,6 +32,7 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var isCorrect: Bool = false
     
     var shouldAutoFinish: Bool = false
+    var hasInvitedPlayers: Bool = false
 
     var playerHasBuzz: Player? = nil
     var playedSongs: [BlindTestSong] = []
@@ -150,43 +151,26 @@ extension BlindTestMasterViewModel {
 
         countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
-            await runCountdownAsync()
-            guard !Task.isCancelled else { return }
-            gameVM.unlockBuzz()
-            if musicHasEnded {
-                restartMusicFromBeginning()
-                musicHasEnded = false
-            } else {
-                resume()
-            }
-            isPlaying = true
-            startReactionTimer()
-            gameVM.broadcastPublicStateFromCurrentGame()
+            await runCountdown(
+                onPhaseChange: { [weak self] phase in
+                    self?.roundCountdownPhase = phase
+                    self?.gameVM.broadcastPublicStateFromCurrentGame()
+                },
+                onComplete: { [weak self] in
+                    guard let self else { return }
+                    self.gameVM.unlockBuzz()
+                    if self.musicHasEnded {
+                        self.restartMusicFromBeginning()
+                        self.musicHasEnded = false
+                    } else {
+                        self.resume()
+                    }
+                    self.isPlaying = true
+                    self.startReactionTimer()
+                    self.gameVM.broadcastPublicStateFromCurrentGame()
+                }
+            )
         }
-    }
-
-    // Countdown async pur — interleave coopératif avec prepareMusicForPlayback via async let
-    @MainActor private func runCountdownAsync() async {
-        roundCountdownPhase = .hidden
-        gameVM.broadcastPublicStateFromCurrentGame()
-
-        try? await Task.sleep(for: .seconds(2))
-        guard !Task.isCancelled else { roundCountdownPhase = .hidden; return }
-
-        for count in stride(from: 3, through: 1, by: -1) {
-            roundCountdownPhase = .counting(count)
-            gameVM.broadcastPublicStateFromCurrentGame()
-            try? await Task.sleep(for: .seconds(1))
-            guard !Task.isCancelled else { roundCountdownPhase = .hidden; return }
-        }
-
-        roundCountdownPhase = .go
-        gameVM.broadcastPublicStateFromCurrentGame()
-        try? await Task.sleep(for: .milliseconds(800))
-        guard !Task.isCancelled else { roundCountdownPhase = .hidden; return }
-
-        roundCountdownPhase = .hidden
-        gameVM.broadcastPublicStateFromCurrentGame()
     }
 }
 
@@ -199,6 +183,10 @@ extension BlindTestMasterViewModel {
         guard let selectedMusic = selectedMusic else { return }
         isFetching = true  // spinner immédiat
 
+        // AVAudioSession.setActive(true) peut bloquer plusieurs secondes sur le main thread
+        // (Bluetooth, routing audio). On le lance en background avant le countdownTask.
+        Task.detached(priority: .userInitiated) { Self.configureAudioSession() }
+
         countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
 
@@ -209,10 +197,15 @@ extension BlindTestMasterViewModel {
             musicHasEnded = false
             state = .playing
             isGameActive = true
-            configureAudioSession()
 
             // Countdown (5.8 s) ET chargement musique en parallèle
-            async let countdown: Void = runCountdownAsync()
+            async let countdown: Void = runCountdown(
+                onPhaseChange: { [weak self] phase in
+                    self?.roundCountdownPhase = phase
+                    self?.gameVM.broadcastPublicStateFromCurrentGame()
+                },
+                onComplete: {}
+            )
             async let musicPrep: Void = prepareMusicForPlayback(song: selectedMusic)
             _ = await (countdown, musicPrep)
 
@@ -266,17 +259,6 @@ extension BlindTestMasterViewModel {
             guard let song = selectedMusic else { return }
             let hint = buildBlindTestHint(song: song)
             gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(hint), player: player)
-
-        case .changeBuzzColor:
-            guard let idx = gameVM.players.firstIndex(where: { $0.id == player.id }) else { return }
-            let colors = GameColor.allCases.filter { $0 != gameVM.players[idx].teamColor }
-            gameVM.players[idx].customBuzzColor = colors.randomElement()
-            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[idx]))
-
-        case .changeBuzzSound:
-            guard let idx = gameVM.players.firstIndex(where: { $0.id == player.id }) else { return }
-            gameVM.players[idx].customBuzzSound = buzzSoundNames.randomElement()
-            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[idx]))
 
         default:
             break
@@ -361,7 +343,8 @@ extension BlindTestMasterViewModel {
                         buzzingPlayer: nil,
                         isAnswerRevealed: false,
                         isPlaying: isPlaying,   // false pendant le countdown → Player ne relance pas son timer trop tôt
-                        hintIndex: currentHintIndex
+                        hintIndex: currentHintIndex,
+                        countdownPhase: roundCountdownPhase
                     )
                 )
 
@@ -376,7 +359,8 @@ extension BlindTestMasterViewModel {
                        buzzingPlayer: player,
                        isAnswerRevealed: false,
                        isPlaying: false,
-                       hintIndex: currentHintIndex
+                       hintIndex: currentHintIndex,
+                       countdownPhase: roundCountdownPhase
                    )
                )
 
@@ -391,7 +375,8 @@ extension BlindTestMasterViewModel {
                        buzzingPlayer: playerHasBuzz,
                        isAnswerRevealed: true,
                        isPlaying: false,
-                       hintIndex: currentHintIndex
+                       hintIndex: currentHintIndex,
+                       countdownPhase: roundCountdownPhase
                    )
                )
            }
@@ -434,7 +419,7 @@ extension BlindTestMasterViewModel {
     
     //MARK: functions Song playing
     
-    // Autorisation + éligibilité
+    // Autorisation + éligibilité (utilisé pendant la lecture pour décider preview vs catalogue)
     func canPlayFullCatalog() async -> Bool {
         let status = await MusicAuthorization.request()
         guard status == .authorized else { return false }
@@ -445,16 +430,24 @@ extension BlindTestMasterViewModel {
             return false
         }
     }
-    
-    // Met à jour le booléen (pour le badge)
+
+    // Appelé à l'onAppear : autorise + vérifie abonnement en un seul aller-retour réseau.
+    // Lance aussi le stream de mises à jour pour les changements futurs.
     @MainActor
-    func updateCatalogPlaybackCapability() async {
-        let can = await canPlayFullCatalog()
-        self.canPlayCatalogContent = can
+    func setupMusicOnAppear() async {
+        observeSubscriptionUpdates()
+        let status = await MusicAuthorization.request()
+        guard status == .authorized else { return }
+        do {
+            let subscription = try await MusicSubscription.current
+            canPlayCatalogContent = subscription.canPlayCatalogContent
+        } catch {
+            canPlayCatalogContent = false
+        }
     }
 
     // Écoute les changements d'abonnement en temps réel
-    func observeSubscriptionUpdates() {
+    private func observeSubscriptionUpdates() {
         Task {
             for await subscription in MusicSubscription.subscriptionUpdates {
                 await MainActor.run {
@@ -462,6 +455,13 @@ extension BlindTestMasterViewModel {
                 }
             }
         }
+    }
+
+    // Recheck après fermeture de l'offre d'abonnement
+    @MainActor
+    func updateCatalogPlaybackCapability() async {
+        let can = await canPlayFullCatalog()
+        canPlayCatalogContent = can
     }
     
     // Prépare la musique SANS jouer — appelé en parallèle avec runCountdownAsync().
@@ -474,7 +474,9 @@ extension BlindTestMasterViewModel {
             previewEndObserver = nil
         }
 
-        if await canPlayFullCatalog() {
+        // Use cached canPlayCatalogContent (updated on appear + via subscription observer)
+        // to avoid re-running MusicAuthorization.request() before every round.
+        if canPlayCatalogContent {
             do {
                 try await prepareFullTrack(song: song)
             } catch {
@@ -509,9 +511,9 @@ extension BlindTestMasterViewModel {
         guard let url = song.previewURL else { return }
         let item = AVPlayerItem(url: url)
         let newPlayer = AVPlayer(playerItem: item)
-        let randomStart = Double.random(in: 0...20)   // preview ~30s, on démarre dans les 20 premières secondes
-        // completionHandler force la version synchrone (sans await) — on n'a pas besoin d'attendre la fin du seek
-        newPlayer.seek(to: CMTime(seconds: randomStart, preferredTimescale: 600), completionHandler: { _ in })
+        // Le clip preview Apple est déjà un extrait curated (refrain/hook) → on démarre à 0
+        // Seek à 0 = pas de buffering réseau avant play(), latence nulle
+        newPlayer.seek(to: .zero, completionHandler: { _ in })
         // Pas de play() ici — juste positionnement et buffering
         previewEndObserver = NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
@@ -580,7 +582,7 @@ extension BlindTestMasterViewModel {
         musicPlayer.stop()
     }
     
-    func configureAudioSession() {
+    nonisolated static func configureAudioSession() {
         do {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playback, mode: .default)

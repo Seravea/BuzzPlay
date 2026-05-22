@@ -7,6 +7,7 @@ import SwiftUI
 
 struct PrivateMasterBlindTestView: View {
     @Bindable var blindTestVM: BlindTestMasterViewModel
+    let onSubscribeTap: () -> Void
 
     @State private var showValidationOverlay = false
     @State private var validationPoints = 0
@@ -26,7 +27,7 @@ struct PrivateMasterBlindTestView: View {
         ZStack {
             BackgroundAppView().ignoresSafeArea()
 
-            BlindTestSearchScreen(blindTestVM: blindTestVM)
+            BlindTestSearchScreen(blindTestVM: blindTestVM, onSubscribeTap: onSubscribeTap)
                 .offset(x: currentScreen == .search ? 0 : -screenWidth)
                 .opacity(currentScreen == .search ? 1 : 0)
 
@@ -43,7 +44,8 @@ struct PrivateMasterBlindTestView: View {
             BlindTestActiveScreen(
                 blindTestVM: blindTestVM,
                 onValidate: handleValidate,
-                onReject: { blindTestVM.rejectAnswer() }
+                onReject: { blindTestVM.rejectAnswer() },
+                onSkip: { withAnimation { blindTestVM.cancelRound() } }
             )
             .offset(x: currentScreen == .playing ? 0 : screenWidth)
             .opacity(currentScreen == .playing ? 1 : 0)
@@ -57,12 +59,7 @@ struct PrivateMasterBlindTestView: View {
             }
         }
         .animation(.spring(duration: 0.45, bounce: 0.05), value: currentScreen)
-        .onAppear {
-            Task {
-                await blindTestVM.appleMusicService.setupAppleMusic()
-                await blindTestVM.updateCatalogPlaybackCapability()
-            }
-        }
+        .task { await blindTestVM.setupMusicOnAppear() }
         .alert("Information", isPresented: $blindTestVM.showSubscriptionAlert) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -92,7 +89,10 @@ struct PrivateMasterBlindTestView: View {
 }
 
 #Preview {
-    PrivateMasterBlindTestView(blindTestVM: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()))
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(BackgroundAppView())
+    PrivateMasterBlindTestView(
+        blindTestVM: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()),
+        onSubscribeTap: {}
+    )
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(BackgroundAppView())
 }
