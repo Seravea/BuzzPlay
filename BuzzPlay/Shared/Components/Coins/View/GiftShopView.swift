@@ -167,8 +167,10 @@ private struct GiftCardView: View {
                     }
                 } label: { cardBody }
                 .disabled(!canAfford)
+                .buttonStyle(.plain)
             } else {
                 Button { onBuy(nil) } label: { cardBody }
+                .buttonStyle(.plain)
                 .disabled(!isActive)
             }
         }

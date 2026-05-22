@@ -10,6 +10,10 @@ import SwiftUI
 @main
 struct BuzzPlayApp: App {
     @StateObject private var router = Router()
+
+    init() {
+        UIApplication.shared.isIdleTimerDisabled = true
+    }
     var body: some Scene {
         WindowGroup {
           HomeView()

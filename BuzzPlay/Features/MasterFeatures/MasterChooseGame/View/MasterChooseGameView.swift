@@ -241,9 +241,9 @@ struct MasterChooseGameView: View {
                     Text("Notes ♪")
                         .font(.nohemi(.body, weight: .bold))
                         .foregroundStyle(.white)
-                    Text("Envoyer aux joueurs")
+                    Text("Solde: \(masterChooseGameVM.masterNotesBalance) 🎵")
                         .font(.nohemi(.caption2, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(.white.opacity(0.6))
                 }
                 Spacer()
             }
@@ -257,41 +257,28 @@ struct MasterChooseGameView: View {
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 10) {
+                        // Card "Tout le monde" si > 1 joueur
+                        if masterChooseGameVM.players.count > 1 {
+                            notesCard(
+                                name: "Tout le\nmonde",
+                                icon: "person.2.fill",
+                                backgroundColor: Color.mustardYellow,
+                                onSelectAmount: { amount in
+                                    masterChooseGameVM.coinsVM.distributeToAll(amount)
+                                }
+                            )
+                        }
+                        
+                        // Cards des joueurs individuels
                         ForEach(masterChooseGameVM.players) { player in
-                            Menu {
-                                ForEach(masterChooseGameVM.coinsVM.moneyCanSend, id: \.self) { amount in
-                                    Button {
-                                        masterChooseGameVM.coinsVM.sendCoinsToPlayer(player, amount: amount)
-                                    } label: {
-                                        Label("\(amount) notes", systemImage: "music.note")
-                                    }
+                            notesCard(
+                                name: player.name,
+                                icon: nil,
+                                playerColor: player.teamColor,
+                                onSelectAmount: { amount in
+                                    masterChooseGameVM.coinsVM.sendCoinsToPlayer(player, amount: amount)
                                 }
-                            } label: {
-                                VStack(spacing: 4) {
-                                    Circle()
-                                        .fill(player.teamColor.gradient)
-                                        .frame(width: 42, height: 42)
-                                        .overlay(
-                                            Text(String(player.name.prefix(1)).uppercased())
-                                                .font(.nohemi(.callout, weight: .bold))
-                                                .foregroundStyle(.white)
-                                        )
-                                    Text(player.name)
-                                        .font(.nohemi(.caption2, weight: .medium))
-                                        .foregroundStyle(.white.opacity(0.8))
-                                        .lineLimit(1)
-                                    Image(systemName: "music.note")
-                                        .font(.system(size: 11, weight: .medium))
-                                        .foregroundStyle(Color.mustardYellow.opacity(0.7))
-                                }
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 8)
-                                .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .strokeBorder(.white.opacity(0.12), lineWidth: 1)
-                                )
-                            }
+                            )
                         }
                     }
                 }
@@ -304,7 +291,63 @@ struct MasterChooseGameView: View {
                 .strokeBorder(.white.opacity(0.10), lineWidth: 1.5)
         )
     }
-}
+
+    private func notesCard(
+        name: String,
+        icon: String? = nil,
+        backgroundColor: Color? = nil,
+        playerColor: GameColor? = nil,
+        onSelectAmount: @escaping (Int) -> Void
+    ) -> some View {
+        Menu {
+            ForEach(masterChooseGameVM.coinsVM.moneyCanSend, id: \.self) { amount in
+                Button {
+                    onSelectAmount(amount)
+                } label: {
+                    Label("\(amount) notes", systemImage: "music.note")
+                }
+            }
+        } label: {
+            VStack(spacing: 4) {
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 42, height: 42)
+                        .background(backgroundColor?.opacity(0.2) ?? Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 10))
+                } else if let playerColor = playerColor {
+                    Circle()
+                        .fill(playerColor.gradient)
+                        .frame(width: 42, height: 42)
+                        .overlay(
+                            Text(String(name.prefix(1)).uppercased())
+                                .font(.nohemi(.callout, weight: .bold))
+                                .foregroundStyle(.white)
+                        )
+                }
+                
+                Text(name)
+                    .font(.nohemi(.caption2, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: 60)
+                
+                Image(systemName: "music.note")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Color.mustardYellow.opacity(0.7))
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(.white.opacity(0.12), lineWidth: 1)
+            )
+        }
+    }
+    }
 
 #Preview {
     NavigationStack {
