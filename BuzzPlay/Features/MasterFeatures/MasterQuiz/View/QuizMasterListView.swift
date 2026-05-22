@@ -66,11 +66,15 @@ struct QuizMasterListView: View {
                 if quizMasterVM.gameVM.isGameComplete { router.push(.scoreMaster) }
             }
         }
-        .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden(quizMasterVM.isPlaying)
+        .onDisappear {
+            if !quizMasterVM.shouldAutoFinish {
+                quizMasterVM.gameVM.finishGameSection(.quiz)
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 if quizMasterVM.isPlaying {
-                    // Question active → passer la question
                     Button {
                         withAnimation { quizMasterVM.skipQuestion() }
                     } label: {
@@ -80,26 +84,6 @@ struct QuizMasterListView: View {
                             .frame(width: 36, height: 36)
                             .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
                     }
-                } else {
-                    // Entre deux questions → terminer la session Quiz
-                    Button {
-                        quizMasterVM.gameVM.finishGameSection(.quiz)
-                        router.path.removeLast()
-                        if quizMasterVM.gameVM.isGameComplete {
-                            router.push(.scoreMaster)
-                        }
-                    } label: {
-                        HStack(spacing: 5) {
-                            Image(systemName: "flag.checkered")
-                                .font(.system(size: 13, weight: .semibold))
-                            Text("Fin de Quiz")
-                                .font(.nohemi(.subheadline, weight: .bold))
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                    }
-                    .buttonStyle(.plain)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {

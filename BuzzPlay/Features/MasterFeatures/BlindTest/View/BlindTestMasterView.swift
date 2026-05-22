@@ -58,25 +58,6 @@ struct BlindTestMasterView: View {
                             .frame(width: 36, height: 36)
                             .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
                     }
-                } else {
-                    Button {
-                        blindTestViewModel.gameVM.finishGameSection(.blindTest)
-                        router.path.removeLast()
-                        if blindTestViewModel.gameVM.isGameComplete {
-                            router.push(.scoreMaster)
-                        }
-                    } label: {
-                        HStack(spacing: 5) {
-                            Image(systemName: "flag.checkered")
-                                .font(.system(size: 13, weight: .semibold))
-                            Text("Fin de Blind Test")
-                                .font(.nohemi(.subheadline, weight: .bold))
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                    }
-                    .buttonStyle(.plain)
                 }
             }
 
@@ -87,7 +68,12 @@ struct BlindTestMasterView: View {
                 )
             }
         }
-        .navigationBarBackButtonHidden(!blindTestViewModel.allSongs.isEmpty || blindTestViewModel.isGameActive)
+        .navigationBarBackButtonHidden(blindTestViewModel.isGameActive)
+        .onDisappear {
+            if !blindTestViewModel.shouldAutoFinish {
+                blindTestViewModel.gameVM.finishGameSection(.blindTest)
+            }
+        }
     }
 }
 
