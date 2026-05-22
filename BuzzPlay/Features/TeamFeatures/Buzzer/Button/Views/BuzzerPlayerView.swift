@@ -54,6 +54,20 @@ struct BuzzerPlayerView: View {
         .animation(.spring(response: 0.5, dampingFraction: 0.75), value: playerGameVM.currentBuzzerVM?.activeHint)
         .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
         .navigationBarBackButtonHidden()
+        .overlay(alignment: .top) {
+            if let notes = playerGameVM.pendingNotesToast {
+                NotesToastView(amount: notes)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                            withAnimation(.easeOut(duration: 0.3)) {
+                                playerGameVM.pendingNotesToast = nil
+                            }
+                        }
+                    }
+            }
+        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: playerGameVM.pendingNotesToast != nil)
         .onAppear { playerGameVM.syncBuzzerWithCurrentPublicState() }
         .sheet(isPresented: $isGiftSheetOpen) {
             GiftShopSheet(coinsVM: coinsVM, isPresented: $isGiftSheetOpen)
@@ -145,6 +159,29 @@ private struct HintBadgeView: View {
             .padding(.bottom, 12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+    }
+}
+
+// MARK: - Notes Toast
+
+private struct NotesToastView: View {
+    let amount: Int
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "dollarsign.bank.building.fill")
+                .font(.system(size: 15, weight: .bold))
+                .foregroundStyle(Color.mustardYellow)
+            Text("+\(amount) Notes reçues !")
+                .font(.nohemi(.subheadline, weight: .bold))
+                .foregroundStyle(.white)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(Color.darkPurple, in: Capsule())
+        .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.4), lineWidth: 1.5))
+        .shadow(color: Color.mustardYellow.opacity(0.25), radius: 12, y: 4)
+        .padding(.top, 8)
     }
 }
 

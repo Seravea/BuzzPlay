@@ -42,18 +42,24 @@ struct PublicBlindTestView: View {
                     .padding(.vertical, 16)
                     .transition(.scale(scale: 0.8).combined(with: .opacity))
             } else {
-                HStack(spacing: 8) {
+                VStack(spacing: 10) {
                     Image(systemName: "waveform")
-                        .font(.body)
-                        .foregroundStyle(Color.mustardYellow.opacity(0.6))
+                        .font(.system(size: 22, weight: .medium))
+                        .foregroundStyle(Color.mustardYellow.opacity(0.8))
+                        .symbolEffect(.variableColor.iterative)
 
                     Text(BlindTestHints.phrases[state.hintIndex % BlindTestHints.phrases.count])
-                        .font(.nohemi(.body, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.6))
+                        .font(.nohemi(.title3, weight: .semiBold))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 16)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 18)
+                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 16))
+                .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+                .padding(.horizontal, 4)
                 .transition(.opacity)
             }
 

@@ -34,6 +34,9 @@ final class PlayerGameViewModel {
     // Fin de partie complète → afficher le podium final
     var isGameComplete: Bool = false
 
+    // Toast Notes reçues (🎵) — auto-dismiss géré dans la vue
+    var pendingNotesToast: Int? = nil
+
     // MARK: - Public display timer mirroring
     var formattedTime: String = "00:00"
     private var timer: Timer?
@@ -126,6 +129,8 @@ extension PlayerGameViewModel {
 
         case .updatedPlayer(let updatedPlayer):
             if updatedPlayer.id == self.player.id {
+                let delta = updatedPlayer.accountAmount - self.player.accountAmount
+                if delta > 0 { pendingNotesToast = delta }
                 self.player = updatedPlayer
                 currentBuzzerVM?.player = updatedPlayer
             }
