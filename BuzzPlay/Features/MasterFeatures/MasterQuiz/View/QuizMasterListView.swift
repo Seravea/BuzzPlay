@@ -29,7 +29,8 @@ struct QuizMasterListView: View {
             QuizActiveQuestionScreen(
                 quizMasterVM: quizMasterVM,
                 onValidate: handleValidate,
-                onReject: { quizMasterVM.rejectAnswer() }
+                onReject: { quizMasterVM.rejectAnswer() },
+                onSkip: { withAnimation { quizMasterVM.skipQuestion() } }
             )
             .offset(x: quizMasterVM.isPlaying ? 0 : UIScreen.main.bounds.width)
             .opacity(quizMasterVM.isPlaying ? 1 : 0)

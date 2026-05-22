@@ -11,6 +11,7 @@ struct QuizActiveQuestionScreen: View {
     @Bindable var quizMasterVM: QuizMasterViewModel
     let onValidate: (Int) -> Void
     let onReject: () -> Void
+    let onSkip: () -> Void
 
     var buzzedPlayer: Player? { quizMasterVM.playerHasBuzz }
 
@@ -140,15 +141,32 @@ struct QuizActiveQuestionScreen: View {
                 QuizScoreRow(player: player, maxScore: maxScore)
             }
 
-            // Radar — attente buzz
-            HStack(spacing: 10) {
-                RadarPulseView()
-                Text("En attente d'un buzz…")
-                    .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.4))
+            if quizMasterVM.playerHasBuzz == nil {
+                HStack {
+                    HStack(spacing: 10) {
+                        RadarPulseView()
+                        Text("En attente d'un buzz…")
+                            .font(.nohemi(.caption, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.4))
+                    }
+                    Spacer()
+                    Button(action: onSkip) {
+                        HStack(spacing: 5) {
+                            Text("Passer")
+                                .font(.nohemi(.caption, weight: .bold))
+                            Image(systemName: "forward.end.fill")
+                                .font(.system(size: 11))
+                        }
+                        .foregroundStyle(.white.opacity(0.7))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(.white.opacity(0.08), in: Capsule())
+                        .overlay(Capsule().strokeBorder(.white.opacity(0.12), lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.top, 4)
             }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.top, 4)
         }
     }
 }
@@ -370,7 +388,8 @@ struct RadarPulseView: View {
                 quizSet: QuizSamples.music2000s
             ),
             onValidate: { _ in },
-            onReject: {}
+            onReject: {},
+            onSkip: {}
         )
     }
 }
