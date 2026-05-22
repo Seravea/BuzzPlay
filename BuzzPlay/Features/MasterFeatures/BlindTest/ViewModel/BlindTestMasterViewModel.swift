@@ -31,6 +31,8 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var nowPlayingSongIndex: Int = 0
     var isCorrect: Bool = false
     
+    var shouldAutoFinish: Bool = false
+
     var playerHasBuzz: Player? = nil
     var playedSongs: [BlindTestSong] = []
 
@@ -91,6 +93,11 @@ extension BlindTestMasterViewModel {
     var totalNumberOfSongs: Int {
         allSongs.count
     }
+
+    var roundsTotal: Int {
+        let total = gameVM.blindTestRoundsTotal
+        return total > 0 ? total : allSongs.count
+    }
     
     @MainActor func validateAnswer(points: Int) {
         guard let playerAnswers = playerHasBuzz else { return }
@@ -102,6 +109,11 @@ extension BlindTestMasterViewModel {
         isCorrect = true
         state = .finished
         gameVM.blindTestRoundsPlayed += 1
+
+        let configuredTotal = gameVM.blindTestRoundsTotal
+        if configuredTotal > 0 && playedSongs.count >= configuredTotal {
+            shouldAutoFinish = true
+        }
 
         let finalPoints = doubledScorePlayers.remove(playerAnswers.id) != nil ? points * 2 : points
         gameVM.addPointToPlayer(playerAnswers, points: finalPoints)

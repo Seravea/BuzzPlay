@@ -10,16 +10,40 @@ struct BlindTestMasterView: View {
     @Bindable var blindTestViewModel: BlindTestMasterViewModel
     @EnvironmentObject private var router: Router
     @State private var showSubscriptionOffer = false
+    @State private var showSectionComplete = false
 
     var body: some View {
-        PrivateMasterBlindTestView(blindTestVM: blindTestViewModel)
-            .musicSubscriptionOffer(isPresented: $showSubscriptionOffer, options: .default)
-            .onChange(of: showSubscriptionOffer) { _, isPresented in
-                if !isPresented {
-                    Task { await blindTestViewModel.updateCatalogPlaybackCapability() }
+        ZStack {
+            PrivateMasterBlindTestView(blindTestVM: blindTestViewModel)
+                .musicSubscriptionOffer(isPresented: $showSubscriptionOffer, options: .default)
+                .onChange(of: showSubscriptionOffer) { _, isPresented in
+                    if !isPresented {
+                        Task { await blindTestViewModel.updateCatalogPlaybackCapability() }
+                    }
                 }
+
+            if showSectionComplete {
+                SectionCompleteOverlay(
+                    gameTitle: "Blind Test",
+                    roundsDone: blindTestViewModel.playedSongs.count,
+                    roundsTotal: blindTestViewModel.roundsTotal
+                )
+                .transition(.opacity)
+                .zIndex(200)
             }
-            .toolbar {
+        }
+        .onChange(of: blindTestViewModel.shouldAutoFinish) { _, done in
+            guard done else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                withAnimation(.easeIn(duration: 0.3)) { showSectionComplete = true }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+                blindTestViewModel.gameVM.finishGameSection(.blindTest)
+                router.path.removeLast()
+                if blindTestViewModel.gameVM.isGameComplete { router.push(.scoreMaster) }
+            }
+        }
+        .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     if blindTestViewModel.isGameActive {
                         // Manche active → annuler la chanson en cours
