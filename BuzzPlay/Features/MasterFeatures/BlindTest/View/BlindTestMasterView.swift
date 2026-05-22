@@ -47,19 +47,6 @@ struct BlindTestMasterView: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                if blindTestViewModel.isGameActive {
-                    Button {
-                        withAnimation { blindTestViewModel.cancelRound() }
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 36, height: 36)
-                            .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
-                    }
-                }
-            }
 
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
