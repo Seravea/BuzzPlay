@@ -240,13 +240,8 @@ extension BlindTestMasterViewModel {
     @MainActor func handlePreviewEnd() {
         switch state {
         case .playing:
-            // Preview terminée → reboucle depuis 0 ET remet le timer à 0
-            stopReactionTimer()
-            reactionTimeMs = 0
+            // Preview terminée → reboucle depuis le début, timer continue à compter
             restartMusicFromBeginning()
-            let timestamp = Date().timeIntervalSince1970
-            gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-            startReactionTimer()
             gameVM.broadcastPublicStateFromCurrentGame()
         case .buzzed:
             // Race condition : musique terminée exactement au moment du buzz
