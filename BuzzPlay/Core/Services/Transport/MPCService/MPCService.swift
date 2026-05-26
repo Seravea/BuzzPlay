@@ -167,6 +167,10 @@ extension MPCService: MCSessionDelegate {
                 self.onPeerConnected?(peerID)
             case .notConnected:
                 print("PAS OK MPC: disconnected from \(peerID.displayName)")
+                // Vider invitedPeers pour permettre une ré-invitation (côté Player)
+                if self.role == .team {
+                    self.invitedPeers.remove(peerID.displayName)
+                }
                 self.onPeerDisconnected?(peerID)
             case .connecting:
                 print("LOAD MPC: is connecting to \(peerID.displayName)")
@@ -244,6 +248,7 @@ extension MPCService: MCNearbyServiceBrowserDelegate {
 
         func browser(_ browser: MCNearbyServiceBrowser,
                      lostPeer peerID: MCPeerID) {
+            // Vider l'entrée pour permettre une ré-invitation si le peer revient
             invitedPeers.remove(peerID.displayName)
             print("❌ MPC: lost peer \(peerID.displayName)")
         }

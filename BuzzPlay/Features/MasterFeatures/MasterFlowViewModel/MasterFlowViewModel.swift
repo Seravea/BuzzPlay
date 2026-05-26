@@ -68,6 +68,10 @@ final class MasterFlowViewModel {
 
     /// Nom du dernier joueur déconnecté (nil = pas d'alerte à montrer)
     var disconnectedPlayerName: String? = nil
+
+    /// Joueurs en attente de reconnexion (timeout 10s avant alerte)
+    var reconnectingPlayers: Set<String> = []
+    private var reconnectTimers: [String: Timer] = [:]
     
     /// QuizSet sélectionné par le Master dans l'écran de sélection de thème
     var selectedQuizSet: QuizSet?
@@ -159,6 +163,11 @@ final class MasterFlowViewModel {
         guard !players.contains(where: { $0.name == player.name }) else { return }
 
         if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == player.name }) {
+            // Annuler le timer de reconnexion si le joueur revient avant 10s
+            reconnectTimers[player.name]?.invalidate()
+            reconnectTimers.removeValue(forKey: player.name)
+            reconnectingPlayers.remove(player.name)
+
             // Reconnexion : restaurer le score sauvegardé (le nom est la clé — l'UUID peut changer)
             var restored = player
             restored.score = allRegisteredPlayers[savedIndex].score
@@ -167,12 +176,16 @@ final class MasterFlowViewModel {
             allRegisteredPlayers[savedIndex] = restored
             players.append(restored)
             mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(restored), player: restored)
-            // Resync état courant du jeu si une partie est en cours
+            // Resync complet si une partie est en cours
             if currentBuzzGame != nil {
+                // 1. Remettre le Player dans la vue Buzzer permanente
+                mpcService.sendMessagetoOnePlayer(message: .masterStartedParty, player: restored)
+                // 2. Indiquer quel jeu est en cours
+                if let gameType = activeGameType {
+                    mpcService.sendMessagetoOnePlayer(message: .masterLaunchedGame(gameType), player: restored)
+                }
+                // 3. Envoyer l'état courant du jeu
                 mpcService.sendMessagetoOnePlayer(message: .publicUpdate(currentPublicState()), player: restored)
-            }
-            if let gameType = activeGameType, currentBuzzGame != nil {
-                mpcService.sendMessagetoOnePlayer(message: .masterLaunchedGame(gameType), player: restored)
             }
         } else {
             // Nouveau player
@@ -230,9 +243,20 @@ extension MasterFlowViewModel {
             self.connectedPeers.removeAll { $0 == peer }
             let name = peer.displayName
             self.players.removeAll { $0.name == name }
-            if name != "Écran Publique" {
-                self.disconnectedPlayerName = name
+            guard name != "Écran Publique" else { return }
+
+            // Démarrer timer reconnexion: si le joueur ne revient pas en 10s → alerte
+            self.reconnectingPlayers.insert(name)
+            let timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { [weak self] _ in
+                guard let self else { return }
+                // Toujours déconnecté après 10s → alerter le Master
+                if self.reconnectingPlayers.contains(name) {
+                    self.disconnectedPlayerName = name
+                    self.reconnectingPlayers.remove(name)
+                }
+                self.reconnectTimers.removeValue(forKey: name)
             }
+            self.reconnectTimers[name] = timer
         }
         
         mpcService.onMessage = { [weak self] data, peer in
@@ -442,5 +466,36 @@ extension MasterFlowViewModel {
             players[idx].customBuzzSound = payload.selectedSound ?? buzzSoundNames.randomElement()
             mpcService.sendMessage(.updatedPlayer(players[idx]))
         }
+    }
+}
+
+// MARK: - New Game Reset
+extension MasterFlowViewModel {
+    func resetForNewGame() {
+        // Reset scores for all players
+        for i in players.indices {
+            players[i].score = 0
+            players[i].blockedFromBuzzing = false
+            players[i].hasShieldSingle = false
+            players[i].hasShieldAll = false
+        }
+
+        // Sync with allRegisteredPlayers
+        for i in allRegisteredPlayers.indices {
+            allRegisteredPlayers[i].score = 0
+        }
+
+        // Reset game rounds
+        quizRoundsPlayed = 0
+        blindTestRoundsPlayed = 0
+        currentBuzzPlayer = nil
+        isBuzzLocked = false
+
+        // Broadcast updated players to all peers
+        for player in players {
+            mpcService.sendMessage(.updatedPlayer(player))
+        }
+
+        print("MASTER: Game reset for new game")
     }
 }
