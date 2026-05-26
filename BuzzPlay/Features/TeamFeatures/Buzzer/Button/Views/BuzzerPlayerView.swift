@@ -222,14 +222,21 @@ private struct NotesToastView: View {
 private struct AnswerFeedbackOverlay: View {
     let result: AnswerResult
 
-    private var isCorrect: Bool {
-        if case .correct = result { return true }
-        return false
+    private var accentColor: Color {
+        switch result {
+        case .correct:    Color(hex: "#00C875")
+        case .incorrect:  Color(hex: "#FF4D4D")
+        case .otherCorrect: Color.mustardYellow
+        }
     }
 
-    private var accentColor: Color { isCorrect ? Color(hex: "#00C875") : Color(hex: "#FF4D4D") }
-    private var iconName: String { isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill" }
-    private var label: String { isCorrect ? "BONNE RÉPONSE" : "MAUVAISE RÉPONSE" }
+    private var iconName: String {
+        switch result {
+        case .correct:      "checkmark.circle.fill"
+        case .incorrect:    "xmark.circle.fill"
+        case .otherCorrect: "checkmark.circle.fill"
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -248,12 +255,12 @@ private struct AnswerFeedbackOverlay: View {
                 }
 
                 VStack(spacing: 10) {
-                    Text(label)
-                        .font(.custom("Nohemi-Black", size: 30))
-                        .tracking(2)
-                        .foregroundStyle(.white)
-
-                    if case .correct(let points, let answer) = result {
+                    switch result {
+                    case .correct(let points, let answer):
+                        Text("BONNE RÉPONSE")
+                            .font(.custom("Nohemi-Black", size: 30))
+                            .tracking(2)
+                            .foregroundStyle(.white)
                         if let answer {
                             Text(answer)
                                 .font(.custom("Nohemi-SemiBold", size: 22))
@@ -263,10 +270,31 @@ private struct AnswerFeedbackOverlay: View {
                         Text("+\(points) point\(points > 1 ? "s" : "")")
                             .font(.custom("Nohemi-Black", size: 26))
                             .foregroundStyle(accentColor)
-                    } else {
+
+                    case .incorrect:
+                        Text("MAUVAISE RÉPONSE")
+                            .font(.custom("Nohemi-Black", size: 30))
+                            .tracking(2)
+                            .foregroundStyle(.white)
                         Text("+0 point")
                             .font(.custom("Nohemi-SemiBold", size: 22))
                             .foregroundStyle(.white.opacity(0.5))
+
+                    case .otherCorrect(let name, let points, let answer):
+                        Text("\(name) a trouvé !")
+                            .font(.custom("Nohemi-Black", size: 28))
+                            .tracking(1)
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.center)
+                        if let answer {
+                            Text(answer)
+                                .font(.custom("Nohemi-SemiBold", size: 20))
+                                .foregroundStyle(.white.opacity(0.80))
+                                .multilineTextAlignment(.center)
+                        }
+                        Text("+\(points) pt\(points > 1 ? "s" : "") pour \(name)")
+                            .font(.custom("Nohemi-SemiBold", size: 18))
+                            .foregroundStyle(accentColor.opacity(0.85))
                     }
                 }
             }

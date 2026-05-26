@@ -43,6 +43,7 @@ final class PlayerGameViewModel {
     var showPostRoundLeaderboard: Bool = false
     var previousRanking: [Player] = []
     private var lastAnswerWasCorrect: Bool = false
+    private var leaderboardTask: Task<Void, Never>?
 
     // MARK: - Public display timer mirroring
     var formattedTime: String = "00:00"
@@ -149,7 +150,10 @@ extension PlayerGameViewModel {
             }
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
-            if game == .score { showPostRoundLeaderboard = false }
+            if game == .score {
+                leaderboardTask?.cancel()
+                showPostRoundLeaderboard = false
+            }
 
         case .masterStartedParty:
             hasPartyStarted = true
@@ -164,13 +168,19 @@ extension PlayerGameViewModel {
             if payload.isCorrect {
                 previousRanking = knownPlayers  // snapshot avant la mise à jour du score
                 lastAnswerWasCorrect = true
+                let isSelf = currentBuzzerVM?.playerNameHasBuzz == player.name
+                let result: AnswerResult = isSelf
+                    ? .correct(points: payload.points, answer: payload.correctAnswer)
+                    : .otherCorrect(
+                        playerName: currentBuzzerVM?.playerNameHasBuzz ?? "Un joueur",
+                        points: payload.points,
+                        answer: payload.correctAnswer
+                      )
+                currentBuzzerVM?.showAnswerResult(result)
             } else {
                 lastAnswerWasCorrect = false
+                currentBuzzerVM?.showAnswerResult(.incorrect)
             }
-            let result: AnswerResult = payload.isCorrect
-                ? .correct(points: payload.points, answer: payload.correctAnswer)
-                : .incorrect
-            currentBuzzerVM?.showAnswerResult(result)
 
         case .buyGiftResult(let gift):
             print("PLAYER: received gift purchase confirmation for \(gift.title)")
@@ -199,10 +209,18 @@ extension PlayerGameViewModel {
                 currentBuzzerVM?.clearBuzzState()
             }
             if lastAnswerWasCorrect && !previousRanking.isEmpty {
-                showPostRoundLeaderboard = true
                 lastAnswerWasCorrect = false
+                // Délai calé sur la fin de l'overlay (2.6s) pour que l'animation du classement
+                // démarre uniquement quand l'overlay a disparu
+                leaderboardTask?.cancel()
+                leaderboardTask = Task { [weak self] in
+                    try? await Task.sleep(for: .seconds(2.7))
+                    guard !Task.isCancelled, let self else { return }
+                    await MainActor.run { self.showPostRoundLeaderboard = true }
+                }
             }
         case .quiz(let quizState):
+            leaderboardTask?.cancel()
             showPostRoundLeaderboard = false
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
@@ -218,6 +236,7 @@ extension PlayerGameViewModel {
                                 autoResumeTimer: false)
             }
         case .blindTest(let blindTestState):
+            leaderboardTask?.cancel()
             showPostRoundLeaderboard = false
             lastMasterFormattedTime = blindTestState.formattedTime
             // Timer piloté par .timerStarted — on ne force la valeur master que si le timer local est inactif
