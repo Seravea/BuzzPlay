@@ -43,6 +43,16 @@ class BuzzerViewModel {
     init(player: Player, mode: BuzzerGameMode) {
         self.player = player
         self.mode = mode
+        setupAudioSession()
+    }
+
+    private func setupAudioSession() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("BuzzerVM: AVAudioSession setup error: \(error)")
+        }
     }
 
     
@@ -53,13 +63,17 @@ class BuzzerViewModel {
 extension BuzzerViewModel {
     func buzz() {
         guard isEnabled else { return }
-        playCustomSoundIfNeeded()
+        playBuzzSound()
         onBuzz?(player, mode)
     }
 
-    private func playCustomSoundIfNeeded() {
-        guard let soundName = player.customBuzzSound,
-              let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return }
+    private func playBuzzSound() {
+        // Son custom (cadeau changeBuzzSound) ou son Buzzer par défaut
+        let soundName = player.customBuzzSound ?? "Buzzer"
+        guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else {
+            print("BuzzerVM: son introuvable — \(soundName).mp3")
+            return
+        }
         customSoundPlayer?.stop()
         customSoundPlayer = try? AVAudioPlayer(contentsOf: url)
         customSoundPlayer?.play()
