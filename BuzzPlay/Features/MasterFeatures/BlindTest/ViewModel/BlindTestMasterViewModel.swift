@@ -123,6 +123,11 @@ extension BlindTestMasterViewModel {
         }
 
         let finalPoints = doubledScorePlayers.remove(playerAnswers.id) != nil ? points * 2 : points
+
+        // .answerResult envoyé EN PREMIER → Player snapshote knownPlayers avant la mise à jour du score
+        let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: nil)
+        gameVM.mpcService.sendMessage(.answerResult(resultPayload))
+
         gameVM.addPointToPlayer(playerAnswers, points: finalPoints)
 
         // on fige définitivement la manche
@@ -132,10 +137,6 @@ extension BlindTestMasterViewModel {
 
         // ✅ update public display (answer revealed)
         gameVM.broadcastPublicStateFromCurrentGame()
-
-        // ✅ Envoyer le résultat aux Players
-        let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: nil)
-        gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
         // (optionnel) on nettoie ensuite la sélection
         selectedMusic = nil
