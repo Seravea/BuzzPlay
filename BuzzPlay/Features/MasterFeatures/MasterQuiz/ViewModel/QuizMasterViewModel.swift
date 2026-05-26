@@ -82,12 +82,14 @@ extension QuizMasterViewModel {
         if let player = gameVM.currentBuzzPlayer {
             UINotificationFeedbackGenerator().notificationOccurred(.success)
             let finalPoints = doubledScorePlayers.remove(player.id) != nil ? points * 2 : points
-            gameVM.addPointToPlayer(player, points: finalPoints)
             gameVM.quizRoundsPlayed += 1
 
+            // .answerResult envoyé EN PREMIER → Player snapshote knownPlayers avant la mise à jour du score
             let allAnswers = currentQuestion.flatMap { $0.answers.isEmpty ? nil : $0.answers.joined(separator: " • ") }
             let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: allAnswers)
             gameVM.mpcService.sendMessage(.answerResult(resultPayload))
+
+            gameVM.addPointToPlayer(player, points: finalPoints)
 
             goToSelectNewQuestion()
             playerHasBuzz = nil

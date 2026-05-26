@@ -149,6 +149,7 @@ extension PlayerGameViewModel {
             }
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
+            if game == .score { showPostRoundLeaderboard = false }
 
         case .masterStartedParty:
             hasPartyStarted = true
