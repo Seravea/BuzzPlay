@@ -332,7 +332,7 @@ extension MasterFlowViewModel {
             allRegisteredPlayers[savedIndex].score = players[index].score
         }
 
-        mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(players[index]), player: players[index])
+        mpcService.sendMessage(.updatedPlayer(players[index]))
     }
 }
 

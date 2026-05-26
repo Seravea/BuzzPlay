@@ -11,46 +11,93 @@ import AVFoundation
 struct GiftBottomBar: View {
     @Bindable var coinsVM: CoinsViewModel
     @Binding var isSheetOpen: Bool
+    var isWaiting: Bool = false
+
+    @State private var glowPulse = false
 
     private var balance: Int { coinsVM.playerGameViewModel?.player.accountAmount ?? 0 }
 
     var body: some View {
-        Button { isSheetOpen = true } label: {
-            HStack(spacing: 10) {
-                Image(systemName: "gift.fill")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Color.mustardYellow)
-
-                Text("Cadeaux")
-                    .font(.nohemi(.subheadline, weight: .bold))
-                    .foregroundStyle(.white)
-
-                Spacer()
-
+        VStack(spacing: 8) {
+            if isWaiting && balance > 0 {
                 HStack(spacing: 5) {
-                    Text("\(balance)")
-                        .font(.nohemi(.callout, weight: .extraBold))
-                        .monospacedDigit()
-                        .foregroundStyle(Color.mustardYellow)
-                    Image(systemName: "dollarsign.bank.building.fill")
-                        .font(.system(size: 13))
-                        .foregroundStyle(Color.mustardYellow)
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 10, weight: .bold))
+                    Text("C'est le moment d'utiliser tes Notes !")
+                        .font(.nohemi(.caption2, weight: .bold))
                 }
-
-                Image(systemName: "chevron.up")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.4))
+                .foregroundStyle(Color.mustardYellow)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 5)
+                .background(Color.mustardYellow.opacity(0.12), in: Capsule())
+                .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.35), lineWidth: 1))
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            .padding(.horizontal, 18)
-            .padding(.vertical, 13)
-            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 18))
-            .overlay(
-                RoundedRectangle(cornerRadius: 18)
-                    .strokeBorder(.white.opacity(0.12), lineWidth: 1)
-            )
+
+            Button { isSheetOpen = true } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "gift.fill")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color.mustardYellow)
+
+                    Text("Cadeaux")
+                        .font(.nohemi(.subheadline, weight: .bold))
+                        .foregroundStyle(.white)
+
+                    Spacer()
+
+                    HStack(spacing: 5) {
+                        Text("\(balance)")
+                            .font(.nohemi(.callout, weight: .extraBold))
+                            .monospacedDigit()
+                            .foregroundStyle(Color.mustardYellow)
+                        Image(systemName: "dollarsign.bank.building.fill")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color.mustardYellow)
+                    }
+
+                    Image(systemName: "chevron.up")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.4))
+                }
+                .padding(.horizontal, 18)
+                .padding(.vertical, 13)
+                .background(
+                    isWaiting ? Color.mustardYellow.opacity(0.10) : .white.opacity(0.08),
+                    in: RoundedRectangle(cornerRadius: 18)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18)
+                        .strokeBorder(
+                            isWaiting ? Color.mustardYellow.opacity(0.55) : .white.opacity(0.12),
+                            lineWidth: isWaiting ? 1.5 : 1
+                        )
+                )
+                .shadow(
+                    color: isWaiting ? Color.mustardYellow.opacity(glowPulse ? 0.40 : 0.12) : .clear,
+                    radius: glowPulse ? 16 : 6
+                )
+            }
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
         .padding(.horizontal, 16)
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isWaiting)
+        .onChange(of: isWaiting) { _, waiting in
+            if waiting {
+                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                    glowPulse = true
+                }
+            } else {
+                glowPulse = false
+            }
+        }
+        .onAppear {
+            if isWaiting {
+                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                    glowPulse = true
+                }
+            }
+        }
     }
 }
 

@@ -92,7 +92,7 @@ struct BuzzerPlayerView: View {
             BuzzerButtonView(buzzerVM: buzzerVM)
                 .padding(.bottom, 20)
 
-            GiftBottomBar(coinsVM: coinsVM, isSheetOpen: $isGiftSheetOpen)
+            GiftBottomBar(coinsVM: coinsVM, isSheetOpen: $isGiftSheetOpen, isWaiting: playerGameVM.publicState == .waiting)
                 .padding(.bottom, 24)
         }
     }
