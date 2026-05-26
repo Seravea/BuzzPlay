@@ -123,7 +123,6 @@ extension QuizMasterViewModel {
         countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
             await runCountdown(
-                startCount: 5,
                 onPhaseChange: { [weak self] phase in
                     self?.roundCountdownPhase = phase
                     if phase != .hidden {
