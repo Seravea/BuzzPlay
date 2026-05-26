@@ -16,6 +16,7 @@ enum BuzzerGameMode {
 enum AnswerResult {
     case correct(points: Int, answer: String?)
     case incorrect
+    case otherCorrect(playerName: String, points: Int, answer: String?)
 }
 
 @Observable
@@ -116,14 +117,12 @@ extension BuzzerViewModel {
 
     func showAnswerResult(_ result: AnswerResult) {
         answerResult = result
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.6) { [weak self] in
             self?.answerResult = nil
             switch result {
             case .incorrect:
-                // Reprise de la manche — countdown puis buzzer actif
                 self?.startCountdownBeforeBuzzer()
-            case .correct:
-                // Bonne réponse — buzzer reste désactivé, attend la prochaine question du Master
+            case .correct, .otherCorrect:
                 self?.lockBuzz(teamNameHasBuzz: "")
             }
         }
