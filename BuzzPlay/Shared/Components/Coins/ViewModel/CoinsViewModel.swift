@@ -69,6 +69,8 @@ extension CoinsViewModel {
         case showIndicies
         case changeBuzzColor
         case changeBuzzSound
+        case shieldSingle
+        case shieldAll
 
         var title: String {
             switch self {
@@ -78,6 +80,8 @@ extension CoinsViewModel {
             case .showIndicies:         return "Afficher un indice"
             case .changeBuzzColor:      return "Super Cadeau 🎁"
             case .changeBuzzSound:      return "Changer le son du buzz"
+            case .shieldSingle:         return "Bouclier individuel"
+            case .shieldAll:            return "Bouclier global"
             }
         }
 
@@ -89,11 +93,15 @@ extension CoinsViewModel {
             case .showIndicies:         return 50
             case .changeBuzzColor:      return 20
             case .changeBuzzSound:      return 20
+            case .shieldSingle:         return 30
+            case .shieldAll:            return 60
             }
         }
 
         var requiresTargetPlayer: Bool {
             self == .enemyCanNotBuzz
+        // Les boucliers ne nécessitent pas de cible
+        // shieldSingle et shieldAll retournent false implicitement
         }
     }
     

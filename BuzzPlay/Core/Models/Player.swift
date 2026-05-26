@@ -21,4 +21,6 @@ struct Player: Identifiable, Hashable, Codable, Equatable {
     var customBuzzSound: String? = nil
     var hasScoreDoubled: Bool = false
     var blockedFromBuzzing: Bool = false
+    var hasShieldSingle: Bool = false
+    var hasShieldAll: Bool = false
 }

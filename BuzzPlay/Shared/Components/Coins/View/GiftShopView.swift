@@ -237,6 +237,8 @@ extension CoinsViewModel.Gift {
         case .showIndicies:         return "lightbulb.fill"
         case .changeBuzzColor:      return "paintbrush.fill"
         case .changeBuzzSound:      return "waveform"
+        case .shieldSingle:         return "shield.fill"
+        case .shieldAll:            return "shield.lefthalf.filled"
         }
     }
 
@@ -248,6 +250,8 @@ extension CoinsViewModel.Gift {
         case .showIndicies:         return "Voir\nun indice"
         case .changeBuzzColor:      return "Changer\nla couleur"
         case .changeBuzzSound:      return "Changer\nle son"
+        case .shieldSingle:         return "Bouclier\n1 ennemi"
+        case .shieldAll:            return "Bouclier\ntout le monde"
         }
     }
 
@@ -259,6 +263,8 @@ extension CoinsViewModel.Gift {
         case .showIndicies:         return Color(hex: "FFD600")
         case .changeBuzzColor:      return Color(hex: "B06BFF")
         case .changeBuzzSound:      return Color(hex: "4DAAFF")
+        case .shieldSingle:         return Color(hex: "2B7FFF")
+        case .shieldAll:            return Color(hex: "00B8DB")
         }
     }
 }
