@@ -119,12 +119,9 @@ extension BuzzerViewModel {
         answerResult = result
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.6) { [weak self] in
             self?.answerResult = nil
-            switch result {
-            case .incorrect:
-                self?.startCountdownBeforeBuzzer()
-            case .correct, .otherCorrect:
-                self?.lockBuzz(teamNameHasBuzz: "")
-            }
+            // Buzzer reste verrouillé pour tous les cas — c'est le Master qui pilote
+            // le countdown et le déverrouillage via MPC (.publicUpdate countdownPhase + .buzzUnlock)
+            self?.lockBuzz(teamNameHasBuzz: "")
         }
     }
 
