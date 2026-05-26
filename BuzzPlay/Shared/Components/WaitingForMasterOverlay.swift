@@ -44,7 +44,7 @@ struct WaitingForMasterOverlay: View {
                         .font(.nohemi(.title2, weight: .bold))
                         .foregroundStyle(.white)
 
-                    Text("Le Maître doit lancer la partie\ndepuis son iPhone")
+                    Text("Le Maître doit lancer la partie\ndepuis son appareil")
                         .font(.nohemi(.subheadline, weight: .regular))
                         .foregroundStyle(.white.opacity(0.55))
                         .multilineTextAlignment(.center)
