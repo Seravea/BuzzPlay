@@ -43,17 +43,18 @@ class CoinsViewModel {
     private func setupPlayerCallbacks() {
         onBuyGift = { [weak self] player, gift in
             guard let self else { return }
-            let payload = GiftRequestPayload(gift: gift, targetPlayerID: nil, buyerID: player.id)
+            let payload = GiftRequestPayload(gift: gift, targetPlayerID: nil, buyerID: player.id, selectedSound: nil)
             self.mpcService?.sendMessage(.buyGiftRequest(payload))
         }
     }
 
-    func sendGiftRequest(_ gift: CoinsViewModel.Gift, targeting targetPlayer: Player?) {
+    func sendGiftRequest(_ gift: CoinsViewModel.Gift, targeting targetPlayer: Player?, selectedSound: String? = nil) {
         guard let player = playerGameViewModel?.player else { return }
         let payload = GiftRequestPayload(
             gift: gift,
             targetPlayerID: targetPlayer?.id,
-            buyerID: player.id
+            buyerID: player.id,
+            selectedSound: selectedSound
         )
         mpcService?.sendMessage(.buyGiftRequest(payload))
     }
@@ -69,6 +70,8 @@ extension CoinsViewModel {
         case showIndicies
         case changeBuzzColor
         case changeBuzzSound
+        case shieldSingle
+        case shieldAll
 
         var title: String {
             switch self {
@@ -78,6 +81,8 @@ extension CoinsViewModel {
             case .showIndicies:         return "Afficher un indice"
             case .changeBuzzColor:      return "Super Cadeau 🎁"
             case .changeBuzzSound:      return "Changer le son du buzz"
+            case .shieldSingle:         return "Bouclier individuel"
+            case .shieldAll:            return "Bouclier global"
             }
         }
 
@@ -89,15 +94,26 @@ extension CoinsViewModel {
             case .showIndicies:         return 50
             case .changeBuzzColor:      return 20
             case .changeBuzzSound:      return 20
+            case .shieldSingle:         return 30
+            case .shieldAll:            return 60
             }
         }
 
         var requiresTargetPlayer: Bool {
             self == .enemyCanNotBuzz
         }
+
+        /// Nombre minimum d'autres joueurs pour que ce pouvoir soit utilisable
+        var minimumOtherPlayers: Int {
+            switch self {
+            case .allEnemiesCanNotBuzz, .shieldAll: return 2
+            case .enemyCanNotBuzz, .shieldSingle:   return 1
+            default:                                return 0
+            }
+        }
     }
     
-    func buyGift(_ gift: Gift, targeting targetPlayer: Player? = nil) {
+    func buyGift(_ gift: Gift, targeting targetPlayer: Player? = nil, selectedSound: String? = nil) {
         guard let player = playerGameViewModel?.player else {
             errorMessage = "Pas de joueur trouvé"
             return
@@ -112,9 +128,9 @@ extension CoinsViewModel {
                 errorMessage = "Choisir un adversaire d'abord"
                 return
             }
-            sendGiftRequest(gift, targeting: target)
+            sendGiftRequest(gift, targeting: target, selectedSound: selectedSound)
         } else {
-            sendGiftRequest(gift, targeting: nil)
+            sendGiftRequest(gift, targeting: nil, selectedSound: selectedSound)
         }
         errorMessage = nil
     }

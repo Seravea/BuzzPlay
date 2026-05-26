@@ -105,6 +105,23 @@ struct BuzzerPlayerView: View {
 
             Spacer()
 
+            // Bouclier actif
+            let hasAnyShield = playerGameVM.player.hasShieldSingle || playerGameVM.player.hasShieldAll
+            if hasAnyShield {
+                HStack(spacing: 3) {
+                    Image(systemName: playerGameVM.player.hasShieldAll ? "shield.lefthalf.filled" : "shield.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                    Text(playerGameVM.player.hasShieldAll ? "×Tous" : "×1")
+                        .font(.nohemi(.caption2, weight: .bold))
+                }
+                .foregroundStyle(Color(hex: "2B7FFF"))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color(hex: "2B7FFF").opacity(0.18), in: Capsule())
+                .overlay(Capsule().strokeBorder(Color(hex: "2B7FFF").opacity(0.4), lineWidth: 1))
+                .transition(.scale.combined(with: .opacity))
+            }
+
             // Solde coins — compact, sans le bouton Cadeaux (déplacé en bottom bar)
             HStack(spacing: 4) {
                 Text("\(playerGameVM.player.accountAmount)")

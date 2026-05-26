@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 // MARK: - Bottom Bar (toujours visible en bas du buzzer)
 
@@ -58,6 +59,8 @@ struct GiftBottomBar: View {
 struct GiftShopSheet: View {
     @Bindable var coinsVM: CoinsViewModel
     @Binding var isPresented: Bool
+
+    @State private var showSoundPicker = false
 
     private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
     private var balance: Int { coinsVM.playerGameViewModel?.player.accountAmount ?? 0 }
@@ -123,8 +126,12 @@ struct GiftShopSheet: View {
                         balance: balance,
                         otherPlayers: coinsVM.otherPlayers,
                         onBuy: { target in
-                            coinsVM.buyGift(gift, targeting: target)
-                            if coinsVM.errorMessage == nil { isPresented = false }
+                            if gift == .changeBuzzSound {
+                                showSoundPicker = true
+                            } else {
+                                coinsVM.buyGift(gift, targeting: target)
+                                if coinsVM.errorMessage == nil { isPresented = false }
+                            }
                         }
                     )
                 }
@@ -133,6 +140,11 @@ struct GiftShopSheet: View {
             .padding(.bottom, 40)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .sheet(isPresented: $showSoundPicker) {
+            SoundPickerSheet(coinsVM: coinsVM, isShopPresented: $isPresented)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+        }
         .background(
             LinearGradient(
                 stops: [
@@ -155,12 +167,12 @@ private struct GiftCardView: View {
     let onBuy: (Player?) -> Void
 
     private var canAfford: Bool { balance >= gift.price }
-    private var noTarget: Bool { gift.requiresTargetPlayer && otherPlayers.isEmpty }
-    private var isActive: Bool { canAfford && !noTarget }
+    private var notEnoughPlayers: Bool { otherPlayers.count < gift.minimumOtherPlayers }
+    private var isActive: Bool { canAfford && !notEnoughPlayers }
 
     var body: some View {
         Group {
-            if gift.requiresTargetPlayer && !otherPlayers.isEmpty {
+            if gift.requiresTargetPlayer && !notEnoughPlayers {
                 Menu {
                     ForEach(otherPlayers) { enemy in
                         Button(enemy.name) { onBuy(enemy) }
@@ -237,6 +249,8 @@ extension CoinsViewModel.Gift {
         case .showIndicies:         return "lightbulb.fill"
         case .changeBuzzColor:      return "paintbrush.fill"
         case .changeBuzzSound:      return "waveform"
+        case .shieldSingle:         return "shield.fill"
+        case .shieldAll:            return "shield.lefthalf.filled"
         }
     }
 
@@ -248,6 +262,8 @@ extension CoinsViewModel.Gift {
         case .showIndicies:         return "Voir\nun indice"
         case .changeBuzzColor:      return "Changer\nla couleur"
         case .changeBuzzSound:      return "Changer\nle son"
+        case .shieldSingle:         return "Bouclier\n1 ennemi"
+        case .shieldAll:            return "Bouclier\ntout le monde"
         }
     }
 
@@ -259,6 +275,121 @@ extension CoinsViewModel.Gift {
         case .showIndicies:         return Color(hex: "FFD600")
         case .changeBuzzColor:      return Color(hex: "B06BFF")
         case .changeBuzzSound:      return Color(hex: "4DAAFF")
+        case .shieldSingle:         return Color(hex: "2B7FFF")
+        case .shieldAll:            return Color(hex: "00B8DB")
         }
+    }
+}
+
+// MARK: - Sound Picker Sheet
+
+struct SoundPickerSheet: View {
+    @Bindable var coinsVM: CoinsViewModel
+    @Binding var isShopPresented: Bool
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var selectedSound: String? = nil
+    @State private var previewPlayer: AVAudioPlayer? = nil
+
+    private let sounds = ["BeginQuestion", "Blblbl", "GoodAnswer", "HeavenlyChoir",
+                          "Mosquito", "PositiveAnswer", "Tired", "WrongAnswer"]
+    private let soundLabels = ["Début de question", "Blblbl", "Bonne réponse", "Chœur céleste",
+                               "Moustique", "Réponse positive", "Fatigué", "Mauvaise réponse"]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text("Choisis ton son de buzzer")
+                .font(.nohemi(.headline, weight: .bold))
+                .foregroundStyle(.white)
+                .padding(.top, 24)
+                .padding(.bottom, 16)
+
+            ScrollView {
+                VStack(spacing: 8) {
+                    ForEach(Array(zip(sounds, soundLabels)), id: \.0) { sound, label in
+                        Button {
+                            selectedSound = sound
+                            playPreview(sound)
+                        } label: {
+                            HStack(spacing: 14) {
+                                Image(systemName: selectedSound == sound ? "checkmark.circle.fill" : "circle")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(selectedSound == sound ? Color(hex: "4DAAFF") : .white.opacity(0.3))
+
+                                Text(label)
+                                    .font(.nohemi(.body, weight: .medium))
+                                    .foregroundStyle(.white)
+
+                                Spacer()
+
+                                Image(systemName: "play.circle")
+                                    .font(.system(size: 18))
+                                    .foregroundStyle(.white.opacity(0.4))
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 12)
+                            .background(
+                                selectedSound == sound ? Color(hex: "4DAAFF").opacity(0.12) : .white.opacity(0.04),
+                                in: RoundedRectangle(cornerRadius: 12)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .strokeBorder(
+                                        selectedSound == sound ? Color(hex: "4DAAFF").opacity(0.4) : .clear,
+                                        lineWidth: 1
+                                    )
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 16)
+                    }
+                }
+                .padding(.bottom, 16)
+            }
+
+            // CTA
+            Button {
+                coinsVM.buyGift(.changeBuzzSound, selectedSound: selectedSound)
+                if coinsVM.errorMessage == nil {
+                    dismiss()
+                    isShopPresented = false
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "waveform")
+                    Text(selectedSound == nil ? "Choisir un son d'abord" : "Confirmer — 20 🎵")
+                        .font(.nohemi(.body, weight: .bold))
+                }
+                .foregroundStyle(selectedSound == nil ? .white.opacity(0.4) : .white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(
+                    selectedSound == nil
+                        ? AnyShapeStyle(Color.white.opacity(0.08))
+                        : AnyShapeStyle(LinearGradient(colors: [Color(hex: "2B7FFF"), Color(hex: "00B8DB")], startPoint: .leading, endPoint: .trailing)),
+                    in: RoundedRectangle(cornerRadius: 14)
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(selectedSound == nil)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 32)
+        }
+        .background(
+            LinearGradient(
+                stops: [
+                    .init(color: Color(hex: "1A0535"), location: 0),
+                    .init(color: Color(hex: "2A0944"), location: 1),
+                ],
+                startPoint: .top, endPoint: .bottom
+            )
+        )
+    }
+
+    private func playPreview(_ soundName: String) {
+        guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return }
+        previewPlayer?.stop()
+        previewPlayer = try? AVAudioPlayer(contentsOf: url)
+        previewPlayer?.play()
     }
 }

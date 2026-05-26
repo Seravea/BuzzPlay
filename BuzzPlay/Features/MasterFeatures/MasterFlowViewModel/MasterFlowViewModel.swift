@@ -394,14 +394,38 @@ extension MasterFlowViewModel {
                 print("MASTER: enemyCanNotBuzz missing target")
                 return
             }
-            players[targetIndex].blockedFromBuzzing = true
+            // Bouclier shieldSingle : annule le blocage et se consomme
+            if players[targetIndex].hasShieldSingle {
+                players[targetIndex].hasShieldSingle = false
+                print("MASTER: \(players[targetIndex].name) bouclier shieldSingle activé — blocage annulé")
+            } else {
+                players[targetIndex].blockedFromBuzzing = true
+            }
             mpcService.sendMessage(.updatedPlayer(players[targetIndex]))
 
         case .allEnemiesCanNotBuzz:
             for i in players.indices where players[i].id != buyer.id {
-                players[i].blockedFromBuzzing = true
+                // Bouclier shieldAll : ce joueur est exempté du blocage
+                if players[i].hasShieldAll {
+                    players[i].hasShieldAll = false
+                    print("MASTER: \(players[i].name) bouclier shieldAll activé — blocage annulé")
+                } else {
+                    players[i].blockedFromBuzzing = true
+                }
                 mpcService.sendMessage(.updatedPlayer(players[i]))
             }
+
+        case .shieldSingle:
+            guard let idx = players.firstIndex(where: { $0.id == buyer.id }) else { return }
+            players[idx].hasShieldSingle = true
+            mpcService.sendMessage(.updatedPlayer(players[idx]))
+            print("MASTER: \(players[idx].name) a acheté shieldSingle")
+
+        case .shieldAll:
+            guard let idx = players.firstIndex(where: { $0.id == buyer.id }) else { return }
+            players[idx].hasShieldAll = true
+            mpcService.sendMessage(.updatedPlayer(players[idx]))
+            print("MASTER: \(players[idx].name) a acheté shieldAll")
 
         case .showIndicies:
             currentBuzzGame?.applyGiftEffect(.showIndicies, to: buyer)
@@ -414,7 +438,8 @@ extension MasterFlowViewModel {
 
         case .changeBuzzSound:
             guard let idx = players.firstIndex(where: { $0.id == buyer.id }) else { return }
-            players[idx].customBuzzSound = buzzSoundNames.randomElement()
+            // Utilise le son choisi par le Player, ou random si non fourni
+            players[idx].customBuzzSound = payload.selectedSound ?? buzzSoundNames.randomElement()
             mpcService.sendMessage(.updatedPlayer(players[idx]))
         }
     }
