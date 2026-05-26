@@ -44,8 +44,13 @@ struct BuzzerPlayerView: View {
             }
 
             if !playerGameVM.isConnectedToMaster {
-                ConnectionLostOverlay()
-                    .transition(.opacity)
+                if playerGameVM.hasEverConnectedToMaster {
+                    ConnectionLostOverlay()
+                        .transition(.opacity)
+                } else {
+                    WaitingForMasterOverlay()
+                        .transition(.opacity)
+                }
             }
         }
         .foregroundStyle(.white)

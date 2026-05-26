@@ -20,6 +20,8 @@ final class PlayerGameViewModel {
     var hasSetupMPC = false
     var didSentPlayer = false
     var isConnectedToMaster = false
+    /// true dès qu'on s'est connecté au moins une fois — distingue "jamais connecté" de "déconnecté"
+    var hasEverConnectedToMaster = false
 
     var receivedMessage: String = ""
     var publicState: PublicState = .waiting
@@ -61,6 +63,7 @@ extension PlayerGameViewModel {
             guard let self else { return }
             DispatchQueue.main.async {
                 self.isConnectedToMaster = true
+                self.hasEverConnectedToMaster = true
                 guard !self.didSentPlayer else { return }
 
                 // ✅ Only send once we are connected (prevents MCSession Code=2: Invalid peerIDs)
