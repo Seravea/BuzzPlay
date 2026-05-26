@@ -155,12 +155,12 @@ private struct GiftCardView: View {
     let onBuy: (Player?) -> Void
 
     private var canAfford: Bool { balance >= gift.price }
-    private var noTarget: Bool { gift.requiresTargetPlayer && otherPlayers.isEmpty }
-    private var isActive: Bool { canAfford && !noTarget }
+    private var notEnoughPlayers: Bool { otherPlayers.count < gift.minimumOtherPlayers }
+    private var isActive: Bool { canAfford && !notEnoughPlayers }
 
     var body: some View {
         Group {
-            if gift.requiresTargetPlayer && !otherPlayers.isEmpty {
+            if gift.requiresTargetPlayer && !notEnoughPlayers {
                 Menu {
                     ForEach(otherPlayers) { enemy in
                         Button(enemy.name) { onBuy(enemy) }

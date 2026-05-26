@@ -100,8 +100,15 @@ extension CoinsViewModel {
 
         var requiresTargetPlayer: Bool {
             self == .enemyCanNotBuzz
-        // Les boucliers ne nécessitent pas de cible
-        // shieldSingle et shieldAll retournent false implicitement
+        }
+
+        /// Nombre minimum d'autres joueurs pour que ce pouvoir soit utilisable
+        var minimumOtherPlayers: Int {
+            switch self {
+            case .allEnemiesCanNotBuzz, .shieldAll: return 2
+            case .enemyCanNotBuzz, .shieldSingle:   return 1
+            default:                                return 0
+            }
         }
     }
     
