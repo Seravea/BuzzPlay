@@ -42,7 +42,7 @@ struct BlindTestActiveScreen: View {
             }
 
             if blindTestVM.roundCountdownPhase != .hidden {
-                CountdownOverlay(phase: blindTestVM.roundCountdownPhase, label: "Prochain buzz dans")
+                CountdownOverlay(phase: blindTestVM.roundCountdownPhase, label: "Prochain buzz dans", backgroundOpacity: 0.30)
                     .transition(.opacity)
                     .zIndex(100)
             }

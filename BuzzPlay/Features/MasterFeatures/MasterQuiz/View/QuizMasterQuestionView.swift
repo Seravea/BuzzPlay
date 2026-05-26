@@ -44,7 +44,7 @@ struct QuizActiveQuestionScreen: View {
             }
 
             if quizMasterVM.roundCountdownPhase != .hidden {
-                CountdownOverlay(phase: quizMasterVM.roundCountdownPhase, label: "Prochain buzz dans")
+                CountdownOverlay(phase: quizMasterVM.roundCountdownPhase, label: "Lis la question à voix haute", backgroundOpacity: 0.30)
                     .transition(.opacity)
                     .zIndex(100)
             }
