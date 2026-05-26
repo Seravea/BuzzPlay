@@ -7,6 +7,7 @@ import Foundation
 
 @MainActor
 func runCountdown(
+    startCount: Int = 3,
     onPhaseChange: @escaping @MainActor (RoundCountdownPhase) -> Void,
     onComplete: @escaping @MainActor () -> Void
 ) async {
@@ -15,7 +16,7 @@ func runCountdown(
     try? await Task.sleep(for: .seconds(2))
     guard !Task.isCancelled else { onPhaseChange(.hidden); return }
 
-    for count in stride(from: 3, through: 1, by: -1) {
+    for count in stride(from: startCount, through: 1, by: -1) {
         onPhaseChange(.counting(count))
         try? await Task.sleep(for: .seconds(1))
         guard !Task.isCancelled else { onPhaseChange(.hidden); return }

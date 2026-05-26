@@ -116,7 +116,7 @@ extension BuzzerViewModel {
 
     func showAnswerResult(_ result: AnswerResult) {
         answerResult = result
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) { [weak self] in
             self?.answerResult = nil
             switch result {
             case .incorrect:

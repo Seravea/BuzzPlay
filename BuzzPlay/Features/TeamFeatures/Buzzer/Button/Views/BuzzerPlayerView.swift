@@ -53,9 +53,13 @@ struct BuzzerPlayerView: View {
             }
 
             if !playerGameVM.isConnectedToMaster {
-                ConnectionLostOverlay()
-                    .transition(.opacity)
-                    .zIndex(200)
+                if playerGameVM.hasEverConnectedToMaster {
+                    ConnectionLostOverlay()
+                        .transition(.opacity)
+                } else {
+                    WaitingForMasterOverlay()
+                        .transition(.opacity)
+                }
             }
         }
         .foregroundStyle(.white)
@@ -103,7 +107,7 @@ struct BuzzerPlayerView: View {
             BuzzerButtonView(buzzerVM: buzzerVM)
                 .padding(.bottom, 20)
 
-            GiftBottomBar(coinsVM: coinsVM, isSheetOpen: $isGiftSheetOpen)
+            GiftBottomBar(coinsVM: coinsVM, isSheetOpen: $isGiftSheetOpen, isWaiting: playerGameVM.publicState == .waiting)
                 .padding(.bottom, 24)
         }
     }

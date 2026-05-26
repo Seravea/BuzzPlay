@@ -8,10 +8,11 @@ import SwiftUI
 struct CountdownOverlay: View {
     let phase: RoundCountdownPhase
     var label: String = "Préparez-vous…"
+    var backgroundOpacity: Double = 0.65
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.65)
+            Color.black.opacity(backgroundOpacity)
                 .ignoresSafeArea()
 
             VStack(spacing: 28) {

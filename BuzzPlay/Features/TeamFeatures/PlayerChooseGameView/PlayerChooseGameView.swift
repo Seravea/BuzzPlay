@@ -36,7 +36,11 @@ struct PlayerChooseGameView: View {
             }
 
             if !playerGameVM.isConnectedToMaster {
-                ConnectionLostOverlay()
+                if playerGameVM.hasEverConnectedToMaster {
+                    ConnectionLostOverlay()
+                } else {
+                    WaitingForMasterOverlay()
+                }
             }
         }
         .toolbar {
