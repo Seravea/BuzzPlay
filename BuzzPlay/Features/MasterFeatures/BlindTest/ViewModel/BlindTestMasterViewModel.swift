@@ -288,9 +288,9 @@ extension BlindTestMasterViewModel {
 //MARK: BuzzDrivenGame conformance
 extension BlindTestMasterViewModel {
 
-    // Timer BlindTest : compte jusqu'à roundDurationMs (30s), puis reboucle avec reset.
-    // En mode preview (isPreviewMode), c'est handlePreviewEnd() qui déclenche le reset naturellement.
-    // En mode catalogue MusicKit, le timer déclenche le reset après roundDurationMs.
+    // Timer BlindTest : compte en continu sans limite — ne se remet jamais à 0.
+    // La musique gère son propre cycle (preview reboucle via handlePreviewEnd,
+    // catalogue joue jusqu'à la fin). Le timer est une montre indépendante.
     @MainActor func startReactionTimer() {
         timer?.invalidate()
         timer = nil
@@ -299,25 +299,10 @@ extension BlindTestMasterViewModel {
             guard let self else { return }
             Task { @MainActor in
                 self.reactionTimeMs += 100
-                // En mode preview, handlePreviewEnd() gère le reset naturellement
-                // En mode catalogue, on reset après roundDurationMs
-                if !self.isPreviewMode && self.reactionTimeMs >= self.roundDurationMs {
-                    self.handleTimerExpiry()
-                }
             }
         }
         RunLoop.main.add(newTimer, forMode: .common)
         timer = newTimer
-    }
-
-    @MainActor private func handleTimerExpiry() {
-        stopReactionTimer()
-        reactionTimeMs = 0
-        restartMusicFromBeginning()
-        let timestamp = Date().timeIntervalSince1970
-        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-        startReactionTimer()
-        gameVM.broadcastPublicStateFromCurrentGame()
     }
 
     @MainActor
