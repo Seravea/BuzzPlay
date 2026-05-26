@@ -43,17 +43,18 @@ class CoinsViewModel {
     private func setupPlayerCallbacks() {
         onBuyGift = { [weak self] player, gift in
             guard let self else { return }
-            let payload = GiftRequestPayload(gift: gift, targetPlayerID: nil, buyerID: player.id)
+            let payload = GiftRequestPayload(gift: gift, targetPlayerID: nil, buyerID: player.id, selectedSound: nil)
             self.mpcService?.sendMessage(.buyGiftRequest(payload))
         }
     }
 
-    func sendGiftRequest(_ gift: CoinsViewModel.Gift, targeting targetPlayer: Player?) {
+    func sendGiftRequest(_ gift: CoinsViewModel.Gift, targeting targetPlayer: Player?, selectedSound: String? = nil) {
         guard let player = playerGameViewModel?.player else { return }
         let payload = GiftRequestPayload(
             gift: gift,
             targetPlayerID: targetPlayer?.id,
-            buyerID: player.id
+            buyerID: player.id,
+            selectedSound: selectedSound
         )
         mpcService?.sendMessage(.buyGiftRequest(payload))
     }
@@ -112,7 +113,7 @@ extension CoinsViewModel {
         }
     }
     
-    func buyGift(_ gift: Gift, targeting targetPlayer: Player? = nil) {
+    func buyGift(_ gift: Gift, targeting targetPlayer: Player? = nil, selectedSound: String? = nil) {
         guard let player = playerGameViewModel?.player else {
             errorMessage = "Pas de joueur trouvé"
             return
@@ -127,9 +128,9 @@ extension CoinsViewModel {
                 errorMessage = "Choisir un adversaire d'abord"
                 return
             }
-            sendGiftRequest(gift, targeting: target)
+            sendGiftRequest(gift, targeting: target, selectedSound: selectedSound)
         } else {
-            sendGiftRequest(gift, targeting: nil)
+            sendGiftRequest(gift, targeting: nil, selectedSound: selectedSound)
         }
         errorMessage = nil
     }

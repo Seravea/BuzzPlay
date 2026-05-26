@@ -438,7 +438,8 @@ extension MasterFlowViewModel {
 
         case .changeBuzzSound:
             guard let idx = players.firstIndex(where: { $0.id == buyer.id }) else { return }
-            players[idx].customBuzzSound = buzzSoundNames.randomElement()
+            // Utilise le son choisi par le Player, ou random si non fourni
+            players[idx].customBuzzSound = payload.selectedSound ?? buzzSoundNames.randomElement()
             mpcService.sendMessage(.updatedPlayer(players[idx]))
         }
     }

@@ -35,8 +35,9 @@ class BuzzerViewModel {
     // MARK: - Indice (gift showIndicies)
     var activeHint: String? = nil
 
-    // MARK: - Son custom (gift changeBuzzSound)
-    private var customSoundPlayer: AVAudioPlayer?
+    // MARK: - Son buzzer
+    private var defaultBuzzPlayer: AVAudioPlayer?   // pré-chargé au init, pas de latence au 1er buzz
+    private var customSoundPlayer: AVAudioPlayer?   // son custom (gift changeBuzzSound)
 
     var onBuzz: ((Player, BuzzerGameMode) -> Void)?
 
@@ -44,6 +45,7 @@ class BuzzerViewModel {
         self.player = player
         self.mode = mode
         setupAudioSession()
+        preloadDefaultSound()
     }
 
     private func setupAudioSession() {
@@ -54,6 +56,12 @@ class BuzzerViewModel {
         } catch {
             print("BuzzerVM: AVAudioSession setup error: \(error)")
         }
+    }
+
+    private func preloadDefaultSound() {
+        guard let url = Bundle.main.url(forResource: "Buzzer", withExtension: "mp3") else { return }
+        defaultBuzzPlayer = try? AVAudioPlayer(contentsOf: url)
+        defaultBuzzPlayer?.prepareToPlay()
     }
 
     
@@ -69,15 +77,17 @@ extension BuzzerViewModel {
     }
 
     private func playBuzzSound() {
-        // Son custom (cadeau changeBuzzSound) ou son Buzzer par défaut
-        let soundName = player.customBuzzSound ?? "Buzzer"
-        guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else {
-            print("BuzzerVM: son introuvable — \(soundName).mp3")
-            return
+        if let soundName = player.customBuzzSound {
+            // Son custom choisi par le Player (cadeau changeBuzzSound)
+            guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return }
+            customSoundPlayer?.stop()
+            customSoundPlayer = try? AVAudioPlayer(contentsOf: url)
+            customSoundPlayer?.play()
+        } else {
+            // Son par défaut pré-chargé → zéro latence
+            defaultBuzzPlayer?.currentTime = 0
+            defaultBuzzPlayer?.play()
         }
-        customSoundPlayer?.stop()
-        customSoundPlayer = try? AVAudioPlayer(contentsOf: url)
-        customSoundPlayer?.play()
     }
 
 
