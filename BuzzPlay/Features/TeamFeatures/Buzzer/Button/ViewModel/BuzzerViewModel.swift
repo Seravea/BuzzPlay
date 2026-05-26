@@ -48,7 +48,8 @@ class BuzzerViewModel {
 
     private func setupAudioSession() {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+            // .playback + .mixWithOthers : joue même en mode silencieux sans couper Apple Music
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
             print("BuzzerVM: AVAudioSession setup error: \(error)")
