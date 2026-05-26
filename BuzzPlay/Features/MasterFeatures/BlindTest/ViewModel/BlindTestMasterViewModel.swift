@@ -46,6 +46,12 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     // → rejectAnswer doit relancer la musique depuis le début au lieu de resume()
     private var musicHasEnded = false
 
+    // true si on joue un extrait AVPlayer (preview URL, ~30s) — false = MusicKit catalogue
+    private var isPreviewMode: Bool = false
+
+    // Durée de la manche en ms : 30s pour preview, 30s aussi pour catalogue (limite raisonnable)
+    private let roundDurationMs = 30_000
+
     //MARK: Timer's datas
     var reactionTimeMs: Int = 0
     var timer: Timer?
@@ -234,7 +240,7 @@ extension BlindTestMasterViewModel {
     @MainActor func handlePreviewEnd() {
         switch state {
         case .playing:
-            // Musique terminée → reboucle depuis le début, timer continue
+            // Preview terminée → reboucle depuis le début, timer continue à compter
             restartMusicFromBeginning()
             gameVM.broadcastPublicStateFromCurrentGame()
         case .buzzed:
@@ -282,8 +288,9 @@ extension BlindTestMasterViewModel {
 //MARK: BuzzDrivenGame conformance
 extension BlindTestMasterViewModel {
 
-    // Shadows the protocol extension's startReactionTimer() to add 15s expiry loop (Option B).
-    // When the reaction window expires, music restarts from the beginning and the timer resets.
+    // Timer BlindTest : compte en continu sans limite — ne se remet jamais à 0.
+    // La musique gère son propre cycle (preview reboucle via handlePreviewEnd,
+    // catalogue joue jusqu'à la fin). Le timer est une montre indépendante.
     @MainActor func startReactionTimer() {
         timer?.invalidate()
         timer = nil
@@ -292,22 +299,10 @@ extension BlindTestMasterViewModel {
             guard let self else { return }
             Task { @MainActor in
                 self.reactionTimeMs += 100
-                if self.reactionTimeMs >= 15_000 {
-                    self.handleTimerExpiry()
-                }
             }
         }
         RunLoop.main.add(newTimer, forMode: .common)
         timer = newTimer
-    }
-
-    @MainActor private func handleTimerExpiry() {
-        stopReactionTimer()
-        restartMusicFromBeginning()
-        let timestamp = Date().timeIntervalSince1970
-        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-        startReactionTimer()
-        gameVM.broadcastPublicStateFromCurrentGame()
     }
 
     @MainActor
@@ -497,23 +492,23 @@ extension BlindTestMasterViewModel {
         }
     }
 
-    // Prépare le catalogue Apple Music (fetchSong + prepareToPlay + position à 5s).
+    // Prépare le catalogue Apple Music (fetchSong + prepareToPlay + position à 0s).
     @MainActor private func prepareFullTrack(song: BlindTestSong) async throws {
         let catalogSong = try await appleMusicService.fetchSong(by: song.appleMusicID)
         musicPlayer.queue = .init(for: [catalogSong])
         try await musicPlayer.prepareToPlay()
-        musicPlayer.playbackTime = 5
+        musicPlayer.playbackTime = 0
+        isPreviewMode = false
         // Prêt : il suffira d'appeler musicPlayer.play() dans playPreparedMusicNow()
     }
 
-    // Prépare un AVPlayer preview (crée, seek position aléatoire, observe fin).
+    // Prépare un AVPlayer preview (crée, seek à 0, observe fin).
     @MainActor private func preparePreviewPlayer(song: BlindTestSong) async throws {
         guard let url = song.previewURL else { return }
         let item = AVPlayerItem(url: url)
         let newPlayer = AVPlayer(playerItem: item)
-        // Le clip preview Apple est déjà un extrait curated (refrain/hook) → on démarre à 0
-        // Seek à 0 = pas de buffering réseau avant play(), latence nulle
         newPlayer.seek(to: .zero, completionHandler: { _ in })
+        isPreviewMode = true
         // Pas de play() ici — juste positionnement et buffering
         previewEndObserver = NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
@@ -553,9 +548,9 @@ extension BlindTestMasterViewModel {
             player.seek(to: .zero)
             player.play()
         } else {
-            // Mode catalogue Apple Music (MusicKit) : repositionne à 5s
+            // Mode catalogue Apple Music (MusicKit) : repositionne à 0s
             Task {
-                musicPlayer.playbackTime = 5
+                musicPlayer.playbackTime = 0
                 try? await musicPlayer.play()
             }
         }
