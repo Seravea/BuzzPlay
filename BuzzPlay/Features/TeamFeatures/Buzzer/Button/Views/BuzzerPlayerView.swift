@@ -43,9 +43,19 @@ struct BuzzerPlayerView: View {
                     .zIndex(50)
             }
 
+            if playerGameVM.showPostRoundLeaderboard {
+                PostRoundLeaderboardView(
+                    previousRanking: playerGameVM.previousRanking,
+                    currentRanking: playerGameVM.knownPlayers
+                )
+                .transition(.opacity)
+                .zIndex(80)
+            }
+
             if !playerGameVM.isConnectedToMaster {
                 ConnectionLostOverlay()
                     .transition(.opacity)
+                    .zIndex(200)
             }
         }
         .foregroundStyle(.white)
@@ -53,6 +63,7 @@ struct BuzzerPlayerView: View {
         .animation(.spring(response: 0.45, dampingFraction: 0.65), value: playerGameVM.currentBuzzerVM?.answerResult != nil)
         .animation(.spring(response: 0.5, dampingFraction: 0.75), value: playerGameVM.currentBuzzerVM?.activeHint)
         .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
+        .animation(.easeInOut(duration: 0.35), value: playerGameVM.showPostRoundLeaderboard)
         .navigationBarBackButtonHidden()
         .overlay(alignment: .top) {
             if let notes = playerGameVM.pendingNotesToast {

@@ -37,6 +37,11 @@ final class PlayerGameViewModel {
     // Toast Notes reçues (🎵) — auto-dismiss géré dans la vue
     var pendingNotesToast: Int? = nil
 
+    // MARK: - Classement post-manche (après bonne réponse validée)
+    var showPostRoundLeaderboard: Bool = false
+    var previousRanking: [Player] = []
+    private var lastAnswerWasCorrect: Bool = false
+
     // MARK: - Public display timer mirroring
     var formattedTime: String = "00:00"
     private var timer: Timer?
@@ -152,6 +157,12 @@ extension PlayerGameViewModel {
             startLocalReactionTimer(masterTimestamp: payload.masterTimestamp)
 
         case .answerResult(let payload):
+            if payload.isCorrect {
+                previousRanking = knownPlayers  // snapshot avant la mise à jour du score
+                lastAnswerWasCorrect = true
+            } else {
+                lastAnswerWasCorrect = false
+            }
             let result: AnswerResult = payload.isCorrect
                 ? .correct(points: payload.points, answer: payload.correctAnswer)
                 : .incorrect
@@ -183,7 +194,12 @@ extension PlayerGameViewModel {
             } else {
                 currentBuzzerVM?.clearBuzzState()
             }
+            if lastAnswerWasCorrect && !previousRanking.isEmpty {
+                showPostRoundLeaderboard = true
+                lastAnswerWasCorrect = false
+            }
         case .quiz(let quizState):
+            showPostRoundLeaderboard = false
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
             currentBuzzerVM?.countdownPhase = quizState.countdownPhase
@@ -198,6 +214,7 @@ extension PlayerGameViewModel {
                                 autoResumeTimer: false)
             }
         case .blindTest(let blindTestState):
+            showPostRoundLeaderboard = false
             lastMasterFormattedTime = blindTestState.formattedTime
             // Timer piloté par .timerStarted — on ne force la valeur master que si le timer local est inactif
             // (resync à la reconnexion ou à l'onAppear), évitant les sauts visuels pendant le jeu
