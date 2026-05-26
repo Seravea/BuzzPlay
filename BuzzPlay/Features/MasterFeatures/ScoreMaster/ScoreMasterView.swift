@@ -205,9 +205,10 @@ struct ScoreMasterView: View {
             .buttonStyle(.plain)
 
             Button {
+                masterFlowVM.resetForNewGame()
                 router.popToRoot()
             } label: {
-                Text("Rejouer")
+                Text("Nouvelle partie")
                     .font(.nohemi(.subheadline, weight: .bold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)

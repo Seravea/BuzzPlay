@@ -444,3 +444,34 @@ extension MasterFlowViewModel {
         }
     }
 }
+
+// MARK: - New Game Reset
+extension MasterFlowViewModel {
+    func resetForNewGame() {
+        // Reset scores for all players
+        for i in players.indices {
+            players[i].score = 0
+            players[i].blockedFromBuzzing = false
+            players[i].hasShieldSingle = false
+            players[i].hasShieldAll = false
+        }
+
+        // Sync with allRegisteredPlayers
+        for i in allRegisteredPlayers.indices {
+            allRegisteredPlayers[i].score = 0
+        }
+
+        // Reset game rounds
+        quizRoundsPlayed = 0
+        blindTestRoundsPlayed = 0
+        currentBuzzPlayer = nil
+        isBuzzLocked = false
+
+        // Broadcast updated players to all peers
+        for player in players {
+            mpcService.sendMessage(.updatedPlayer(player))
+        }
+
+        print("MASTER: Game reset for new game")
+    }
+}
