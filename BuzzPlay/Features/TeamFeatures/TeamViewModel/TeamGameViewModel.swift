@@ -151,6 +151,7 @@ extension PlayerGameViewModel {
             }
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
+            hasPartyStarted = true  // reconnexion après kill app : la partie est déjà lancée
             if game == .score {
                 leaderboardTask?.cancel()
                 showPostRoundLeaderboard = false
