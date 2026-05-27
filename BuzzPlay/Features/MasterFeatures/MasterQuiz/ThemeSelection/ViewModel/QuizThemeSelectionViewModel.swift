@@ -32,6 +32,10 @@ final class QuizThemeSelectionViewModel {
     }
 
     func selectSet(_ set: QuizSet) {
-        gameVM.selectedQuizSet = set
+        let limit = gameVM.quizRoundsTotal
+        let questions = limit > 0 && set.questions.count > limit
+            ? Array(set.questions.shuffled().prefix(limit))
+            : set.questions
+        gameVM.selectedQuizSet = QuizSet(id: set.id, title: set.title, theme: set.theme, questions: questions)
     }
 }
