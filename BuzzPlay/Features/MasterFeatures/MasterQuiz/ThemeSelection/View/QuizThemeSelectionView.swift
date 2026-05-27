@@ -5,9 +5,18 @@
 
 import SwiftUI
 
+#if os(iOS) && swift(>=5.9)
+import FoundationModels
+#endif
+
 struct QuizThemeSelectionView: View {
     @Bindable var viewModel: QuizThemeSelectionViewModel
     @EnvironmentObject private var router: Router
+
+    @State private var showAIGeneratorSheet = false
+    @State private var showAIReviewSheet = false
+    @State private var aiGeneratedSet: QuizSet?
+    @State private var aiGenerator = AIQuizGenerator()
 
     var body: some View {
         ScrollView {
@@ -40,16 +49,79 @@ struct QuizThemeSelectionView: View {
                     .foregroundStyle(.white)
             }
         }
+        .sheet(isPresented: $showAIGeneratorSheet) {
+            if #available(iOS 26.0, *) {
+                #if os(iOS) && swift(>=5.9)
+                AIQuizSetupView(
+                    generator: aiGenerator,
+                    quizRoundsTotal: viewModel.quizRoundsTotal,
+                    onComplete: { set in
+                        aiGeneratedSet = set
+                        showAIGeneratorSheet = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                            showAIReviewSheet = true
+                        }
+                    },
+                    onDismiss: { showAIGeneratorSheet = false }
+                )
+                #else
+                EmptyView()
+                #endif
+            } else {
+                EmptyView()
+            }
+        }
+        .sheet(isPresented: $showAIReviewSheet) {
+            if #available(iOS 26.0, *) {
+                #if os(iOS) && swift(>=5.9)
+                AIQuizReviewView(
+                    generator: aiGenerator,
+                    quizSet: aiGeneratedSet ?? QuizSet(id: UUID(), title: "", theme: QuizTheme(id: UUID(), title: "", emoji: "", color: .clear), questions: []),
+                    onLaunch: { set in
+                        viewModel.selectSet(set)
+                        router.push(.quizMaster)
+                    },
+                    onBack: { showAIReviewSheet = false }
+                )
+                #else
+                EmptyView()
+                #endif
+            } else {
+                EmptyView()
+            }
+        }
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Choisir un quiz")
-                .font(.nohemi(.title, weight: .extraBold))
-                .foregroundStyle(.white)
-            Text("Sélectionne le thème et la playlist")
-                .font(.nohemi(.subheadline, weight: .regular))
-                .foregroundStyle(.white.opacity(0.5))
+        HStack(alignment: .top, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Choisir un quiz")
+                    .font(.nohemi(.title, weight: .extraBold))
+                    .foregroundStyle(.white)
+                Text("Sélectionne le thème et la playlist")
+                    .font(.nohemi(.subheadline, weight: .regular))
+                    .foregroundStyle(.white.opacity(0.5))
+            }
+
+            Spacer()
+
+            if #available(iOS 26.0, *) {
+                #if os(iOS) && swift(>=5.9)
+                if SystemLanguageModel.default.availability == .available {
+                    Button(action: { showAIGeneratorSheet = true }) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 40, height: 40)
+                            .background(Color(hex: "#AD46FF").opacity(0.2), in: RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .strokeBorder(Color(hex: "#AD46FF").opacity(0.3), lineWidth: 1)
+                            )
+                    }
+                }
+                #endif
+            }
         }
     }
 }
@@ -106,12 +178,13 @@ private struct QuizSetCard: View {
     private var difficultyRange: String {
         let diffs = set.questions.compactMap(\.difficulty)
         guard !diffs.isEmpty else { return "" }
-        let avg = diffs.reduce(0, +) / diffs.count
-        switch avg {
-        case 1:  return "Facile"
-        case 2:  return "Moyen"
-        default: return "Difficile"
+
+        let difficultyOrder: [QuizDifficulty] = [.expert, .difficile, .moyen, .facile]
+        if let highest = diffs.first(where: { difficultyOrder.contains($0) }) {
+            return highest.label
         }
+
+        return diffs.first?.label ?? ""
     }
 
     var body: some View {

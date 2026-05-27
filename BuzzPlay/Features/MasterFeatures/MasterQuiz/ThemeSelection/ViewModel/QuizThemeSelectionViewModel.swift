@@ -16,6 +16,8 @@ final class QuizThemeSelectionViewModel {
 
     let themes: [QuizTheme] = QuizThemes.all
 
+    var quizRoundsTotal: Int { gameVM.quizRoundsTotal }
+
     init(gameVM: MasterFlowViewModel) {
         self.gameVM = gameVM
     }

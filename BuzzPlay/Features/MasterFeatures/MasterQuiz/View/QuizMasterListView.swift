@@ -267,12 +267,8 @@ private struct QuizQuestionRow: View {
 
     private var badgeColor: Color {
         if isDone { return .white.opacity(0.1) }
-        switch question.difficulty {
-        case 1: return Color(hex: "#00C950").opacity(0.35)
-        case 2: return Color(hex: "#F0B100").opacity(0.45)
-        case 3: return Color(hex: "#FB2C36").opacity(0.4)
-        default: return .white.opacity(0.1)
-        }
+        guard let difficulty = question.difficulty else { return .white.opacity(0.1) }
+        return difficulty.color.opacity(0.35)
     }
 }
 
