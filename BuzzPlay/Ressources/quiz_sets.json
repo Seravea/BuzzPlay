@@ -1,0 +1,166 @@
+{
+  "sets": [
+    {
+      "id": "A1B2C3D4-0001-0000-0000-000000000001",
+      "title": "Années 80 — Les Classiques",
+      "themeKey": "annees80",
+      "questions": [
+        {
+          "question": "Qui chante 'Thriller' (1982) ?",
+          "answer": "Michael Jackson",
+          "difficulty": "facile",
+          "funFact": "Thriller est l'album le plus vendu de l'histoire avec plus de 70 millions de copies."
+        },
+        {
+          "question": "Quel groupe suédois a sorti l'album 'The Visitors' en 1981, son dernier studio ?",
+          "answer": "ABBA",
+          "difficulty": "moyen",
+          "funFact": "ABBA s'est séparé en 1982 sans jamais l'annoncer officiellement."
+        }
+      ]
+    },
+    {
+      "id": "A1B2C3D4-0002-0000-0000-000000000002",
+      "title": "Années 90 — Génération Grunge",
+      "themeKey": "annees90",
+      "questions": [
+        {
+          "question": "Quel album de Nirvana a rendu le groupe mondialement célèbre en 1991 ?",
+          "answer": "Nevermind",
+          "difficulty": "facile",
+          "funFact": "Nevermind a détrôné Michael Jackson de la première place du Billboard 200."
+        }
+      ]
+    },
+    {
+      "id": "A1B2C3D4-0003-0000-0000-000000000003",
+      "title": "Années 2000 — Les Tubes",
+      "themeKey": "annees2000",
+      "questions": [
+        {
+          "question": "Quel artiste a sorti l'album 'The College Dropout' en 2004 ?",
+          "answer": "Kanye West",
+          "difficulty": "moyen",
+          "funFact": "Kanye West était producteur pour Jay-Z avant de lancer sa carrière solo."
+        }
+      ]
+    },
+    {
+      "id": "A1B2C3D4-0004-0000-0000-000000000004",
+      "title": "Années 2010-2020 — Streaming Era",
+      "themeKey": "annees2010",
+      "questions": [
+        {
+          "question": "Quel artiste belge a sorti 'Formidable' en 2013 ?",
+          "answer": "Stromae",
+          "difficulty": "facile",
+          "funFact": "Stromae est un anagramme de 'Maestro'."
+        }
+      ]
+    },
+    {
+      "id": "A1B2C3D4-0005-0000-0000-000000000005",
+      "title": "Pop FR — Hits Français",
+      "themeKey": "popFR",
+      "questions": [
+        {
+          "question": "Quel est le vrai prénom d'Aya Nakamura ?",
+          "answer": "Aya Danioko",
+          "difficulty": "difficile",
+          "funFact": "Elle a choisi Nakamura en hommage au personnage de la série Heroes."
+        }
+      ]
+    },
+    {
+      "id": "A1B2C3D4-0006-0000-0000-000000000006",
+      "title": "Pop Internationale — Hits Mondiaux",
+      "themeKey": "popIntl",
+      "questions": [
+        {
+          "question": "Quel album de Adele contient le titre 'Rolling in the Deep' ?",
+          "answer": "21",
+          "difficulty": "facile",
+          "funFact": "L'album 21 a été vendu à plus de 31 millions de copies dans le monde."
+        }
+      ]
+    },
+    {
+      "id": "A1B2C3D4-0007-0000-0000-000000000007",
+      "title": "Rock — Les Légendes",
+      "themeKey": "rock",
+      "questions": [
+        {
+          "question": "Quel groupe britannique a sorti 'Bohemian Rhapsody' en 1975 ?",
+          "answer": "Queen",
+          "difficulty": "facile",
+          "funFact": "Bohemian Rhapsody est la première chanson à atteindre le numéro 1 deux fois au Royaume-Uni."
+        }
+      ]
+    },
+    {
+      "id": "A1B2C3D4-0008-0000-0000-000000000008",
+      "title": "Rap FR — Les Incontournables",
+      "themeKey": "rapFR",
+      "questions": [
+        {
+          "question": "Quel album d'Orelsan a remporté l'album de l'année aux Victoires de la musique 2018 ?",
+          "answer": "La fête est finie",
+          "difficulty": "moyen",
+          "funFact": "L'album a été certifié double platine en France."
+        }
+      ]
+    },
+    {
+      "id": "A1B2C3D4-0009-0000-0000-000000000009",
+      "title": "Rap US — Golden Era",
+      "themeKey": "rapUS",
+      "questions": [
+        {
+          "question": "Dans quelle ville est né Tupac Shakur ?",
+          "answer": "New York",
+          "difficulty": "moyen",
+          "funFact": "Tupac est né à East Harlem mais est associé à Los Angeles où il a vécu et enregistré."
+        }
+      ]
+    },
+    {
+      "id": "A1B2C3D4-0010-0000-0000-000000000010",
+      "title": "Électro / Dance — Les Pionniers",
+      "themeKey": "electro",
+      "questions": [
+        {
+          "question": "Quel est le vrai nom du duo Daft Punk ?",
+          "answer": "Thomas Bangalter et Guy-Manuel de Homem-Christo",
+          "difficulty": "moyen",
+          "funFact": "Ils se sont rencontrés au lycée Carnot à Paris en 1987."
+        }
+      ]
+    },
+    {
+      "id": "A1B2C3D4-0011-0000-0000-000000000011",
+      "title": "R&B / Soul — Les Voix",
+      "themeKey": "rnbSoul",
+      "questions": [
+        {
+          "question": "Quel est l'album le plus vendu de Beyoncé ?",
+          "answer": "Dangerously in Love",
+          "difficulty": "difficile",
+          "funFact": "L'album est sorti en 2003, c'était son premier album solo après Destiny's Child."
+        }
+      ]
+    },
+    {
+      "id": "A1B2C3D4-0012-0000-0000-000000000012",
+      "title": "K-Pop — Les Références",
+      "themeKey": "kpop",
+      "questions": [
+        {
+          "question": "Combien de membres compte le groupe BTS ?",
+          "answer": "7",
+          "difficulty": "facile",
+          "funFact": "Les membres sont RM, Jin, Suga, J-Hope, Jimin, V et Jungkook."
+        }
+      ]
+    }
+  ]
+}

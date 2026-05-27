@@ -467,6 +467,8 @@ enum QuizSamples {
     ]
 
     static func sets(for theme: QuizTheme) -> [QuizSet] {
-        allSets.filter { $0.theme == theme }
+        let hardcoded = allSets.filter { $0.theme == theme }
+        let fromJSON = QuizJSONLoader.sets(for: theme)
+        return hardcoded + fromJSON
     }
 }
