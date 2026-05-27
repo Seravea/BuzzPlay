@@ -74,6 +74,9 @@ final class MasterFlowViewModel {
 
     /// Nom du dernier joueur déconnecté (nil = pas d'alerte à montrer)
     var disconnectedPlayerName: String? = nil
+
+    /// true quand tous les joueurs sont déconnectés pendant une partie active
+    var isGamePaused: Bool = false
     
     /// QuizSet sélectionné par le Master dans l'écran de sélection de thème
     var selectedQuizSet: QuizSet?
@@ -163,6 +166,7 @@ final class MasterFlowViewModel {
     func addPlayer(_ player: Player) {
         // Éviter les doublons si le player envoie playerJoin plusieurs fois dans la même session
         guard !players.contains(where: { $0.name == player.name }) else { return }
+        isGamePaused = false
 
         if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == player.name }) {
             // Reconnexion : restaurer le score sauvegardé (le nom est la clé — l'UUID peut changer)
@@ -241,8 +245,11 @@ extension MasterFlowViewModel {
                 self.connectedPeers.removeAll { $0 == peer }
                 let name = peer.displayName
                 self.players.removeAll { $0.name == name }
-                if name != "Écran Publique" {
-                    self.disconnectedPlayerName = name
+                guard name != "Écran Publique" else { return }
+                self.disconnectedPlayerName = name
+                // Pause si plus aucun joueur pendant une partie active
+                if self.activeGameType != nil && self.connectedPlayersCount == 0 {
+                    self.isGamePaused = true
                 }
             }
         }

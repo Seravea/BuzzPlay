@@ -116,7 +116,7 @@ struct HomeView: View {
             .alert(
                 "Joueur déconnecté",
                 isPresented: Binding(
-                    get: { masterFlowVM.disconnectedPlayerName != nil },
+                    get: { masterFlowVM.disconnectedPlayerName != nil && !masterFlowVM.isGamePaused },
                     set: { if !$0 { masterFlowVM.disconnectedPlayerName = nil } }
                 )
             ) {
@@ -127,6 +127,13 @@ struct HomeView: View {
                 }
             }
         }
+        .overlay {
+            if masterFlowVM.isGamePaused {
+                GamePausedOverlay(playerName: masterFlowVM.disconnectedPlayerName)
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.35), value: masterFlowVM.isGamePaused)
     }
 }
 
