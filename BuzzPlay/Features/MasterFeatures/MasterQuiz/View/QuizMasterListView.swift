@@ -234,10 +234,16 @@ private struct QuizQuestionRow: View {
                         .font(.nohemi(.subheadline, weight: .semiBold))
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.leading)
-                    if let theme = question.theme {
-                        Text(theme)
-                            .font(.nohemi(.caption2, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.4))
+                    HStack(spacing: 6) {
+                        if question.questionType == .rebus {
+                            Text("🎭 Rébus")
+                                .font(.nohemi(.caption2, weight: .semiBold))
+                                .foregroundStyle(Color(hex: "#AD46FF").opacity(0.9))
+                        } else if let theme = question.theme {
+                            Text(theme)
+                                .font(.nohemi(.caption2, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.4))
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

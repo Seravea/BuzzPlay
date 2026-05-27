@@ -8,6 +8,7 @@
 import Foundation
 import Observation
 
+@MainActor
 @Observable
 class PlayerFlowViewModel {
     //MARK: - Persistence
@@ -119,7 +120,8 @@ class PlayerFlowViewModel {
 
     func makeBuzzerViewModel(for mode: BuzzerGameMode) -> BuzzerViewModel {
         guard let playerVM = playerGameVM else {
-            fatalError("Pas de player défini")
+            assertionFailure("makeBuzzerViewModel appelé sans playerGameVM défini")
+            return BuzzerViewModel(player: Player(name: "?", teamColor: .purpleGame), mode: mode)
         }
 
         let vm = BuzzerViewModel(player: playerVM.player, mode: mode)

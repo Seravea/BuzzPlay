@@ -10,6 +10,7 @@ struct BuzzerPlayerView: View {
     var gameType: GameType
     @State private var coinsVM: CoinsViewModel
     @State private var isGiftSheetOpen = false
+    @Environment(\.scenePhase) private var scenePhase
 
     init(playerGameVM: PlayerGameViewModel, gameType: GameType) {
         self._playerGameVM = Bindable(playerGameVM)
@@ -84,6 +85,19 @@ struct BuzzerPlayerView: View {
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: playerGameVM.pendingNotesToast != nil)
         .onAppear { playerGameVM.syncBuzzerWithCurrentPublicState() }
+        .onChange(of: playerGameVM.player.accountAmount) { _, _ in
+            coinsVM.onPlayerUpdated(playerGameVM.player)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            switch phase {
+            case .background, .inactive:
+                playerGameVM.handleSceneDidBackground()
+            case .active:
+                playerGameVM.handleSceneWillForeground()
+            @unknown default:
+                break
+            }
+        }
         .sheet(isPresented: $isGiftSheetOpen) {
             GiftShopSheet(coinsVM: coinsVM, isPresented: $isGiftSheetOpen)
                 .presentationDetents([.fraction(0.90)])
@@ -143,6 +157,7 @@ struct BuzzerPlayerView: View {
                     .font(.nohemi(.callout, weight: .extraBold))
                     .foregroundStyle(.white)
                     .monospacedDigit()
+                    .frame(minWidth: 24, alignment: .trailing)
                 Image(systemName: "dollarsign.bank.building.fill")
                     .font(.system(size: 13))
                     .foregroundStyle(Color.mustardYellow)

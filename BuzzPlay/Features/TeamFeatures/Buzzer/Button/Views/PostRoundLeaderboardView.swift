@@ -21,7 +21,7 @@ struct PostRoundLeaderboardView: View {
                     .padding(.top, 20)
                     .padding(.bottom, 16)
 
-                ScrollView(showsIndicators: false) {
+                ScrollView() {
                     VStack(spacing: 10) {
                         ForEach(Array(displayedPlayers.enumerated()), id: \.element.id) { index, player in
                             let oldScore = previousRanking.first(where: { $0.id == player.id })?.score ?? player.score

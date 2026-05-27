@@ -109,15 +109,20 @@ struct QuizThemeSelectionView: View {
                 #if os(iOS) && swift(>=5.9)
                 if SystemLanguageModel.default.availability == .available {
                     Button(action: { showAIGeneratorSheet = true }) {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 40, height: 40)
-                            .background(Color(hex: "#AD46FF").opacity(0.2), in: RoundedRectangle(cornerRadius: 10))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .strokeBorder(Color(hex: "#AD46FF").opacity(0.3), lineWidth: 1)
-                            )
+                        HStack(spacing: 6) {
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 13, weight: .semibold))
+                            Text("Générer")
+                                .font(.nohemi(.caption, weight: .bold))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color(hex: "#AD46FF").opacity(0.2), in: RoundedRectangle(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .strokeBorder(Color(hex: "#AD46FF").opacity(0.3), lineWidth: 1)
+                        )
                     }
                 }
                 #endif

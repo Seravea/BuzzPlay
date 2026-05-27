@@ -30,6 +30,7 @@ class QuizMasterViewModel: BuzzDrivenGame {
 
     private var doubledScorePlayers: Set<UUID> = []
     private var usedQuestionHintIndex: [UUID: Int] = [:]  // questionID -> next hint index
+    private let feedbackGenerator = UINotificationFeedbackGenerator()
 
     //MARK: Timer's datas
     var reactionTimeMs: Int = 0
@@ -40,6 +41,7 @@ class QuizMasterViewModel: BuzzDrivenGame {
         self.quizSet = quizSet
         let limit = gameVM.quizRoundsTotal
         self.questions = limit > 0 ? Array(quizSet.questions.prefix(limit)) : quizSet.questions
+        feedbackGenerator.prepare()
     }
 }
 
@@ -80,7 +82,7 @@ extension QuizMasterViewModel {
     
     func validateAnswer(points: Int) {
         if let player = gameVM.currentBuzzPlayer {
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            feedbackGenerator.notificationOccurred(.success)
             let finalPoints = doubledScorePlayers.remove(player.id) != nil ? points * 2 : points
             gameVM.quizRoundsPlayed += 1
 
@@ -102,7 +104,7 @@ extension QuizMasterViewModel {
     }
     
     func rejectAnswer() {
-        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+        feedbackGenerator.notificationOccurred(.warning)
 
         let resultPayload = AnswerResultPayload(isCorrect: false, points: 0, correctAnswer: nil)
         gameVM.mpcService.sendMessage(.answerResult(resultPayload))

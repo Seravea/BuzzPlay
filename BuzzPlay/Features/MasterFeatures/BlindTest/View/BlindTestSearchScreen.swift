@@ -218,7 +218,7 @@ struct BlindTestSearchScreen: View {
     // MARK: Categories
 
     private var categoriesSection: some View {
-        ScrollView(showsIndicators: false) {
+        ScrollView() {
             VStack(alignment: .leading, spacing: 24) {
                 categoryRow(label: "GÉNÉRATION", items: generations)
                 categoryRow(label: "GENRE", items: genres)
@@ -235,7 +235,7 @@ struct BlindTestSearchScreen: View {
                 .tracking(0.8)
                 .padding(.horizontal, 20)
 
-            ScrollView(.horizontal, showsIndicators: false) {
+            ScrollView(.horizontal) {
                 HStack(spacing: 10) {
                     ForEach(items) { item in
                         CategoryCard(item: item) { doSearch(query: item.query) }

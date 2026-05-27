@@ -255,7 +255,7 @@ struct MasterChooseGameView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 8)
             } else {
-                ScrollView(.horizontal, showsIndicators: false) {
+                ScrollView(.horizontal) {
                     HStack(spacing: 10) {
                         // Card "Tout le monde" si > 1 joueur
                         if masterChooseGameVM.players.count > 1 {

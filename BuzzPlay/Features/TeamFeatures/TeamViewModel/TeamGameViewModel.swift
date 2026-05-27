@@ -9,6 +9,7 @@ import Foundation
 import Observation
 
 
+@MainActor
 @Observable
 final class PlayerGameViewModel {
 
@@ -65,41 +66,36 @@ extension PlayerGameViewModel {
         guard !hasSetupMPC else { return }
         hasSetupMPC = true
 
+        // MPCService dispatche déjà sur le main thread — on utilise Task @MainActor pour
+        // garantir l'isolation sans double-dispatch.
         mpc.onPeerConnected = { [weak self] _ in
-            guard let self else { return }
-            DispatchQueue.main.async {
+            Task { @MainActor [weak self] in
+                guard let self else { return }
                 self.isConnectedToMaster = true
                 self.hasEverConnectedToMaster = true
                 guard !self.didSentPlayer else { return }
-
-                // ✅ Only send once we are connected (prevents MCSession Code=2: Invalid peerIDs)
                 self.didSentPlayer = true
-
-                // PLAYER joins the master
                 self.mpc.sendMessage(.playerJoin(self.player))
             }
         }
 
         mpc.onPeerDisconnected = { [weak self] _ in
-            guard let self else { return }
-            DispatchQueue.main.async {
+            Task { @MainActor [weak self] in
+                guard let self else { return }
                 self.isConnectedToMaster = false
-                // Reset so player re-announces itself when master comes back
                 self.didSentPlayer = false
-                // Browser continues running; master will be re-discovered automatically
             }
         }
 
         mpc.onMessage = { [weak self] data, peer in
-            guard let self else { return }
-
-            do {
-                let message = try JSONDecoder().decode(MPCMessage.self, from: data)
-                DispatchQueue.main.async {
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                do {
+                    let message = try JSONDecoder().decode(MPCMessage.self, from: data)
                     self.handleMessage(message)
+                } catch {
+                    print("Message received but unknown in MPCMessage: \(error)")
                 }
-            } catch {
-                print("Message received but unknown in MPCMessage: \(error)")
             }
         }
 
@@ -312,6 +308,17 @@ extension PlayerGameViewModel {
     private func stopUITimer() {
         timer?.invalidate()
         timer = nil
+    }
+
+    // MARK: - B4 : Gestion background/foreground
+    // Appelé depuis BuzzerPlayerView via .onChange(of: scenePhase)
+    func handleSceneDidBackground() {
+        stopUITimer()
+    }
+
+    func handleSceneWillForeground() {
+        // Resync depuis la dernière valeur reçue du Master (pas de drift en foreground)
+        formattedTime = lastMasterFormattedTime
     }
 
     private func syncBuzzerState(buzzingPlayer: Player?, isRoundActive: Bool, autoResumeTimer: Bool = true) {

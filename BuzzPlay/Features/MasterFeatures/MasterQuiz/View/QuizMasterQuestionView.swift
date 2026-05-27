@@ -79,21 +79,48 @@ struct QuizActiveQuestionScreen: View {
     // MARK: Question Card
 
     private var questionCard: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("QUESTION")
-                .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.white.opacity(0.4))
-                .tracking(0.8)
-            if let question = quizMasterVM.currentQuestion {
-                Text(question.title)
+        let question = quizMasterVM.currentQuestion
+        let isRebus = question?.questionType == .rebus
+
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Text("QUESTION")
+                    .font(.nohemi(.caption2, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.4))
+                    .tracking(0.8)
+                if isRebus {
+                    Text("🎭 RÉBUS")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .foregroundStyle(Color(hex: "#AD46FF"))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color(hex: "#AD46FF").opacity(0.15), in: Capsule())
+                }
+            }
+            if let q = question {
+                Text(q.title)
                     .font(.nohemi(.title3, weight: .bold))
                     .foregroundStyle(.white)
+
+                if isRebus && !q.indices.isEmpty {
+                    HStack(spacing: 10) {
+                        ForEach(q.indices, id: \.self) { emoji in
+                            Text(emoji)
+                                .font(.system(size: 44))
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 10)
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
         .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
-        .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.1), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(
+            isRebus ? Color(hex: "#AD46FF").opacity(0.25) : .white.opacity(0.1),
+            lineWidth: 1
+        ))
     }
 
     // MARK: Answers

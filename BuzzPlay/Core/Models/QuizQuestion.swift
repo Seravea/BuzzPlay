@@ -19,6 +19,7 @@ struct QuizQuestion: Identifiable, Codable, Hashable {
     var correctAnswer: String?
     var funFact: String?
     var source: QuizSource = .bundled
+    var questionType: QuizQuestionType = .standard
 }
 
 enum QuizDifficulty: String, CaseIterable, Identifiable, Codable, Hashable {
@@ -61,6 +62,20 @@ enum QuizDifficulty: String, CaseIterable, Identifiable, Codable, Hashable {
 enum QuizSource: String, CaseIterable, Codable, Hashable {
     case aiGenerated
     case bundled
+}
+
+enum QuizQuestionType: String, CaseIterable, Codable, Hashable, Identifiable {
+    case standard
+    case rebus
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .standard: "Standard"
+        case .rebus: "Rébus"
+        }
+    }
 }
 
 

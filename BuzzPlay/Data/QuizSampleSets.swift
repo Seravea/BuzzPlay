@@ -29,7 +29,54 @@ enum QuizThemes {
         color: .teal
     )
 
-    static let all: [QuizTheme] = [music, cinema, cultureG]
+    static let sport = QuizTheme(
+        title: "Sport",
+        emoji: "⚽",
+        color: Color(hex: "#00C950")
+    )
+
+    static let popCultureFR = QuizTheme(
+        title: "Pop Culture FR",
+        emoji: "📱",
+        color: Color(hex: "#F6339A")
+    )
+
+    static let annees9000 = QuizTheme(
+        title: "Années 90-2000",
+        emoji: "📺",
+        color: Color(hex: "#F0B100")
+    )
+
+    static let memes = QuizTheme(
+        title: "Réseaux & Mèmes",
+        emoji: "🌐",
+        color: Color(hex: "#00B8DB")
+    )
+
+    static let gastro = QuizTheme(
+        title: "Gastronomie",
+        emoji: "🍕",
+        color: Color(hex: "#FF6900")
+    )
+
+    static let jeuxVideo = QuizTheme(
+        title: "Jeux vidéo",
+        emoji: "🎮",
+        color: Color(hex: "#2B7FFF")
+    )
+
+    static let rebus = QuizTheme(
+        title: "Rébus",
+        emoji: "🎭",
+        color: Color(hex: "#AD46FF")
+    )
+
+    // Tier 1 + 4 thèmes clés 18-35 ans FR — 8 max en V1
+    static let all: [QuizTheme] = [
+        music, cinema, cultureG, sport,
+        annees9000, popCultureFR, jeuxVideo, gastro
+    ]
+    // Réservés V1.5 : memes, rebus (saisonniers aussi)
 }
 
 // MARK: - Sets
@@ -274,12 +321,360 @@ enum QuizSamples {
         ]
     )
 
+    // MARK: Sport
+
+    static let sportChampions: QuizSet = QuizSet(
+        title: "Champions & Records",
+        theme: QuizThemes.sport,
+        questions: [
+            QuizQuestion(title: "Quel pays a remporté la Coupe du Monde de football en 1998 ?",
+                         answers: ["La France", "France"],
+                         theme: "Sport", difficulty: .facile, tone: nil,
+                         funFact: "Zinedine Zidane a marqué deux buts de la tête en finale. Score : 3-0 contre le Brésil."),
+            QuizQuestion(title: "Combien de titres de champion du monde de F1 Lewis Hamilton détient-il ?",
+                         answers: ["7", "Sept"],
+                         theme: "Sport", difficulty: .moyen, tone: nil,
+                         funFact: "Il a égalé le record légendaire de Michael Schumacher avec 7 titres mondiaux en 2020."),
+            QuizQuestion(title: "Dans quelle ville se sont déroulés les Jeux Olympiques d'été 2024 ?",
+                         answers: ["Paris"],
+                         theme: "Sport", difficulty: .facile, tone: nil,
+                         funFact: "C'était la 3e fois que Paris accueillait les JO d'été, après 1900 et 1924."),
+            QuizQuestion(title: "Quel club a remporté le plus de Ligues des Champions UEFA ?",
+                         answers: ["Real Madrid", "Le Real Madrid"],
+                         theme: "Sport", difficulty: .facile, tone: nil,
+                         funFact: "Le Real Madrid a remporté 15 Ligues des Champions, dont 3 consécutives de 2016 à 2018."),
+            QuizQuestion(title: "En quelle année Zinedine Zidane a-t-il reçu un carton rouge en finale de Coupe du Monde ?",
+                         answers: ["2006"],
+                         theme: "Sport", difficulty: .moyen, tone: nil,
+                         funFact: "Ce coup de tête contre Marco Materazzi reste l'un des moments les plus marquants de l'histoire du foot."),
+            QuizQuestion(title: "Quelle nation a remporté le plus de Coupes du Monde de rugby ?",
+                         answers: ["Nouvelle-Zélande", "Les All Blacks"],
+                         theme: "Sport", difficulty: .moyen, tone: nil,
+                         funFact: "Les All Blacks ont remporté le titre en 1987, 2011 et 2015."),
+            QuizQuestion(title: "Quel tennisman détient le record du plus grand nombre de titres en Grand Chelem ?",
+                         answers: ["Novak Djokovic", "Djokovic"],
+                         theme: "Sport", difficulty: .difficile, tone: nil,
+                         funFact: "Djokovic a remporté 24 titres du Grand Chelem, dépassant Federer (20) et Nadal (22)."),
+        ]
+    )
+
+    // MARK: Pop Culture FR
+
+    static let popCultureFRSet: QuizSet = QuizSet(
+        title: "Made in France",
+        theme: QuizThemes.popCultureFR,
+        questions: [
+            QuizQuestion(title: "Dans la série Kaamelott, qui joue le roi Arthur ?",
+                         answers: ["Alexandre Astier"],
+                         theme: "Pop Culture FR", difficulty: .facile, tone: nil,
+                         funFact: "Alexandre Astier a écrit, réalisé et joué dans Kaamelott. Il a tourné plus de 458 épisodes."),
+            QuizQuestion(title: "Quel groupe de rap français est connu pour les titres 'Le Lac' et 'Da' ?",
+                         answers: ["PNL"],
+                         theme: "Pop Culture FR", difficulty: .facile, tone: nil,
+                         funFact: "PNL (Deux Frères) est le duo formé par Ademo et N.O.S, deux frères originaires de Tarterêts."),
+            QuizQuestion(title: "Quelle émission TV française a révélé Jenifer Bartoli en 2002 ?",
+                         answers: ["Star Academy"],
+                         theme: "Pop Culture FR", difficulty: .facile, tone: nil,
+                         funFact: "Star Academy saison 1 a battu des records d'audience avec plus de 10 millions de téléspectateurs pour la finale."),
+            QuizQuestion(title: "Quel rappeur français est surnommé 'le Duc de Boulogne' ?",
+                         answers: ["Booba"],
+                         theme: "Pop Culture FR", difficulty: .moyen, tone: nil,
+                         funFact: "Booba est l'un des artistes les plus certifiés de l'histoire du rap français avec plus de 5 millions d'albums vendus."),
+            QuizQuestion(title: "Quel est le vrai prénom du YouTubeur français connu sous le pseudonyme Squeezie ?",
+                         answers: ["Lucas", "Lucas Hauchard"],
+                         theme: "Pop Culture FR", difficulty: .moyen, tone: nil,
+                         funFact: "Squeezie est le YouTubeur français le plus suivi avec plus de 18 millions d'abonnés."),
+            QuizQuestion(title: "Dans quel film Jean Dujardin incarne-t-il un espion français maladroit des années 60 ?",
+                         answers: ["OSS 117"],
+                         theme: "Pop Culture FR", difficulty: .facile, tone: nil,
+                         funFact: "OSS 117 : Le Caire, nid d'espions (2006) a relancé la carrière de Jean Dujardin qui a enchaîné avec The Artist."),
+            QuizQuestion(title: "Quel est le vrai prénom de Bigflo, du duo Bigflo & Oli ?",
+                         answers: ["Florian"],
+                         theme: "Pop Culture FR", difficulty: .difficile, tone: nil,
+                         funFact: "Bigflo (Florian) et Oli (Olivio) sont deux frères toulousains. 'La Cour des grands' a été disque de platine."),
+        ]
+    )
+
+    // MARK: Années 90-2000
+
+    static let annees9000Set: QuizSet = QuizSet(
+        title: "Nostalgie 90-2000",
+        theme: QuizThemes.annees9000,
+        questions: [
+            QuizQuestion(title: "Quel Pokémon porte le numéro 25 dans le Pokédex ?",
+                         answers: ["Pikachu"],
+                         theme: "Années 90-2000", difficulty: .facile, tone: nil,
+                         funFact: "Pikachu est devenu la mascotte officielle de la franchise Pokémon depuis les débuts du dessin animé en 1997."),
+            QuizQuestion(title: "Quel groupe britannique a chanté 'Wannabe' en 1996 ?",
+                         answers: ["Spice Girls"],
+                         theme: "Années 90-2000", difficulty: .facile, tone: nil,
+                         funFact: "'Wannabe' est resté numéro 1 pendant 7 semaines au Royaume-Uni. C'est l'un des singles féminins les plus vendus de l'histoire."),
+            QuizQuestion(title: "En quelle année est sorti le premier film de la saga Harry Potter ?",
+                         answers: ["2001"],
+                         theme: "Années 90-2000", difficulty: .facile, tone: nil,
+                         funFact: "Harry Potter à l'école des sorciers a rapporté 975 millions de dollars mondial. Daniel Radcliffe avait 12 ans au tournage."),
+            QuizQuestion(title: "Quel jeu de simulation de vie a été lancé par Maxis en 2000 ?",
+                         answers: ["Les Sims", "The Sims"],
+                         theme: "Années 90-2000", difficulty: .moyen, tone: nil,
+                         funFact: "Les Sims ont vendu plus de 200 millions d'exemplaires toutes versions confondues, ce qui en fait l'un des jeux les plus vendus de l'histoire."),
+            QuizQuestion(title: "Qui animait 'Le Club Dorothée' sur TF1 dans les années 80-90 ?",
+                         answers: ["Dorothée"],
+                         theme: "Années 90-2000", difficulty: .facile, tone: nil,
+                         funFact: "Le Club Dorothée a duré de 1987 à 1997, diffusant Dragon Ball Z, Sailor Moon et Saint Seiya pour la première fois en France."),
+            QuizQuestion(title: "En quelle année Google a-t-il été fondé par Larry Page et Sergey Brin ?",
+                         answers: ["1998"],
+                         theme: "Années 90-2000", difficulty: .moyen, tone: nil,
+                         funFact: "Google a été créé dans un garage en Californie. Leur premier serveur était fait de pièces LEGO pour être facilement extensible."),
+            QuizQuestion(title: "Quel groupe a chanté 'Bye Bye Bye' en 2000 ?",
+                         answers: ["NSYNC", "*NSYNC"],
+                         theme: "Années 90-2000", difficulty: .moyen, tone: nil,
+                         funFact: "Justin Timberlake était membre de *NSYNC avant de lancer sa carrière solo avec 'Cry Me a River' en 2002."),
+        ]
+    )
+
+    // MARK: Réseaux & Mèmes
+
+    static let memesInternetSet: QuizSet = QuizSet(
+        title: "Internet & Mèmes",
+        theme: QuizThemes.memes,
+        questions: [
+            QuizQuestion(title: "En quelle année YouTube a-t-il été créé ?",
+                         answers: ["2005"],
+                         theme: "Réseaux & Mèmes", difficulty: .moyen, tone: nil,
+                         funFact: "La première vidéo uploadée sur YouTube s'intitule 'Me at the zoo' et dure 18 secondes. Elle a été postée par le cofondateur Jawed Karim."),
+            QuizQuestion(title: "Quel chanteur est associé au phénomène du 'Rickrolling' sur internet ?",
+                         answers: ["Rick Astley"],
+                         theme: "Réseaux & Mèmes", difficulty: .facile, tone: nil,
+                         funFact: "Le Rickrolling consiste à partager un faux lien qui redirige vers 'Never Gonna Give You Up'. En 2023, la vidéo a dépassé le milliard de vues."),
+            QuizQuestion(title: "Combien de caractères maximum permettait un tweet avant novembre 2017 ?",
+                         answers: ["140"],
+                         theme: "Réseaux & Mèmes", difficulty: .moyen, tone: nil,
+                         funFact: "Twitter a doublé la limite à 280 caractères en 2017. La limite initiale de 140 venait des SMS qui permettaient 160 caractères."),
+            QuizQuestion(title: "Dans quel pays TikTok a-t-il été créé ?",
+                         answers: ["Chine"],
+                         theme: "Réseaux & Mèmes", difficulty: .facile, tone: nil,
+                         funFact: "TikTok a été créé par ByteDance en 2016 sous le nom Douyin en Chine. Il s'appelle TikTok dans le reste du monde depuis 2017."),
+            QuizQuestion(title: "Quel réseau social a lancé le concept des 'Stories' éphémères en premier ?",
+                         answers: ["Snapchat"],
+                         theme: "Réseaux & Mèmes", difficulty: .moyen, tone: nil,
+                         funFact: "Snapchat a lancé les Stories en 2013. Instagram les a copiées en 2016, et elles ont depuis dépassé Snapchat en nombre d'utilisateurs actifs."),
+            QuizQuestion(title: "En quelle année Instagram a-t-il été racheté par Facebook ?",
+                         answers: ["2012"],
+                         theme: "Réseaux & Mèmes", difficulty: .difficile, tone: nil,
+                         funFact: "Facebook a racheté Instagram pour 1 milliard de dollars en 2012. Instagram valait plus de 100 milliards 10 ans plus tard."),
+            QuizQuestion(title: "De quel animal vient le mème 'This is fine' (chien devant un incendie) ?",
+                         answers: ["Un chien", "Chien"],
+                         theme: "Réseaux & Mèmes", difficulty: .facile, tone: nil,
+                         funFact: "Ce mème vient d'un comic strip de KC Green (2013) où un chien dit 'This is fine' en buvant son café, entouré de flammes."),
+        ]
+    )
+
+    // MARK: Gastronomie
+
+    static let gastroSaveurs: QuizSet = QuizSet(
+        title: "Cuisine & Saveurs",
+        theme: QuizThemes.gastro,
+        questions: [
+            QuizQuestion(title: "Dans quelle ville française est née la bouillabaisse ?",
+                         answers: ["Marseille"],
+                         theme: "Gastronomie", difficulty: .facile, tone: nil,
+                         funFact: "La bouillabaisse est une soupe de poisson originaire de Marseille. Son nom vient du provençal 'bolhabaissa' (faire bouillir et abaisser le feu)."),
+            QuizQuestion(title: "Quelle épice donne la couleur jaune vif au curry ?",
+                         answers: ["Le curcuma", "Curcuma"],
+                         theme: "Gastronomie", difficulty: .moyen, tone: nil,
+                         funFact: "Le curcuma est utilisé depuis plus de 4 000 ans. Il a des propriétés anti-inflammatoires reconnues par la science moderne."),
+            QuizQuestion(title: "Quel pays africain est le plus grand producteur mondial de cacao ?",
+                         answers: ["Côte d'Ivoire"],
+                         theme: "Gastronomie", difficulty: .difficile, tone: nil,
+                         funFact: "La Côte d'Ivoire produit environ 40% du cacao mondial, soit l'équivalent de 2 millions de tonnes par an."),
+            QuizQuestion(title: "Quel est l'ingrédient principal du guacamole ?",
+                         answers: ["Avocat", "L'avocat"],
+                         theme: "Gastronomie", difficulty: .facile, tone: nil,
+                         funFact: "Le mot 'guacamole' vient du nahuatl 'āhuacamōlli' qui signifie littéralement 'sauce d'avocat'. Les Aztèques le préparaient déjà il y a 500 ans."),
+            QuizQuestion(title: "Quel fromage normand emblématique est vendu dans une boîte ronde en bois ?",
+                         answers: ["Le camembert", "Camembert"],
+                         theme: "Gastronomie", difficulty: .facile, tone: nil,
+                         funFact: "La boîte en bois du camembert a été inventée en 1890 pour permettre son transport jusqu'aux États-Unis sans l'abîmer."),
+            QuizQuestion(title: "Quelle ville française est souvent surnommée 'capitale mondiale de la gastronomie' ?",
+                         answers: ["Lyon"],
+                         theme: "Gastronomie", difficulty: .facile, tone: nil,
+                         funFact: "Lyon abrite plus de 4 000 restaurants dont plusieurs étoilés Michelin. Paul Bocuse, né près de Lyon, a révolutionné la cuisine française."),
+            QuizQuestion(title: "D'où vient originellement le sushi ?",
+                         answers: ["Japon", "Du Japon"],
+                         theme: "Gastronomie", difficulty: .facile, tone: nil,
+                         funFact: "Le sushi moderne (nigiri) a été inventé à Tokyo (alors Edo) vers 1820 par Hanaya Yohei comme repas rapide à emporter."),
+        ]
+    )
+
+    // MARK: Jeux vidéo
+
+    static let jeuxVideoSet: QuizSet = QuizSet(
+        title: "Pixel Masters",
+        theme: QuizThemes.jeuxVideo,
+        questions: [
+            QuizQuestion(title: "Quel est le prénom du plombier emblématique de Nintendo ?",
+                         answers: ["Mario"],
+                         theme: "Jeux vidéo", difficulty: .facile, tone: nil,
+                         funFact: "Mario s'appelait 'Jumpman' dans Donkey Kong (1981). Son nom vient de Mario Segale, le propriétaire de l'entrepôt de Nintendo USA."),
+            QuizQuestion(title: "Dans quel jeu de RPG joue-t-on Geralt de Riv ?",
+                         answers: ["The Witcher", "Le Sorceleur"],
+                         theme: "Jeux vidéo", difficulty: .facile, tone: nil,
+                         funFact: "The Witcher 3 a remporté plus de 250 récompenses du jeu de l'année. Il est basé sur les romans polonais d'Andrzej Sapkowski."),
+            QuizQuestion(title: "En quelle année Minecraft a-t-il été officiellement lancé ?",
+                         answers: ["2011"],
+                         theme: "Jeux vidéo", difficulty: .moyen, tone: nil,
+                         funFact: "Minecraft est le jeu le plus vendu de l'histoire avec plus de 238 millions d'exemplaires. Il a été créé par Markus 'Notch' Persson en Suède."),
+            QuizQuestion(title: "Quel jeu battle royale met 100 joueurs en compétition sur une île ?",
+                         answers: ["Fortnite"],
+                         theme: "Jeux vidéo", difficulty: .facile, tone: nil,
+                         funFact: "Fortnite a atteint 350 millions de joueurs en 2020. Le concert virtuel de Travis Scott dans le jeu a réuni 12 millions de spectateurs simultanés."),
+            QuizQuestion(title: "Comment s'appelle le monstre vert explosif emblématique de Minecraft ?",
+                         answers: ["Creeper"],
+                         theme: "Jeux vidéo", difficulty: .facile, tone: nil,
+                         funFact: "Le Creeper est né d'un bug : Notch avait inversé la hauteur et la largeur d'un cochon par erreur, créant cette silhouette verte caractéristique."),
+            QuizQuestion(title: "Quelle console Nintendo lancée en 2017 peut s'utiliser aussi bien à la maison qu'en portable ?",
+                         answers: ["Nintendo Switch"],
+                         theme: "Jeux vidéo", difficulty: .facile, tone: nil,
+                         funFact: "La Nintendo Switch a dépassé les 140 millions d'unités vendues, devenant la console la plus vendue de l'histoire de Nintendo."),
+            QuizQuestion(title: "Dans quelle ville japonaise se trouve le siège de Nintendo ?",
+                         answers: ["Kyoto"],
+                         theme: "Jeux vidéo", difficulty: .difficile, tone: nil,
+                         funFact: "Nintendo a été fondée à Kyoto en 1889... comme fabricant de cartes à jouer hanafuda. Elle n'est entrée dans le jeu vidéo qu'en 1977."),
+        ]
+    )
+
+    // MARK: Rébus Films
+
+    static let rebusFilms: QuizSet = QuizSet(
+        title: "Films en emojis",
+        theme: QuizThemes.rebus,
+        questions: [
+            QuizQuestion(
+                title: "Quel film Disney se cache ici ?",
+                answers: ["Le Roi Lion"],
+                theme: "Rébus",
+                difficulty: .facile,
+                tone: nil,
+                indices: ["🦁", "👑"],
+                correctAnswer: "Le Roi Lion",
+                funFact: "Le film est inspiré de Hamlet de Shakespeare et a rapporté 968M$ en 1994.",
+                questionType: .rebus
+            ),
+            QuizQuestion(
+                title: "Quel film d'animation est caché ici ?",
+                answers: ["La Reine des Neiges"],
+                theme: "Rébus",
+                difficulty: .facile,
+                tone: nil,
+                indices: ["❄️", "👸"],
+                correctAnswer: "La Reine des Neiges",
+                funFact: "'Let It Go' a été traduite en 42 langues différentes pour les versions locales du film.",
+                questionType: .rebus
+            ),
+            QuizQuestion(
+                title: "Quel super-héros se cache ici ?",
+                answers: ["Spider-Man"],
+                theme: "Rébus",
+                difficulty: .facile,
+                tone: nil,
+                indices: ["🕷️", "🧑"],
+                correctAnswer: "Spider-Man",
+                funFact: "Le costume de Spider-Man dans le film de 2002 a coûté 100 000 dollars à fabriquer.",
+                questionType: .rebus
+            ),
+            QuizQuestion(
+                title: "Quel film Pixar se cache ici ?",
+                answers: ["Le Monde de Nemo"],
+                theme: "Rébus",
+                difficulty: .facile,
+                tone: nil,
+                indices: ["🐠", "🔍"],
+                correctAnswer: "Le Monde de Nemo",
+                funFact: "Le film a déclenché une hausse de 40% des ventes de poissons-clowns dans les animaleries.",
+                questionType: .rebus
+            ),
+            QuizQuestion(
+                title: "Quel conte Disney est représenté ici ?",
+                answers: ["La Belle et la Bête"],
+                theme: "Rébus",
+                difficulty: .moyen,
+                tone: nil,
+                indices: ["🌹", "🧌"],
+                correctAnswer: "La Belle et la Bête",
+                funFact: "La bibliothèque de la Bête dans le film contient plus de 2 000 livres selon les créateurs.",
+                questionType: .rebus
+            ),
+            QuizQuestion(
+                title: "Quel film de science-fiction est caché ici ?",
+                answers: ["Matrix"],
+                theme: "Rébus",
+                difficulty: .moyen,
+                tone: nil,
+                indices: ["💊", "🔴", "🕶️"],
+                correctAnswer: "Matrix",
+                funFact: "Les Wachowski ont présenté 90 pages de storyboards pour convaincre le studio. Le budget initial était de 63 millions de dollars.",
+                questionType: .rebus
+            ),
+            QuizQuestion(
+                title: "Quel blockbuster est caché ici ?",
+                answers: ["Jurassic Park"],
+                theme: "Rébus",
+                difficulty: .moyen,
+                tone: nil,
+                indices: ["🦕", "🏝️"],
+                correctAnswer: "Jurassic Park",
+                funFact: "Le rugissement du T-Rex est un mélange de sons de tigre, d'alligator et d'éléphant enregistrés par les équipes sonores.",
+                questionType: .rebus
+            ),
+            QuizQuestion(
+                title: "Quel film culte est représenté ici ?",
+                answers: ["Titanic"],
+                theme: "Rébus",
+                difficulty: .moyen,
+                tone: nil,
+                indices: ["🚢", "🧊", "❄️"],
+                correctAnswer: "Titanic",
+                funFact: "James Cameron a plongé 33 fois sur l'épave du vrai Titanic pour préparer le film.",
+                questionType: .rebus
+            ),
+            QuizQuestion(
+                title: "Quel film d'animation est caché ici ?",
+                answers: ["Kung Fu Panda"],
+                theme: "Rébus",
+                difficulty: .facile,
+                tone: nil,
+                indices: ["🐼", "🥋"],
+                correctAnswer: "Kung Fu Panda",
+                funFact: "Jack Black a mangé de vraies nouilles pendant l'enregistrement pour rendre son jeu d'acteur plus authentique.",
+                questionType: .rebus
+            ),
+            QuizQuestion(
+                title: "Quelle saga légendaire se cache ici ?",
+                answers: ["Harry Potter"],
+                theme: "Rébus",
+                difficulty: .facile,
+                tone: nil,
+                indices: ["🧙", "⚡", "📖"],
+                correctAnswer: "Harry Potter",
+                funFact: "J.K. Rowling a imaginé l'histoire de Harry Potter pendant un retard de train de 4 heures entre Manchester et Londres en 1990.",
+                questionType: .rebus
+            ),
+        ]
+    )
+
     // MARK: - All
 
     static let all: [QuizSet] = [
         music2000s, musicFrench,
         cinemaCult, seriesTV,
-        cultureGeoHistoire, cultureSciences
+        cultureGeoHistoire, cultureSciences,
+        sportChampions,
+        popCultureFRSet,
+        annees9000Set,
+        memesInternetSet,
+        gastroSaveurs,
+        jeuxVideoSet,
+        rebusFilms
     ]
 
     /// Tous les sets d'un thème donné.

@@ -171,6 +171,7 @@ struct GiftShopSheet: View {
                     GiftCardView(
                         gift: gift,
                         balance: balance,
+                        isPending: coinsVM.isPendingPurchase,
                         otherPlayers: coinsVM.otherPlayers,
                         onBuy: { target in
                             if gift == .changeBuzzSound {
@@ -210,12 +211,13 @@ struct GiftShopSheet: View {
 private struct GiftCardView: View {
     let gift: CoinsViewModel.Gift
     let balance: Int
+    let isPending: Bool
     let otherPlayers: [Player]
     let onBuy: (Player?) -> Void
 
     private var canAfford: Bool { balance >= gift.price }
     private var notEnoughPlayers: Bool { otherPlayers.count < gift.minimumOtherPlayers }
-    private var isActive: Bool { canAfford && !notEnoughPlayers }
+    private var isActive: Bool { canAfford && !notEnoughPlayers && !isPending }
 
     var body: some View {
         Group {

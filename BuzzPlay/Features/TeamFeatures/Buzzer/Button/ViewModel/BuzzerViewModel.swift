@@ -19,6 +19,7 @@ enum AnswerResult {
     case otherCorrect(playerName: String, points: Int, answer: String?)
 }
 
+@MainActor
 @Observable
 class BuzzerViewModel {
 
@@ -117,10 +118,9 @@ extension BuzzerViewModel {
 
     func showAnswerResult(_ result: AnswerResult) {
         answerResult = result
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.6) { [weak self] in
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(2.6))
             self?.answerResult = nil
-            // Buzzer reste verrouillé pour tous les cas — c'est le Master qui pilote
-            // le countdown et le déverrouillage via MPC (.publicUpdate countdownPhase + .buzzUnlock)
             self?.lockBuzz(teamNameHasBuzz: "")
         }
     }
@@ -132,15 +132,18 @@ extension BuzzerViewModel {
         countdownPhase = .counting(count)
         countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
             count -= 1
-            if count > 0 {
-                self?.countdownPhase = .counting(count)
-            } else {
-                timer.invalidate()
-                self?.countdownTimer = nil
-                self?.countdownPhase = .go
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                    self?.countdownPhase = .hidden
-                    self?.unLockBuzz()
+            // Garantir l'isolation @MainActor pour les mutations depuis la closure Timer
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                if count > 0 {
+                    self.countdownPhase = .counting(count)
+                } else {
+                    timer.invalidate()
+                    self.countdownTimer = nil
+                    self.countdownPhase = .go
+                    try? await Task.sleep(for: .milliseconds(800))
+                    self.countdownPhase = .hidden
+                    self.unLockBuzz()
                 }
             }
         }

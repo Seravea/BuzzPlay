@@ -90,7 +90,7 @@ extension QuizTheme {
         case "Musique":
             return "Artistes, albums, chansons. Musique populaire, pas trop pointue."
         case "Sport":
-            return "Football, tennis, F1, JO. Palmarès, records, équipes nationales."
+            return "Football, tennis, F1, JO, rugby. Palmarès, records, champions emblématiques, équipes nationales. Privilégie les faits marquants bien connus."
         case "Histoire":
             return "Événements majeurs, personnages historiques. Évite les dates trop précises."
         case "Science & Nature":
@@ -107,6 +107,16 @@ extension QuizTheme {
             return "Peintres, écrivains, œuvres célèbres. Culture générale artistique."
         case "People & Célébrités":
             return "Célébrités françaises et internationales. Acteurs, chanteurs, sportifs."
+        case "Pop Culture FR":
+            return "Références françaises récentes : rap (Booba, PNL, SCH), séries (Kaamelott, HPI, Lupin), YouTubeurs, films français cultes. Accessible 18-35 ans."
+        case "Années 90-2000":
+            return "Nostalgie 25-40 ans. Club Dorothée, Pokémon, Tamagotchi, Skyrock, Loft Story, premières consoles, films de l'époque, groupes pop. Pas d'events post-2005."
+        case "Réseaux & Mèmes":
+            return "Internet culture : mèmes cultes, réseaux sociaux (Instagram, TikTok, Twitter), YouTubeurs, viral moments, records YouTube. Faits vérifiables uniquement."
+        case "Gastronomie":
+            return "Cuisine française et mondiale. Plats emblématiques, ingrédients, techniques, chefs célèbres, origines des recettes. Fun et accessible, pas trop technique."
+        case "Jeux vidéo":
+            return "Jeux iconiques : Mario, GTA, Minecraft, Fortnite, LoL, Zelda, Call of Duty. Personnages, studios, records de ventes. Accessible aux joueurs occasionnels."
         default:
             return "Questions variées et amusantes."
         }

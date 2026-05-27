@@ -62,7 +62,13 @@ final class MasterFlowViewModel {
 
     //MARK: Datas for games
     var currentBuzzPlayer: Player?
-    var masterNotesBalance: Int = 1000
+    private static let notesBalanceKey = "buzzplay.master.notesBalance"
+    var masterNotesBalance: Int = {
+        let saved = UserDefaults.standard.integer(forKey: notesBalanceKey)
+        return saved > 0 ? saved : 1000
+    }() {
+        didSet { UserDefaults.standard.set(masterNotesBalance, forKey: Self.notesBalanceKey) }
+    }
     var isBuzzLocked: Bool = false
     var gameState: GameState = .lobby
 
@@ -163,10 +169,13 @@ final class MasterFlowViewModel {
             var restored = player
             restored.score = allRegisteredPlayers[savedIndex].score
             restored.accountAmount = allRegisteredPlayers[savedIndex].accountAmount
-            // Mettre à jour l'UUID dans allRegisteredPlayers pour rester en sync
             allRegisteredPlayers[savedIndex] = restored
             players.append(restored)
             mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(restored), player: restored)
+            // B2 : envoyer tous les joueurs connus pour remplir knownPlayers côté Player reconnecté
+            for existingPlayer in players where existingPlayer.id != restored.id {
+                mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(existingPlayer), player: restored)
+            }
             // Resync état courant du jeu si une partie est en cours
             if currentBuzzGame != nil {
                 mpcService.sendMessagetoOnePlayer(message: .publicUpdate(currentPublicState()), player: restored)
@@ -219,30 +228,34 @@ extension MasterFlowViewModel {
     }
     
     func setupMPC() {
-        // Connexion / déconnexion des peers
+        // MPCService dispatche déjà sur main — Task @MainActor pour garantir l'isolation.
         mpcService.onPeerConnected = { [weak self] peer in
-            guard let self else { return }
-            self.connectedPeers.append(peer)
-        }
-        
-        mpcService.onPeerDisconnected = { [weak self] peer in
-            guard let self else { return }
-            self.connectedPeers.removeAll { $0 == peer }
-            let name = peer.displayName
-            self.players.removeAll { $0.name == name }
-            if name != "Écran Publique" {
-                self.disconnectedPlayerName = name
+            Task { @MainActor [weak self] in
+                self?.connectedPeers.append(peer)
             }
         }
-        
+
+        mpcService.onPeerDisconnected = { [weak self] peer in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.connectedPeers.removeAll { $0 == peer }
+                let name = peer.displayName
+                self.players.removeAll { $0.name == name }
+                if name != "Écran Publique" {
+                    self.disconnectedPlayerName = name
+                }
+            }
+        }
+
         mpcService.onMessage = { [weak self] data, peer in
-            guard let self else { return }
-            
-            do {
-                let message = try JSONDecoder().decode(MPCMessage.self, from: data)
-                self.handle(message: message, from: peer)
-            } catch {
-                print("MASTER: message reçus inconnu de : \(peer.displayName)")
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                do {
+                    let message = try JSONDecoder().decode(MPCMessage.self, from: data)
+                    self.handle(message: message, from: peer)
+                } catch {
+                    print("MASTER: message reçus inconnu de : \(peer.displayName)")
+                }
             }
         }
         

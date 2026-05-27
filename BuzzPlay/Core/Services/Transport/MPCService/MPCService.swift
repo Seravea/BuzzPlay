@@ -226,15 +226,21 @@ extension MPCService: MCNearbyServiceBrowserDelegate {
         let name = peerID.displayName
         let peerRole = info?["role"] ?? "unknown"
 
-        // 👉 N'inviter QUE le Master
         guard peerRole == "master" else {
             print("⚠️ MPC: ignoring non-master peer \(name) (role=\(peerRole))")
             return
         }
 
-        guard !invitedPeers.contains(name) else {
-            print("⚠️ MPC: already invited \(name)")
+        // Si déjà connecté, ignorer
+        if session.connectedPeers.contains(where: { $0.displayName == name }) {
+            print("⚠️ MPC: \(name) already connected, ignoring")
             return
+        }
+
+        // Si dans invitedPeers mais pas connecté → invitation précédente expirée, réinviter
+        if invitedPeers.contains(name) {
+            print("⚠️ MPC: \(name) was in invitedPeers but not connected — retrying invite")
+            invitedPeers.remove(name)
         }
 
         invitedPeers.insert(name)
@@ -273,11 +279,16 @@ extension MPCService {
     }
     
     func sendMessagetoOnePlayer(message: MPCMessage, player: Player) {
-        guard let targetPeer = session.connectedPeers.first(where: { $0.displayName == player.name }) else {
+        let matches = session.connectedPeers.filter { $0.displayName == player.name }
+        guard let targetPeer = matches.first else {
             print("MPC: no connected peer found for player \(player.name)")
             return
         }
-
+        if matches.count > 1 {
+            // Deux joueurs avec le même nom : le message va au premier trouvé.
+            // Empêcher les doublons de noms dans CreateTeamView pour éviter ce cas.
+            print("⚠️ MPC: multiple peers named \(player.name) — sending to first match only")
+        }
         do {
             let data = try JSONEncoder().encode(message)
             try session.send(data, toPeers: [targetPeer], with: .reliable)
