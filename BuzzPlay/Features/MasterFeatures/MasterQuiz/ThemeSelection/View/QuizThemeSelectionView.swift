@@ -25,15 +25,9 @@ struct QuizThemeSelectionView: View {
                     .padding(.horizontal, 20)
                     .padding(.bottom, 24)
 
-                ForEach(viewModel.themes) { theme in
-                    ThemeSection(
-                        theme: theme,
-                        sets: viewModel.sets(for: theme)
-                    ) { set in
-                        viewModel.selectSet(set)
-                        router.push(.quizMaster)
-                    }
-                    .padding(.bottom, 28)
+                ForEach(viewModel.groupedThemes, id: \.label) { group in
+                    groupSection(label: group.label, themes: group.themes)
+                        .padding(.bottom, 28)
                 }
             }
             .padding(.top, 8)
@@ -58,7 +52,8 @@ struct QuizThemeSelectionView: View {
                     onComplete: { set in
                         aiGeneratedSet = set
                         showAIGeneratorSheet = false
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .milliseconds(600))
                             showAIReviewSheet = true
                         }
                     },
@@ -76,7 +71,7 @@ struct QuizThemeSelectionView: View {
                 #if os(iOS) && swift(>=5.9)
                 AIQuizReviewView(
                     generator: aiGenerator,
-                    quizSet: aiGeneratedSet ?? QuizSet(id: UUID(), title: "", theme: QuizTheme(id: UUID(), title: "", emoji: "", color: .clear), questions: []),
+                    quizSet: aiGeneratedSet ?? QuizSet(id: UUID(), title: "", theme: QuizThemes.annees2000, questions: []),
                     onLaunch: { set in
                         viewModel.selectSet(set)
                         router.push(.quizMaster)
@@ -91,6 +86,8 @@ struct QuizThemeSelectionView: View {
             }
         }
     }
+
+    // MARK: - Header
 
     private var header: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -129,9 +126,38 @@ struct QuizThemeSelectionView: View {
             }
         }
     }
+
+    // MARK: - Group Section
+
+    @ViewBuilder
+    private func groupSection(label: String, themes: [QuizTheme]) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Eyebrow label
+            Text(label.uppercased())
+                .font(.nohemi(.caption2, weight: .bold))
+                .tracking(0.8)
+                .foregroundStyle(.white.opacity(0.40))
+                .padding(.horizontal, 20)
+
+            VStack(spacing: 28) {
+                ForEach(themes) { theme in
+                    let sets = viewModel.sets(for: theme)
+                    if sets.isEmpty {
+                        ThemeAIOnlyCard(theme: theme, onTap: { showAIGeneratorSheet = true })
+                            .padding(.horizontal, 16)
+                    } else {
+                        ThemeSection(theme: theme, sets: sets) { set in
+                            viewModel.selectSet(set)
+                            router.push(.quizMaster)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
-// MARK: - Theme Section
+// MARK: - Theme Section (avec sets curatés)
 
 private struct ThemeSection: View {
     let theme: QuizTheme
@@ -140,12 +166,12 @@ private struct ThemeSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // Theme header
             HStack(spacing: 10) {
-                Text(theme.emoji)
-                    .font(.system(size: 20))
+                Image(systemName: theme.iconName)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(theme.color)
                     .frame(width: 38, height: 38)
-                    .background(theme.color.opacity(0.2), in: RoundedRectangle(cornerRadius: 10))
+                    .background(theme.color.opacity(0.18), in: RoundedRectangle(cornerRadius: 10))
                     .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(theme.color.opacity(0.35), lineWidth: 1))
 
                 Text(theme.title)
@@ -160,7 +186,6 @@ private struct ThemeSection: View {
             }
             .padding(.horizontal, 20)
 
-            // Quiz cards
             VStack(spacing: 8) {
                 ForEach(sets) { set in
                     QuizSetCard(set: set, themeColor: theme.color) {
@@ -170,6 +195,49 @@ private struct ThemeSection: View {
             }
             .padding(.horizontal, 16)
         }
+    }
+}
+
+// MARK: - Theme AI-Only Card (sans set curatés)
+
+private struct ThemeAIOnlyCard: View {
+    let theme: QuizTheme
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                Image(systemName: theme.iconName)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(theme.color)
+                    .frame(width: 36, height: 36)
+                    .background(theme.color.opacity(0.14), in: RoundedRectangle(cornerRadius: 10))
+                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(theme.color.opacity(0.25), lineWidth: 1))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(theme.title)
+                        .font(.nohemi(.subheadline, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text("Générer avec l'IA ✦")
+                        .font(.nohemi(.caption, weight: .medium))
+                        .foregroundStyle(Color(hex: "#AD46FF").opacity(0.8))
+                }
+
+                Spacer()
+
+                Image(systemName: "sparkles")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color(hex: "#AD46FF"))
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(Color(hex: "#AD46FF").opacity(0.20), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -183,19 +251,16 @@ private struct QuizSetCard: View {
     private var difficultyRange: String {
         let diffs = set.questions.compactMap(\.difficulty)
         guard !diffs.isEmpty else { return "" }
-
         let difficultyOrder: [QuizDifficulty] = [.expert, .difficile, .moyen, .facile]
         if let highest = diffs.first(where: { difficultyOrder.contains($0) }) {
             return highest.label
         }
-
         return diffs.first?.label ?? ""
     }
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 14) {
-                // Left accent stripe
                 RoundedRectangle(cornerRadius: 3)
                     .fill(themeColor)
                     .frame(width: 4)

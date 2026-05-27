@@ -14,19 +14,23 @@ final class QuizThemeSelectionViewModel {
 
     private let gameVM: MasterFlowViewModel
 
-    let themes: [QuizTheme] = QuizThemes.all
-
     var quizRoundsTotal: Int { gameVM.quizRoundsTotal }
 
     init(gameVM: MasterFlowViewModel) {
         self.gameVM = gameVM
     }
 
+    var groupedThemes: [(label: String, themes: [QuizTheme])] {
+        [
+            ("Par décennie", QuizThemes.eras),
+            ("Par genre", QuizThemes.genres)
+        ]
+    }
+
     func sets(for theme: QuizTheme) -> [QuizSet] {
         QuizSamples.sets(for: theme)
     }
 
-    /// Le Master sélectionne un QuizSet → on le stocke dans le flow, puis on navigue.
     func selectSet(_ set: QuizSet) {
         gameVM.selectedQuizSet = set
     }

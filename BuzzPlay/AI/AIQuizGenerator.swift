@@ -41,7 +41,7 @@ class AIQuizGenerator {
 
     @available(iOS 26.0, *)
     func generate(
-        theme: QuizTheme,
+        themes: [QuizTheme],
         difficulty: QuizDifficulty,
         count: Int
     ) async {
@@ -57,7 +57,8 @@ class AIQuizGenerator {
         error = nil
 
         let session = LanguageModelSession()
-        let prompt = buildQuizPrompt(theme: theme, difficulty: difficulty, count: count + 2, previousQuestions: previousQuestionTitles)
+        let prompt = buildQuizPrompt(themes: themes, difficulty: difficulty, count: count + 2, previousQuestions: previousQuestionTitles)
+        let themeLabel = themes.map(\.title).joined(separator: "/")
 
         do {
             let stream = try session.streamResponse(
@@ -82,7 +83,7 @@ class AIQuizGenerator {
                     return QuizQuestion(
                         title: question,
                         answers: [correctAnswer],
-                        theme: theme.title,
+                        theme: themeLabel,
                         difficulty: QuizDifficulty(rawValue: aiQ.difficulty ?? "moyen") ?? .moyen,
                         tone: nil,
                         indices: [],
@@ -92,7 +93,6 @@ class AIQuizGenerator {
                     )
                 }
 
-                // Limiter au count demandé
                 let trimmed = Array(questions.prefix(count))
                 print("🤖 AIQuiz snapshot: \(trimmed.count)/\(count) questions")
 
@@ -107,7 +107,6 @@ class AIQuizGenerator {
         self.isGenerating = false
         self.generationProgress = 1.0
 
-        // Sauvegarder les titres pour éviter les doublons lors de la prochaine génération
         if !self.generatedQuestions.isEmpty {
             let newTitles = self.generatedQuestions.map(\.title)
             let combined = (previousQuestionTitles + newTitles).suffix(100)

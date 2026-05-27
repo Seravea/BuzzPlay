@@ -10,13 +10,25 @@ import SwiftUI
 @available(iOS 26.0, *)
 struct AIQuizSetupView: View {
     @Bindable var generator: AIQuizGenerator
-    @State private var selectedTheme: QuizTheme?
+    @State private var selectedThemeIDs: Set<UUID> = []
     @State private var selectedDifficulty: QuizDifficulty?
     @State private var isGenerating = false
 
     let quizRoundsTotal: Int
     let onComplete: (QuizSet) -> Void
     let onDismiss: () -> Void
+
+    private var selectedThemes: [QuizTheme] {
+        QuizThemes.all.filter { selectedThemeIDs.contains($0.id) }
+    }
+
+    private var allSelected: Bool {
+        selectedThemeIDs.count == QuizThemes.all.count
+    }
+
+    private var canGenerate: Bool {
+        !selectedThemeIDs.isEmpty && selectedDifficulty != nil && !isGenerating
+    }
 
     var body: some View {
         ZStack {
@@ -43,23 +55,41 @@ struct AIQuizSetupView: View {
                 // Content
                 ScrollView {
                     VStack(spacing: 24) {
-                        // THÈME
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("THÈME")
-                                .font(.nohemi(.caption2, weight: .bold))
-                                .foregroundStyle(.white.opacity(0.5))
-                                .tracking(0.8)
 
-                            LazyVGrid(columns: [.init(.flexible()), .init(.flexible())], spacing: 12) {
-                                ForEach(QuizThemes.all) { theme in
-                                    ThemeCardAI(
-                                        theme: theme,
-                                        isSelected: selectedTheme?.id == theme.id,
-                                        action: { selectedTheme = theme }
-                                    )
-                                }
+                        // THÈMES — Par décennie
+                        themeGroup(
+                            label: "Par décennie",
+                            themes: QuizThemes.eras
+                        )
+
+                        // THÈMES — Par genre
+                        themeGroup(
+                            label: "Par genre",
+                            themes: QuizThemes.genres
+                        )
+
+                        // Sélection tout / rien
+                        Button {
+                            if allSelected {
+                                selectedThemeIDs = []
+                            } else {
+                                selectedThemeIDs = Set(QuizThemes.all.map(\.id))
                             }
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: allSelected ? "checkmark.circle.fill" : "circle.dotted")
+                                    .font(.system(size: 14))
+                                Text(allSelected ? "Tout désélectionner" : "Tout sélectionner")
+                                    .font(.nohemi(.caption, weight: .bold))
+                            }
+                            .foregroundStyle(.white.opacity(0.55))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(.white.opacity(0.06), in: Capsule())
+                            .overlay(Capsule().strokeBorder(.white.opacity(0.12), lineWidth: 1))
                         }
+                        .buttonStyle(.plain)
+                        .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.horizontal, 20)
 
                         // DIFFICULTÉ
@@ -85,7 +115,8 @@ struct AIQuizSetupView: View {
                         HStack(spacing: 8) {
                             Image(systemName: "info.circle.fill")
                                 .foregroundStyle(.white.opacity(0.4))
-                            Text("\(quizRoundsTotal) questions seront générées")
+                            let themeCount = selectedThemeIDs.count
+                            Text("\(quizRoundsTotal) questions · \(themeCount == 0 ? "Sélectionne un thème" : themeCount == 1 ? "1 thème" : "\(themeCount) thèmes mélangés")")
                                 .font(.nohemi(.caption, weight: .regular))
                                 .foregroundStyle(.white.opacity(0.6))
                         }
@@ -117,7 +148,7 @@ struct AIQuizSetupView: View {
                     .padding(.bottom, 8)
                 }
 
-                // Live preview des questions générées
+                // Live preview questions générées
                 if isGenerating && !generator.generatedQuestions.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {
                         ForEach(generator.generatedQuestions) { q in
@@ -175,19 +206,47 @@ struct AIQuizSetupView: View {
         }
     }
 
-    private var canGenerate: Bool {
-        selectedTheme != nil && selectedDifficulty != nil && !isGenerating
+    // MARK: - Theme Group
+
+    @ViewBuilder
+    private func themeGroup(label: String, themes: [QuizTheme]) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(label.uppercased())
+                .font(.nohemi(.caption2, weight: .bold))
+                .foregroundStyle(.white.opacity(0.5))
+                .tracking(0.8)
+                .padding(.horizontal, 20)
+
+            LazyVGrid(
+                columns: [.init(.flexible(), spacing: 10), .init(.flexible(), spacing: 10), .init(.flexible(), spacing: 10)],
+                spacing: 10
+            ) {
+                ForEach(themes) { theme in
+                    let isSelected = selectedThemeIDs.contains(theme.id)
+                    ThemeCardAI(theme: theme, isSelected: isSelected) {
+                        if isSelected {
+                            selectedThemeIDs.remove(theme.id)
+                        } else {
+                            selectedThemeIDs.insert(theme.id)
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+        }
     }
+
+    // MARK: - Generate
 
     @MainActor
     private func generate() {
-        guard let theme = selectedTheme, let difficulty = selectedDifficulty else { return }
+        guard !selectedThemes.isEmpty, let difficulty = selectedDifficulty else { return }
         isGenerating = true
 
         Task {
             if #available(iOS 26.0, *) {
                 await generator.generate(
-                    theme: theme,
+                    themes: selectedThemes,
                     difficulty: difficulty,
                     count: quizRoundsTotal
                 )
@@ -196,15 +255,19 @@ struct AIQuizSetupView: View {
 
             guard generator.error == nil, !generator.generatedQuestions.isEmpty else { return }
 
+            let themeNames = selectedThemes.map(\.title).joined(separator: " + ")
+            let representativeTheme = selectedThemes.first ?? QuizThemes.annees2000
             let customSet = QuizSet(
-                title: "Quiz généré - \(theme.title)",
-                theme: theme,
+                title: selectedThemes.count == 1 ? selectedThemes[0].title : "Mix — \(themeNames)",
+                theme: representativeTheme,
                 questions: generator.generatedQuestions
             )
             onComplete(customSet)
         }
     }
 }
+
+// MARK: - Theme Card (multi-sélectionnable)
 
 @available(iOS 26.0, *)
 private struct ThemeCardAI: View {
@@ -215,33 +278,52 @@ private struct ThemeCardAI: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
-                Text(theme.emoji)
-                    .font(.system(size: 28))
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: theme.iconName)
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(isSelected ? theme.color : .white.opacity(0.35))
+                        .frame(width: 44, height: 44)
+                        .background(
+                            isSelected ? theme.color.opacity(0.2) : Color.white.opacity(0.05),
+                            in: RoundedRectangle(cornerRadius: 12)
+                        )
+
+                    if isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(theme.color)
+                            .background(Color(hex: "#1A0535"), in: Circle())
+                            .offset(x: 6, y: -6)
+                    }
+                }
+
                 Text(theme.title)
-                    .font(.nohemi(.caption, weight: .semiBold))
-                    .foregroundStyle(.white)
+                    .font(.nohemi(.caption2, weight: .semiBold))
+                    .foregroundStyle(isSelected ? .white : .white.opacity(0.5))
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 100)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 4)
             .background(
-                isSelected
-                    ? theme.color.opacity(0.3)
-                    : Color.white.opacity(0.04),
+                isSelected ? theme.color.opacity(0.12) : Color.white.opacity(0.03),
                 in: RoundedRectangle(cornerRadius: 14)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
                     .strokeBorder(
-                        isSelected ? theme.color.opacity(0.6) : Color.white.opacity(0.08),
-                        lineWidth: isSelected ? 2 : 1
+                        isSelected ? theme.color.opacity(0.5) : Color.white.opacity(0.07),
+                        lineWidth: isSelected ? 1.5 : 1
                     )
             )
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isSelected)
         }
         .buttonStyle(.plain)
     }
 }
+
+// MARK: - Difficulty Pill
 
 @available(iOS 26.0, *)
 private struct DifficultyPillAI: View {
@@ -265,9 +347,7 @@ private struct DifficultyPillAI: View {
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity)
             .background(
-                isSelected
-                    ? difficulty.color.opacity(0.15)
-                    : Color.white.opacity(0.04),
+                isSelected ? difficulty.color.opacity(0.15) : Color.white.opacity(0.04),
                 in: RoundedRectangle(cornerRadius: 12)
             )
             .overlay(
@@ -281,4 +361,3 @@ private struct DifficultyPillAI: View {
         .buttonStyle(.plain)
     }
 }
-
