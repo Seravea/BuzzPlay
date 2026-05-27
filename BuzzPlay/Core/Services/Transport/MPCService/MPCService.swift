@@ -123,6 +123,17 @@ extension MPCService {
         browser?.startBrowsingForPeers()
         print("OK MPC: browsing(TEAM) started as \(myPeerID.displayName)")
     }
+
+    // Relance un scan fresh — utile après déconnexion ou retour foreground.
+    func restartBrowsing() {
+        guard role == .team else { return }
+        invitedPeers.removeAll()
+        browser?.stopBrowsingForPeers()
+        browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
+        browser?.delegate = self
+        browser?.startBrowsingForPeers()
+        print("🔄 MPC: browsing restarted for \(myPeerID.displayName)")
+    }
     
    //send player to Hosting
     func sendPlayer(_ player: Player) {

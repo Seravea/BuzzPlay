@@ -9,6 +9,7 @@ struct PlayerChooseGameView: View {
     @Bindable var playerGameVM: PlayerGameViewModel
     @EnvironmentObject var router: Router
     @Bindable var playerFlowVM: PlayerFlowViewModel
+    @Environment(\.scenePhase) private var scenePhase
 
     private var otherPlayers: [Player] {
         playerGameVM.knownPlayers.filter { $0.id != playerGameVM.player.id }
@@ -52,6 +53,9 @@ struct PlayerChooseGameView: View {
         .appDefaultTextStyle(Typography.body)
         .onChange(of: playerGameVM.hasPartyStarted) { _, started in
             if started { router.push(.playerGameView) }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { playerGameVM.handleSceneWillForeground() }
         }
     }
 

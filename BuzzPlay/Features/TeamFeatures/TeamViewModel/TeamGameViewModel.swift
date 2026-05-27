@@ -51,6 +51,9 @@ final class PlayerGameViewModel {
     private var timer: Timer?
     private var lastMasterFormattedTime: String = "00:00"
 
+    // MARK: - Reconnect auto
+    private var reconnectTimer: Timer?
+
     init(player: Player, mpc: MPCService) {
         self.player = player
         self.mpc = mpc
@@ -73,6 +76,7 @@ extension PlayerGameViewModel {
                 guard let self else { return }
                 self.isConnectedToMaster = true
                 self.hasEverConnectedToMaster = true
+                self.stopReconnectTimer()
                 guard !self.didSentPlayer else { return }
                 self.didSentPlayer = true
                 self.mpc.sendMessage(.playerJoin(self.player))
@@ -84,6 +88,7 @@ extension PlayerGameViewModel {
                 guard let self else { return }
                 self.isConnectedToMaster = false
                 self.didSentPlayer = false
+                self.startReconnectTimer()
             }
         }
 
@@ -317,8 +322,32 @@ extension PlayerGameViewModel {
     }
 
     func handleSceneWillForeground() {
-        // Resync depuis la dernière valeur reçue du Master (pas de drift en foreground)
         formattedTime = lastMasterFormattedTime
+        guard !isConnectedToMaster else { return }
+        // Retour foreground sans connexion → scan immédiat + timer de retry
+        mpc.restartBrowsing()
+        startReconnectTimer()
+    }
+
+    // MARK: - Reconnect auto
+
+    private func startReconnectTimer() {
+        stopReconnectTimer()
+        reconnectTimer = Timer.scheduledTimer(withTimeInterval: 6, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, !self.isConnectedToMaster else {
+                    self?.stopReconnectTimer()
+                    return
+                }
+                print("🔄 PlayerGameVM: tentative de reconnexion auto")
+                self.mpc.restartBrowsing()
+            }
+        }
+    }
+
+    private func stopReconnectTimer() {
+        reconnectTimer?.invalidate()
+        reconnectTimer = nil
     }
 
     private func syncBuzzerState(buzzingPlayer: Player?, isRoundActive: Bool, autoResumeTimer: Bool = true) {
