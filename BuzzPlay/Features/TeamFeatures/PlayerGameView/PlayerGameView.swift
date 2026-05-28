@@ -40,6 +40,12 @@ struct PlayerGameView: View {
                 onReplay: { router.path.removeLast() }
             )
         }
+        .onAppear {
+            // Cas kill app + relaunch : pendingGameInvite déjà set avant l'apparition de la vue
+            if let invite = playerGameVM.pendingGameInvite {
+                handleGameInvite(invite)
+            }
+        }
         .onChange(of: playerGameVM.pendingGameInvite) { _, invite in
             guard let invite else { return }
             handleGameInvite(invite)

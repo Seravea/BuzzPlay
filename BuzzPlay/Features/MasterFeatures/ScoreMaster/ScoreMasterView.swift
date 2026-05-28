@@ -207,7 +207,7 @@ struct ScoreMasterView: View {
             Button {
                 masterFlowVM.resetForNewGame()
                 router.popToRoot()
-                router.push(.masterChooseGameView)
+                router.push(.masterLobbyView)
             } label: {
                 Text("Nouvelle partie")
                     .font(.nohemi(.subheadline, weight: .bold))

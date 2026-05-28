@@ -119,7 +119,7 @@ extension BuzzerViewModel {
     func showAnswerResult(_ result: AnswerResult) {
         answerResult = result
         Task { @MainActor [weak self] in
-            try? await Task.sleep(for: .seconds(2.6))
+            try? await Task.sleep(for: .seconds(1.5))
             self?.answerResult = nil
             self?.lockBuzz(teamNameHasBuzz: "")
         }

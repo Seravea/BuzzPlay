@@ -201,6 +201,8 @@ final class MasterFlowViewModel {
         for i in players.indices { players[i].score = 0 }
         for i in allRegisteredPlayers.indices { allRegisteredPlayers[i].score = 0 }
         selectedQuizSet = nil
+        gameDuration = .normale
+        gameMode = .quiz
         resetGameVMs()
         isGamePaused = false
         disconnectedPlayerName = nil

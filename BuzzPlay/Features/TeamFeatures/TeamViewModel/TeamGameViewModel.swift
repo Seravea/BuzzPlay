@@ -297,12 +297,9 @@ extension PlayerGameViewModel {
     private func resumeUITimerIfNeeded() {
         guard timer == nil else { return }  // déjà actif
 
-        // Reconstruire reactionTimeMs depuis formattedTime "SS:CS"
-        let components = formattedTime.split(separator: ":").compactMap { Int($0) }
-        guard components.count == 2 else { return }
-        // formattedTime est produit par formatReactionTime : ss = displayUnits/100, cs = displayUnits%100
-        // displayUnits = reactionTimeMs/10 → reactionTimeMs = (ss*100 + cs) * 10
-        var reactionTimeMs = (components[0] * 100 + components[1]) * 10
+        // Reconstruire reactionTimeMs depuis formattedTime "SS"
+        guard let seconds = Int(formattedTime) else { return }
+        var reactionTimeMs = seconds * 1000
 
         let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self else { return }
@@ -318,10 +315,7 @@ extension PlayerGameViewModel {
 
     // Miroir exact de BuzzDrivenGame.formattedTime
     private static func formatReactionTime(_ reactionTimeMs: Int) -> String {
-        let displayUnits = reactionTimeMs / 10
-        let seconds = displayUnits / 100
-        let cs = displayUnits % 100
-        return String(format: "%02d:%02d", seconds, cs)
+        String(format: "%02d", reactionTimeMs / 1000)
     }
 
     private func stopUITimer() {

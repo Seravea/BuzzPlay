@@ -69,10 +69,7 @@ extension BuzzDrivenGame {
 // Timer functions
 extension BuzzDrivenGame {
     var formattedTime: String {
-        let centiseconds = reactionTimeMs / 10
-        let seconds = centiseconds / 100
-        let cs = centiseconds % 100
-        return String(format: "%02d:%02d", seconds, cs)
+        String(format: "%02d", reactionTimeMs / 1000)
     }
     
     // Resume-or-start timer without resetting reactionTimeMs.

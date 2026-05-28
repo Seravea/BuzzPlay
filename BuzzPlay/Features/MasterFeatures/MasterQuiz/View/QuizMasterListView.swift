@@ -63,6 +63,8 @@ struct QuizMasterListView: View {
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
                 quizMasterVM.gameVM.finishGameSection(.quiz)
+                // Pop quizMaster + quizThemeSelection → retour au hub
+                router.path.removeLast()
                 router.path.removeLast()
                 if quizMasterVM.gameVM.isGameComplete { router.push(.scoreMaster) }
             }

@@ -9,6 +9,7 @@ struct HomeView: View {
     @EnvironmentObject private var router: Router
     @State var playerFlowVM = PlayerFlowViewModel()
     @State var masterFlowVM = MasterFlowViewModel()
+    @State private var showMasterConfirmation = false
 
     var body: some View {
         NavigationStack(path: $router.path) {
@@ -36,34 +37,34 @@ struct HomeView: View {
                 Spacer()
 
                 // CTA cards
-                VStack(spacing: 12) {
+                VStack(spacing: 10) {
+                    // Rejoindre — bouton principal
                     Button { router.push(Route.createTeamView) } label: {
                         HomeRoleCard(
                             title: "Rejoindre",
-                            subtitle: "Avec un code à 4 chiffres",
+                            subtitle: "Rejoins la partie d'un hôte",
                             iconName: "bolt.fill",
                             gradient: LinearGradient(
                                 colors: [Color.purpleLeading, Color.purpleTrailing],
                                 startPoint: .topLeading, endPoint: .bottomTrailing
                             ),
-                            shadowColor: Color.purpleLeading.opacity(0.30)
+                            isPrimary: true,
+                            shadowColor: Color.purpleLeading.opacity(0.35)
                         )
                     }
                     .buttonStyle(.plain)
 
-                    Button { router.push(Route.masterLobbyView) } label: {
-                        HomeRoleCard(
-                            title: "Animer",
-                            subtitle: "Hôte de la partie",
-                            iconName: "gamecontroller.fill",
-                            gradient: LinearGradient(
-                                colors: [Color.blueLeading, Color.blueTrailing],
-                                startPoint: .topLeading, endPoint: .bottomTrailing
-                            ),
-                            shadowColor: nil
-                        )
+                    // Animer — bouton secondaire discret
+                    Button { showMasterConfirmation = true } label: {
+                        HomeSecondaryCard(title: "Animer", subtitle: "Hôte de la partie", iconName: "gamecontroller.fill")
                     }
                     .buttonStyle(.plain)
+                    .alert("Tu vas animer la partie", isPresented: $showMasterConfirmation) {
+                        Button("Annuler", role: .cancel) { }
+                        Button("Continuer") { router.push(Route.masterLobbyView) }
+                    } message: {
+                        Text("Assure-toi d'être le bon appareil avant de lancer.")
+                    }
                 }
                 .padding(.horizontal, 18)
                 .padding(.bottom, 32)
@@ -137,40 +138,76 @@ struct HomeView: View {
     }
 }
 
-// MARK: - Role card (HomeA style)
+// MARK: - Role cards
 
 private struct HomeRoleCard: View {
     let title: String
     let subtitle: String
     let iconName: String
     let gradient: LinearGradient
+    var isPrimary: Bool = false
     let shadowColor: Color?
 
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: iconName)
-                .font(.system(size: 24, weight: .semibold))
-                .frame(width: 52, height: 52)
+                .font(.system(size: isPrimary ? 28 : 24, weight: .semibold))
+                .frame(width: isPrimary ? 60 : 52, height: isPrimary ? 60 : 52)
                 .background(.white.opacity(0.18), in: RoundedRectangle(cornerRadius: 16))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.nohemi(.title2, weight: .extraBold))
+                    .font(.nohemi(isPrimary ? .title : .title2, weight: .extraBold))
                 Text(subtitle)
-                    .font(.nohemi(.subheadline))
+                    .font(.nohemi(isPrimary ? .subheadline : .callout))
                     .foregroundStyle(.white.opacity(0.85))
             }
 
             Spacer()
 
             Image(systemName: "arrow.right")
-                .font(.system(size: 20, weight: .semibold))
+                .font(.system(size: isPrimary ? 22 : 20, weight: .semibold))
                 .foregroundStyle(.white.opacity(0.90))
         }
         .foregroundStyle(.white)
-        .padding(18)
+        .padding(isPrimary ? 22 : 18)
         .background(gradient, in: RoundedRectangle(cornerRadius: 22))
-        .shadow(color: shadowColor ?? .clear, radius: 16, y: 6)
+        .shadow(color: shadowColor ?? .clear, radius: isPrimary ? 20 : 10, y: isPrimary ? 8 : 4)
+    }
+}
+
+private struct HomeSecondaryCard: View {
+    let title: String
+    let subtitle: String
+    let iconName: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: iconName)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.55))
+                .frame(width: 40, height: 40)
+                .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 12))
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(.nohemi(.subheadline, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.75))
+                Text(subtitle)
+                    .font(.nohemi(.caption, weight: .regular))
+                    .foregroundStyle(.white.opacity(0.40))
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.30))
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.10), lineWidth: 1))
     }
 }
 

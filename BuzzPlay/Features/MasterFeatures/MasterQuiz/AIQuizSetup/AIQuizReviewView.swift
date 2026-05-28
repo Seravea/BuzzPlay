@@ -90,13 +90,13 @@ struct AIQuizReviewView: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 48)
                             .background(
-                                questions.count >= 3
+                                !questions.isEmpty
                                     ? LinearGradient(colors: [Color(hex: "#AD46FF"), Color(hex: "#F6339A")], startPoint: .topLeading, endPoint: .bottomTrailing)
                                     : LinearGradient(colors: [Color.white.opacity(0.08), Color.white.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing),
                                 in: RoundedRectangle(cornerRadius: 12)
                             )
                     }
-                    .disabled(questions.count < 3)
+                    .disabled(questions.isEmpty)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)

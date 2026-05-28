@@ -151,18 +151,6 @@ struct BuzzerPlayerView: View {
                 .transition(.scale.combined(with: .opacity))
             }
 
-            // Solde coins — compact, sans le bouton Cadeaux (déplacé en bottom bar)
-            HStack(spacing: 4) {
-                Text("\(playerGameVM.player.accountAmount)")
-                    .font(.nohemi(.callout, weight: .extraBold))
-                    .foregroundStyle(.white)
-                    .monospacedDigit()
-                    .frame(minWidth: 24, alignment: .trailing)
-                Image(systemName: "dollarsign.bank.building.fill")
-                    .font(.system(size: 13))
-                    .foregroundStyle(Color.mustardYellow)
-            }
-
             Text(playerGameVM.formattedTime)
                 .font(.nohemi(.callout, weight: .extraBold))
                 .foregroundStyle(Color.mustardYellow)
@@ -170,7 +158,7 @@ struct BuzzerPlayerView: View {
                 .monospacedDigit()
                 .contentTransition(.numericText())
                 .animation(.default, value: playerGameVM.formattedTime)
-                .frame(minWidth: 52, alignment: .trailing)
+                .frame(minWidth: 32, alignment: .trailing)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
@@ -291,9 +279,8 @@ private struct AnswerFeedbackOverlay: View {
                             .font(.custom("Nohemi-Black", size: 30))
                             .tracking(2)
                             .foregroundStyle(.white)
-                        Text("+0 point")
-                            .font(.custom("Nohemi-SemiBold", size: 22))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity, alignment: .center)
 
                     case .otherCorrect(let name, let points, let answer):
                         Text("\(name) a trouvé !")
