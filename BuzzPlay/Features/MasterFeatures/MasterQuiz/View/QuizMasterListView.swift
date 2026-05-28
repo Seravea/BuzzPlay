@@ -68,11 +68,6 @@ struct QuizMasterListView: View {
             }
         }
         .navigationBarBackButtonHidden(quizMasterVM.isPlaying)
-        .onDisappear {
-            if !quizMasterVM.shouldAutoFinish {
-                quizMasterVM.gameVM.finishGameSection(.quiz)
-            }
-        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(

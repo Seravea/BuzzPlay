@@ -56,11 +56,6 @@ struct BlindTestMasterView: View {
             }
         }
         .navigationBarBackButtonHidden(blindTestViewModel.isGameActive)
-        .onDisappear {
-            if !blindTestViewModel.shouldAutoFinish {
-                blindTestViewModel.gameVM.finishGameSection(.blindTest)
-            }
-        }
     }
 }
 
