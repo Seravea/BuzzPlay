@@ -193,6 +193,23 @@ final class MasterFlowViewModel {
         currentBuzzGame = nil
         activeGameType = nil
     }
+
+    /// Nouvelle partie sans déconnecter les joueurs.
+    /// Remet les scores à 0, reset les VMs, notifie tous les players.
+    func resetForNewGame() {
+        // Reset scores dans les deux tableaux
+        for i in players.indices { players[i].score = 0 }
+        for i in allRegisteredPlayers.indices { allRegisteredPlayers[i].score = 0 }
+        selectedQuizSet = nil
+        resetGameVMs()
+        isGamePaused = false
+        disconnectedPlayerName = nil
+        // Envoie le score remis à 0 à chaque player encore connecté
+        for player in players {
+            mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(player), player: player)
+        }
+        mpcService.sendMessage(.masterResetGame)
+    }
     
     
     //MARK: Master's functions for Player

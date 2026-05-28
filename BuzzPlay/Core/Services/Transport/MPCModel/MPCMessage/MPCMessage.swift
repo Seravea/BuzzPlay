@@ -52,6 +52,9 @@ enum MPCMessage: Codable {
     // Master -> Team : toutes les manches sont terminées (afficher le podium final)
     case masterGameComplete
 
+    // Master -> Team : le Master lance une nouvelle partie (reset scores, retour au lobby)
+    case masterResetGame
+
     //TEST
     case pong
 }

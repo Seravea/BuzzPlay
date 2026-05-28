@@ -37,6 +37,9 @@ final class PlayerGameViewModel {
     // Fin de partie complète → afficher le podium final
     var isGameComplete: Bool = false
 
+    // Master a lancé une nouvelle partie → retourner au lobby player
+    var shouldReturnToLobby: Bool = false
+
     // Toast Notes reçues (🎵) — auto-dismiss géré dans la vue
     var pendingNotesToast: Int? = nil
 
@@ -162,6 +165,16 @@ extension PlayerGameViewModel {
 
         case .masterGameComplete:
             isGameComplete = true
+
+        case .masterResetGame:
+            isGameComplete = false
+            hasPartyStarted = false
+            pendingGameInvite = nil
+            publicState = .waiting
+            currentBuzzerVM = nil
+            showPostRoundLeaderboard = false
+            leaderboardTask?.cancel()
+            shouldReturnToLobby = true
 
         case .timerStarted(let payload):
             startLocalReactionTimer(masterTimestamp: payload.masterTimestamp)

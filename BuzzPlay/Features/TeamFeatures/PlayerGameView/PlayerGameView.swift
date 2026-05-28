@@ -36,7 +36,8 @@ struct PlayerGameView: View {
             PlayerPodiumSheet(
                 players: playerGameVM.knownPlayers,
                 currentPlayer: playerGameVM.player,
-                onQuit: { router.popToRoot() }
+                onQuit: { router.popToRoot() },
+                onReplay: { router.path.removeLast() }
             )
         }
         .onChange(of: playerGameVM.pendingGameInvite) { _, invite in
@@ -49,6 +50,13 @@ struct PlayerGameView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                 showPodium = true
             }
+        }
+        .onChange(of: playerGameVM.shouldReturnToLobby) { _, should in
+            guard should else { return }
+            playerGameVM.shouldReturnToLobby = false
+            showPodium = false
+            showInterGameScore = false
+            router.path.removeLast()
         }
     }
 
@@ -308,6 +316,7 @@ private struct PlayerPodiumSheet: View {
     let players: [Player]
     let currentPlayer: Player
     let onQuit: () -> Void
+    let onReplay: () -> Void
     @Environment(\.dismiss) private var dismiss
 
     private var sorted: [Player] {
@@ -355,16 +364,32 @@ private struct PlayerPodiumSheet: View {
                     .padding(20)
                 }
 
-                // Quit button
-                Button(action: { dismiss(); onQuit() }) {
-                    Text("Quitter")
-                        .font(.nohemi(.body, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+                // Actions
+                HStack(spacing: 10) {
+                    Button(action: { dismiss(); onQuit() }) {
+                        Text("Quitter")
+                            .font(.nohemi(.body, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+                    }
+                    .buttonStyle(.plain)
+
+                    Button(action: { dismiss(); onReplay() }) {
+                        Text("Rejouer")
+                            .font(.nohemi(.body, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(
+                                LinearGradient(colors: [Color(hex: "#AD46FF"), Color(hex: "#F6339A")],
+                                               startPoint: .leading, endPoint: .trailing),
+                                in: RoundedRectangle(cornerRadius: 16)
+                            )
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 40)
             }
