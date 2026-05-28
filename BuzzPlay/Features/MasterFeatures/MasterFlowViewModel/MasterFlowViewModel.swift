@@ -78,8 +78,15 @@ final class MasterFlowViewModel {
     /// true quand tous les joueurs sont déconnectés pendant une partie active
     var isGamePaused: Bool = false
     
-    /// QuizSet sélectionné par le Master dans l'écran de sélection de thème
-    var selectedQuizSet: QuizSet?
+    /// QuizSet sélectionné par le Master dans l'écran de sélection de thème.
+    /// Changer de set invalide le VM Quiz mis en cache.
+    var selectedQuizSet: QuizSet? {
+        didSet {
+            if selectedQuizSet?.id != oldValue?.id {
+                cachedQuizMasterVM = nil
+            }
+        }
+    }
 
     // MARK: Game Config (set from Lobby)
     var gameDuration: GameDuration = .normale
@@ -129,35 +136,62 @@ final class MasterFlowViewModel {
 
     /// Jeu actuellement actif (pour la reconnexion)
     var activeGameType: GameType? = nil
-    
-    
+
+    // VMs mis en cache pour préserver l'état (questions passées, musiques jouées)
+    // quand le Master navigue en arrière et revient en cours de partie.
+    private var cachedQuizMasterVM: QuizMasterViewModel?
+    private var cachedBlindTestMasterVM: BlindTestMasterViewModel?
+
     //MARK: Master's makeVM
-    
+
     func makeLobbyViewModel() -> MasterLobbyViewModel {
         MasterLobbyViewModel(gameVM: self)
     }
-    
+
     func makeChooseGameVM() -> MasterChooseGameViewModel {
         MasterChooseGameViewModel(gameVM: self)
     }
-    
+
     func makeBlindTestMasterVM() -> BlindTestMasterViewModel {
+        if let cached = cachedBlindTestMasterVM {
+            self.currentBuzzGame = cached
+            self.activeGameType = .blindTest
+            return cached
+        }
         let vm = BlindTestMasterViewModel(gameVM: self)
         self.currentBuzzGame = vm
         self.activeGameType = .blindTest
+        cachedBlindTestMasterVM = vm
         return vm
     }
-    
+
     func makeQuizThemeSelectionVM() -> QuizThemeSelectionViewModel {
         QuizThemeSelectionViewModel(gameVM: self)
     }
 
     func makeQuizMasterVM() -> QuizMasterViewModel {
         let set = selectedQuizSet ?? QuizSamples.music2000s
+        // Réutilise le VM existant si le même set est toujours sélectionné
+        if let cached = cachedQuizMasterVM, cached.quizSet.id == set.id {
+            self.currentBuzzGame = cached
+            self.activeGameType = .quiz
+            return cached
+        }
         let vm = QuizMasterViewModel(gameVM: self, quizSet: set)
         self.currentBuzzGame = vm
         self.activeGameType = .quiz
+        cachedQuizMasterVM = vm
         return vm
+    }
+
+    /// Remet à zéro les VMs mis en cache (à appeler pour une nouvelle partie).
+    func resetGameVMs() {
+        cachedQuizMasterVM = nil
+        cachedBlindTestMasterVM = nil
+        quizRoundsPlayed = 0
+        blindTestRoundsPlayed = 0
+        currentBuzzGame = nil
+        activeGameType = nil
     }
     
     
