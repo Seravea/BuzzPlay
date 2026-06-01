@@ -13,6 +13,8 @@ struct AIQuizSetupView: View {
     @State private var selectedThemeIDs: Set<UUID> = []
     @State private var selectedDifficulty: QuizDifficulty?
     @State private var isGenerating = false
+    // Tâche de génération en cours, annulée si la vue disparaît.
+    @State private var generationTask: Task<Void, Never>?
 
     let quizRoundsTotal: Int
     let onComplete: (QuizSet) -> Void
@@ -204,6 +206,7 @@ struct AIQuizSetupView: View {
                 }
             }
         }
+        .onDisappear { generationTask?.cancel() }
     }
 
     // MARK: - Theme Group
@@ -243,7 +246,7 @@ struct AIQuizSetupView: View {
         guard !selectedThemes.isEmpty, let difficulty = selectedDifficulty else { return }
         isGenerating = true
 
-        Task {
+        generationTask = Task {
             if #available(iOS 26.0, *) {
                 await generator.generate(
                     themes: selectedThemes,
@@ -253,7 +256,9 @@ struct AIQuizSetupView: View {
             }
             isGenerating = false
 
-            guard generator.error == nil, !generator.generatedQuestions.isEmpty else { return }
+            // Sheet fermée pendant la génération : on n'ouvre pas la review.
+            guard !Task.isCancelled,
+                  generator.error == nil, !generator.generatedQuestions.isEmpty else { return }
 
             let themeNames = selectedThemes.map(\.title).joined(separator: " + ")
             let representativeTheme = selectedThemes.first ?? QuizThemes.annees2000

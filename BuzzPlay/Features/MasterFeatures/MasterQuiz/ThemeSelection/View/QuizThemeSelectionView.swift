@@ -18,6 +18,10 @@ struct QuizThemeSelectionView: View {
     @State private var aiGeneratedSet: QuizSet?
     @State private var aiGenerator = AIQuizGenerator()
 
+    // Alertes affichées quand l'appareil est éligible mais Apple Intelligence indisponible.
+    @State private var showEnableAIAlert = false
+    @State private var showModelNotReadyAlert = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -72,6 +76,7 @@ struct QuizThemeSelectionView: View {
                 AIQuizReviewView(
                     generator: aiGenerator,
                     quizSet: aiGeneratedSet ?? QuizSet(id: UUID(), title: "", theme: QuizThemes.annees2000, questions: []),
+                    targetCount: viewModel.quizRoundsTotal,
                     onLaunch: { set in
                         viewModel.selectSet(set)
                         router.push(.quizMaster)
@@ -84,6 +89,24 @@ struct QuizThemeSelectionView: View {
             } else {
                 EmptyView()
             }
+        }
+        .alert("Activer Apple Intelligence", isPresented: $showEnableAIAlert) {
+            Button("Ouvrir les Réglages") { openAppSettings() }
+            Button("Plus tard", role: .cancel) {}
+        } message: {
+            Text("La génération de quiz par IA nécessite Apple Intelligence. Active-le dans Réglages › Apple Intelligence et Siri, puis reviens ici.")
+        }
+        .alert("Apple Intelligence se prépare", isPresented: $showModelNotReadyAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Le modèle d'Apple Intelligence est en cours de téléchargement. Réessaie dans quelques minutes.")
+        }
+    }
+
+    /// Ouvre la page Réglages de l'app (point d'entrée le plus direct vers Apple Intelligence).
+    private func openAppSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
         }
     }
 
@@ -102,28 +125,50 @@ struct QuizThemeSelectionView: View {
 
             Spacer()
 
-            if #available(iOS 26.0, *) {
-                #if os(iOS) && swift(>=5.9)
-                if SystemLanguageModel.default.availability == .available {
-                    Button(action: { showAIGeneratorSheet = true }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 13, weight: .semibold))
-                            Text("Générer")
-                                .font(.nohemi(.caption, weight: .bold))
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color(hex: "#AD46FF").opacity(0.2), in: RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .strokeBorder(Color(hex: "#AD46FF").opacity(0.3), lineWidth: 1)
-                        )
-                    }
-                }
-                #endif
+            aiGenerateButton
+        }
+    }
+
+    /// Bouton « Générer » selon l'état réel d'Apple Intelligence :
+    /// - disponible → actif, ouvre le générateur
+    /// - activé mais modèle pas prêt → grisé, message de patience
+    /// - Apple Intelligence désactivé → grisé, invite à l'activer dans les Réglages
+    /// - appareil non éligible (ou iOS < 26) → rien
+    @ViewBuilder
+    private var aiGenerateButton: some View {
+        if #available(iOS 26.0, *) {
+            #if os(iOS) && swift(>=5.9)
+            switch SystemLanguageModel.default.availability {
+            case .available:
+                generateButtonLabel(enabled: true) { showAIGeneratorSheet = true }
+            case .unavailable(.appleIntelligenceNotEnabled):
+                generateButtonLabel(enabled: false) { showEnableAIAlert = true }
+            case .unavailable(.modelNotReady):
+                generateButtonLabel(enabled: false) { showModelNotReadyAlert = true }
+            case .unavailable:
+                EmptyView()
             }
+            #endif
+        }
+    }
+
+    @ViewBuilder
+    private func generateButtonLabel(enabled: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 13, weight: .semibold))
+                Text("Générer")
+                    .font(.nohemi(.caption, weight: .bold))
+            }
+            .foregroundStyle(enabled ? .white : .white.opacity(0.40))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color(hex: "#AD46FF").opacity(enabled ? 0.2 : 0.08), in: RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .strokeBorder(Color(hex: "#AD46FF").opacity(enabled ? 0.3 : 0.12), lineWidth: 1)
+            )
         }
     }
 
