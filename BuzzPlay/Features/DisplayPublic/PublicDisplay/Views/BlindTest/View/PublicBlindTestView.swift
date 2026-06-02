@@ -15,6 +15,11 @@ struct PublicBlindTestView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // Timer badge
+            TimerBadge(time: timer)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.bottom, 6)
+
             // Song info
             if state.isAnswerRevealed {
                 let releaseDate: Date? = {

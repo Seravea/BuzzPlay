@@ -113,18 +113,35 @@ struct AIQuizSetupView: View {
                         }
                         .padding(.horizontal, 20)
 
-                        // INFO
+                        // INFO / guide conditions
+                        let themeCount = selectedThemeIDs.count
+                        let infoText: String = {
+                            if themeCount == 0 && selectedDifficulty == nil {
+                                return "Sélectionne un thème et une difficulté pour générer"
+                            } else if themeCount == 0 {
+                                return "Sélectionne au moins un thème pour continuer"
+                            } else if selectedDifficulty == nil {
+                                return "Sélectionne une difficulté pour continuer"
+                            } else {
+                                return "\(quizRoundsTotal) questions · \(themeCount == 1 ? "1 thème" : "\(themeCount) thèmes mélangés")"
+                            }
+                        }()
+                        let infoIsWarning = themeCount == 0 || selectedDifficulty == nil
                         HStack(spacing: 8) {
-                            Image(systemName: "info.circle.fill")
-                                .foregroundStyle(.white.opacity(0.4))
-                            let themeCount = selectedThemeIDs.count
-                            Text("\(quizRoundsTotal) questions · \(themeCount == 0 ? "Sélectionne un thème" : themeCount == 1 ? "1 thème" : "\(themeCount) thèmes mélangés")")
-                                .font(.nohemi(.caption, weight: .regular))
-                                .foregroundStyle(.white.opacity(0.6))
+                            Image(systemName: infoIsWarning ? "arrow.down.circle.fill" : "checkmark.circle.fill")
+                                .foregroundStyle(infoIsWarning ? Color(hex: "#AD46FF").opacity(0.7) : .white.opacity(0.4))
+                            Text(infoText)
+                                .font(.nohemi(.caption, weight: infoIsWarning ? .semiBold : .regular))
+                                .foregroundStyle(infoIsWarning ? .white.opacity(0.8) : .white.opacity(0.6))
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 10)
-                        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 10))
+                        .background(
+                            infoIsWarning
+                                ? Color(hex: "#AD46FF").opacity(0.06)
+                                : Color.white.opacity(0.04),
+                            in: RoundedRectangle(cornerRadius: 10)
+                        )
                         .padding(.horizontal, 20)
                     }
                     .padding(.vertical, 24)
@@ -191,6 +208,7 @@ struct AIQuizSetupView: View {
                     Button(action: generate) {
                         Text(generator.error != nil ? "Réessayer" : "✨ Générer")
                             .font(.nohemi(.body, weight: .bold))
+                            .foregroundStyle(canGenerate ? .white : .white.opacity(0.30))
                     }
                     .disabled(!canGenerate)
                     .frame(maxWidth: .infinity)
