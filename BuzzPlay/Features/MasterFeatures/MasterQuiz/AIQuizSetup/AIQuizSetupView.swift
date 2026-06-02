@@ -150,26 +150,6 @@ struct AIQuizSetupView: View {
                     .padding(.bottom, 8)
                 }
 
-                // Live preview questions générées
-                if isGenerating && !generator.generatedQuestions.isEmpty {
-                    VStack(alignment: .leading, spacing: 6) {
-                        ForEach(generator.generatedQuestions) { q in
-                            HStack(spacing: 8) {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(Color(hex: "#AD46FF"))
-                                Text(q.title)
-                                    .font(.nohemi(.caption, weight: .regular))
-                                    .foregroundStyle(.white.opacity(0.75))
-                                    .lineLimit(1)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 4)
-                    .padding(.bottom, 8)
-                }
-
                 // CTA
                 if isGenerating {
                     VStack(spacing: 8) {
@@ -248,7 +228,7 @@ struct AIQuizSetupView: View {
 
         generationTask = Task {
             if #available(iOS 26.0, *) {
-                await generator.generate(
+                await generator.generateInitialPass(
                     themes: selectedThemes,
                     difficulty: difficulty,
                     count: quizRoundsTotal

@@ -17,11 +17,12 @@ import FoundationModels
 class AIQuizGenerator {
     var generatedQuestions: [QuizQuestion] = []
     var isGenerating: Bool = false
+    /// Vrai pendant les passes de complétion (2-3) lancées depuis la Review.
+    var isCompleting: Bool = false
     var error: QuizGenerationError? = nil
     var generationProgress: Double = 0.0
     var totalQuestionCount: Int = 0
 
-    // id de la question en cours de régénération individuelle (nil si aucune)
     var regeneratingQuestionID: UUID? = nil
 
     // Anti-doublons : titres des questions déjà générées (persistés entre sessions)
@@ -53,8 +54,12 @@ class AIQuizGenerator {
     // ~30 tokens/s on-device → 8 s couvre 2-3 questions ; au-delà on abandonne.
     private static let completionPassTimeout: TimeInterval = 8
 
+    // MARK: - Génération en deux temps (Setup → Review)
+
+    /// Passe 1 uniquement. Le Setup appelle ceci, puis ouvre la Review immédiatement
+    /// sans attendre les passes de complétion.
     @available(iOS 26.0, *)
-    func generate(
+    func generateInitialPass(
         themes: [QuizTheme],
         difficulty: QuizDifficulty,
         count: Int
@@ -63,21 +68,29 @@ class AIQuizGenerator {
             error = .notAvailable
             return
         }
-
         isGenerating = true
         generatedQuestions = []
         generationProgress = 0.0
         totalQuestionCount = count
         error = nil
-
-        // Mémorise les paramètres pour la régénération unitaire et la complétion en review.
         lastThemes = themes
         lastDifficulty = difficulty
 
-        await runGenerationLoop(target: count, seed: [])
+        await runGenerationLoop(target: count, seed: [], maxPasses: 1, firstPassUnlimited: true)
 
-        self.isGenerating = false
-        self.generationProgress = 1.0
+        isGenerating = false
+        generationProgress = Double(generatedQuestions.count) / Double(count)
+    }
+
+    /// Passes de complétion (max 2 passes supplémentaires) lancées depuis la Review
+    /// quand il manque des questions. Flag `isCompleting` visible dans la Review.
+    @available(iOS 26.0, *)
+    func completeGeneration(target: Int) async {
+        guard isAvailable, !isCompleting, !isGenerating else { return }
+        guard generatedQuestions.count < target else { return }
+        isCompleting = true
+        await runGenerationLoop(target: target, seed: generatedQuestions, maxPasses: 2, firstPassUnlimited: false)
+        isCompleting = false
     }
 
     /// Boucle de génération commune : part de `seed`, déduplique (batch + historique) et
@@ -87,29 +100,32 @@ class AIQuizGenerator {
     /// Passe 1 : génération principale, sans limite de temps (durée ∝ au nombre demandé).
     /// Passes 2-3 (complément automatique) : chacune bornée par `completionPassTimeout`,
     /// et la boucle s'arrête dès qu'une passe ne ramène aucune question inédite.
+    /// `maxPasses` : nb de passes à effectuer dans cet appel.
+    /// `firstPassUnlimited` : si vrai, la 1re passe n'a pas de deadline (génération initiale).
     @available(iOS 26.0, *)
-    private func runGenerationLoop(target: Int, seed: [QuizQuestion]) async {
+    private func runGenerationLoop(
+        target: Int,
+        seed: [QuizQuestion],
+        maxPasses: Int,
+        firstPassUnlimited: Bool
+    ) async {
         let themeLabel = lastThemes.map(\.title).joined(separator: "/")
 
-        // Filet anti-doublons : titres normalisés déjà retenus (historique + lot en cours).
-        var seenNormalized = Set((previousQuestionTitles + seed.map(\.title)).map(Self.normalizeTitle))
+        var seenTitles = Set((previousQuestionTitles + seed.map(\.title)).map(Self.normalizeTitle))
+        var seenAnswers = Set((previousQuestionTitles + seed.compactMap(\.correctAnswer)).map(Self.normalizeTitle).filter { !$0.isEmpty })
         var accepted = seed
         self.generatedQuestions = seed
 
         do {
             var pass = 0
-            while accepted.count < target && pass < Self.maxGenerationPasses {
+            while accepted.count < target && pass < maxPasses {
                 pass += 1
-                let isCompletionPass = pass > 1
                 let countBefore = accepted.count
-                // Les passes de complément sont limitées dans le temps ; la 1re ne l'est pas.
-                let passDeadline = isCompletionPass
-                    ? Date().addingTimeInterval(Self.completionPassTimeout)
-                    : Date.distantFuture
+                let passDeadline = (firstPassUnlimited && pass == 1)
+                    ? Date.distantFuture
+                    : Date().addingTimeInterval(Self.completionPassTimeout)
                 let remaining = target - accepted.count
 
-                // Le prompt rappelle au modèle tout ce qu'il doit éviter : l'historique
-                // persisté + ce qui a déjà été retenu lors des passes précédentes.
                 let exclude = previousQuestionTitles + accepted.map(\.title)
                 let prompt = buildQuizPrompt(
                     themes: lastThemes,
@@ -127,27 +143,24 @@ class AIQuizGenerator {
                 )
 
                 for try await snapshot in stream {
-                    // Coupe une passe de complément qui s'éternise.
                     if Date() >= passDeadline { break }
 
-                    guard let aiQuestions = snapshot.content.questions else {
-                        print("🤖 AIQuiz snapshot: questions nil")
-                        continue
-                    }
+                    guard let aiQuestions = snapshot.content.questions else { continue }
 
-                    // Reconstruction idempotente : les snapshots sont cumulatifs, on repart
-                    // donc de `accepted` (figé) et on déduplique le contenu du snapshot.
-                    var batchSeen = seenNormalized
+                    var batchTitles = seenTitles
+                    var batchAnswers = seenAnswers
                     var live = accepted
                     for aiQ in aiQuestions {
                         guard live.count < target else { break }
                         guard let question = aiQ.question, !question.isEmpty,
-                              let correctAnswer = aiQ.correctAnswer, !correctAnswer.isEmpty else {
-                            continue
-                        }
-                        let key = Self.normalizeTitle(question)
-                        guard !key.isEmpty, !batchSeen.contains(key) else { continue }
-                        batchSeen.insert(key)
+                              let correctAnswer = aiQ.correctAnswer, !correctAnswer.isEmpty else { continue }
+                        let titleKey = Self.normalizeTitle(question)
+                        let answerKey = Self.normalizeTitle(correctAnswer)
+                        guard !titleKey.isEmpty,
+                              !batchTitles.contains(titleKey),
+                              !batchAnswers.contains(answerKey) else { continue }
+                        batchTitles.insert(titleKey)
+                        batchAnswers.insert(answerKey)
                         live.append(QuizQuestion(
                             title: question,
                             answers: [correctAnswer],
@@ -165,21 +178,18 @@ class AIQuizGenerator {
                     self.generationProgress = Double(live.count) / Double(target)
                 }
 
-                // Fige le résultat de la passe et met à jour le filtre pour la passe suivante.
                 accepted = self.generatedQuestions
-                seenNormalized = Set(
-                    (previousQuestionTitles + accepted.map(\.title)).map(Self.normalizeTitle)
-                )
+                seenTitles = Set((previousQuestionTitles + accepted.map(\.title)).map(Self.normalizeTitle))
+                seenAnswers = Set((previousQuestionTitles + accepted.compactMap(\.correctAnswer)).map(Self.normalizeTitle).filter { !$0.isEmpty })
                 print("🤖 AIQuiz passe \(pass): \(accepted.count)/\(target) questions uniques")
 
-                // Le modèle n'a plus rien d'inédit à proposer : inutile d'insister.
-                if isCompletionPass && accepted.count == countBefore { break }
+                if pass > 1 && accepted.count == countBefore { break }
             }
             print("🤖 AIQuiz terminé: \(accepted.count) questions finales")
         } catch is CancellationError {
-            // Annulation volontaire (sheet fermée) : on garde ce qui a été généré, sans erreur.
+            // Annulation volontaire : on garde l'acquis sans erreur.
         } catch {
-            self.error = .generationFailed(error.localizedDescription)
+            self.error = mapGenerationError(error)
         }
 
         if !self.generatedQuestions.isEmpty {
@@ -209,9 +219,9 @@ class AIQuizGenerator {
         error = nil
 
         let themeLabel = lastThemes.map(\.title).joined(separator: "/")
-        // À éviter : l'historique + toutes les questions affichées (dont celle rejetée).
         let exclude = previousQuestionTitles + generatedQuestions.map(\.title)
-        let seen = Set(exclude.map(Self.normalizeTitle))
+        let seenTitles = Set(exclude.map(Self.normalizeTitle))
+        let seenAnswers = Set((previousQuestionTitles + generatedQuestions.compactMap(\.correctAnswer)).map(Self.normalizeTitle).filter { !$0.isEmpty })
 
         do {
             // count: 3 → marge pour qu'au moins une question soit réellement inédite.
@@ -240,8 +250,11 @@ class AIQuizGenerator {
                           let correctAnswer = aiQ.correctAnswer, !correctAnswer.isEmpty else {
                         continue
                     }
-                    let key = Self.normalizeTitle(question)
-                    guard !key.isEmpty, !seen.contains(key) else { continue }
+                    let titleKey = Self.normalizeTitle(question)
+                    let answerKey = Self.normalizeTitle(correctAnswer)
+                    guard !titleKey.isEmpty,
+                          !seenTitles.contains(titleKey),
+                          !seenAnswers.contains(answerKey) else { continue }
                     replacement = QuizQuestion(
                         title: question,
                         answers: [correctAnswer],
@@ -269,38 +282,47 @@ class AIQuizGenerator {
                 self.error = .noFreshQuestion
             }
         } catch is CancellationError {
-            // Annulation volontaire (sheet fermée) : aucun message d'erreur.
+            // Annulation volontaire.
         } catch {
-            self.error = .generationFailed(error.localizedDescription)
+            self.error = mapGenerationError(error)
         }
 
         regeneratingQuestionID = nil
     }
 
-    /// Normalise un intitulé pour comparer les questions sans tenir compte de la casse,
-    /// des accents, de la ponctuation ni des espaces multiples.
-    /// « Qui chante 'Thriller' ? » et « qui chante thriller » donnent la même clé.
     nonisolated static func normalizeTitle(_ raw: String) -> String {
         raw.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: Locale(identifier: "fr_FR"))
             .components(separatedBy: CharacterSet.alphanumerics.inverted)
             .filter { !$0.isEmpty }
             .joined(separator: " ")
     }
+
+    private func mapGenerationError(_ error: Error) -> QuizGenerationError {
+        let msg = error.localizedDescription.lowercased()
+        if msg.contains("context") || msg.contains("window") || msg.contains("length")
+            || msg.contains("token") || msg.contains("size") {
+            return .contextOverflow
+        }
+        return .generationFailed
+    }
 }
 
 enum QuizGenerationError: LocalizedError {
     case notAvailable
-    case generationFailed(String)
+    case generationFailed
     case noFreshQuestion
+    case contextOverflow
 
     var errorDescription: String? {
         switch self {
         case .notAvailable:
             return "Apple Intelligence n'est pas disponible sur cet appareil."
-        case .generationFailed(let msg):
-            return "Génération échouée : \(msg)"
+        case .generationFailed:
+            return "Génération échouée. Réessaie."
         case .noFreshQuestion:
-            return "Aucune nouvelle question trouvée pour l'instant. Réessaie ou lance avec celles-ci."
+            return "Aucune nouvelle question trouvée. Réessaie ou lance avec celles-ci."
+        case .contextOverflow:
+            return "Trop de sessions d'affilée — réessaie dans un instant."
         }
     }
 }
