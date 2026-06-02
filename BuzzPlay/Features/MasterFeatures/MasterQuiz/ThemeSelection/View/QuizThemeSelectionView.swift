@@ -56,10 +56,7 @@ struct QuizThemeSelectionView: View {
                     onComplete: { set in
                         aiGeneratedSet = set
                         showAIGeneratorSheet = false
-                        Task { @MainActor in
-                            try? await Task.sleep(for: .milliseconds(600))
-                            showAIReviewSheet = true
-                        }
+                        showAIReviewSheet = true
                     },
                     onDismiss: { showAIGeneratorSheet = false }
                 )
@@ -78,6 +75,7 @@ struct QuizThemeSelectionView: View {
                     quizSet: aiGeneratedSet ?? QuizSet(id: UUID(), title: "", theme: QuizThemes.annees2000, questions: []),
                     targetCount: viewModel.quizRoundsTotal,
                     onLaunch: { set in
+                        showAIReviewSheet = false
                         viewModel.selectSet(set)
                         router.push(.quizMaster)
                     },

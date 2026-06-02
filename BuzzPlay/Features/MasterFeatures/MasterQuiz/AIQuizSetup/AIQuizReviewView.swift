@@ -16,8 +16,10 @@ struct AIQuizReviewView: View {
     let onLaunch: (QuizSet) -> Void
     let onBack: () -> Void
 
-    // Tâche de régénération en cours, annulée si la vue disparaît.
     @State private var regenTask: Task<Void, Never>?
+    @State private var completionTask: Task<Void, Never>?
+    // Anti-double-tap : passe à true au 1er tap sur "Lancer".
+    @State private var hasLaunched = false
 
     // Source de vérité : le generator, pas le quizSet (évite les problèmes de timing de sheet)
     private var questions: [QuizQuestion] {
@@ -29,12 +31,12 @@ struct AIQuizReviewView: View {
         max(0, targetCount - questions.count)
     }
 
-    // Lancement bloqué seulement pendant une (ré)génération en cours. Les questions
-    // manquantes sont complétées automatiquement par des classiques au lancement.
     private var canLaunch: Bool {
         !questions.isEmpty
+            && !hasLaunched
             && generator.regeneratingQuestionID == nil
             && !generator.isGenerating
+            && !generator.isCompleting
     }
 
     var body: some View {
@@ -96,6 +98,28 @@ struct AIQuizReviewView: View {
                     .padding(.top, 10)
                 }
 
+                // Bandeau complétion en cours (passes 2-3 après ouverture de la Review)
+                if generator.isCompleting {
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.mini)
+                            .tint(Color(hex: "#AD46FF"))
+                        Text("Ajout de questions en cours…")
+                            .font(.nohemi(.caption, weight: .regular))
+                            .foregroundStyle(.white.opacity(0.7))
+                        Spacer()
+                        Text("\(questions.count)/\(targetCount)")
+                            .font(.nohemi(.caption, weight: .semiBold))
+                            .foregroundStyle(.white.opacity(0.5))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Color(hex: "#AD46FF").opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color(hex: "#AD46FF").opacity(0.2), lineWidth: 1))
+                    .padding(.horizontal, 16)
+                    .padding(.top, 6)
+                }
+
                 // Questions list
                 ScrollView {
                     VStack(spacing: 12) {
@@ -144,6 +168,7 @@ struct AIQuizReviewView: View {
                     }
 
                     Button(action: {
+                        hasLaunched = true
                         let finalSet = QuizSet(
                             id: quizSet.id,
                             title: quizSet.title,
@@ -170,7 +195,15 @@ struct AIQuizReviewView: View {
                 .padding(.vertical, 12)
             }
         }
-        .onDisappear { regenTask?.cancel() }
+        .task {
+            if #available(iOS 26.0, *), missingCount > 0 {
+                completionTask = Task { await generator.completeGeneration(target: targetCount) }
+            }
+        }
+        .onDisappear {
+            regenTask?.cancel()
+            completionTask?.cancel()
+        }
     }
 }
 

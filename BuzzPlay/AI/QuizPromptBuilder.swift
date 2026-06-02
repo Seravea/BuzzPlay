@@ -22,8 +22,8 @@ func buildQuizPrompt(
 
     let previousSection = previousQuestions.isEmpty ? "" : """
 
-    QUESTIONS DÉJÀ POSÉES LORS DES PARTIES PRÉCÉDENTES — NE PAS RÉPÉTER :
-    \(previousQuestions.prefix(60).enumerated().map { "- \($0.element)" }.joined(separator: "\n"))
+    QUESTIONS DÉJÀ POSÉES — NE PAS RÉPÉTER (ni la question, ni la même réponse) :
+    \(previousQuestions.suffix(15).map { "- \($0)" }.joined(separator: "\n"))
 
     """
 
@@ -52,33 +52,14 @@ func buildQuizPrompt(
     10. Pas de questions sur des événements après 2024
     11. Le funFact doit être surprenant ou amusant — pas une reformulation de la réponse
     12. Varie les types : "Qui", "Quel", "Dans quel", "Combien", "Quelle année", "Comment s'appelle"
-    13. Ne commence pas deux questions par la même formulation
+    13. Chaque question ET chaque réponse doivent être uniques — ne reformule pas une question déjà posée, et ne donne pas la même réponse sous un autre intitulé
 
-    EXEMPLES DE BONNES QUESTIONS MUSICALES :
-
-    ✅ Facile / Années 80 :
-    Q: "Qui chante 'Thriller' (1982) ?"
-    R: "Michael Jackson"
-    Anecdote: "Thriller reste l'album le plus vendu de l'histoire avec plus de 70 millions de copies."
-
-    ✅ Moyen / Rock :
-    Q: "Quel groupe a sorti l'album 'OK Computer' en 1997 ?"
-    R: "Radiohead"
+    ✅ BON EXEMPLE :
+    Q: "Quel groupe a sorti l'album 'OK Computer' en 1997 ?" R: "Radiohead"
     Anecdote: "OK Computer a été élu 'meilleur album de tous les temps' dans de nombreux sondages."
 
-    ✅ Difficile / Rap FR :
-    Q: "En quelle année Orelsan a-t-il sorti son album 'La fête est finie' ?"
-    R: "2017"
-    Anecdote: "L'album a reçu 4 Victoires de la musique dont l'album de l'année."
-
-    ✅ Expert / Électro :
-    Q: "Quel était le vrai nom du duo Daft Punk ?"
-    R: "Thomas Bangalter et Guy-Manuel de Homem-Christo"
-    Anecdote: "Ils se sont rencontrés au lycée Carnot à Paris en 1987."
-
-    ❌ EXEMPLES À NE JAMAIS FAIRE :
-    - "Quel est le titre d'une chanson de Beyoncé ?" → trop vague
-    - "Quel artiste chante sur ce titre ?" → pas de contexte audio ici
+    ❌ À ÉVITER :
+    - "Quel est le titre d'une chanson de Beyoncé ?" → trop vague, pas de réponse unique
     - "Dans quel film joue Lady Gaga ?" → pas musical
     """
 }
