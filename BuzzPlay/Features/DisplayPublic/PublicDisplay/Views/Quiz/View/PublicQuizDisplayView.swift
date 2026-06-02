@@ -13,6 +13,10 @@ struct PublicQuizDisplayView: View {
 
     var body: some View {
         VStack(spacing: 14) {
+            // Timer badge
+            TimerBadge(time: timer)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+
             // Question Card — masquée jusqu'à la fin du premier countdown
             if state.isQuestionRevealed {
                 VStack(alignment: .leading, spacing: 8) {

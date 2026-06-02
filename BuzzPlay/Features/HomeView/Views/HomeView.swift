@@ -54,17 +54,11 @@ struct HomeView: View {
                     }
                     .buttonStyle(.plain)
 
-                    // Animer — bouton secondaire discret
+                    // Animer — bouton secondaire
                     Button { showMasterConfirmation = true } label: {
                         HomeSecondaryCard(title: "Animer", subtitle: "Hôte de la partie", iconName: "gamecontroller.fill")
                     }
                     .buttonStyle(.plain)
-                    .alert("Tu vas animer la partie", isPresented: $showMasterConfirmation) {
-                        Button("Annuler", role: .cancel) { }
-                        Button("Continuer") { router.push(Route.masterLobbyView) }
-                    } message: {
-                        Text("Assure-toi d'être le bon appareil avant de lancer.")
-                    }
                 }
                 .padding(.horizontal, 18)
                 .padding(.bottom, 32)
@@ -135,6 +129,91 @@ struct HomeView: View {
             }
         }
         .animation(.easeInOut(duration: 0.35), value: masterFlowVM.isGamePaused)
+        .overlay {
+            if showMasterConfirmation {
+                MasterConfirmOverlay(
+                    onConfirm: {
+                        showMasterConfirmation = false
+                        router.push(Route.masterLobbyView)
+                    },
+                    onCancel: { showMasterConfirmation = false }
+                )
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
+            }
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: showMasterConfirmation)
+    }
+}
+
+// MARK: - Overlay confirmation Master
+
+private struct MasterConfirmOverlay: View {
+    let onConfirm: () -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.55)
+                .ignoresSafeArea()
+
+            VStack(spacing: 24) {
+                VStack(spacing: 10) {
+                    Image(systemName: "gamecontroller.fill")
+                        .font(.system(size: 36, weight: .semibold))
+                        .foregroundStyle(LinearGradient(
+                            colors: [Color(hex: "#2B7FFF"), Color(hex: "#00B8DB")],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
+                        ))
+
+                    Text("Prêt à mener la danse ?")
+                        .font(.nohemi(.title2, weight: .extraBold))
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+
+                    Text("Tu vas animer la partie en tant qu'hôte. Les joueurs pourront te rejoindre depuis leur iPhone.")
+                        .font(.nohemi(.subheadline, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.65))
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(3)
+                }
+
+                HStack(spacing: 12) {
+                    Button(action: onCancel) {
+                        Text("Annuler")
+                            .font(.nohemi(.body, weight: .semiBold))
+                            .foregroundStyle(.white.opacity(0.75))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 14))
+                    }
+
+                    Button(action: onConfirm) {
+                        Text("C'est parti !")
+                            .font(.nohemi(.body, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color(hex: "#2B7FFF"), Color(hex: "#00B8DB")],
+                                    startPoint: .topLeading, endPoint: .bottomTrailing
+                                ),
+                                in: RoundedRectangle(cornerRadius: 14)
+                            )
+                    }
+                }
+            }
+            .padding(28)
+            .background(
+                Color(hex: "#1A0535"),
+                in: RoundedRectangle(cornerRadius: 28)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 28)
+                    .strokeBorder(.white.opacity(0.10), lineWidth: 1)
+            )
+            .padding(.horizontal, 24)
+        }
     }
 }
 
@@ -185,29 +264,29 @@ private struct HomeSecondaryCard: View {
         HStack(spacing: 12) {
             Image(systemName: iconName)
                 .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.55))
+                .foregroundStyle(.white.opacity(0.80))
                 .frame(width: 40, height: 40)
-                .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 12))
+                .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 12))
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
                     .font(.nohemi(.subheadline, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.75))
+                    .foregroundStyle(.white)
                 Text(subtitle)
                     .font(.nohemi(.caption, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.40))
+                    .foregroundStyle(.white.opacity(0.60))
             }
 
             Spacer()
 
             Image(systemName: "chevron.right")
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.30))
+                .foregroundStyle(.white.opacity(0.50))
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.10), lineWidth: 1))
+        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.18), lineWidth: 1))
     }
 }
 

@@ -110,7 +110,7 @@ struct BuzzerPlayerView: View {
 
     private func iphoneLayout(buzzerVM: BuzzerViewModel) -> some View {
         VStack(spacing: 0) {
-            compactHeader
+            compactHeader(buzzerVM: buzzerVM)
 
             PublicDisplayView(playerGameVM: playerGameVM, gameType: gameType)
                 .padding(.horizontal, 12)
@@ -126,7 +126,7 @@ struct BuzzerPlayerView: View {
         }
     }
 
-    private var compactHeader: some View {
+    private func compactHeader(buzzerVM: BuzzerViewModel) -> some View {
         HStack(spacing: 12) {
             Text(gameType.gameTitle)
                 .font(.nohemi(.subheadline, weight: .bold))
@@ -151,14 +151,18 @@ struct BuzzerPlayerView: View {
                 .transition(.scale.combined(with: .opacity))
             }
 
-            Text(playerGameVM.formattedTime)
-                .font(.nohemi(.callout, weight: .extraBold))
-                .foregroundStyle(Color.mustardYellow)
-                .tracking(2)
-                .monospacedDigit()
-                .contentTransition(.numericText())
-                .animation(.default, value: playerGameVM.formattedTime)
-                .frame(minWidth: 32, alignment: .trailing)
+            // Bouton mute son buzzer
+            Button {
+                withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                    buzzerVM.isBuzzMuted.toggle()
+                }
+            } label: {
+                Image(systemName: buzzerVM.isBuzzMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(buzzerVM.isBuzzMuted ? .white.opacity(0.35) : .white.opacity(0.85))
+                    .frame(width: 44, height: 44)
+            }
+            .accessibilityLabel(buzzerVM.isBuzzMuted ? "Activer le son du buzzer" : "Couper le son du buzzer")
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
