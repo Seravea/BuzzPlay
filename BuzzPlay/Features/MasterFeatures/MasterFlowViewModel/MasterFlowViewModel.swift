@@ -52,10 +52,18 @@ final class MasterFlowViewModel {
     /// Tous les joueurs qui ont rejoint la session (ne diminue jamais, sert au statut de connexion)
     private(set) var allRegisteredPlayers: [Player] = []
 
-    /// Nombre de joueurs actuellement connectés (hors écran public)
     var connectedPlayersCount: Int { players.filter { $0.name != "Écran Publique" }.count }
-    /// Nombre total de joueurs ayant rejoint depuis le début (hors écran public)
     var totalPlayersCount: Int { allRegisteredPlayers.filter { $0.name != "Écran Publique" }.count }
+
+    /// Noms des joueurs ayant confirmé leur présence sur le buzzer.
+    private(set) var readyPlayers: Set<String> = []
+
+    /// Vrai dès que tous les joueurs connectés ont envoyé playerReady.
+    var allPlayersReady: Bool {
+        let game = players.filter { $0.name != "Écran Publique" }
+        guard !game.isEmpty else { return false }
+        return game.allSatisfy { readyPlayers.contains($0.name) }
+    }
     
     var mpcService: MPCService = MPCService(peerName: "Master", role: .master)
     private var hasStartedHosting = false
@@ -269,6 +277,10 @@ extension MasterFlowViewModel {
         switch message {
         case .playerJoin(let player):
             addPlayer(player)
+        case .playerReady:
+            let name = peer.displayName
+            readyPlayers.insert(name)
+            print("MASTER: \(name) est prêt sur son buzzer (\(readyPlayers.count)/\(connectedPlayersCount))")
         case .buzz(let payload):
             handleBuzzReceive(data: payload, from: peer)
         case .buyGiftRequest(let payload):
@@ -298,6 +310,7 @@ extension MasterFlowViewModel {
                 self.connectedPeers.removeAll { $0 == peer }
                 let name = peer.displayName
                 self.players.removeAll { $0.name == name }
+                self.readyPlayers.remove(name)
                 guard name != "Écran Publique" else { return }
                 self.disconnectedPlayerName = name
                 // Pause si plus aucun joueur pendant une partie active
@@ -328,6 +341,7 @@ extension MasterFlowViewModel {
 //MARK: sending TO Peer connected
 extension MasterFlowViewModel {
     func broadcastGameLaunch(_ game: GameType) {
+        readyPlayers.removeAll()  // players devront re-confirmer leur présence sur le nouveau buzzer
         mpcService.sendMessage(.masterLaunchedGame(game))
     }
     

@@ -24,6 +24,8 @@ class MasterChooseGameViewModel {
     var connectedPlayersCount: Int { gameVM.connectedPlayersCount }
     var totalPlayersCount: Int { gameVM.totalPlayersCount }
     var players: [Player] { gameVM.players }
+    var allPlayersReady: Bool { gameVM.allPlayersReady }
+    var readyPlayersCount: Int { gameVM.readyPlayers.count }
 
     // Round progress
     var currentRound: Int { gameVM.currentRound }
