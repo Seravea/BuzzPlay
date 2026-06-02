@@ -91,6 +91,9 @@ struct MasterChooseGameView: View {
         let isAvailable: Bool = game == .quiz
             ? masterChooseGameVM.isQuizCardAvailable
             : masterChooseGameVM.isBlindTestCardAvailable
+        let allReady = masterChooseGameVM.allPlayersReady
+        let readyCount = masterChooseGameVM.readyPlayersCount
+        let totalCount = masterChooseGameVM.connectedPlayersCount
 
         VStack(spacing: 0) {
             VStack(spacing: 10) {
@@ -118,21 +121,36 @@ struct MasterChooseGameView: View {
                 router.push(game.destinationMaster)
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: isAvailable ? game.iconName : "checkmark")
-                        .font(.system(size: 12, weight: .semibold))
-                    Text(isAvailable ? "Lancer" : "Terminé")
-                        .font(.nohemi(.subheadline, weight: .bold))
+                    if !isAvailable {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .semibold))
+                        Text("Terminé")
+                            .font(.nohemi(.subheadline, weight: .bold))
+                    } else if !allReady {
+                        ProgressView()
+                            .controlSize(.mini)
+                            .tint(.white.opacity(0.6))
+                        Text("\(readyCount)/\(totalCount) prêts…")
+                            .font(.nohemi(.subheadline, weight: .bold))
+                    } else {
+                        Image(systemName: game.iconName)
+                            .font(.system(size: 12, weight: .semibold))
+                        Text("Lancer")
+                            .font(.nohemi(.subheadline, weight: .bold))
+                    }
                 }
-                .foregroundStyle(isAvailable ? .white : .white.opacity(0.40))
+                .foregroundStyle((isAvailable && allReady) ? .white : .white.opacity(0.40))
                 .frame(maxWidth: .infinity)
                 .frame(height: 40)
                 .background(
-                    isAvailable ? AnyShapeStyle(gradient) : AnyShapeStyle(Color.white.opacity(0.06)),
+                    (isAvailable && allReady)
+                        ? AnyShapeStyle(gradient)
+                        : AnyShapeStyle(Color.white.opacity(0.06)),
                     in: RoundedRectangle(cornerRadius: 12)
                 )
             }
             .buttonStyle(.plain)
-            .disabled(!isAvailable)
+            .disabled(!isAvailable || !allReady)
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
         }

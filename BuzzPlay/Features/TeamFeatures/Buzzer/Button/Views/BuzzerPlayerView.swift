@@ -84,7 +84,10 @@ struct BuzzerPlayerView: View {
             }
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: playerGameVM.pendingNotesToast != nil)
-        .onAppear { playerGameVM.syncBuzzerWithCurrentPublicState() }
+        .onAppear {
+            playerGameVM.syncBuzzerWithCurrentPublicState()
+            playerGameVM.sendPlayerReady()
+        }
         .onChange(of: playerGameVM.player.accountAmount) { _, _ in
             coinsVM.onPlayerUpdated(playerGameVM.player)
         }

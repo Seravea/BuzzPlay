@@ -25,6 +25,7 @@ enum MPCMessage: Codable {
     case playerJoin(Player)
     case buzz(BuzzPayload)
     case buyGiftRequest(GiftRequestPayload)
+    case playerReady  // Player est arrivé sur son buzzer
 
     // MASTER -> PLAYER
     case buyGiftResult(CoinsViewModel.Gift)

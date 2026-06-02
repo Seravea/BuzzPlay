@@ -329,8 +329,17 @@ extension PlayerGameViewModel {
         stopUITimer()
     }
 
+    func sendPlayerReady() {
+        guard isConnectedToMaster else { return }
+        mpc.sendMessage(.playerReady)
+    }
+
     func handleSceneWillForeground() {
         formattedTime = lastMasterFormattedTime
+        // Re-confirmer la présence si déjà sur le buzzer
+        if isConnectedToMaster && hasPartyStarted {
+            sendPlayerReady()
+        }
         guard !isConnectedToMaster else { return }
         // Retour foreground sans connexion → scan immédiat + timer de retry
         mpc.restartBrowsing()
