@@ -13,6 +13,8 @@ struct AIQuizSetupView: View {
     @State private var selectedThemeIDs: Set<UUID> = []
     @State private var selectedDifficulty: QuizDifficulty?
     @State private var isGenerating = false
+    // Tâche de génération en cours, annulée si la vue disparaît.
+    @State private var generationTask: Task<Void, Never>?
 
     let quizRoundsTotal: Int
     let onComplete: (QuizSet) -> Void
@@ -111,18 +113,35 @@ struct AIQuizSetupView: View {
                         }
                         .padding(.horizontal, 20)
 
-                        // INFO
+                        // INFO / guide conditions
+                        let themeCount = selectedThemeIDs.count
+                        let infoText: String = {
+                            if themeCount == 0 && selectedDifficulty == nil {
+                                return "Sélectionne un thème et une difficulté pour générer"
+                            } else if themeCount == 0 {
+                                return "Sélectionne au moins un thème pour continuer"
+                            } else if selectedDifficulty == nil {
+                                return "Sélectionne une difficulté pour continuer"
+                            } else {
+                                return "\(quizRoundsTotal) questions · \(themeCount == 1 ? "1 thème" : "\(themeCount) thèmes mélangés")"
+                            }
+                        }()
+                        let infoIsWarning = themeCount == 0 || selectedDifficulty == nil
                         HStack(spacing: 8) {
-                            Image(systemName: "info.circle.fill")
-                                .foregroundStyle(.white.opacity(0.4))
-                            let themeCount = selectedThemeIDs.count
-                            Text("\(quizRoundsTotal) questions · \(themeCount == 0 ? "Sélectionne un thème" : themeCount == 1 ? "1 thème" : "\(themeCount) thèmes mélangés")")
-                                .font(.nohemi(.caption, weight: .regular))
-                                .foregroundStyle(.white.opacity(0.6))
+                            Image(systemName: infoIsWarning ? "arrow.down.circle.fill" : "checkmark.circle.fill")
+                                .foregroundStyle(infoIsWarning ? Color(hex: "#AD46FF").opacity(0.7) : .white.opacity(0.4))
+                            Text(infoText)
+                                .font(.nohemi(.caption, weight: infoIsWarning ? .semiBold : .regular))
+                                .foregroundStyle(infoIsWarning ? .white.opacity(0.8) : .white.opacity(0.6))
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 10)
-                        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 10))
+                        .background(
+                            infoIsWarning
+                                ? Color(hex: "#AD46FF").opacity(0.06)
+                                : Color.white.opacity(0.04),
+                            in: RoundedRectangle(cornerRadius: 10)
+                        )
                         .padding(.horizontal, 20)
                     }
                     .padding(.vertical, 24)
@@ -148,26 +167,6 @@ struct AIQuizSetupView: View {
                     .padding(.bottom, 8)
                 }
 
-                // Live preview questions générées
-                if isGenerating && !generator.generatedQuestions.isEmpty {
-                    VStack(alignment: .leading, spacing: 6) {
-                        ForEach(generator.generatedQuestions) { q in
-                            HStack(spacing: 8) {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(Color(hex: "#AD46FF"))
-                                Text(q.title)
-                                    .font(.nohemi(.caption, weight: .regular))
-                                    .foregroundStyle(.white.opacity(0.75))
-                                    .lineLimit(1)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 4)
-                    .padding(.bottom, 8)
-                }
-
                 // CTA
                 if isGenerating {
                     VStack(spacing: 8) {
@@ -189,6 +188,7 @@ struct AIQuizSetupView: View {
                     Button(action: generate) {
                         Text(generator.error != nil ? "Réessayer" : "✨ Générer")
                             .font(.nohemi(.body, weight: .bold))
+                            .foregroundStyle(canGenerate ? .white : .white.opacity(0.30))
                     }
                     .disabled(!canGenerate)
                     .frame(maxWidth: .infinity)
@@ -204,6 +204,7 @@ struct AIQuizSetupView: View {
                 }
             }
         }
+        .onDisappear { generationTask?.cancel() }
     }
 
     // MARK: - Theme Group
@@ -243,9 +244,9 @@ struct AIQuizSetupView: View {
         guard !selectedThemes.isEmpty, let difficulty = selectedDifficulty else { return }
         isGenerating = true
 
-        Task {
+        generationTask = Task {
             if #available(iOS 26.0, *) {
-                await generator.generate(
+                await generator.generateInitialPass(
                     themes: selectedThemes,
                     difficulty: difficulty,
                     count: quizRoundsTotal
@@ -253,7 +254,9 @@ struct AIQuizSetupView: View {
             }
             isGenerating = false
 
-            guard generator.error == nil, !generator.generatedQuestions.isEmpty else { return }
+            // Sheet fermée pendant la génération : on n'ouvre pas la review.
+            guard !Task.isCancelled,
+                  generator.error == nil, !generator.generatedQuestions.isEmpty else { return }
 
             let themeNames = selectedThemes.map(\.title).joined(separator: " + ")
             let representativeTheme = selectedThemes.first ?? QuizThemes.annees2000

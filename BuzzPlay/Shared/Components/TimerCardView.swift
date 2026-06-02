@@ -34,6 +34,26 @@ struct TimerCardView: View {
 }
 
 
+/// Badge compact du chrono — affiché dans la zone question côté Player.
+struct TimerBadge: View {
+    let time: String
+
+    var body: some View {
+        Text(time)
+            .font(.nohemi(.caption, weight: .extraBold))
+            .foregroundStyle(Color.mustardYellow)
+            .monospacedDigit()
+            .contentTransition(.numericText())
+            .animation(.default, value: time)
+            .frame(minWidth: 44, alignment: .trailing)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Color.mustardYellow.opacity(0.12), in: Capsule())
+            .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.30), lineWidth: 1))
+    }
+}
+
 #Preview {
     TimerCardView(timer: "00:01", isCorrectAnswer: true)
+    TimerBadge(time: "00:42")
 }

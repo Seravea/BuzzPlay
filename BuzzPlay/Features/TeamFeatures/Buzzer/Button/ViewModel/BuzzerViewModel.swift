@@ -38,8 +38,12 @@ class BuzzerViewModel {
     var activeHint: String? = nil
 
     // MARK: - Son buzzer
-    private var defaultBuzzPlayer: AVAudioPlayer?   // pré-chargé au init, pas de latence au 1er buzz
-    private var customSoundPlayer: AVAudioPlayer?   // son custom (gift changeBuzzSound)
+    private var defaultBuzzPlayer: AVAudioPlayer?
+    private var customSoundPlayer: AVAudioPlayer?
+
+    var isBuzzMuted: Bool = UserDefaults.standard.bool(forKey: "buzzplay.player.buzzMuted") {
+        didSet { UserDefaults.standard.set(isBuzzMuted, forKey: "buzzplay.player.buzzMuted") }
+    }
 
     var onBuzz: ((Player, BuzzerGameMode) -> Void)?
 
@@ -79,6 +83,7 @@ extension BuzzerViewModel {
     }
 
     private func playBuzzSound() {
+        guard !isBuzzMuted else { return }
         if let soundName = player.customBuzzSound {
             // Son custom choisi par le Player (cadeau changeBuzzSound)
             guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return }
