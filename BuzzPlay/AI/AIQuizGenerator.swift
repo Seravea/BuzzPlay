@@ -137,7 +137,7 @@ class AIQuizGenerator {
                 let session = LanguageModelSession()
                 let stream = try session.streamResponse(
                     generating: AIGeneratedQuiz.self,
-                    includeSchemaInPrompt: true,
+                    includeSchemaInPrompt: false,
                     options: GenerationOptions(),
                     prompt: { Prompt(prompt) }
                 )
@@ -235,7 +235,7 @@ class AIQuizGenerator {
             let session = LanguageModelSession()
             let stream = try session.streamResponse(
                 generating: AIGeneratedQuiz.self,
-                includeSchemaInPrompt: true,
+                includeSchemaInPrompt: false,
                 options: GenerationOptions(),
                 prompt: { Prompt(prompt) }
             )
