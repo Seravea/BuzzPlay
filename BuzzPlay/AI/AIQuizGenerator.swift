@@ -299,8 +299,13 @@ class AIQuizGenerator {
 
     private func mapGenerationError(_ error: Error) -> QuizGenerationError {
         let msg = error.localizedDescription.lowercased()
-        if msg.contains("context") || msg.contains("window") || msg.contains("length")
-            || msg.contains("token") || msg.contains("size") {
+        print("🤖 AIQuiz erreur brute: \(error)")
+        print("🤖 AIQuiz localizedDescription: \(msg)")
+        // Ne mapper contextOverflow que sur des patterns ultra-spécifiques au débordement
+        // de contexte FoundationModels. Les mots génériques ("context", "size"…) matchaient
+        // des erreurs Foundation sans rapport.
+        if msg.contains("context window") || msg.contains("context limit")
+            || msg.contains("token limit") || msg.contains("maximum context") {
             return .contextOverflow
         }
         return .generationFailed
