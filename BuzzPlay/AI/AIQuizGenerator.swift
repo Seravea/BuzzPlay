@@ -53,9 +53,11 @@ class AIQuizGenerator {
     // lot d'un coup, le modèle remplit le contexte et plante (exceededContextWindowSize).
     // On génère donc par petits lots et on boucle jusqu'au quota.
     private static let questionsPerBatch = 6
-    // Plafond DUR sur l'output d'un appel : empêche le modèle de partir en roue libre
-    // au-delà du lot demandé. ~6 questions (funFact inclus) tiennent largement dedans.
-    private static let maxBatchResponseTokens = 1200
+    // Plafond DUR sur l'output d'un appel : empêche le modèle de partir en roue libre.
+    // Les funFacts peuvent être verbeux (~250 tokens/question) : 6 questions = ~1500 tokens.
+    // On prend 2048 pour absorber les variations. Le pire cas prompt (12 thèmes, ~1600 tk
+    // d'input) donne 1600 + 2048 = 3648 < 4096 — on reste sous le plafond du modèle.
+    private static let maxBatchResponseTokens = 2048
     // Budget temps d'un lot de complément (le 1er lot n'est pas limité — cold start).
     private static let completionPassTimeout: TimeInterval = 8
 
