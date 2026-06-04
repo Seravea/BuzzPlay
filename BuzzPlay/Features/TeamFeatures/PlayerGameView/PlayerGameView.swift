@@ -89,6 +89,8 @@ struct PlayerGameView: View {
             playerGameVM.currentBuzzerVM = playerFlowVM.makeBuzzerViewModel(
                 for: game == .quiz ? .quiz : .blindTest
             )
+            // Re-confirme la présence au Master (#B7 : BuzzerPlayerView déjà à l'écran → onAppear ne refire pas)
+            playerGameVM.sendPlayerReady()
             if showInterGameScore {
                 showInterGameScore = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {

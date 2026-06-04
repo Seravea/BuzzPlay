@@ -297,6 +297,7 @@ extension MasterFlowViewModel {
     }
     
     func setupMPC() {
+        guard !hasStartedHosting else { return }
         // MPCService dispatche déjà sur main — Task @MainActor pour garantir l'isolation.
         mpcService.onPeerConnected = { [weak self] peer in
             Task { @MainActor [weak self] in
