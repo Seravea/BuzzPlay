@@ -50,13 +50,11 @@ func buildQuizPrompt(
     8. Adapté à un public français de 18 à 35 ans en soirée
     9. Ton fun et décontracté, pas scolaire
     10. Pas de questions sur des événements après 2024
-    11. Le funFact doit être surprenant ou amusant — pas une reformulation de la réponse
-    12. Varie les types : "Qui", "Quel", "Dans quel", "Combien", "Quelle année", "Comment s'appelle"
-    13. Chaque question ET chaque réponse doivent être uniques — ne reformule pas une question déjà posée, et ne donne pas la même réponse sous un autre intitulé
+    11. Varie les types : "Qui", "Quel", "Dans quel", "Combien", "Quelle année", "Comment s'appelle"
+    12. Chaque question ET chaque réponse doivent être uniques — ne reformule pas une question déjà posée, et ne donne pas la même réponse sous un autre intitulé
 
     ✅ BON EXEMPLE :
     Q: "Quel groupe a sorti l'album 'OK Computer' en 1997 ?" R: "Radiohead"
-    Anecdote: "OK Computer a été élu 'meilleur album de tous les temps' dans de nombreux sondages."
 
     ❌ À ÉVITER :
     - "Quel est le titre d'une chanson de Beyoncé ?" → trop vague, pas de réponse unique

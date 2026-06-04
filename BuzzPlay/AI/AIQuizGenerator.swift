@@ -54,10 +54,10 @@ class AIQuizGenerator {
     // On génère donc par petits lots et on boucle jusqu'au quota.
     private static let questionsPerBatch = 6
     // Plafond DUR sur l'output d'un appel : empêche le modèle de partir en roue libre.
-    // Les funFacts peuvent être verbeux (~250 tokens/question) : 6 questions = ~1500 tokens.
-    // On prend 2048 pour absorber les variations. Le pire cas prompt (12 thèmes, ~1600 tk
-    // d'input) donne 1600 + 2048 = 3648 < 4096 — on reste sous le plafond du modèle.
-    private static let maxBatchResponseTokens = 2048
+    // Sans funFact, une question = ~60-80 tokens (question + réponse + difficulté).
+    // 6 questions × 80 tokens = ~480 tokens. 1024 donne une large marge de sécurité.
+    // Le pire cas prompt (12 thèmes, ~1600 tk input) : 1600 + 1024 = 2624 < 4096 ✓
+    private static let maxBatchResponseTokens = 1024
     // Budget temps d'un lot de complément (le 1er lot n'est pas limité — cold start).
     private static let completionPassTimeout: TimeInterval = 8
 
@@ -188,7 +188,7 @@ class AIQuizGenerator {
                             tone: nil,
                             indices: [],
                             correctAnswer: correctAnswer,
-                            funFact: aiQ.funFact,
+                            funFact: nil, // retiré — trop gourmand en tokens (WWDC26)
                             source: .aiGenerated
                         ))
                     }
@@ -273,7 +273,7 @@ class AIQuizGenerator {
             )
 
             // Les snapshots sont cumulatifs et partiels : on réévalue à chaque tour,
-            // le dernier snapshot fournit la question complète (funFact inclus).
+            // le dernier snapshot fournit la question complète.
             var replacement: QuizQuestion? = nil
             for try await snapshot in stream {
                 guard let aiQuestions = snapshot.content.questions else { continue }
@@ -295,7 +295,7 @@ class AIQuizGenerator {
                         tone: nil,
                         indices: [],
                         correctAnswer: correctAnswer,
-                        funFact: aiQ.funFact,
+                        funFact: nil, // retiré — trop gourmand en tokens (WWDC26)
                         source: .aiGenerated
                     )
                     break

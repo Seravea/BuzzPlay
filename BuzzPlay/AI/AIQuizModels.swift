@@ -27,13 +27,6 @@ struct AIQuizQuestion {
         """)
     let correctAnswer: String
 
-    @Guide(description: """
-        Anecdote fun, surprenante ou amusante sur la réponse.
-        Révélée après validation par le Master. Ton décontracté, pas académique.
-        1 à 2 phrases maximum.
-        """)
-    let funFact: String
-
     @Guide(.anyOf(["facile", "moyen", "difficile", "expert"]))
     let difficulty: String
 }
