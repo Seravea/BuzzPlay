@@ -32,7 +32,7 @@ struct PublicDisplayView: View {
                 .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.white.opacity(0.08), lineWidth: 1))
 
                 case .quiz(let quizState):
-                    PublicQuizDisplayView(state: quizState, timer: playerGameVM.formattedTime)
+                    PublicQuizDisplayView(state: quizState, timer: playerGameVM.formattedTime, timerReady: playerGameVM.hasReceivedFirstTimer)
                     
                 case .blindTest(let blindTestState):
                 PublicBlindTestView(state: blindTestState, timer: playerGameVM.formattedTime)

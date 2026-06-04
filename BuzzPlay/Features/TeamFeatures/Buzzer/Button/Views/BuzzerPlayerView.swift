@@ -84,7 +84,10 @@ struct BuzzerPlayerView: View {
             }
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: playerGameVM.pendingNotesToast != nil)
-        .onAppear {
+        .task {
+            // Délai pour laisser la transition de navigation se terminer
+            // avant d'envoyer playerReady (#A5)
+            try? await Task.sleep(for: .milliseconds(600))
             playerGameVM.syncBuzzerWithCurrentPublicState()
             playerGameVM.sendPlayerReady()
         }

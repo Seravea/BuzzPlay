@@ -114,9 +114,15 @@ extension QuizMasterViewModel {
         let state = makePublicState()
         gameVM.sendPublicState(state)
 
-        startRoundCountdown {
-            self.startReactionTimer()          // reprend le timer Master depuis reactionTimeMs (pause, pas reset)
-            self.gameVM.unlockBuzz()           // envoie .buzzUnlock → Player appelle resumeUITimerIfNeeded()
+        // Délai simple sans countdown broadcasté : évite que le CountdownOverlay
+        // couvre la question côté Player (le buzz se re-déverrouille silencieusement)
+        countdownTask?.cancel()
+        countdownTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            try? await Task.sleep(for: .seconds(2))
+            guard !Task.isCancelled else { return }
+            self.startReactionTimer()
+            self.gameVM.unlockBuzz()
             let newState = self.makePublicState()
             self.gameVM.sendPublicState(newState)
         }

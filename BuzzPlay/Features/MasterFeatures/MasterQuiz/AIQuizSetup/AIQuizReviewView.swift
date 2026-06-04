@@ -41,7 +41,8 @@ struct AIQuizReviewView: View {
 
     var body: some View {
         ZStack {
-            BackgroundAppView().ignoresSafeArea()
+            // Fond géré par .presentationBackground dans la sheet parente (#A2)
+            Color(hex: "#1A0535").ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Header

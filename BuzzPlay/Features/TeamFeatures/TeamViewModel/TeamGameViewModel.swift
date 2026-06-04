@@ -53,6 +53,8 @@ final class PlayerGameViewModel {
     var formattedTime: String = "00:00"
     private var timer: Timer?
     private var lastMasterFormattedTime: String = "00:00"
+    // Masque le timer jusqu'au 1er .timerStarted pour éviter le drift sur la 1re question (#A4)
+    var hasReceivedFirstTimer: Bool = false
 
     // MARK: - Reconnect auto
     private var reconnectTimer: Timer?
@@ -155,6 +157,7 @@ extension PlayerGameViewModel {
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
             hasPartyStarted = true  // reconnexion après kill app : la partie est déjà lancée
+            hasReceivedFirstTimer = false  // reset pour chaque nouveau jeu (#A4)
             if game == .score {
                 leaderboardTask?.cancel()
                 showPostRoundLeaderboard = false
@@ -177,6 +180,7 @@ extension PlayerGameViewModel {
             shouldReturnToLobby = true
 
         case .timerStarted(let payload):
+            hasReceivedFirstTimer = true
             startLocalReactionTimer(masterTimestamp: payload.masterTimestamp)
 
         case .answerResult(let payload):
