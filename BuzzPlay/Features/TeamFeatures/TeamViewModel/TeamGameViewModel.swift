@@ -39,6 +39,8 @@ final class PlayerGameViewModel {
 
     // Master a lancé une nouvelle partie → retourner au lobby player
     var shouldReturnToLobby: Bool = false
+    // Notification brève avant redirection (#B6)
+    var showNewGameNotification: Bool = false
 
     // Toast Notes reçues (🎵) — auto-dismiss géré dans la vue
     var pendingNotesToast: Int? = nil
@@ -177,7 +179,13 @@ extension PlayerGameViewModel {
             currentBuzzerVM = nil
             showPostRoundLeaderboard = false
             leaderboardTask?.cancel()
-            shouldReturnToLobby = true
+            // Affiche notification brève avant redirection (#B6)
+            showNewGameNotification = true
+            Task { @MainActor [weak self] in
+                try? await Task.sleep(for: .seconds(2))
+                self?.showNewGameNotification = false
+                self?.shouldReturnToLobby = true
+            }
 
         case .timerStarted(let payload):
             hasReceivedFirstTimer = true

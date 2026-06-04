@@ -40,14 +40,14 @@ struct TimerBadge: View {
 
     var body: some View {
         Text(time)
-            .font(.nohemi(.caption, weight: .extraBold))
+            .font(.nohemi(.callout, weight: .extraBold))
             .foregroundStyle(Color.mustardYellow)
             .monospacedDigit()
             .contentTransition(.numericText())
             .animation(.default, value: time)
-            .frame(minWidth: 44, alignment: .trailing)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
+            .frame(minWidth: 52, alignment: .center)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
             .background(Color.mustardYellow.opacity(0.12), in: Capsule())
             .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.30), lineWidth: 1))
     }
