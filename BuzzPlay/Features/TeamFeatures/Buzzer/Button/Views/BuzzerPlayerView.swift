@@ -237,96 +237,115 @@ private struct NotesToastView: View {
     }
 }
 
-// MARK: - Answer Feedback Overlay
+// MARK: - Answer Feedback Overlay (#B5 — Neon Gradient Blast)
 
 private struct AnswerFeedbackOverlay: View {
     let result: AnswerResult
 
-    private var accentColor: Color {
+    @State private var glowPulse = false
+
+    private var gradientColors: [Color] {
         switch result {
-        case .correct:    Color(hex: "#00C875")
-        case .incorrect:  Color(hex: "#FF4D4D")
-        case .otherCorrect: Color.mustardYellow
+        case .correct:      [Color(hex: "#00C950"), Color(hex: "#009966")]
+        case .incorrect:    [Color(hex: "#FB2C36"), Color(hex: "#F6339A")]
+        case .otherCorrect: [Color(hex: "#F0B100"), Color(hex: "#FF6900")]
         }
     }
 
-    private var iconName: String {
+    private var label: String {
         switch result {
-        case .correct:      "checkmark.circle.fill"
-        case .incorrect:    "xmark.circle.fill"
-        case .otherCorrect: "checkmark.circle.fill"
+        case .correct:      "BONNE RÉPONSE"
+        case .incorrect:    "MAUVAISE RÉPONSE"
+        case .otherCorrect: ""
         }
     }
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.55)
+            Color.black.opacity(0.65)
                 .ignoresSafeArea()
 
-            VStack(spacing: 20) {
-                ZStack {
-                    Circle()
-                        .fill(accentColor.opacity(0.18))
-                        .frame(width: 130, height: 130)
-
-                    Image(systemName: iconName)
-                        .font(.system(size: 72, weight: .bold))
-                        .foregroundStyle(accentColor)
-                }
-
-                VStack(spacing: 10) {
+            VStack(spacing: 0) {
+                // Gradient card
+                VStack(spacing: 18) {
                     switch result {
                     case .correct(let points, let answer):
-                        Text("BONNE RÉPONSE")
-                            .font(.custom("Nohemi-Black", size: 30))
-                            .tracking(2)
-                            .foregroundStyle(.white)
-                        if let answer {
-                            Text(answer)
-                                .font(.custom("Nohemi-SemiBold", size: 22))
-                                .foregroundStyle(.white.opacity(0.9))
-                                .multilineTextAlignment(.center)
-                        }
-                        Text("+\(points) point\(points > 1 ? "s" : "")")
-                            .font(.custom("Nohemi-Black", size: 26))
-                            .foregroundStyle(accentColor)
-
-                    case .incorrect:
-                        Text("MAUVAISE RÉPONSE")
-                            .font(.custom("Nohemi-Black", size: 30))
-                            .tracking(2)
-                            .foregroundStyle(.white)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity, alignment: .center)
-
-                    case .otherCorrect(let name, let points, let answer):
-                        Text("\(name) a trouvé !")
+                        Text(label)
                             .font(.custom("Nohemi-Black", size: 28))
-                            .tracking(1)
+                            .tracking(4)
                             .foregroundStyle(.white)
+                            .shadow(color: gradientColors[0].opacity(glowPulse ? 0.9 : 0.4), radius: glowPulse ? 20 : 8)
                             .multilineTextAlignment(.center)
+
                         if let answer {
                             Text(answer)
                                 .font(.custom("Nohemi-SemiBold", size: 20))
-                                .foregroundStyle(.white.opacity(0.80))
+                                .foregroundStyle(.white.opacity(0.90))
                                 .multilineTextAlignment(.center)
                         }
-                        Text("+\(points) pt\(points > 1 ? "s" : "") pour \(name)")
-                            .font(.custom("Nohemi-SemiBold", size: 18))
-                            .foregroundStyle(accentColor.opacity(0.85))
+
+                        // Score badge
+                        Text("+\(points) POINT\(points > 1 ? "S" : "")")
+                            .font(.custom("Nohemi-Black", size: 22))
+                            .tracking(2)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Color.black.opacity(0.30), in: Capsule())
+                            .overlay(Capsule().strokeBorder(.white.opacity(0.35), lineWidth: 1))
+
+                    case .incorrect:
+                        Text(label)
+                            .font(.custom("Nohemi-Black", size: 28))
+                            .tracking(4)
+                            .foregroundStyle(.white)
+                            .shadow(color: gradientColors[0].opacity(glowPulse ? 0.9 : 0.4), radius: glowPulse ? 20 : 8)
+                            .multilineTextAlignment(.center)
+
+                    case .otherCorrect(let name, let points, let answer):
+                        Text("\(name) A TROUVÉ !")
+                            .font(.custom("Nohemi-Black", size: 26))
+                            .tracking(3)
+                            .foregroundStyle(.white)
+                            .shadow(color: gradientColors[0].opacity(glowPulse ? 0.9 : 0.4), radius: glowPulse ? 20 : 8)
+                            .multilineTextAlignment(.center)
+
+                        if let answer {
+                            Text(answer)
+                                .font(.custom("Nohemi-SemiBold", size: 19))
+                                .foregroundStyle(.white.opacity(0.90))
+                                .multilineTextAlignment(.center)
+                        }
+
+                        Text("+\(points) PT\(points > 1 ? "S" : "") POUR \(name.uppercased())")
+                            .font(.custom("Nohemi-Black", size: 16))
+                            .tracking(2)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Color.black.opacity(0.30), in: Capsule())
+                            .overlay(Capsule().strokeBorder(.white.opacity(0.35), lineWidth: 1))
                     }
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 36)
+                .padding(.horizontal, 32)
+                .background(
+                    LinearGradient(
+                        colors: gradientColors,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    in: RoundedRectangle(cornerRadius: 28)
+                )
+                .shadow(color: gradientColors[0].opacity(glowPulse ? 0.55 : 0.25), radius: glowPulse ? 32 : 14)
             }
-            .padding(40)
-            .background(
-                RoundedRectangle(cornerRadius: 32)
-                    .fill(.ultraThinMaterial.opacity(0.9))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 32)
-                            .strokeBorder(accentColor.opacity(0.35), lineWidth: 1.5)
-                    )
-            )
-            .padding(.horizontal, 36)
+            .padding(.horizontal, 32)
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                glowPulse = true
+            }
         }
     }
 }
