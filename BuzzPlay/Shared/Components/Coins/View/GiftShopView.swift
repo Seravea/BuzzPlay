@@ -176,6 +176,7 @@ struct GiftShopSheet: View {
                         balance: balance,
                         isPending: coinsVM.isPendingPurchase,
                         otherPlayers: coinsVM.otherPlayers,
+                        player: coinsVM.playerGameViewModel?.player,
                         onBuy: { target in
                             if gift == .changeBuzzSound {
                                 showSoundPicker = true
@@ -216,11 +217,13 @@ private struct GiftCardView: View {
     let balance: Int
     let isPending: Bool
     let otherPlayers: [Player]
+    let player: Player?
     let onBuy: (Player?) -> Void
 
     private var canAfford: Bool { balance >= gift.price }
     private var notEnoughPlayers: Bool { otherPlayers.count < gift.minimumOtherPlayers }
     private var isActive: Bool { canAfford && !notEnoughPlayers && !isPending }
+    private var isOwned: Bool { gift.isActiveOnPlayer(player) }
 
     var body: some View {
         Group {
@@ -250,6 +253,17 @@ private struct GiftCardView: View {
                     isActive ? gift.accentColor.opacity(0.18) : .white.opacity(0.05),
                     in: RoundedRectangle(cornerRadius: 14)
                 )
+                .overlay(alignment: .topTrailing) {
+                    if isOwned {
+                        Text("Actif")
+                            .font(.nohemi(.caption2, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(Color(hex: "#00C950"), in: Capsule())
+                            .offset(x: 6, y: -6)
+                    }
+                }
 
             Text(gift.shortTitle)
                 .font(.nohemi(.caption, weight: .bold))
@@ -287,6 +301,23 @@ private struct GiftCardView: View {
                 )
         )
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isActive)
+    }
+}
+
+// MARK: - État actif sur le Player
+
+extension CoinsViewModel.Gift {
+    func isActiveOnPlayer(_ player: Player?) -> Bool {
+        guard let player else { return false }
+        switch self {
+        case .scoreDoubled:         return player.hasScoreDoubled
+        case .shieldSingle:         return player.hasShieldSingle
+        case .shieldAll:            return player.hasShieldAll
+        case .changeBuzzColor:      return player.customBuzzColor != nil
+        case .changeBuzzSound:      return player.customBuzzSound != nil
+        case .enemyCanNotBuzz, .allEnemiesCanNotBuzz, .showIndicies:
+            return false  // effets ponctuels, pas de state persistant côté acheteur
+        }
     }
 }
 
