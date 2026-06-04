@@ -31,7 +31,7 @@ struct BuzzerPlayerView: View {
                         .zIndex(100)
                 }
 
-                if buzzerVM.countdownPhase != .hidden {
+                if buzzerVM.countdownPhase != .hidden && buzzerVM.answerResult == nil {
                     CountdownOverlay(phase: buzzerVM.countdownPhase)
                         .transition(.opacity)
                         .zIndex(99)
@@ -62,9 +62,16 @@ struct BuzzerPlayerView: View {
                         .transition(.opacity)
                 }
             }
+
+            if playerGameVM.showNewGameNotification {
+                NewGameNotificationOverlay()
+                    .transition(.scale(scale: 0.85).combined(with: .opacity))
+                    .zIndex(200)
+            }
         }
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: playerGameVM.showNewGameNotification)
         .animation(.spring(response: 0.45, dampingFraction: 0.65), value: playerGameVM.currentBuzzerVM?.answerResult != nil)
         .animation(.spring(response: 0.5, dampingFraction: 0.75), value: playerGameVM.currentBuzzerVM?.activeHint)
         .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
@@ -320,6 +327,40 @@ private struct AnswerFeedbackOverlay: View {
                     )
             )
             .padding(.horizontal, 36)
+        }
+    }
+}
+
+// MARK: - New Game Notification Overlay (#B6)
+
+private struct NewGameNotificationOverlay: View {
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.60).ignoresSafeArea()
+
+            VStack(spacing: 16) {
+                Image(systemName: "arrow.counterclockwise.circle.fill")
+                    .font(.system(size: 56, weight: .bold))
+                    .foregroundStyle(Color(hex: "#AD46FF"))
+
+                VStack(spacing: 6) {
+                    Text("Nouvelle partie !")
+                        .font(.custom("Nohemi-Black", size: 26))
+                        .tracking(1)
+                        .foregroundStyle(.white)
+                    Text("Le Master relance une partie")
+                        .font(.nohemi(.subheadline, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.60))
+                }
+            }
+            .padding(40)
+            .background(
+                RoundedRectangle(cornerRadius: 28)
+                    .fill(.ultraThinMaterial.opacity(0.9))
+                    .overlay(RoundedRectangle(cornerRadius: 28)
+                        .strokeBorder(Color(hex: "#AD46FF").opacity(0.35), lineWidth: 1.5))
+            )
+            .padding(.horizontal, 40)
         }
     }
 }

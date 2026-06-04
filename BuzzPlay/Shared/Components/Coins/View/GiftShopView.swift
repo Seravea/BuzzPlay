@@ -140,10 +140,13 @@ struct GiftShopSheet: View {
                             .font(.nohemi(.title3, weight: .extraBold))
                             .monospacedDigit()
                             .foregroundStyle(Color.mustardYellow)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
                         Image(systemName: "dollarsign.bank.building.fill")
                             .foregroundStyle(Color.mustardYellow)
+                            .layoutPriority(1)
                     }
-                    Text("coins disponibles")
+                    Text("Notes disponibles")
                         .font(.nohemi(.caption2, weight: .regular))
                         .foregroundStyle(.white.opacity(0.4))
                 }
