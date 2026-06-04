@@ -246,13 +246,11 @@ struct AIQuizSetupView: View {
         isGenerating = true
 
         generationTask = Task {
-            if #available(iOS 26.0, *) {
-                await generator.generateInitialPass(
-                    themes: selectedThemes,
-                    difficulty: difficulty,
-                    count: quizRoundsTotal
-                )
-            }
+            await generator.generateInitialPass(
+                themes: selectedThemes,
+                difficulty: difficulty,
+                count: quizRoundsTotal
+            )
             isGenerating = false
 
             // Sheet fermée pendant la génération : on n'ouvre pas la review.
