@@ -48,10 +48,15 @@ class AIQuizGenerator {
         return false
     }
 
-    // 1 passe initiale + jusqu'à 2 passes de complément pour atteindre le quota.
-    private static let maxGenerationPasses = 3
-    // Budget temps d'une passe de complément (la 1re passe n'est pas limitée).
-    // ~30 tokens/s on-device → 8 s couvre 2-3 questions ; au-delà on abandonne.
+    // Nombre de questions demandées PAR APPEL au modèle. La fenêtre de contexte
+    // on-device est de 4096 tokens (input + output confondus). En demandant un gros
+    // lot d'un coup, le modèle remplit le contexte et plante (exceededContextWindowSize).
+    // On génère donc par petits lots et on boucle jusqu'au quota.
+    private static let questionsPerBatch = 6
+    // Plafond DUR sur l'output d'un appel : empêche le modèle de partir en roue libre
+    // au-delà du lot demandé. ~6 questions (funFact inclus) tiennent largement dedans.
+    private static let maxBatchResponseTokens = 1200
+    // Budget temps d'un lot de complément (le 1er lot n'est pas limité — cold start).
     private static let completionPassTimeout: TimeInterval = 8
 
     // MARK: - Génération en deux temps (Setup → Review)
@@ -76,7 +81,10 @@ class AIQuizGenerator {
         lastThemes = themes
         lastDifficulty = difficulty
 
-        await runGenerationLoop(target: count, seed: [], maxPasses: 1, firstPassUnlimited: true)
+        // Assez de lots pour couvrir le quota, + marge pour les lots qui ne ramènent
+        // que des doublons.
+        let passes = Int(ceil(Double(count) / Double(Self.questionsPerBatch))) + 3
+        await runGenerationLoop(target: count, seed: [], maxPasses: passes, firstPassUnlimited: true)
 
         isGenerating = false
         generationProgress = Double(generatedQuestions.count) / Double(count)
@@ -89,19 +97,23 @@ class AIQuizGenerator {
         guard isAvailable, !isCompleting, !isGenerating else { return }
         guard generatedQuestions.count < target else { return }
         isCompleting = true
-        await runGenerationLoop(target: target, seed: generatedQuestions, maxPasses: 2, firstPassUnlimited: false)
+        let remaining = target - generatedQuestions.count
+        let passes = Int(ceil(Double(remaining) / Double(Self.questionsPerBatch))) + 2
+        await runGenerationLoop(target: target, seed: generatedQuestions, maxPasses: passes, firstPassUnlimited: false)
         isCompleting = false
     }
 
-    /// Boucle de génération commune : part de `seed`, déduplique (batch + historique) et
-    /// répète jusqu'à `target` questions ou épuisement des passes. Met à jour
+    /// Boucle de génération par PETITS LOTS : part de `seed`, demande au modèle un lot
+    /// de `questionsPerBatch` questions à la fois (jamais le quota entier d'un coup, pour
+    /// ne pas saturer la fenêtre de contexte de 4096 tokens), déduplique (lot + historique)
+    /// et répète jusqu'à `target` questions ou épuisement des passes. Met à jour
     /// `generatedQuestions` en continu et persiste l'historique anti-doublons à la fin.
     ///
-    /// Passe 1 : génération principale, sans limite de temps (durée ∝ au nombre demandé).
-    /// Passes 2-3 (complément automatique) : chacune bornée par `completionPassTimeout`,
-    /// et la boucle s'arrête dès qu'une passe ne ramène aucune question inédite.
-    /// `maxPasses` : nb de passes à effectuer dans cet appel.
-    /// `firstPassUnlimited` : si vrai, la 1re passe n'a pas de deadline (génération initiale).
+    /// Chaque lot est plafonné en sortie par `maxBatchResponseTokens` (anti runaway).
+    /// 1er lot : pas de deadline (cold start). Lots suivants : bornés par `completionPassTimeout`.
+    /// La boucle abandonne après 2 lots consécutifs sans aucune question inédite.
+    /// `maxPasses` : nb max de lots à effectuer dans cet appel.
+    /// `firstPassUnlimited` : si vrai, le 1er lot n'a pas de deadline (génération initiale).
     @available(iOS 26.0, *)
     private func runGenerationLoop(
         target: Int,
@@ -118,6 +130,8 @@ class AIQuizGenerator {
 
         do {
             var pass = 0
+            // Nombre de lots consécutifs n'ayant ramené aucune question inédite.
+            var emptyStreak = 0
             while accepted.count < target && pass < maxPasses {
                 pass += 1
                 let countBefore = accepted.count
@@ -125,12 +139,15 @@ class AIQuizGenerator {
                     ? Date.distantFuture
                     : Date().addingTimeInterval(Self.completionPassTimeout)
                 let remaining = target - accepted.count
+                // On ne demande qu'un petit lot par appel pour ne jamais saturer la
+                // fenêtre de contexte (+2 de marge pour absorber les doublons).
+                let batchCount = min(Self.questionsPerBatch, remaining) + 2
 
                 let exclude = previousQuestionTitles + accepted.map(\.title)
                 let prompt = buildQuizPrompt(
                     themes: lastThemes,
                     difficulty: lastDifficulty,
-                    count: remaining + 2,
+                    count: batchCount,
                     previousQuestions: exclude
                 )
 
@@ -138,7 +155,7 @@ class AIQuizGenerator {
                 let stream = try session.streamResponse(
                     generating: AIGeneratedQuiz.self,
                     includeSchemaInPrompt: false,
-                    options: GenerationOptions(),
+                    options: GenerationOptions(maximumResponseTokens: Self.maxBatchResponseTokens),
                     prompt: { Prompt(prompt) }
                 )
 
@@ -181,15 +198,28 @@ class AIQuizGenerator {
                 accepted = self.generatedQuestions
                 seenTitles = Set((previousQuestionTitles + accepted.map(\.title)).map(Self.normalizeTitle))
                 seenAnswers = Set((previousQuestionTitles + accepted.compactMap(\.correctAnswer)).map(Self.normalizeTitle).filter { !$0.isEmpty })
-                print("🤖 AIQuiz passe \(pass): \(accepted.count)/\(target) questions uniques")
+                print("🤖 AIQuiz lot \(pass): \(accepted.count)/\(target) questions uniques")
 
-                if pass > 1 && accepted.count == countBefore { break }
+                // Lot improductif : on tolère un coup de malchance, mais on abandonne
+                // après 2 lots consécutifs sans aucune question inédite (modèle épuisé).
+                if accepted.count == countBefore {
+                    emptyStreak += 1
+                    if emptyStreak >= 2 { break }
+                } else {
+                    emptyStreak = 0
+                }
             }
             print("🤖 AIQuiz terminé: \(accepted.count) questions finales")
         } catch is CancellationError {
             // Annulation volontaire : on garde l'acquis sans erreur.
         } catch {
-            self.error = mapGenerationError(error)
+            // On ne signale l'erreur que si AUCUNE question n'a pu être produite.
+            // Un échec sur un lot tardif ne doit pas jeter les lots déjà réussis.
+            if self.generatedQuestions.isEmpty {
+                self.error = mapGenerationError(error)
+            } else {
+                print("🤖 AIQuiz: erreur après \(self.generatedQuestions.count) questions — on garde l'acquis: \(error)")
+            }
         }
 
         if !self.generatedQuestions.isEmpty {
@@ -236,7 +266,7 @@ class AIQuizGenerator {
             let stream = try session.streamResponse(
                 generating: AIGeneratedQuiz.self,
                 includeSchemaInPrompt: false,
-                options: GenerationOptions(),
+                options: GenerationOptions(maximumResponseTokens: Self.maxBatchResponseTokens),
                 prompt: { Prompt(prompt) }
             )
 
