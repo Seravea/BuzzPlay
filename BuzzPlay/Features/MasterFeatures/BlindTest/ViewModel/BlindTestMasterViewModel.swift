@@ -124,13 +124,14 @@ extension BlindTestMasterViewModel {
             shouldAutoFinish = true
         }
 
-        let finalPoints = doubledScorePlayers.remove(playerAnswers.id) != nil ? points * 2 : points
+        let wasDoubled = doubledScorePlayers.remove(playerAnswers.id) != nil
+        let finalPoints = wasDoubled ? points * 2 : points
 
         // .answerResult envoyé EN PREMIER → Player snapshote knownPlayers avant la mise à jour du score
         let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: nil)
         gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
-        gameVM.addPointToPlayer(playerAnswers, points: finalPoints)
+        gameVM.addPointToPlayer(playerAnswers, points: finalPoints, consumeScoreDouble: wasDoubled)
 
         // on fige définitivement la manche
         stopReactionTimer()

@@ -230,10 +230,18 @@ final class MasterFlowViewModel {
         isGamePaused = false
 
         if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == player.name }) {
-            // Reconnexion : restaurer le score sauvegardé (le nom est la clé — l'UUID peut changer)
+            // Reconnexion : restaurer l'état sauvegardé (le nom est la clé — l'UUID peut changer)
             var restored = player
-            restored.score = allRegisteredPlayers[savedIndex].score
-            restored.accountAmount = allRegisteredPlayers[savedIndex].accountAmount
+            let saved = allRegisteredPlayers[savedIndex]
+            restored.score              = saved.score
+            restored.accountAmount      = saved.accountAmount
+            // Restaurer les pouvoirs achetés avec des Notes (valeur monétaire réelle)
+            restored.hasScoreDoubled    = saved.hasScoreDoubled
+            restored.hasShieldSingle    = saved.hasShieldSingle
+            restored.hasShieldAll       = saved.hasShieldAll
+            restored.customBuzzColor    = saved.customBuzzColor
+            restored.customBuzzSound    = saved.customBuzzSound
+            restored.blockedFromBuzzing = saved.blockedFromBuzzing
             allRegisteredPlayers[savedIndex] = restored
             players.append(restored)
             mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(restored), player: restored)
@@ -411,13 +419,17 @@ extension MasterFlowViewModel {
 
 //MARK: functions for game Score
 extension MasterFlowViewModel {
-    func addPointToPlayer(_ player: Player, points: Int) {
+    func addPointToPlayer(_ player: Player, points: Int, consumeScoreDouble: Bool = false) {
         guard let index = players.firstIndex(of: player) else { return }
         players[index].score += points
+        if consumeScoreDouble {
+            players[index].hasScoreDoubled = false
+        }
 
         // Sync allRegisteredPlayers pour conserver le score en cas de déconnexion
         if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == player.name }) {
             allRegisteredPlayers[savedIndex].score = players[index].score
+            if consumeScoreDouble { allRegisteredPlayers[savedIndex].hasScoreDoubled = false }
         }
 
         mpcService.sendMessage(.updatedPlayer(players[index]))
@@ -460,11 +472,18 @@ extension MasterFlowViewModel {
 
         activateGiftEffect(payload, for: players[playerIndex])
 
+        // scoreDoubled est tracké via doubledScorePlayers (UUID) dans les BuzzGame VMs,
+        // mais hasScoreDoubled sur le Player permet l'affichage du badge en boutique.
+        if gift == .scoreDoubled {
+            players[playerIndex].hasScoreDoubled = true
+        }
+
         mpcService.sendMessage(.updatedPlayer(players[playerIndex]))
         mpcService.sendMessagetoOnePlayer(message: .buyGiftResult(gift), player: players[playerIndex])
 
+        // Sync l'état complet (pas seulement accountAmount) pour la reconnexion
         if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == players[playerIndex].name }) {
-            allRegisteredPlayers[savedIndex].accountAmount = players[playerIndex].accountAmount
+            allRegisteredPlayers[savedIndex] = players[playerIndex]
         }
 
         print("MASTER: \(player.name) bought \(gift.title) for \(gift.price) coins")
