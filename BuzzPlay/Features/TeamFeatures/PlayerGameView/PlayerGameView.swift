@@ -110,7 +110,7 @@ struct PlayerPulsingPill: View {
     @State private var isPulsing = false
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: BuzzSpacing.sm) {
             Circle()
                 .fill(Color.mustardYellow)
                 .frame(width: 8, height: 8)
@@ -121,7 +121,7 @@ struct PlayerPulsingPill: View {
                 .font(.nohemi(.caption, weight: .bold))
                 .foregroundStyle(.white.opacity(0.7))
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, BuzzSpacing.lg)
         .padding(.vertical, 10)
         .background(.white.opacity(0.06), in: Capsule())
         .overlay(Capsule().strokeBorder(.white.opacity(0.10), lineWidth: 1))
@@ -141,21 +141,21 @@ private struct GameAnnounceSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            RoundedRectangle(cornerRadius: 99)
+            RoundedRectangle(cornerRadius: BuzzRadius.pill)
                 .fill(.white.opacity(0.2))
                 .frame(width: 36, height: 4)
-                .padding(.top, 16)
-                .padding(.bottom, 24)
+                .padding(.top, BuzzSpacing.lg)
+                .padding(.bottom, BuzzSpacing.xxl)
 
-            VStack(spacing: 20) {
+            VStack(spacing: BuzzSpacing.xl) {
                 HStack(spacing: 14) {
                     Image(systemName: game.iconName)
                         .textStyle(Typography.sectionTitle)
                         .foregroundStyle(.white)
                         .frame(width: 56, height: 56)
-                        .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 16))
+                        .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
 
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                         Text("Le Maître lance")
                             .font(.nohemi(.subheadline, weight: .regular))
                             .foregroundStyle(.white.opacity(0.55))
@@ -186,7 +186,7 @@ private struct GameAnnounceSheet: View {
                     .foregroundStyle(.white.opacity(0.45))
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, BuzzSpacing.xl)
 
             Spacer()
         }
@@ -230,13 +230,13 @@ private struct InterGameScoreSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            RoundedRectangle(cornerRadius: 99)
+            RoundedRectangle(cornerRadius: BuzzRadius.pill)
                 .fill(.white.opacity(0.2))
                 .frame(width: 36, height: 4)
-                .padding(.top, 16)
-                .padding(.bottom, 20)
+                .padding(.top, BuzzSpacing.lg)
+                .padding(.bottom, BuzzSpacing.xl)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                 Text("SCORES")
                     .font(.nohemi(.caption2, weight: .bold))
                     .tracking(0.8)
@@ -246,22 +246,22 @@ private struct InterGameScoreSheet: View {
                     .foregroundStyle(.white)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 16)
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.bottom, BuzzSpacing.lg)
 
             Divider().overlay(Color.white.opacity(0.08))
 
             ScrollView {
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     ForEach(Array(sortedPlayers.enumerated()), id: \.element.id) { index, player in
                         scoreRow(rank: index + 1, player: player)
                     }
                 }
-                .padding(16)
+                .padding(BuzzSpacing.lg)
             }
 
             PlayerPulsingPill(text: "En attente du prochain jeu…")
-                .padding(.vertical, 16)
+                .padding(.vertical, BuzzSpacing.lg)
         }
         .foregroundStyle(.white)
         .background(Color.sheetBg)
@@ -272,7 +272,7 @@ private struct InterGameScoreSheet: View {
     }
 
     private func scoreRow(rank: Int, player: Player) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: BuzzSpacing.md) {
             Text("#\(rank)")
                 .font(.nohemi(.caption, weight: .bold))
                 .foregroundStyle(.white.opacity(0.4))
@@ -287,7 +287,7 @@ private struct InterGameScoreSheet: View {
                         .foregroundStyle(.white)
                 )
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                 Text(player.name)
                     .font(.nohemi(.subheadline, weight: .bold))
                     .foregroundStyle(.white)
@@ -312,9 +312,9 @@ private struct InterGameScoreSheet: View {
                 .monospacedDigit()
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+        .padding(.vertical, BuzzSpacing.md)
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.md).strokeBorder(.white.opacity(0.08), lineWidth: 1))
     }
 }
 
@@ -341,7 +341,7 @@ private struct PlayerPodiumSheet: View {
 
             VStack(spacing: 0) {
                 // Header
-                VStack(spacing: 4) {
+                VStack(spacing: BuzzSpacing.xs) {
                     Text("PARTIE TERMINÉE")
                         .font(.nohemi(.caption2, weight: .bold))
                         .tracking(0.8)
@@ -350,26 +350,26 @@ private struct PlayerPodiumSheet: View {
                         .font(.nohemi(.title, weight: .extraBold))
                         .foregroundStyle(.white)
                 }
-                .padding(.top, 32)
+                .padding(.top, BuzzSpacing.xxxl)
                 .padding(.bottom, 28)
 
                 // My rank highlight
                 if let myRank = rank(of: currentPlayer) {
                     myRankCard(rank: myRank, player: currentPlayer)
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 20)
+                        .padding(.horizontal, BuzzSpacing.xl)
+                        .padding(.bottom, BuzzSpacing.xl)
                 }
 
-                Divider().overlay(Color.white.opacity(0.08)).padding(.horizontal, 20)
+                Divider().overlay(Color.white.opacity(0.08)).padding(.horizontal, BuzzSpacing.xl)
 
                 // Full ranking
                 ScrollView {
-                    VStack(spacing: 8) {
+                    VStack(spacing: BuzzSpacing.sm) {
                         ForEach(Array(sorted.enumerated()), id: \.element.id) { index, player in
                             podiumRow(rank: index + 1, player: player, isSelf: player.id == currentPlayer.id)
                         }
                     }
-                    .padding(20)
+                    .padding(BuzzSpacing.xl)
                 }
 
                 // Actions
@@ -380,7 +380,7 @@ private struct PlayerPodiumSheet: View {
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
-                            .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+                            .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
                     }
                     .buttonStyle(.plain)
 
@@ -393,12 +393,12 @@ private struct PlayerPodiumSheet: View {
                             .background(
                                 LinearGradient(colors: [Color.purpleLeading, Color.purpleTrailing],
                                                startPoint: .leading, endPoint: .trailing),
-                                in: RoundedRectangle(cornerRadius: 16)
+                                in: RoundedRectangle(cornerRadius: BuzzRadius.lg)
                             )
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.bottom, 40)
             }
         }
@@ -432,16 +432,16 @@ private struct PlayerPodiumSheet: View {
                     .foregroundStyle(.white.opacity(0.5))
             }
         }
-        .padding(16)
-        .background(player.teamColor.color.opacity(0.12), in: RoundedRectangle(cornerRadius: 18))
+        .padding(BuzzSpacing.lg)
+        .background(player.teamColor.color.opacity(0.12), in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
         .overlay(
-            RoundedRectangle(cornerRadius: 18)
+            RoundedRectangle(cornerRadius: BuzzRadius.lg2)
                 .strokeBorder(player.teamColor.color.opacity(0.35), lineWidth: 1.5)
         )
     }
 
     private func podiumRow(rank: Int, player: Player, isSelf: Bool) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: BuzzSpacing.md) {
             Text(rankEmoji(rank))
                 .textStyle(Typography.title3)
                 .frame(width: 32)
@@ -474,9 +474,9 @@ private struct PlayerPodiumSheet: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(isSelf ? player.teamColor.color.opacity(0.08) : .white.opacity(0.04), in: RoundedRectangle(cornerRadius: 14))
+        .background(isSelf ? player.teamColor.color.opacity(0.08) : .white.opacity(0.04), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: BuzzRadius.md)
                 .strokeBorder(isSelf ? player.teamColor.color.opacity(0.25) : .white.opacity(0.06), lineWidth: 1)
         )
     }

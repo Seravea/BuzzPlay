@@ -20,13 +20,13 @@ struct ButtonChooseGameView: View {
         } label: {
             
             ZStack(alignment: .topTrailing) {
-                VStack(spacing: 40) {
+                VStack(spacing: BuzzSpacing.xs0) {
                     Image(systemName: iconName)
                         .font(.largeTitle)
                         .foregroundStyle(.white)
                         .padding()
                         .background(
-                            RoundedRectangle(cornerRadius: 16)
+                            RoundedRectangle(cornerRadius: BuzzRadius.lg)
                                 .foregroundStyle(.white)
                                 .opacity(0.1)
                         )
@@ -37,7 +37,7 @@ struct ButtonChooseGameView: View {
                         .frame(maxWidth: .infinity, maxHeight: 400)
                         .frame(minWidth: 200)
                         .background {
-                            RoundedRectangle(cornerRadius: 18)
+                            RoundedRectangle(cornerRadius: BuzzRadius.lg2)
                                 .foregroundStyle(.white.opacity(0.1))
                                 .opacity(isOpen ? 1 : 0.8)
                         }
@@ -47,9 +47,9 @@ struct ButtonChooseGameView: View {
                     
                     Text(isOpen ? "Ouvert" : "Fermé")
                         .foregroundStyle(isOpen ? Color.darkestPurple : Color.white)
-                        .padding(8)
+                        .padding(BuzzSpacing.sm)
                         .background {
-                            RoundedRectangle(cornerRadius: 10)
+                            RoundedRectangle(cornerRadius: BuzzRadius.sm2)
                                 .foregroundStyle(isOpen ? .green : .red)
                         }
                         .padding()

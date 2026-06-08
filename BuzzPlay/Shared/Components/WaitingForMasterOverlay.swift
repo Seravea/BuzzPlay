@@ -14,7 +14,7 @@ struct WaitingForMasterOverlay: View {
             Color.black.opacity(0.70)
                 .ignoresSafeArea()
 
-            VStack(spacing: 20) {
+            VStack(spacing: BuzzSpacing.xl) {
 
                 // Icône pulsante arcade
                 ZStack {
@@ -39,7 +39,7 @@ struct WaitingForMasterOverlay: View {
                         )
                 }
 
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     Text("En attente du Maître")
                         .font(.nohemi(.title2, weight: .bold))
                         .foregroundStyle(.white)
@@ -58,9 +58,9 @@ struct WaitingForMasterOverlay: View {
                 }
                 .padding(.top, 4)
             }
-            .padding(.horizontal, 32)
+            .padding(.horizontal, BuzzSpacing.xxxl)
             .padding(.vertical, 28)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
         }
         .onAppear {
             withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {

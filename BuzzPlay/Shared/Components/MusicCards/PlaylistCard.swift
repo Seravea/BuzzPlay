@@ -38,9 +38,9 @@ struct PlaylistCard: View {
             
         }
         .frame(width: 250)
-        .padding(12)
+        .padding(BuzzSpacing.md)
         .background {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: BuzzRadius.sm)
                 .foregroundStyle(.white)
                 .opacity(0.1)
         }

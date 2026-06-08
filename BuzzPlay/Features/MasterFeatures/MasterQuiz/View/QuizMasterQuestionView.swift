@@ -24,7 +24,7 @@ struct QuizActiveQuestionScreen: View {
                 scoresSection
                 Spacer(minLength: 0)
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, BuzzSpacing.xl)
 
             if buzzedPlayer != nil {
                 Color.black.opacity(0.5)
@@ -50,7 +50,7 @@ struct QuizActiveQuestionScreen: View {
             }
         }
         .animation(.spring(duration: 0.4, bounce: 0.05), value: buzzedPlayer != nil)
-        .animation(.easeInOut(duration: 0.25), value: quizMasterVM.roundCountdownPhase)
+        .animation(.buzzFade, value: quizMasterVM.roundCountdownPhase)
         // #D11/#C3 — empêcher la veille iPhone pendant la partie
         .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
         .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
@@ -76,7 +76,7 @@ struct QuizActiveQuestionScreen: View {
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 14)
-        .background(Color.darkestPurple, in: RoundedRectangle(cornerRadius: 18))
+        .background(Color.darkestPurple, in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
     }
 
     // MARK: Question Card
@@ -85,8 +85,8 @@ struct QuizActiveQuestionScreen: View {
         let question = quizMasterVM.currentQuestion
         let isRebus = question?.questionType == .rebus
 
-        return VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
+        return VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
+            HStack(spacing: BuzzSpacing.sm) {
                 Text("QUESTION")
                     .font(.nohemi(.caption2, weight: .bold))
                     .foregroundStyle(.white.opacity(0.4))
@@ -119,8 +119,8 @@ struct QuizActiveQuestionScreen: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
-        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
-        .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(
+        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(
             isRebus ? Color.purpleLeading.opacity(0.25) : .white.opacity(0.1),
             lineWidth: 1
         ))
@@ -129,7 +129,7 @@ struct QuizActiveQuestionScreen: View {
     // MARK: Answers
 
     private var answersSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
             Text("RÉPONSES")
                 .font(.nohemi(.caption2, weight: .bold))
                 .foregroundStyle(.white.opacity(0.4))
@@ -137,17 +137,17 @@ struct QuizActiveQuestionScreen: View {
                 .padding(.leading, 2)
 
             if let answers = quizMasterVM.currentQuestion?.answers, !answers.isEmpty {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: BuzzSpacing.sm) {
                     ForEach(answers, id: \.self) { answer in
                         Text(answer)
                             .font(.nohemi(.subheadline, weight: .semiBold))
                             .foregroundStyle(Color.greenGlow)
                             .multilineTextAlignment(.center)
-                            .padding(.vertical, 12)
+                            .padding(.vertical, BuzzSpacing.md)
                             .padding(.horizontal, 14)
                             .frame(maxWidth: .infinity)
-                            .background(Color.greenButtonLeading.opacity(0.12), in: RoundedRectangle(cornerRadius: 14))
-                            .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.greenButtonLeading.opacity(0.25), lineWidth: 1))
+                            .background(Color.greenButtonLeading.opacity(0.12), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+                            .overlay(RoundedRectangle(cornerRadius: BuzzRadius.md).strokeBorder(Color.greenButtonLeading.opacity(0.25), lineWidth: 1))
                     }
                 }
             }
@@ -160,7 +160,7 @@ struct QuizActiveQuestionScreen: View {
         let players = quizMasterVM.gameVM.players.sorted { $0.score > $1.score }
         let maxScore = max(players.map(\.score).max() ?? 1, 1)
 
-        return VStack(alignment: .leading, spacing: 8) {
+        return VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
             Text("CLASSEMENT EN DIRECT")
                 .font(.nohemi(.caption2, weight: .bold))
                 .foregroundStyle(.white.opacity(0.35))
@@ -188,7 +188,7 @@ struct QuizActiveQuestionScreen: View {
                                 .textStyle(Typography.caption2)
                         }
                         .foregroundStyle(.white.opacity(0.7))
-                        .padding(.horizontal, 12)
+                        .padding(.horizontal, BuzzSpacing.md)
                         .padding(.vertical, 6)
                         .background(.white.opacity(0.08), in: Capsule())
                         .overlay(Capsule().strokeBorder(.white.opacity(0.12), lineWidth: 1))
@@ -237,12 +237,12 @@ struct QuizScoreRow: View {
                 .foregroundStyle(.white.opacity(0.9))
                 .frame(minWidth: 50, alignment: .trailing)
                 .scaleEffect(scoreChanged ? 1.1 : 1.0)
-                .animation(.easeInOut(duration: 0.3), value: scoreChanged)
+                .animation(.buzzEase, value: scoreChanged)
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, BuzzSpacing.md)
         .padding(.vertical, 10)
-        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.white.opacity(0.07), lineWidth: 1))
+        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.md).strokeBorder(.white.opacity(0.07), lineWidth: 1))
         .shadow(color: player.teamColor.color.opacity(0.15), radius: 8, y: 3)
         .onChange(of: player.score) { oldScore, newScore in
             if newScore > oldScore {
@@ -267,7 +267,7 @@ struct QuizBuzzSheet: View {
     var body: some View {
         VStack(spacing: 14) {
             // Handle
-            RoundedRectangle(cornerRadius: 99)
+            RoundedRectangle(cornerRadius: BuzzRadius.pill)
                 .fill(.white.opacity(0.2))
                 .frame(width: 36, height: 4)
                 .padding(.bottom, 2)
@@ -279,7 +279,7 @@ struct QuizBuzzSheet: View {
 
             // Team card
             HStack(spacing: 14) {
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: BuzzRadius.md)
                     .fill(player.teamColor.gradient)
                     .frame(width: 46, height: 46)
                     .overlay(
@@ -307,28 +307,28 @@ struct QuizBuzzSheet: View {
                         .contentTransition(.numericText())
                         .animation(.default, value: reactionTime)
                 }
-                .padding(.horizontal, 12)
+                .padding(.horizontal, BuzzSpacing.md)
                 .padding(.vertical, 6)
-                .background(Color.mustardYellow.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
-                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.mustardYellow.opacity(0.25), lineWidth: 1))
+                .background(Color.mustardYellow.opacity(0.12), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
+                .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm).strokeBorder(Color.mustardYellow.opacity(0.25), lineWidth: 1))
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, BuzzSpacing.lg)
             .padding(.vertical, 14)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 18))
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
             .overlay(
-                RoundedRectangle(cornerRadius: 18)
+                RoundedRectangle(cornerRadius: BuzzRadius.lg2)
                     .strokeBorder(.white.opacity(0.1), lineWidth: 1)
             )
             .overlay(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 4)
+                RoundedRectangle(cornerRadius: BuzzRadius.xxs)
                     .fill(player.teamColor.gradient)
                     .frame(width: 4)
                     .padding(.leading, 0)
-                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                    .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.lg2))
             }
 
             // Validation buttons — différenciés par taille
-            HStack(spacing: 8) {
+            HStack(spacing: BuzzSpacing.sm) {
                 validationButton(points: 10, scale: 0.88)
                 validationButton(points: 20, scale: 0.94)
                 validationButton(points: 30, scale: 1.0, highlighted: true)
@@ -341,15 +341,15 @@ struct QuizBuzzSheet: View {
                     .foregroundStyle(Color.redSoft)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 13)
-                    .background(Color.redLeading.opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
-                    .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.redLeading.opacity(0.35), lineWidth: 1.5))
+                    .background(Color.redLeading.opacity(0.1), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.md).strokeBorder(Color.redLeading.opacity(0.35), lineWidth: 1.5))
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 12)
+        .padding(.horizontal, BuzzSpacing.xl)
+        .padding(.top, BuzzSpacing.md)
         .padding(.bottom, 40)
-        .background(Color.sheetBg, in: RoundedRectangle(cornerRadius: 28))
+        .background(Color.sheetBg, in: RoundedRectangle(cornerRadius: BuzzRadius.sheet))
         .ignoresSafeArea(edges: .bottom)
     }
 
@@ -373,7 +373,7 @@ struct QuizBuzzSheet: View {
             .background(
                 LinearGradient(colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
                                startPoint: .leading, endPoint: .trailing),
-                in: RoundedRectangle(cornerRadius: 14)
+                in: RoundedRectangle(cornerRadius: BuzzRadius.md)
             )
             .opacity(highlighted ? 1 : (scale < 0.9 ? 0.65 : 0.82))
             .shadow(color: highlighted ? Color.greenButtonLeading.opacity(0.4) : Color.greenButtonLeading.opacity(0.15), radius: 12, y: 4)

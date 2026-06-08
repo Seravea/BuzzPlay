@@ -74,7 +74,7 @@ struct BuzzerPlayerView: View {
         .animation(.spring(response: 0.5, dampingFraction: 0.7), value: playerGameVM.showNewGameNotification)
         .animation(.spring(response: 0.45, dampingFraction: 0.65), value: playerGameVM.currentBuzzerVM?.answerResult != nil)
         .animation(.spring(response: 0.5, dampingFraction: 0.75), value: playerGameVM.currentBuzzerVM?.activeHint)
-        .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
+        .animation(.buzzEase, value: playerGameVM.isConnectedToMaster)
         .animation(.easeInOut(duration: 0.35), value: playerGameVM.showPostRoundLeaderboard)
         .navigationBarBackButtonHidden()
         // #D11/#C3 — empêcher la mise en veille pendant la partie (cause de déconnexion MPC)
@@ -86,14 +86,14 @@ struct BuzzerPlayerView: View {
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                            withAnimation(.easeOut(duration: 0.3)) {
+                            withAnimation(.buzzSlide) {
                                 playerGameVM.pendingNotesToast = nil
                             }
                         }
                     }
             }
         }
-        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: playerGameVM.pendingNotesToast != nil)
+        .animation(.buzzSmooth, value: playerGameVM.pendingNotesToast != nil)
         .task {
             // Délai pour laisser la transition de navigation se terminer
             // avant d'envoyer playerReady (#A5)
@@ -129,21 +129,21 @@ struct BuzzerPlayerView: View {
             compactHeader(buzzerVM: buzzerVM)
 
             PublicDisplayView(playerGameVM: playerGameVM, gameType: gameType)
-                .padding(.horizontal, 12)
-                .padding(.top, 12)
+                .padding(.horizontal, BuzzSpacing.md)
+                .padding(.top, BuzzSpacing.md)
 
             Spacer()
 
             BuzzerButtonView(buzzerVM: buzzerVM)
-                .padding(.bottom, 20)
+                .padding(.bottom, BuzzSpacing.xl)
 
             GiftBottomBar(coinsVM: coinsVM, isSheetOpen: $isGiftSheetOpen, isWaiting: playerGameVM.publicState == .waiting)
-                .padding(.bottom, 24)
+                .padding(.bottom, BuzzSpacing.xxl)
         }
     }
 
     private func compactHeader(buzzerVM: BuzzerViewModel) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: BuzzSpacing.md) {
             Text(gameType.gameTitle)
                 .font(.nohemi(.subheadline, weight: .bold))
                 .foregroundStyle(.white)
@@ -160,7 +160,7 @@ struct BuzzerPlayerView: View {
                         .font(.nohemi(.caption2, weight: .bold))
                 }
                 .foregroundStyle(Color.blueLeading)
-                .padding(.horizontal, 8)
+                .padding(.horizontal, BuzzSpacing.sm)
                 .padding(.vertical, 4)
                 .background(Color.blueLeading.opacity(0.18), in: Capsule())
                 .overlay(Capsule().strokeBorder(Color.blueLeading.opacity(0.4), lineWidth: 1))
@@ -169,7 +169,7 @@ struct BuzzerPlayerView: View {
 
             // Bouton mute son buzzer
             Button {
-                withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                withAnimation(.buzzSnappy) {
                     buzzerVM.isBuzzMuted.toggle()
                 }
             } label: {
@@ -180,8 +180,8 @@ struct BuzzerPlayerView: View {
             }
             .accessibilityLabel(buzzerVM.isBuzzMuted ? "Activer le son du buzzer" : "Couper le son du buzzer")
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.horizontal, BuzzSpacing.lg)
+        .padding(.vertical, BuzzSpacing.sm)
         .background(Color.black.opacity(0.25))
     }
 
@@ -203,15 +203,15 @@ private struct HintBadgeView: View {
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, BuzzSpacing.lg)
             .padding(.vertical, 10)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: BuzzRadius.md))
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: BuzzRadius.md)
                     .strokeBorder(Color.mustardYellow.opacity(0.4), lineWidth: 1)
             )
-            .padding(.horizontal, 20)
-            .padding(.bottom, 12)
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.bottom, BuzzSpacing.md)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
     }
@@ -223,7 +223,7 @@ private struct NotesToastView: View {
     let amount: Int
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: BuzzSpacing.sm) {
             Image(systemName: "dollarsign.bank.building.fill")
                 .textStyle(Typography.labelSMBold)
                 .foregroundStyle(Color.mustardYellow)
@@ -231,12 +231,12 @@ private struct NotesToastView: View {
                 .font(.nohemi(.subheadline, weight: .bold))
                 .foregroundStyle(.white)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
+        .padding(.horizontal, BuzzSpacing.xl)
+        .padding(.vertical, BuzzSpacing.md)
         .background(Color.darkPurple, in: Capsule())
         .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.4), lineWidth: 1.5))
         .shadow(color: Color.mustardYellow.opacity(0.25), radius: 12, y: 4)
-        .padding(.top, 8)
+        .padding(.top, BuzzSpacing.sm)
     }
 }
 
@@ -292,7 +292,7 @@ private struct AnswerFeedbackOverlay: View {
                             .font(.custom("Nohemi-Black", size: 22))
                             .tracking(2)
                             .foregroundStyle(.white)
-                            .padding(.horizontal, 20)
+                            .padding(.horizontal, BuzzSpacing.xl)
                             .padding(.vertical, 10)
                             .background(Color.black.opacity(0.30), in: Capsule())
                             .overlay(Capsule().strokeBorder(.white.opacity(0.35), lineWidth: 1))
@@ -324,7 +324,7 @@ private struct AnswerFeedbackOverlay: View {
                             .font(.custom("Nohemi-Black", size: 16))
                             .tracking(2)
                             .foregroundStyle(.white)
-                            .padding(.horizontal, 20)
+                            .padding(.horizontal, BuzzSpacing.xl)
                             .padding(.vertical, 10)
                             .background(Color.black.opacity(0.30), in: Capsule())
                             .overlay(Capsule().strokeBorder(.white.opacity(0.35), lineWidth: 1))
@@ -332,18 +332,18 @@ private struct AnswerFeedbackOverlay: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 36)
-                .padding(.horizontal, 32)
+                .padding(.horizontal, BuzzSpacing.xxxl)
                 .background(
                     LinearGradient(
                         colors: gradientColors,
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
-                    in: RoundedRectangle(cornerRadius: 28)
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.sheet)
                 )
                 .shadow(color: gradientColors[0].opacity(glowPulse ? 0.55 : 0.25), radius: glowPulse ? 32 : 14)
             }
-            .padding(.horizontal, 32)
+            .padding(.horizontal, BuzzSpacing.xxxl)
         }
         .onAppear {
             withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
@@ -360,7 +360,7 @@ private struct NewGameNotificationOverlay: View {
         ZStack {
             Color.black.opacity(0.60).ignoresSafeArea()
 
-            VStack(spacing: 16) {
+            VStack(spacing: BuzzSpacing.lg) {
                 Image(systemName: "arrow.counterclockwise.circle.fill")
                     .font(.system(size: 56, weight: .bold))
                     .foregroundStyle(Color.purpleLeading)
@@ -377,9 +377,9 @@ private struct NewGameNotificationOverlay: View {
             }
             .padding(40)
             .background(
-                RoundedRectangle(cornerRadius: 28)
+                RoundedRectangle(cornerRadius: BuzzRadius.sheet)
                     .fill(.ultraThinMaterial.opacity(0.9))
-                    .overlay(RoundedRectangle(cornerRadius: 28)
+                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sheet)
                         .strokeBorder(Color.purpleLeading.opacity(0.35), lineWidth: 1.5))
             )
             .padding(.horizontal, 40)

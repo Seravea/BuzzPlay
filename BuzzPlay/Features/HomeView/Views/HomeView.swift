@@ -20,7 +20,7 @@ struct HomeView: View {
                         .font(.nohemi(.caption2, weight: .bold))
                         .tracking(0.8)
                         .foregroundStyle(.white.opacity(0.55))
-                        .padding(.bottom, 12)
+                        .padding(.bottom, BuzzSpacing.md)
 
                     BPWordmarkView(size: 64)
 
@@ -61,7 +61,7 @@ struct HomeView: View {
                     .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 18)
-                .padding(.bottom, 32)
+                .padding(.bottom, BuzzSpacing.xxxl)
             }
             .background(BackgroundAppView())
             .foregroundStyle(.white)
@@ -158,7 +158,7 @@ private struct MasterConfirmOverlay: View {
             Color.black.opacity(0.55)
                 .ignoresSafeArea()
 
-            VStack(spacing: 24) {
+            VStack(spacing: BuzzSpacing.xxl) {
                 VStack(spacing: 10) {
                     Image(systemName: "gamecontroller.fill")
                         .textStyle(Typography.largeTitle)
@@ -179,14 +179,14 @@ private struct MasterConfirmOverlay: View {
                         .lineSpacing(3)
                 }
 
-                HStack(spacing: 12) {
+                HStack(spacing: BuzzSpacing.md) {
                     Button(action: onCancel) {
                         Text("Annuler")
                             .font(.nohemi(.body, weight: .semiBold))
                             .foregroundStyle(.white.opacity(0.75))
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
-                            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 14))
+                            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
                     }
 
                     Button(action: onConfirm) {
@@ -200,7 +200,7 @@ private struct MasterConfirmOverlay: View {
                                     colors: [Color.greenButtonLeading, Color.greenTrailing],
                                     startPoint: .topLeading, endPoint: .bottomTrailing
                                 ),
-                                in: RoundedRectangle(cornerRadius: 14)
+                                in: RoundedRectangle(cornerRadius: BuzzRadius.md)
                             )
                     }
                 }
@@ -208,13 +208,13 @@ private struct MasterConfirmOverlay: View {
             .padding(28)
             .background(
                 Color.sheetBg,
-                in: RoundedRectangle(cornerRadius: 28)
+                in: RoundedRectangle(cornerRadius: BuzzRadius.sheet)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 28)
+                RoundedRectangle(cornerRadius: BuzzRadius.sheet)
                     .strokeBorder(.white.opacity(0.10), lineWidth: 1)
             )
-            .padding(.horizontal, 24)
+            .padding(.horizontal, BuzzSpacing.xxl)
         }
     }
 }
@@ -234,7 +234,7 @@ private struct HomeRoleCard: View {
             Image(systemName: iconName)
                 .font(.system(size: isPrimary ? 28 : 24, weight: .semibold))
                 .frame(width: isPrimary ? 60 : 52, height: isPrimary ? 60 : 52)
-                .background(.white.opacity(0.18), in: RoundedRectangle(cornerRadius: 16))
+                .background(.white.opacity(0.18), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -263,12 +263,12 @@ private struct HomeSecondaryCard: View {
     let iconName: String
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: BuzzSpacing.md) {
             Image(systemName: iconName)
                 .textStyle(Typography.cardTitle)
                 .foregroundStyle(.white.opacity(0.80))
                 .frame(width: 40, height: 40)
-                .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 12))
+                .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
@@ -285,10 +285,10 @@ private struct HomeSecondaryCard: View {
                 .textStyle(Typography.footnoteEM)
                 .foregroundStyle(.white.opacity(0.50))
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.18), lineWidth: 1))
+        .padding(.horizontal, BuzzSpacing.lg)
+        .padding(.vertical, BuzzSpacing.md)
+        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg).strokeBorder(.white.opacity(0.18), lineWidth: 1))
     }
 }
 

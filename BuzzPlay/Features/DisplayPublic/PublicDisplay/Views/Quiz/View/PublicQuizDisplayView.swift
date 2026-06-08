@@ -20,7 +20,7 @@ struct PublicQuizDisplayView: View {
 
             // Question Card — masquée jusqu'à la fin du premier countdown
             if state.isQuestionRevealed {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
                     Text("QUESTION")
                         .font(.nohemi(.caption2, weight: .bold))
                         .foregroundStyle(.white.opacity(0.4))
@@ -34,11 +34,11 @@ struct PublicQuizDisplayView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(18)
-                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
-                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.1), lineWidth: 1))
+                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+                .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(.white.opacity(0.1), lineWidth: 1))
                 .transition(.opacity)
             } else {
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "hourglass")
                         .textStyle(Typography.sectionTitleSoft)
                         .foregroundStyle(.white.opacity(0.35))
@@ -48,14 +48,14 @@ struct PublicQuizDisplayView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(18)
-                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 20))
-                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.06), lineWidth: 1))
+                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+                .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(.white.opacity(0.06), lineWidth: 1))
                 .transition(.opacity)
             }
 
             // Answers Section (only if revealed)
             if state.isAnswerRevealed {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
                     Text("RÉPONSE")
                         .font(.nohemi(.caption2, weight: .bold))
                         .foregroundStyle(.white.opacity(0.4))
@@ -67,14 +67,14 @@ struct PublicQuizDisplayView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(18)
-                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
-                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(Color.mustardYellow.opacity(0.3), lineWidth: 1))
+                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+                .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(Color.mustardYellow.opacity(0.3), lineWidth: 1))
                 .transition(.scale.combined(with: .opacity))
             }
 
             // Buzzing team
             if let player = state.buzzingPlayer {
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     Text("A BUZZÉ")
                         .font(.nohemi(.caption2, weight: .bold))
                         .foregroundStyle(.white.opacity(0.5))
@@ -89,7 +89,7 @@ struct PublicQuizDisplayView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(.horizontal, 20)
+        .padding(.horizontal, BuzzSpacing.xl)
         .padding(.top, 0)
         .animation(.spring(duration: 0.4), value: state)
     }

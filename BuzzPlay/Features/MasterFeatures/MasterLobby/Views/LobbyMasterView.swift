@@ -14,7 +14,7 @@ struct LobbyMasterView: View {
             BackgroundAppView().ignoresSafeArea()
 
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: BuzzSpacing.xl) {
                     configSection
                     summaryPill
                     Divider()
@@ -23,8 +23,8 @@ struct LobbyMasterView: View {
                     playersSection
                     Spacer(minLength: 80)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.top, BuzzSpacing.lg)
             }
 
             startButton
@@ -48,7 +48,7 @@ struct LobbyMasterView: View {
     // MARK: - Config section
 
     private var configSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.lg) {
             durationSection
             modeSection
         }
@@ -63,7 +63,7 @@ struct LobbyMasterView: View {
                 ForEach(GameDuration.allCases, id: \.self) { duration in
                     let isSelected = masterGameVM.gameDuration == duration
                     Button {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        withAnimation(.buzzDefault) {
                             masterGameVM.gameDuration = duration
                         }
                     } label: {
@@ -82,10 +82,10 @@ struct LobbyMasterView: View {
                         .padding(.vertical, 14)
                         .background(
                             isSelected ? Color.white.opacity(0.12) : Color.white.opacity(0.05),
-                            in: RoundedRectangle(cornerRadius: 14)
+                            in: RoundedRectangle(cornerRadius: BuzzRadius.md)
                         )
                         .overlay(
-                            RoundedRectangle(cornerRadius: 14)
+                            RoundedRectangle(cornerRadius: BuzzRadius.md)
                                 .strokeBorder(
                                     isSelected ? Color.mustardYellow.opacity(0.6) : Color.white.opacity(0.10),
                                     lineWidth: 1.5
@@ -93,7 +93,7 @@ struct LobbyMasterView: View {
                         )
                     }
                     .buttonStyle(.plain)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+                    .animation(.buzzDefault, value: isSelected)
                 }
             }
         }
@@ -108,7 +108,7 @@ struct LobbyMasterView: View {
                 ForEach(GameMode.allCases, id: \.self) { mode in
                     let isSelected = masterGameVM.gameMode == mode
                     Button {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        withAnimation(.buzzDefault) {
                             masterGameVM.gameMode = mode
                         }
                     } label: {
@@ -124,7 +124,7 @@ struct LobbyMasterView: View {
                         .padding(.vertical, 14)
                         .background(modeBackground(mode, isSelected: isSelected))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 14)
+                            RoundedRectangle(cornerRadius: BuzzRadius.md)
                                 .strokeBorder(
                                     isSelected ? Color.clear : Color.white.opacity(0.10),
                                     lineWidth: 1.5
@@ -132,7 +132,7 @@ struct LobbyMasterView: View {
                         )
                     }
                     .buttonStyle(.plain)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+                    .animation(.buzzDefault, value: isSelected)
                 }
             }
 
@@ -154,7 +154,7 @@ struct LobbyMasterView: View {
                         colors: [Color.purpleLeading, Color.purpleTrailing],
                         startPoint: .topLeading, endPoint: .bottomTrailing
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.md))
                 )
             case .blindTest:
                 AnyView(
@@ -162,7 +162,7 @@ struct LobbyMasterView: View {
                         colors: [Color.blueLeading, Color.blueTrailing],
                         startPoint: .topLeading, endPoint: .bottomTrailing
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.md))
                 )
             case .mix:
                 AnyView(
@@ -170,13 +170,13 @@ struct LobbyMasterView: View {
                         colors: [Color.purpleLeading, Color.blueTrailing],
                         startPoint: .topLeading, endPoint: .bottomTrailing
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.md))
                 )
             }
         } else {
             AnyView(
                 Color.white.opacity(0.05)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.md))
             )
         }
     }
@@ -199,7 +199,7 @@ struct LobbyMasterView: View {
                 .foregroundStyle(.white.opacity(0.8))
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 8)
+        .padding(.vertical, BuzzSpacing.sm)
         .background(.white.opacity(0.06), in: Capsule())
         .overlay(Capsule().strokeBorder(.white.opacity(0.10), lineWidth: 1))
         .frame(maxWidth: .infinity, alignment: .center)
@@ -211,8 +211,8 @@ struct LobbyMasterView: View {
         Text("\(masterGameVM.totalRounds) manches · \(masterGameVM.gameMode.label)")
             .font(.nohemi(.caption, weight: .bold))
             .foregroundStyle(.white.opacity(0.6))
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+            .padding(.horizontal, BuzzSpacing.lg)
+            .padding(.vertical, BuzzSpacing.sm)
             .background(.white.opacity(0.06), in: Capsule())
             .overlay(Capsule().strokeBorder(.white.opacity(0.10), lineWidth: 1))
             .frame(maxWidth: .infinity, alignment: .center)
@@ -233,7 +233,7 @@ struct LobbyMasterView: View {
                     .fill(.white.opacity(0.08))
                     .frame(height: 1)
             }
-            .padding(.bottom, 12)
+            .padding(.bottom, BuzzSpacing.md)
 
             if masterGameVM.players.isEmpty {
                 emptyPlayersState
@@ -248,7 +248,7 @@ struct LobbyMasterView: View {
     }
 
     private var emptyPlayersState: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: BuzzSpacing.md) {
             ZStack {
                 Circle()
                     .fill(.white.opacity(0.06))
@@ -257,7 +257,7 @@ struct LobbyMasterView: View {
                     .textStyle(Typography.screenTitleSoft)
                     .foregroundStyle(.white.opacity(0.30))
             }
-            VStack(spacing: 4) {
+            VStack(spacing: BuzzSpacing.xs) {
                 Text("En attente de joueurs…")
                     .font(.nohemi(.subheadline, weight: .semiBold))
                     .foregroundStyle(.white.opacity(0.6))
@@ -267,7 +267,7 @@ struct LobbyMasterView: View {
                     .multilineTextAlignment(.center)
             }
         }
-        .padding(.vertical, 24)
+        .padding(.vertical, BuzzSpacing.xxl)
         .frame(maxWidth: .infinity)
     }
 
@@ -294,7 +294,7 @@ struct LobbyMasterView: View {
                         colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
                         startPoint: .leading, endPoint: .trailing
                     )),
-                in: RoundedRectangle(cornerRadius: 18)
+                in: RoundedRectangle(cornerRadius: BuzzRadius.lg2)
             )
             .shadow(
                 color: masterGameVM.players.isEmpty ? .clear : Color.greenButtonLeading.opacity(0.32),
@@ -303,9 +303,9 @@ struct LobbyMasterView: View {
         }
         .buttonStyle(.plain)
         .disabled(masterGameVM.players.isEmpty)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 32)
-        .padding(.top, 12)
+        .padding(.horizontal, BuzzSpacing.xl)
+        .padding(.bottom, BuzzSpacing.xxxl)
+        .padding(.top, BuzzSpacing.md)
         .background(
             LinearGradient(
                 colors: [Color.sheetBg.opacity(0), Color.sheetBg],
@@ -331,8 +331,8 @@ private struct LobbyTeamRow: View {
     let player: Player
 
     var body: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 12)
+        HStack(spacing: BuzzSpacing.md) {
+            RoundedRectangle(cornerRadius: BuzzRadius.sm)
                 .fill(player.teamColor.gradient)
                 .frame(width: 44, height: 44)
                 .overlay(
@@ -352,9 +352,9 @@ private struct LobbyTeamRow: View {
                 .foregroundStyle(Color.greenGlow)
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+        .padding(.vertical, BuzzSpacing.md)
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg).strokeBorder(.white.opacity(0.08), lineWidth: 1))
     }
 }
 

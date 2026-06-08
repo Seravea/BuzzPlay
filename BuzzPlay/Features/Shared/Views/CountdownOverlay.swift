@@ -55,7 +55,7 @@ struct CountdownOverlay: View {
 }
 
 #Preview {
-    VStack(spacing: 20) {
+    VStack(spacing: BuzzSpacing.xl) {
         CountdownOverlay(phase: .counting(3))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 

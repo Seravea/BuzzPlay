@@ -16,7 +16,7 @@ struct AmbiantSoundsPadView: View {
     var column: [GridItem] = [GridItem(.flexible(minimum: 0)), GridItem(.flexible(minimum: 0))]
     var body: some View {
         
-        LazyVGrid(columns: column, spacing: 20) {
+        LazyVGrid(columns: column, spacing: BuzzSpacing.xl) {
             ForEach(ambiantAudioPlayerVM.songs, id: \.self) { song in
                 
                 ButtonAmbiantSong(action: {
@@ -28,7 +28,7 @@ struct AmbiantSoundsPadView: View {
         //            .frame(width: 350)
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: BuzzRadius.sm)
                 .foregroundStyle(Color.darkPink)
         }
     }

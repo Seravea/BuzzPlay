@@ -51,19 +51,19 @@ struct BlindTestSearchScreen: View {
 
             // Apple Music banner
             appleMusicBanner
-                .padding(.horizontal, 20)
-                .padding(.bottom, 12)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.bottom, BuzzSpacing.md)
 
             // Lancer le Blind Test — invite les players sur leur buzzer
             launchButton
-                .padding(.horizontal, 20)
-                .padding(.bottom, 16)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.bottom, BuzzSpacing.lg)
 
             // Inline search bar (slides in from top)
             if showSearchBar {
                 searchBarRow
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 16)
+                    .padding(.horizontal, BuzzSpacing.xl)
+                    .padding(.bottom, BuzzSpacing.lg)
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
 
@@ -80,8 +80,8 @@ struct BlindTestSearchScreen: View {
         .safeAreaInset(edge: .bottom) {
             if !showSearchBar && blindTestVM.playlists.isEmpty && !blindTestVM.isFetching {
                 bottomSearchCTA
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 16)
+                    .padding(.horizontal, BuzzSpacing.xl)
+                    .padding(.bottom, BuzzSpacing.lg)
             }
         }
         .animation(.spring(duration: 0.3, bounce: 0.05), value: showSearchBar)
@@ -97,7 +97,7 @@ struct BlindTestSearchScreen: View {
             blindTestVM.hasInvitedPlayers = true
             blindTestVM.gameVM.broadcastGameLaunch(.blindTest)
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: BuzzSpacing.sm) {
                 Image(systemName: invited ? "checkmark.circle.fill" : "person.wave.2.fill")
                     .textStyle(Typography.footnoteBold)
                 Text(invited ? "Joueurs invités" : "Inviter les joueurs")
@@ -108,10 +108,10 @@ struct BlindTestSearchScreen: View {
                     .foregroundStyle(.white.opacity(invited ? 0.5 : 0.65))
             }
             .foregroundStyle(.white)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.horizontal, BuzzSpacing.lg)
+            .padding(.vertical, BuzzSpacing.md)
             .background(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: BuzzRadius.md)
                     .fill(invited
                           ? AnyShapeStyle(Color.white.opacity(0.10))
                           : AnyShapeStyle(LinearGradient(colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
@@ -120,7 +120,7 @@ struct BlindTestSearchScreen: View {
             .shadow(color: invited ? .clear : Color.greenButtonLeading.opacity(0.35), radius: 10, y: 3)
         }
         .buttonStyle(.plain)
-        .animation(.easeInOut(duration: 0.25), value: invited)
+        .animation(.buzzFade, value: invited)
     }
 
     // MARK: Apple Music Banner
@@ -163,15 +163,15 @@ struct BlindTestSearchScreen: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm).strokeBorder(.white.opacity(0.08), lineWidth: 1))
     }
 
     // MARK: Inline Search Bar
 
     private var searchBarRow: some View {
         HStack(spacing: 10) {
-            HStack(spacing: 8) {
+            HStack(spacing: BuzzSpacing.sm) {
                 Image(systemName: "magnifyingglass")
                     .textStyle(Typography.footnoteMedium)
                     .foregroundStyle(.white.opacity(0.4))
@@ -193,11 +193,11 @@ struct BlindTestSearchScreen: View {
                     .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal, 12)
+            .padding(.horizontal, BuzzSpacing.md)
             .padding(.vertical, 11)
-            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 14))
+            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: BuzzRadius.md)
                     .strokeBorder(Color.mustardYellow.opacity(0.5), lineWidth: 1)
             )
 
@@ -219,7 +219,7 @@ struct BlindTestSearchScreen: View {
 
     private var categoriesSection: some View {
         ScrollView() {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: BuzzSpacing.xxl) {
                 categoryRow(label: "GÉNÉRATION", items: generations)
                 categoryRow(label: "GENRE", items: genres)
             }
@@ -228,12 +228,12 @@ struct BlindTestSearchScreen: View {
     }
 
     private func categoryRow(label: String, items: [CategoryItem]) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             Text(label)
                 .font(.nohemi(.caption2, weight: .bold))
                 .foregroundStyle(.white.opacity(0.4))
                 .tracking(0.8)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
 
             ScrollView(.horizontal) {
                 HStack(spacing: 10) {
@@ -241,7 +241,7 @@ struct BlindTestSearchScreen: View {
                         CategoryCard(item: item) { doSearch(query: item.query) }
                     }
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
             }
         }
     }
@@ -272,19 +272,19 @@ struct BlindTestSearchScreen: View {
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 12)
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.bottom, BuzzSpacing.md)
 
             ScrollView {
-                LazyVStack(spacing: 8) {
+                LazyVStack(spacing: BuzzSpacing.sm) {
                     ForEach(blindTestVM.playlists) { playlist in
                         BlindTestPlaylistRow(playlist: playlist) {
                             Task { await blindTestVM.selectPlaylist(playlist) }
                         }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 20)
+                .padding(.horizontal, BuzzSpacing.lg)
+                .padding(.bottom, BuzzSpacing.xl)
             }
         }
     }
@@ -292,7 +292,7 @@ struct BlindTestSearchScreen: View {
     // MARK: Loading
 
     private var loadingView: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: BuzzSpacing.md) {
             ProgressView().scaleEffect(1.2).tint(.white)
             Text("Recherche en cours…")
                 .font(.nohemi(.subheadline, weight: .regular))
@@ -316,10 +316,10 @@ struct BlindTestSearchScreen: View {
                     .foregroundStyle(.white.opacity(0.65))
                 Spacer()
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, BuzzSpacing.lg)
             .padding(.vertical, 14)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.1), lineWidth: 1))
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+            .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg).strokeBorder(.white.opacity(0.1), lineWidth: 1))
         }
         .buttonStyle(.plain)
     }
@@ -349,7 +349,7 @@ private struct CategoryCard: View {
                     LinearGradient(colors: item.colors,
                                    startPoint: .topLeading,
                                    endPoint: .bottomTrailing)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.md))
 
                     Image(systemName: item.icon)
                         .textStyle(Typography.screenTitle)
@@ -388,7 +388,7 @@ struct BlindTestPlaylistRow: View {
                         )
                 }
                 .frame(width: 60, height: 60)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.xs))
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(playlist.name)
@@ -414,9 +414,9 @@ struct BlindTestPlaylistRow: View {
                     .textStyle(Typography.footnoteEM)
                     .foregroundStyle(.white.opacity(0.25))
             }
-            .padding(8)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.08), lineWidth: 1.5))
+            .padding(BuzzSpacing.sm)
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+            .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg).strokeBorder(.white.opacity(0.08), lineWidth: 1.5))
         }
         .buttonStyle(.plain)
     }

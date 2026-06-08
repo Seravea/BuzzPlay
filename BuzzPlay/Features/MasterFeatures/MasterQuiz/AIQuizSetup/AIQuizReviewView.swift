@@ -67,8 +67,8 @@ struct AIQuizReviewView: View {
                             .foregroundStyle(.white.opacity(0.5))
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.vertical, BuzzSpacing.md)
 
                 Divider().opacity(0.1)
 
@@ -77,7 +77,7 @@ struct AIQuizReviewView: View {
                     Button {
                         generator.error = nil
                     } label: {
-                        HStack(spacing: 8) {
+                        HStack(spacing: BuzzSpacing.sm) {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundStyle(.orange)
                             Text(error.localizedDescription)
@@ -89,19 +89,19 @@ struct AIQuizReviewView: View {
                                 .textStyle(Typography.caption2EM)
                                 .foregroundStyle(.white.opacity(0.4))
                         }
-                        .padding(.horizontal, 12)
+                        .padding(.horizontal, BuzzSpacing.md)
                         .padding(.vertical, 10)
-                        .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
-                        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.orange.opacity(0.3), lineWidth: 1))
+                        .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
+                        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm2).strokeBorder(Color.orange.opacity(0.3), lineWidth: 1))
                     }
                     .buttonStyle(.plain)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, BuzzSpacing.lg)
                     .padding(.top, 10)
                 }
 
                 // Bandeau complétion en cours (passes 2-3 après ouverture de la Review)
                 if generator.isCompleting {
-                    HStack(spacing: 8) {
+                    HStack(spacing: BuzzSpacing.sm) {
                         ProgressView()
                             .controlSize(.mini)
                             .tint(Color.purpleLeading)
@@ -113,17 +113,17 @@ struct AIQuizReviewView: View {
                             .font(.nohemi(.caption, weight: .semiBold))
                             .foregroundStyle(.white.opacity(0.5))
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, BuzzSpacing.lg)
                     .padding(.vertical, 10)
-                    .background(Color.purpleLeading.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
-                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.purpleLeading.opacity(0.2), lineWidth: 1))
-                    .padding(.horizontal, 16)
+                    .background(Color.purpleLeading.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
+                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm2).strokeBorder(Color.purpleLeading.opacity(0.2), lineWidth: 1))
+                    .padding(.horizontal, BuzzSpacing.lg)
                     .padding(.top, 6)
                 }
 
                 // Questions list
                 ScrollView {
-                    VStack(spacing: 12) {
+                    VStack(spacing: BuzzSpacing.md) {
                         ForEach(questions) { question in
                             QuestionCardAI(
                                 question: question,
@@ -136,8 +136,8 @@ struct AIQuizReviewView: View {
                             )
                         }
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
+                    .padding(.horizontal, BuzzSpacing.lg)
+                    .padding(.vertical, BuzzSpacing.md)
                 }
 
                 // Transparence : la complétion par l'IA est automatique ; s'il manque
@@ -151,21 +151,21 @@ struct AIQuizReviewView: View {
                     }
                     .foregroundStyle(.white.opacity(0.5))
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 8)
+                    .padding(.horizontal, BuzzSpacing.lg)
+                    .padding(.top, BuzzSpacing.sm)
                 }
 
                 Divider().opacity(0.1)
 
                 // Footer — CTAs
-                HStack(spacing: 12) {
+                HStack(spacing: BuzzSpacing.md) {
                     Button(action: onBack) {
                         Text("Retour")
                             .font(.nohemi(.body, weight: .semiBold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 48)
-                            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+                            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
                     }
 
                     Button(action: {
@@ -187,13 +187,13 @@ struct AIQuizReviewView: View {
                                 canLaunch
                                     ? LinearGradient(colors: [Color.purpleLeading, Color.purpleTrailing], startPoint: .topLeading, endPoint: .bottomTrailing)
                                     : LinearGradient(colors: [Color.white.opacity(0.08), Color.white.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing),
-                                in: RoundedRectangle(cornerRadius: 12)
+                                in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
                             )
                     }
                     .disabled(!canLaunch)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
+                .padding(.horizontal, BuzzSpacing.lg)
+                .padding(.vertical, BuzzSpacing.md)
             }
         }
         .task {
@@ -217,9 +217,9 @@ private struct QuestionCardAI: View {
     var onRegenerate: () -> Void = {}
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
             // Question
-            HStack(spacing: 8) {
+            HStack(spacing: BuzzSpacing.sm) {
                 Image(systemName: "checkmark.circle.fill")
                     .textStyle(Typography.footnote)
                     .foregroundStyle(.green)
@@ -252,7 +252,7 @@ private struct QuestionCardAI: View {
 
             // Réponse
             if !question.correctAnswers.isEmpty {
-                HStack(spacing: 8) {
+                HStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "arrow.right")
                         .textStyle(Typography.caption)
                         .foregroundStyle(.white.opacity(0.4))
@@ -265,7 +265,7 @@ private struct QuestionCardAI: View {
 
             // Anecdote
             if let funFact = question.funFact, !funFact.isEmpty {
-                HStack(spacing: 8) {
+                HStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "lightbulb.fill")
                         .textStyle(Typography.caption)
                         .foregroundStyle(.yellow.opacity(0.6))
@@ -277,8 +277,8 @@ private struct QuestionCardAI: View {
                 .padding(.leading, 28)
             }
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, BuzzSpacing.md)
         .padding(.vertical, 10)
-        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 12))
+        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
     }
 }

@@ -26,16 +26,16 @@ struct QuizThemeSelectionView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 header
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 24)
+                    .padding(.horizontal, BuzzSpacing.xl)
+                    .padding(.bottom, BuzzSpacing.xxl)
 
                 ForEach(viewModel.groupedThemes, id: \.label) { group in
                     groupSection(label: group.label, themes: group.themes)
                         .padding(.bottom, 28)
                 }
             }
-            .padding(.top, 8)
-            .padding(.bottom, 32)
+            .padding(.top, BuzzSpacing.sm)
+            .padding(.bottom, BuzzSpacing.xxxl)
         }
         .foregroundStyle(.white)
         .background(BackgroundAppView())
@@ -113,8 +113,8 @@ struct QuizThemeSelectionView: View {
     // MARK: - Header
 
     private var header: some View {
-        HStack(alignment: .top, spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
+        HStack(alignment: .top, spacing: BuzzSpacing.md) {
+            VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                 Text("Choisir un quiz")
                     .font(.nohemi(.title, weight: .extraBold))
                     .foregroundStyle(.white)
@@ -162,11 +162,11 @@ struct QuizThemeSelectionView: View {
                     .font(.nohemi(.caption, weight: .bold))
             }
             .foregroundStyle(enabled ? .white : .white.opacity(0.40))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color.purpleLeading.opacity(enabled ? 0.2 : 0.08), in: RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal, BuzzSpacing.md)
+            .padding(.vertical, BuzzSpacing.sm)
+            .background(Color.purpleLeading.opacity(enabled ? 0.2 : 0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
             .overlay(
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: BuzzRadius.sm2)
                     .strokeBorder(Color.purpleLeading.opacity(enabled ? 0.3 : 0.12), lineWidth: 1)
             )
         }
@@ -176,20 +176,20 @@ struct QuizThemeSelectionView: View {
 
     @ViewBuilder
     private func groupSection(label: String, themes: [QuizTheme]) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.lg) {
             // Eyebrow label
             Text(label.uppercased())
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
                 .foregroundStyle(.white.opacity(0.40))
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
 
             VStack(spacing: 28) {
                 ForEach(themes) { theme in
                     let sets = viewModel.sets(for: theme)
                     if sets.isEmpty {
                         ThemeAIOnlyCard(theme: theme, onTap: { showAIGeneratorSheet = true })
-                            .padding(.horizontal, 16)
+                            .padding(.horizontal, BuzzSpacing.lg)
                     } else {
                         ThemeSection(theme: theme, sets: sets) { set in
                             viewModel.selectSet(set)
@@ -216,8 +216,8 @@ private struct ThemeSection: View {
                     .textStyle(Typography.cardTitle)
                     .foregroundStyle(theme.color)
                     .frame(width: 38, height: 38)
-                    .background(theme.color.opacity(0.18), in: RoundedRectangle(cornerRadius: 10))
-                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(theme.color.opacity(0.35), lineWidth: 1))
+                    .background(theme.color.opacity(0.18), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
+                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm2).strokeBorder(theme.color.opacity(0.35), lineWidth: 1))
 
                 Text(theme.title)
                     .font(.nohemi(.title3, weight: .bold))
@@ -229,16 +229,16 @@ private struct ThemeSection: View {
                     .font(.nohemi(.caption, weight: .semiBold))
                     .foregroundStyle(.white.opacity(0.4))
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, BuzzSpacing.xl)
 
-            VStack(spacing: 8) {
+            VStack(spacing: BuzzSpacing.sm) {
                 ForEach(sets) { set in
                     QuizSetCard(set: set, themeColor: theme.color) {
                         onSelect(set)
                     }
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, BuzzSpacing.lg)
         }
     }
 }
@@ -251,13 +251,13 @@ private struct ThemeAIOnlyCard: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 12) {
+            HStack(spacing: BuzzSpacing.md) {
                 Image(systemName: theme.iconName)
                     .textStyle(Typography.label)
                     .foregroundStyle(theme.color)
                     .frame(width: 36, height: 36)
-                    .background(theme.color.opacity(0.14), in: RoundedRectangle(cornerRadius: 10))
-                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(theme.color.opacity(0.25), lineWidth: 1))
+                    .background(theme.color.opacity(0.14), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
+                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm2).strokeBorder(theme.color.opacity(0.25), lineWidth: 1))
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(theme.title)
@@ -275,10 +275,10 @@ private struct ThemeAIOnlyCard: View {
                     .foregroundStyle(Color.purpleLeading)
             }
             .padding(.horizontal, 14)
-            .padding(.vertical, 12)
-            .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 16))
+            .padding(.vertical, BuzzSpacing.md)
+            .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: BuzzRadius.lg)
                     .strokeBorder(Color.purpleLeading.opacity(0.20), lineWidth: 1)
             )
         }
@@ -311,13 +311,13 @@ private struct QuizSetCard: View {
                     .frame(width: 4)
                     .padding(.vertical, 4)
 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                     Text(set.title)
                         .font(.nohemi(.body, weight: .semiBold))
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.leading)
 
-                    HStack(spacing: 8) {
+                    HStack(spacing: BuzzSpacing.sm) {
                         Label("\(set.questions.count) questions", systemImage: "list.bullet")
                             .font(.nohemi(.caption, weight: .medium))
                             .foregroundStyle(.white.opacity(0.45))
@@ -340,10 +340,10 @@ private struct QuizSetCard: View {
             }
             .padding(.vertical, 14)
             .padding(.trailing, 14)
-            .padding(.leading, 12)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 16))
+            .padding(.leading, BuzzSpacing.md)
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: BuzzRadius.lg)
                     .strokeBorder(.white.opacity(0.08), lineWidth: 1.5)
             )
         }

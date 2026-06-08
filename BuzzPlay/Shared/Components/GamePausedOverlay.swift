@@ -14,7 +14,7 @@ struct GamePausedOverlay: View {
             Color.black.opacity(0.80)
                 .ignoresSafeArea()
 
-            VStack(spacing: 24) {
+            VStack(spacing: BuzzSpacing.xxl) {
                 ZStack {
                     Circle()
                         .fill(Color.yellowLeading.opacity(0.15))
@@ -28,7 +28,7 @@ struct GamePausedOverlay: View {
                         .foregroundStyle(Color.yellowLeading)
                 }
 
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     Text("Partie en pause")
                         .font(.nohemi(.title2, weight: .bold))
                         .foregroundStyle(.white)
@@ -54,7 +54,7 @@ struct GamePausedOverlay: View {
                 }
             }
             .padding(36)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: BuzzRadius.xxl))
             .shadow(color: .black.opacity(0.4), radius: 30, y: 10)
         }
         .onAppear { isPulsing = true }

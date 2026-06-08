@@ -11,7 +11,7 @@ struct ConnectionLostOverlay: View {
             Color.black.opacity(0.75)
                 .ignoresSafeArea()
 
-            VStack(spacing: 20) {
+            VStack(spacing: BuzzSpacing.xl) {
                 Image(systemName: "wifi.slash")
                     .font(.system(size: 48))
                     .foregroundStyle(.white)
@@ -28,8 +28,8 @@ struct ConnectionLostOverlay: View {
                     .tint(.white)
                     .scaleEffect(1.2)
             }
-            .padding(32)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+            .padding(BuzzSpacing.xxxl)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
         }
     }
 }

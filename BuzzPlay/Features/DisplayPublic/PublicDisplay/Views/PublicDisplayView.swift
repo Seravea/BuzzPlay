@@ -15,7 +15,7 @@ struct PublicDisplayView: View {
         VStack {
             switch playerGameVM.publicState {
             case .waiting:
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "hourglass")
                         .textStyle(Typography.screenTitleSoft)
                         .foregroundStyle(.white.opacity(0.4))
@@ -27,9 +27,9 @@ struct PublicDisplayView: View {
                         .foregroundStyle(.white.opacity(0.45))
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 24)
-                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 18))
-                .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+                .padding(.vertical, BuzzSpacing.xxl)
+                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
+                .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg2).strokeBorder(.white.opacity(0.08), lineWidth: 1))
 
                 case .quiz(let quizState):
                     PublicQuizDisplayView(state: quizState, timer: playerGameVM.formattedTime, timerReady: playerGameVM.hasReceivedFirstTimer)

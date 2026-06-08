@@ -24,8 +24,8 @@ struct ScoreMasterView: View {
                     if sorted.count > 3 { othersSection }
                     Spacer(minLength: 100)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.top, BuzzSpacing.sm)
             }
 
             VStack {
@@ -41,7 +41,7 @@ struct ScoreMasterView: View {
     // MARK: - Header
 
     private var header: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: BuzzSpacing.xs) {
             Text("PARTIE TERMINÉE")
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
@@ -62,14 +62,14 @@ struct ScoreMasterView: View {
                 .padding(.top, 4)
             }
         }
-        .padding(.top, 12)
+        .padding(.top, BuzzSpacing.md)
         .padding(.bottom, 28)
     }
 
     // MARK: - Podium
 
     private var podiumSection: some View {
-        HStack(alignment: .bottom, spacing: 8) {
+        HStack(alignment: .bottom, spacing: BuzzSpacing.sm) {
             if sorted.count >= 2 { podiumSlot(rank: 2, player: sorted[1]) }
             if sorted.count >= 1 { podiumSlot(rank: 1, player: sorted[0]) }
             if sorted.count >= 3 { podiumSlot(rank: 3, player: sorted[2]) }
@@ -109,7 +109,7 @@ struct ScoreMasterView: View {
                 .font(.nohemi(rank == 1 ? .subheadline : .caption, weight: .bold))
                 .foregroundStyle(rank == 1 ? Color.mustardYellow : .white)
                 .lineLimit(1)
-                .padding(.top, 8)
+                .padding(.top, BuzzSpacing.sm)
 
             Text("\(player.score) pts")
                 .font(.nohemi(.caption2, weight: .medium))
@@ -139,7 +139,7 @@ struct ScoreMasterView: View {
     // MARK: - Others
 
     private var othersSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
             HStack {
                 Text("ET LES AUTRES…")
                     .font(.nohemi(.caption2, weight: .bold))
@@ -157,11 +157,11 @@ struct ScoreMasterView: View {
                 }
             }
         }
-        .padding(.bottom, 24)
+        .padding(.bottom, BuzzSpacing.xxl)
     }
 
     private func othersRow(rank: Int, player: Player) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: BuzzSpacing.md) {
             Text("\(rank)")
                 .font(.nohemi(.caption, weight: .bold))
                 .foregroundStyle(.white.opacity(0.5))
@@ -187,11 +187,11 @@ struct ScoreMasterView: View {
                 .foregroundStyle(.white)
                 .monospacedDigit()
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal, BuzzSpacing.md)
+        .padding(.vertical, BuzzSpacing.sm)
+        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: BuzzRadius.sm)
                 .strokeBorder(.white.opacity(0.06), lineWidth: 1)
         )
     }
@@ -208,9 +208,9 @@ struct ScoreMasterView: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
-                    .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
+                    .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: BuzzRadius.lg)
                             .strokeBorder(.white.opacity(0.12), lineWidth: 1)
                     )
             }
@@ -231,15 +231,15 @@ struct ScoreMasterView: View {
                             colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
                             startPoint: .leading, endPoint: .trailing
                         ),
-                        in: RoundedRectangle(cornerRadius: 16)
+                        in: RoundedRectangle(cornerRadius: BuzzRadius.lg)
                     )
                     .shadow(color: Color.greenButtonLeading.opacity(0.32), radius: 12, y: 4)
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 32)
-        .padding(.top, 12)
+        .padding(.horizontal, BuzzSpacing.xl)
+        .padding(.bottom, BuzzSpacing.xxxl)
+        .padding(.top, BuzzSpacing.md)
         .background(
             LinearGradient(
                 colors: [Color.sheetBg.opacity(0), Color.sheetBg],

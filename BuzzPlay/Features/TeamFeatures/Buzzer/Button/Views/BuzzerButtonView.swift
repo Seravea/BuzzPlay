@@ -19,7 +19,7 @@ struct BuzzerButtonView: View {
     }
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: BuzzSpacing.xl) {
             ZStack {
                 // Pulse rings — uniquement quand actif et pas encore buzzé
                 if buzzerVM.isEnabled && !hasBuzzed {
@@ -68,7 +68,7 @@ struct BuzzerButtonView: View {
                         .shadow(color: circleColor.opacity(0.40), radius: 30, y: 15)
                         .opacity(buzzerVM.isEnabled ? 1 : (ourTeamBuzzed ? 0.65 : (isBlocked ? 0.55 : 0.30)))
 
-                    VStack(spacing: 4) {
+                    VStack(spacing: BuzzSpacing.xs) {
                         Image(systemName: isBlocked ? "lock.fill" : "bolt.fill")
                             .font(.system(size: 52, weight: .bold))
                         Text(ourTeamBuzzed ? "BUZZÉ" : (isBlocked ? "BLOQUÉ" : "BUZZ"))
@@ -97,13 +97,13 @@ struct BuzzerButtonView: View {
 
             stateLabel
         }
-        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: buzzerVM.player.blockedFromBuzzing)
+        .animation(.buzzSmooth, value: buzzerVM.player.blockedFromBuzzing)
         .appDefaultTextStyle(Typography.body)
     }
 
     @ViewBuilder
     private var stateLabel: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: BuzzSpacing.xs) {
             if let teamName = buzzerVM.playerNameHasBuzz {
                 if teamName == buzzerVM.player.name {
                     Text("Tu as buzzé !")
@@ -149,7 +149,7 @@ struct BuzzerButtonView: View {
                     .foregroundStyle(.white.opacity(0.30))
             }
         }
-        .padding(.horizontal, 32)
+        .padding(.horizontal, BuzzSpacing.xxxl)
         .multilineTextAlignment(.center)
     }
 }

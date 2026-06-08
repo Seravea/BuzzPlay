@@ -18,7 +18,7 @@ struct SectionCompleteOverlay: View {
                 .ignoresSafeArea()
                 .background(.ultraThinMaterial.opacity(0.3))
 
-            VStack(spacing: 24) {
+            VStack(spacing: BuzzSpacing.xxl) {
                 ZStack {
                     Circle()
                         .fill(Color.greenButtonLeading.opacity(0.06))
@@ -32,13 +32,13 @@ struct SectionCompleteOverlay: View {
                 }
                 .scaleEffect(scale)
                 .onAppear {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                    withAnimation(.buzzBouncy) {
                         scale = 1.0
                     }
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 }
 
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     Text("\(gameTitle) terminé !")
                         .font(.nohemi(.title2, weight: .extraBold))
                         .foregroundStyle(.white)

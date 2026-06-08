@@ -30,13 +30,13 @@ struct PrimaryButtonView: View {
                     Image(systemName: iconName)
                         .font(iconSize)
                         .foregroundStyle(colorIcon)
-                        .padding(.leading, 8)
+                        .padding(.leading, BuzzSpacing.sm)
                 }
                
             }
             .frame(maxWidth: size ?? .infinity)
-            .padding([.vertical], 8)
-            .padding(.horizontal, 12)
+            .padding([.vertical], BuzzSpacing.sm)
+            .padding(.horizontal, BuzzSpacing.md)
             .background {
                 Self.backgroundPrimaryButton(style: style)
                     

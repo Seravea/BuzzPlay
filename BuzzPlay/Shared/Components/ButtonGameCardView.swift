@@ -22,7 +22,7 @@ struct ButtonGameCardView: View {
                 .padding()
                 .frame(width: 300, height: 500)
                 .background {
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: BuzzRadius.sm)
                         .foregroundStyle(Color.mustardYellow)
                 }
                 .shadow(color: Color.mustardYellow.opacity(0.4), radius: 16, y: 8)
