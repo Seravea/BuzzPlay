@@ -76,8 +76,6 @@ extension PlayerGameViewModel {
         guard !hasSetupMPC else { return }
         hasSetupMPC = true
 
-        // MPCService dispatche déjà sur le main thread — on utilise Task @MainActor pour
-        // garantir l'isolation sans double-dispatch.
         mpc.onPeerConnected = { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self else { return }
@@ -87,6 +85,13 @@ extension PlayerGameViewModel {
                 guard !self.didSentPlayer else { return }
                 self.didSentPlayer = true
                 self.mpc.sendMessage(.playerJoin(self.player))
+                // #C7 — re-confirmer la présence si une partie est déjà en cours
+                // (reconnexion MPC sans transition foreground)
+                if self.hasPartyStarted {
+                    try? await Task.sleep(for: .milliseconds(500))
+                    guard !Task.isCancelled else { return }
+                    self.mpc.sendMessage(.playerReady)
+                }
             }
         }
 
@@ -119,6 +124,9 @@ extension PlayerGameViewModel {
         hasStartedBrowsing = true
         print("PLAYER Starting MPC browsing...")
         mpc.startBrowsingIfNeeded()
+        // #C1 — watchdog : relance le scan toutes les 6s si connexion non établie
+        // (couvre les invitations expirées sans callback onPeerConnected)
+        startReconnectTimer()
     }
 
 }
@@ -150,6 +158,10 @@ extension PlayerGameViewModel {
                 if delta > 0 { pendingNotesToast = delta }
                 self.player = updatedPlayer
                 currentBuzzerVM?.player = updatedPlayer
+                // #C5 — bloquer immédiatement le buzzer si le cadeau adverse vient d'arriver
+                if updatedPlayer.blockedFromBuzzing {
+                    currentBuzzerVM?.lockBuzz(teamNameHasBuzz: "")
+                }
             }
             if let idx = knownPlayers.firstIndex(where: { $0.id == updatedPlayer.id }) {
                 knownPlayers[idx] = updatedPlayer

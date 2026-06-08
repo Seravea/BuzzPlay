@@ -110,9 +110,11 @@ extension BuzzerViewModel {
 
 
     func unLockBuzz() {
-        isEnabled = true
         playerNameHasBuzz = nil
-        activeHint = nil  // reset l'indice à chaque nouvelle manche
+        activeHint = nil
+        // #C5 — ne pas réactiver si le joueur est bloqué par un cadeau adverse
+        guard !player.blockedFromBuzzing else { return }
+        isEnabled = true
     }
 
     func lockBuzz(teamNameHasBuzz: String) {

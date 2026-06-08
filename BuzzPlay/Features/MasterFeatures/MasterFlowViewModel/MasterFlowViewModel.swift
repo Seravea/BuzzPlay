@@ -262,6 +262,8 @@ final class MasterFlowViewModel {
         selectedQuizSet = nil
         gameDuration = .normale
         gameMode = .quiz
+        // #C4/#B7 — vider les ready pour que les Players re-confirment sur le prochain buzzer
+        readyPlayers.removeAll()
         resetGameVMs()
         isGamePaused = false
         disconnectedPlayerName = nil
