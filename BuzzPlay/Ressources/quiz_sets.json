@@ -1,1046 +1,1047 @@
 {
   "sets": [
     {
-      "id": "A1B2C3D4-0001-0000-0000-000000000001",
+      "id": "c92d8e41-60fb-4382-b7e1-8f4326f95c4d",
       "title": "Années 80 — Les Classiques",
       "themeKey": "annees80",
       "questions": [
         {
-          "question": "Qui chante 'Thriller' (1982) ?",
+          "question": "Quel artiste américain interprète la chanson phare du film « SOS Fantômes » (Ghostbusters), classée numéro un en France au début de l'année 1985 ?",
+          "answers": [
+            "Ray Parker, Jr."
+          ],
+          "difficulty": "moyen",
+          "funFact": "Ce titre a été la toute première bande originale de film à atteindre la première place du Top 50 français."
+        },
+        {
+          "question": "De quel pays est originaire le groupe Europe, qui a dominé les classements mondiaux en 1986 avec le tube « The Final Countdown » ?",
+          "answers": [
+            "Suède"
+          ],
           "difficulty": "facile",
-          "funFact": "Thriller est l'album le plus vendu de l'histoire avec plus de 70 millions de copies.",
+          "funFact": null
+        },
+        {
+          "question": "Quel artiste américain est l'interprète du titre « Billie Jean », single sorti en 1983 et écoulé à plus de 7 millions d'exemplaires physiques ?",
           "answers": [
             "Michael Jackson"
-          ]
+          ],
+          "difficulty": "facile",
+          "funFact": null
         },
         {
-          "question": "Quel groupe suédois a sorti l'album 'The Visitors' en 1981, son dernier studio ?",
+          "question": "Quel chanteur français est l'interprète de la chanson « L'Aziza », qui a dominé le Top 50 pendant 8 semaines au début de l'année 1986 ?",
+          "answers": [
+            "Daniel Balavoine"
+          ],
           "difficulty": "moyen",
-          "funFact": "ABBA s'est séparé en 1982 sans jamais l'annoncer officiellement.",
-          "answers": [
-            "ABBA"
-          ]
+          "funFact": "Il a été le tout premier artiste de l'histoire du classement à atteindre la première place à titre posthume."
         },
         {
-          "question": "Qui chante 'Billie Jean' sorti en single le 2 janvier 1983 ?",
-          "difficulty": "facile",
-          "funFact": "Billie Jean est restée 7 semaines numéro 1 au Billboard Hot 100 et a remporté 2 Grammy Awards.",
+          "question": "Quelle chanteuse américaine a publié en 1983 son premier album solo intitulé « She's So Unusual », contenant le hit « Girls Just Want to Have Fun » ?",
           "answers": [
-            "Michael Jackson"
-          ]
-        },
-        {
-          "question": "Quel album de Prince est resté 24 semaines consécutives numéro 1 au Billboard en 1984 ?",
+            "Cyndi Lauper"
+          ],
           "difficulty": "moyen",
-          "funFact": "Purple Rain a remporté l'Oscar de la meilleure musique de film en 1985 et 3 Grammy Awards.",
-          "answers": [
-            "Purple Rain"
-          ]
+          "funFact": null
         },
         {
-          "question": "Quel groupe chante 'Every Breath You Take' en 1983 ?",
-          "difficulty": "facile",
-          "funFact": "Sting a écrit la chanson en une nuit dans la maison de Noel Coward en Jamaïque.",
+          "question": "Quel duo français a eu l'honneur de classer le tout premier titre numéro un de l'histoire du Top 50 le 4 novembre 1984 ?",
           "answers": [
-            "The Police"
-          ]
+            "Peter et Sloane"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Leur chanson, « Besoin de rien, envie de toi », est restée 9 semaines au sommet du classement."
         },
         {
-          "question": "Qui chante 'Like a Virgin' en 1984 ?",
-          "difficulty": "facile",
-          "funFact": "Le clip de Like a Virgin a été tourné à Venise, en Italie.",
+          "question": "Quelle chanteuse française a été la première artiste féminine à se produire à Bercy en 1989 ?",
           "answers": [
-            "Madonna"
-          ]
+            "Jeanne Mas"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Elle y a donné quatre soirs consécutifs."
         },
         {
-          "question": "Quel groupe chante 'Sweet Child O' Mine' en 1987 ?",
-          "difficulty": "facile",
-          "funFact": "Le célèbre riff de guitare a été composé par Slash comme un simple exercice d'échauffement.",
+          "question": "Quel groupe de rock a connu ses premiers grands succès mondiaux en 1980 avec le titre « I will follow » et l'album « Boy » ?",
           "answers": [
-            "Guns N' Roses"
-          ]
-        },
-        {
-          "question": "Qui chante 'Take On Me' en 1985 ?",
-          "difficulty": "facile",
-          "funFact": "Le clip de Take On Me utilise la technique d'animation rotoscopique, mélange de dessin et de prise de vue réelle.",
-          "answers": [
-            "a-ha"
-          ]
-        },
-        {
-          "question": "Quel groupe chante 'Don't You (Forget About Me)' en 1985, issu du film The Breakfast Club ?",
+            "U2"
+          ],
           "difficulty": "moyen",
-          "funFact": "Simple Minds a hésité à enregistrer ce titre, pensant qu'il ne leur correspondait pas.",
-          "answers": [
-            "Simple Minds"
-          ]
+          "funFact": "Le groupe a été formé à Dublin en Irlande quelques années avant ce premier succès international."
         },
         {
-          "question": "Qui chante 'Africa' en 1982 ?",
-          "difficulty": "moyen",
-          "funFact": "Africa est devenue un mème internet dans les années 2010, ce qui a relancé la popularité du groupe.",
+          "question": "Dans quel film de 1987 peut-on entendre la chanson « (I've Had) The Time of My Life » ?",
           "answers": [
-            "Toto"
-          ]
+            "Dirty Dancing"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "En 1988, quel titre a été le premier duo de l'histoire du Top 50 dont les deux membres avaient déjà été numéro un en solo ?",
+          "answers": [
+            "Un roman d'amitié"
+          ],
+          "difficulty": "expert",
+          "funFact": "Il était interprété par l'américain Glenn Medeiros et la française Elsa."
         }
       ]
     },
     {
-      "id": "A1B2C3D4-0002-0000-0000-000000000002",
+      "id": "a9d3e8b4-1234-4c5b-9e1f-8c6d2a4b5931",
       "title": "Années 90 — Génération Grunge & Pop",
       "themeKey": "annees90",
       "questions": [
         {
-          "question": "Quel album de Nirvana a rendu le groupe mondialement célèbre en 1991 ?",
-          "difficulty": "facile",
-          "funFact": "Nevermind a détrôné Michael Jackson de la première place du Billboard 200 en janvier 1992.",
+          "question": "De quel pays est originaire la chanteuse Céline Dion, qui a connu un immense succès mondial en 1997 avec le titre « My Heart Will Go On » ?",
           "answers": [
-            "Nevermind"
-          ]
+            "Canada"
+          ],
+          "difficulty": "facile",
+          "funFact": null
         },
         {
-          "question": "Qui chante 'Smells Like Teen Spirit', sorti le 10 septembre 1991 ?",
-          "difficulty": "facile",
-          "funFact": "Kurt Cobain s'est inspiré du style soft/loud des Pixies pour composer ce titre.",
+          "question": "Qui a sorti en 1997 une version hommage de sa chanson « Candle in the Wind » suite au décès de la princesse Diana ?",
           "answers": [
-            "Nirvana"
-          ]
+            "Elton John"
+          ],
+          "difficulty": "facile",
+          "funFact": null
         },
         {
-          "question": "Quel groupe chante 'Wannabe' en 1996 ?",
-          "difficulty": "facile",
-          "funFact": "Wannabe a atteint le numéro 1 dans 37 pays à travers le monde.",
+          "question": "Quel groupe féminin britannique a dominé les classements mondiaux en 1996 avec le tube « Wannabe » ?",
           "answers": [
             "Spice Girls"
-          ]
-        },
-        {
-          "question": "Qui chante 'Losing My Religion' en 1991 ?",
-          "difficulty": "moyen",
-          "funFact": "L'expression 'losing my religion' est une expression du sud des États-Unis signifiant perdre son sang-froid.",
-          "answers": [
-            "R.E.M."
-          ]
-        },
-        {
-          "question": "Quel groupe chante 'Wonderwall' en 1995 ?",
+          ],
           "difficulty": "facile",
-          "funFact": "Noel Gallagher a composé Wonderwall en pensant à une personne imaginaire idéale.",
-          "answers": [
-            "Oasis"
-          ]
+          "funFact": "Une étude scientifique a désigné ce titre comme la chanson pop la plus accrocheuse des 60 dernières années."
         },
         {
-          "question": "Qui chante 'Baby One More Time' en 1998 ?",
+          "question": "Dans quel film de 1992, dont elle partage l'affiche avec Kevin Costner, Whitney Houston interprète-t-elle « I Will Always Love You » ?",
+          "answers": [
+            "Bodyguard"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe américain originaire de Seattle a lancé la vague grunge en 1991 avec l'album « Nevermind » ?",
+          "answers": [
+            "Nirvana"
+          ],
           "difficulty": "facile",
-          "funFact": "C'était le premier single de Britney Spears. Il a atteint le numéro 1 dans plus de 15 pays.",
-          "answers": [
-            "Britney Spears"
-          ]
+          "funFact": null
         },
         {
-          "question": "Quel groupe chante 'No Scrubs' en 1999 ?",
-          "difficulty": "moyen",
-          "funFact": "No Scrubs a été nommée l'une des 500 plus grandes chansons de tous les temps par Rolling Stone.",
-          "answers": [
-            "TLC"
-          ]
-        },
-        {
-          "question": "Qui chante 'Bitter Sweet Symphony' en 1997 ?",
-          "difficulty": "moyen",
-          "funFact": "La chanson utilise un sample orchestral des Rolling Stones. The Verve a longtemps dû céder les droits d'auteur.",
+          "question": "Quel groupe britannique interprète « Bitter Sweet Symphony » en 1997 ?",
           "answers": [
             "The Verve"
-          ]
+          ],
+          "difficulty": "moyen",
+          "funFact": "Le titre sample une orchestration des Rolling Stones, ce qui a contraint le groupe à céder les droits d'auteur pendant des années."
         },
         {
-          "question": "Qui chante 'Creep' en 1992 ?",
-          "difficulty": "facile",
-          "funFact": "Radiohead a longtemps refusé de jouer Creep en concert, la considérant trop simpliste.",
+          "question": "Quel film de 1997 possède une bande originale composée par James Horner qui est restée 14 semaines en tête des ventes en France ?",
           "answers": [
-            "Radiohead"
-          ]
+            "Titanic"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
         },
         {
-          "question": "Qui chante 'My Heart Will Go On', thème du film Titanic en 1997 ?",
-          "difficulty": "facile",
-          "funFact": "Céline Dion avait d'abord refusé d'enregistrer ce titre. Elle l'a chanté en une seule prise.",
+          "question": "Sur quel album de Vanessa Paradis, sorti en 1990 et contenant le titre « Tandem », Serge Gainsbourg a-t-il signé l'intégralité des paroles ?",
           "answers": [
-            "Céline Dion"
-          ]
+            "Variations sur le même t'aime"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Ce fut la toute dernière œuvre livrée par Serge Gainsbourg de son vivant."
+        },
+        {
+          "question": "En juillet 1990, quel artiste britannique a rejoué le concert « The Wall » sur la Potsdamer Platz pour célébrer la chute du Mur de Berlin ?",
+          "answers": [
+            "Roger Waters"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Quel enfant star détient depuis octobre 1992 le record du plus jeune interprète de l'histoire à avoir été numéro un du Top 50 ?",
+          "answers": [
+            "Jordy"
+          ],
+          "difficulty": "expert",
+          "funFact": "Sa chanson « Dur dur d'être bébé ! » est restée classée à la première place pendant 15 semaines consécutives."
         }
       ]
     },
     {
-      "id": "A1B2C3D4-0003-0000-0000-000000000003",
+      "id": "f29a1b8c-5e4d-492a-bc7f-3a21690e4d52",
       "title": "Années 2000 — Les Tubes",
       "themeKey": "annees2000",
       "questions": [
         {
-          "question": "Quel artiste a sorti l'album 'The College Dropout' en 2004 ?",
+          "question": "Quel groupe de rock français a classé l'album « Comme on a dit » à la première place des ventes en janvier 2000 ?",
+          "answers": [
+            "Louise Attaque"
+          ],
           "difficulty": "moyen",
-          "funFact": "Kanye West était producteur pour Jay-Z avant de lancer sa carrière solo.",
-          "answers": [
-            "Kanye West"
-          ]
+          "funFact": null
         },
         {
-          "question": "Qui chante 'Crazy in Love' en 2003 ?",
-          "difficulty": "facile",
-          "funFact": "Jay-Z apparaît sur ce titre. C'est le premier single solo de Beyoncé après Destiny's Child.",
-          "answers": [
-            "Beyoncé"
-          ]
-        },
-        {
-          "question": "Quel groupe chante 'Seven Nation Army' en 2003 ?",
-          "difficulty": "facile",
-          "funFact": "La ligne de basse iconique est en réalité jouée à la guitare avec un effet de pédale.",
-          "answers": [
-            "The White Stripes"
-          ]
-        },
-        {
-          "question": "Qui chante 'In Da Club' en 2003 ?",
-          "difficulty": "facile",
-          "funFact": "In Da Club a passé 9 semaines numéro 1 au Billboard Hot 100.",
-          "answers": [
-            "50 Cent"
-          ]
-        },
-        {
-          "question": "Quel groupe chante 'Harder, Better, Faster, Stronger' en 2001 ?",
-          "difficulty": "facile",
-          "funFact": "Kanye West a samplé ce titre pour composer 'Stronger' en 2007.",
-          "answers": [
-            "Daft Punk"
-          ]
-        },
-        {
-          "question": "Qui chante 'Beautiful' en 2002 ?",
-          "difficulty": "facile",
-          "funFact": "Beautiful a remporté le Grammy Award de la meilleure performance pop féminine en 2004.",
-          "answers": [
-            "Christina Aguilera"
-          ]
-        },
-        {
-          "question": "Quel artiste chante 'Yeah!' en 2004 ?",
-          "difficulty": "facile",
-          "funFact": "Yeah! a passé 12 semaines consécutives numéro 1 au Billboard Hot 100.",
-          "answers": [
-            "Usher"
-          ]
-        },
-        {
-          "question": "Qui chante 'Umbrella' en 2007 ?",
-          "difficulty": "facile",
-          "funFact": "Britney Spears a refusé le titre avant qu’il soit proposé à Rihanna.",
-          "answers": [
-            "Rihanna"
-          ]
-        },
-        {
-          "question": "Quel groupe chante 'Mr. Brightside' en 2003 ?",
-          "difficulty": "moyen",
-          "funFact": "Mr. Brightside est l’une des chansons les plus longtemps classées dans l’histoire du UK Singles Chart.",
-          "answers": [
-            "The Killers"
-          ]
-        },
-        {
-          "question": "Qui chante 'Toxic' en 2004 ?",
-          "difficulty": "facile",
-          "funFact": "Toxic a remporté le Grammy Award de la meilleure performance dance en 2005.",
+          "question": "Qui interprète le tube mondial « Oops !... I Did It Again », sorti au cours de l'année 2000 ?",
           "answers": [
             "Britney Spears"
-          ]
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel est le titre du premier album studio du groupe Linkin Park, sorti en 2000 et vendu à plus de 24 millions d'exemplaires ?",
+          "answers": [
+            "Hybrid Theory"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "De quel pays est originaire la chanteuse Rihanna, dont la carrière a explosé à partir de l'année 2005 ?",
+          "answers": [
+            "La Barbade"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel film sorti en 2004 possède une bande originale composée par Bruno Coulais qui est restée 11 semaines en tête des ventes en France ?",
+          "answers": [
+            "Les Choristes"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel artiste britannique est l'interprète de la chanson « You're Beautiful », restée 8 semaines en tête des téléchargements en 2005 ?",
+          "answers": [
+            "James Blunt"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "L'album « Life in Cartoon Motion », contenant le tube « Relax, Take It Easy », a été la meilleure vente de quelle année en France ?",
+          "answers": [
+            "2007"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Il s'agit du premier album studio de l'artiste Mika."
+        },
+        {
+          "question": "En quelle année s'est déroulée la toute première édition des NRJ Music Awards en France ?",
+          "answers": [
+            "2000"
+          ],
+          "difficulty": "difficile",
+          "funFact": "L'événement a eu lieu précisément le 22 janvier 2000."
+        },
+        {
+          "question": "Quel artiste virtuel détient le record de s'être auto-détrôné à la première place du Top Singles en 2005 avec les titres « Axel F » et « Popcorn » ?",
+          "answers": [
+            "Crazy Frog"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Les deux titres sont issus du même album intitulé « Crazy Frog Presents Crazy Hits »."
+        },
+        {
+          "question": "Quel est le vrai nom du rappeur américain connu sous le pseudonyme 'Eminem' ?",
+          "answers": [
+            "Marshall Bruce Mathers III"
+          ],
+          "difficulty": "expert",
+          "funFact": "Il a grandi à Detroit, élevé seul par sa mère dès l'âge de neuf mois."
         }
       ]
     },
     {
-      "id": "A1B2C3D4-0004-0000-0000-000000000004",
+      "id": "7d3a5e82-1b9c-4f6a-8d2e-0c1b4a9f5d32",
       "title": "Années 2010-2020 — Streaming Era",
       "themeKey": "annees2010",
       "questions": [
         {
-          "question": "Quel artiste belge a sorti 'Formidable' en 2013 ?",
-          "difficulty": "facile",
-          "funFact": "Stromae est l'anagramme de Maestro.",
-          "answers": [
-            "Stromae"
-          ]
-        },
-        {
-          "question": "Qui chante 'Shape of You' en 2017 ?",
-          "difficulty": "facile",
-          "funFact": "Shape of You a été la chanson la plus écoutée sur Spotify en 2017.",
-          "answers": [
-            "Ed Sheeran"
-          ]
-        },
-        {
-          "question": "Quel artiste chante 'Blinding Lights' en 2019 ?",
-          "difficulty": "facile",
-          "funFact": "Blinding Lights a passé 57 semaines dans le top 10 du Billboard Hot 100, un record.",
-          "answers": [
-            "The Weeknd"
-          ]
-        },
-        {
-          "question": "Qui chante 'Old Town Road' en 2019 ?",
-          "difficulty": "facile",
-          "funFact": "Old Town Road a passé 19 semaines consécutives numéro 1 au Billboard Hot 100, un record absolu.",
-          "answers": [
-            "Lil Nas X"
-          ]
-        },
-        {
-          "question": "Quel groupe coréen chante 'Gangnam Style' en 2012 ?",
-          "difficulty": "facile",
-          "funFact": "Gangnam Style a été la première vidéo YouTube à dépasser 1 milliard de vues en 2012.",
-          "answers": [
-            "PSY"
-          ]
-        },
-        {
-          "question": "Qui chante 'Someone Like You' en 2011 ?",
-          "difficulty": "facile",
-          "funFact": "Someone Like You a été numéro 1 au Royaume-Uni pendant 5 semaines.",
+          "question": "Qui est l'interprète britannique des tubes mondiaux « Someone Like You » et « Hello », dont les albums portent des titres correspondant à son âge ?",
           "answers": [
             "Adele"
-          ]
-        },
-        {
-          "question": "Quel groupe chante 'Get Lucky' en 2013 ?",
+          ],
           "difficulty": "facile",
-          "funFact": "Get Lucky fait partie de l'album Random Access Memories, qui a remporté 5 Grammy Awards en 2014.",
-          "answers": [
-            "Daft Punk"
-          ]
+          "funFact": null
         },
         {
-          "question": "Qui chante 'Uptown Funk' en 2014 ?",
-          "difficulty": "moyen",
-          "funFact": "Uptown Funk a passé 14 semaines numéro 1 au Billboard Hot 100.",
+          "question": "De quel pays est originaire le chanteur Psy, qui a connu un immense succès planétaire en 2012 avec le titre « Gangnam Style » ?",
           "answers": [
-            "Mark Ronson ft. Bruno Mars"
-          ]
-        },
-        {
-          "question": "Quel artiste chante 'Despacito' en 2017 ?",
-          "difficulty": "moyen",
-          "funFact": "Despacito a été la première chanson en espagnol à atteindre le numéro 1 du Billboard Hot 100 depuis 'Macarena' en 1996.",
-          "answers": [
-            "Luis Fonsi ft. Daddy Yankee"
-          ]
-        },
-        {
-          "question": "Qui chante 'Bad Guy' en 2019 ?",
+            "La Corée du Sud"
+          ],
           "difficulty": "facile",
-          "funFact": "Billie Eilish avait 17 ans quand Bad Guy est sorti. Elle est devenue la plus jeune artiste à remporter les 4 grands Grammy Awards.",
+          "funFact": null
+        },
+        {
+          "question": "Dans quel film sorti en 2018 peut-on entendre le duo « Shallow », interprété par Lady Gaga et Bradley Cooper ?",
           "answers": [
-            "Billie Eilish"
-          ]
+            "A Star Is Born"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel artiste belge a connu ses premiers grands succès en France au cours de l'année 2010 avec le titre « Alors on danse » ?",
+          "answers": [
+            "Stromae"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Il fait partie des révélations de l'année 2010 aux côtés de Zaz et de la Sexion d'Assaut."
+        },
+        {
+          "question": "Quel est le titre de l'album du groupe Daft Punk, sorti en 2013, qui contient le succès mondial « Get Lucky » ?",
+          "answers": [
+            "Random Access Memories"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Cet album a été certifié disque de diamant en France la même année."
+        },
+        {
+          "question": "Quel est le vrai nom de la chanteuse britannique connue sous le pseudonyme 'Adele' ?",
+          "answers": [
+            "Adele Laurie Blue Adkins"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel single d'Ed Sheeran, sorti en 2017, détient le record de longévité à la première place du classement mégafusion avec 15 semaines au sommet ?",
+          "answers": [
+            "Shape of You"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel est le titre du premier album de la chanteuse belge Angèle, sorti en 2018 et contenant le morceau « Balance ton quoi » ?",
+          "answers": [
+            "Brol"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Quel est le vrai nom de la chanteuse néo-zélandaise connue sous le pseudonyme 'Lorde' ?",
+          "answers": [
+            "Ella Yelich-O'Connor"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Elle avait seulement 16 ans lors de la sortie de son premier single 'Royals' en 2013."
+        },
+        {
+          "question": "Quel DJ et producteur allemand a réalisé en 2014 le remix à succès du titre « Prayer in C » du duo Lilly Wood and the Prick ?",
+          "answers": [
+            "Robin Schulz"
+          ],
+          "difficulty": "expert",
+          "funFact": null
         }
       ]
     },
     {
-      "id": "A1B2C3D4-0005-0000-0000-000000000005",
+      "id": "8b23f1e9-9d4a-4c5b-9e1f-8c6d2a4b5931",
       "title": "Pop FR — Hits Français",
       "themeKey": "popFR",
       "questions": [
         {
-          "question": "Quel est le vrai prénom d'Aya Nakamura ?",
-          "difficulty": "difficile",
-          "funFact": "Elle a choisi Nakamura en hommage au personnage de la série Heroes.",
+          "question": "Qui chante le tube de 1991 « Désenchantée », resté numéro un du Top 50 pendant 9 semaines ?",
           "answers": [
-            "Aya Danioko"
-          ]
-        },
-        {
-          "question": "Stromae est l'anagramme de quel mot ?",
-          "difficulty": "moyen",
-          "funFact": "Stromae s'appelait MC Stroman avant d'adopter ce pseudonyme.",
-          "answers": [
-            "Maestro"
-          ]
-        },
-        {
-          "question": "Quel artiste français chante 'Je veux' en 2010 ?",
-          "difficulty": "moyen",
-          "funFact": "Zaz s'appelle Isabelle Geffroy à l'état civil. Son style mêle jazz manouche et chanson française.",
-          "answers": [
-            "Zaz"
-          ]
-        },
-        {
-          "question": "Qui chante 'Alors on danse' en 2009 ?",
+            "Mylène Farmer"
+          ],
           "difficulty": "facile",
-          "funFact": "Alors on danse est numéro 1 dans plus de 11 pays européens en 2010.",
-          "answers": [
-            "Stromae"
-          ]
+          "funFact": null
         },
         {
-          "question": "Quel artiste chante 'Tout donner' en 2014 ?",
-          "difficulty": "moyen",
-          "funFact": "Maître Gims est membre du groupe Sexion d'Assaut avant sa carrière solo.",
+          "question": "Quel duo masculin français a interprété le titre « Je te donne » en 1985 ?",
           "answers": [
-            "Maître Gims"
-          ]
-        },
-        {
-          "question": "Qui chante 'Djadja' en 2018 ?",
+            "Jean-Jacques Goldman et Michael Jones"
+          ],
           "difficulty": "facile",
-          "funFact": "Djadja a rendu Aya Nakamura célèbre dans toute l'Europe et a été certifiée multi-platine en France.",
-          "answers": [
-            "Aya Nakamura"
-          ]
+          "funFact": "C'était le tout premier duo masculin à atteindre la première place du classement des ventes en France."
         },
         {
-          "question": "Quel artiste chante 'Le monde est stone' en 1978, titre issu de la comédie musicale Starmania ?",
-          "difficulty": "difficile",
-          "funFact": "Starmania est une comédie musicale de Michel Berger et Luc Plamondon créée en 1978.",
-          "answers": [
-            "Diane Dufresne"
-          ]
-        },
-        {
-          "question": "Qui chante 'L’Envie' en 1986 ?",
-          "difficulty": "moyen",
-          "funFact": "Johnny Hallyday a vendu plus de 110 millions de disques au cours de sa carrière.",
+          "question": "Quel chanteur français a publié en 1999 l'album « Sang pour sang », intégralement composé par son fils David ?",
           "answers": [
             "Johnny Hallyday"
-          ]
+          ],
+          "difficulty": "facile",
+          "funFact": null
         },
         {
-          "question": "Quel artiste chante 'Papaoutai' en 2013 ?",
-          "difficulty": "facile",
-          "funFact": "Le titre Papaoutai fait référence à l'absence du père de Stromae, décédé lors du génocide rwandais de 1994.",
+          "question": "Quel album sorti en 1992 est l'unique disque studio enregistré intégralement en duo par Michel Berger et France Gall ?",
           "answers": [
-            "Stromae"
-          ]
+            "Double Jeu"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
         },
         {
-          "question": "Qui chante 'Alexandrie Alexandra' en 1977 ?",
-          "difficulty": "facile",
-          "funFact": "",
+          "question": "Quel artiste français a sorti en 1986 l'album « Mistral gagnant », dont la chanson phare est devenue un monument de la variété française ?",
           "answers": [
-            "Claude François"
-          ]
+            "Renaud"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe de rock français, emmené par Nicola Sirkis, a fait un retour fracassant en 2002 avec le single « J'ai demandé à la lune » ?",
+          "answers": [
+            "Indochine"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quelle chanteuse française, célèbre pour « Mademoiselle chante le blues », a classé son album « Scène de vie » numéro un pendant 5 mois en 1990 ?",
+          "answers": [
+            "Patricia Kaas"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe français a popularisé le genre rap celtique en 1998 avec le tube « La Tribu de Dana » ?",
+          "answers": [
+            "Manau"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Avec quelle artiste italienne le chanteur Marc Lavoine interprète-t-il le duo « J'ai tout oublié », numéro un en France en 2002 ?",
+          "answers": [
+            "Cristina Marocco"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Quel chanteur français a connu un immense succès mondial en 1971 avec le titre « Butterfly », vendu à 7 millions d'exemplaires ?",
+          "answers": [
+            "Danyel Gérard"
+          ],
+          "difficulty": "expert",
+          "funFact": null
         }
       ]
     },
     {
-      "id": "A1B2C3D4-0006-0000-0000-000000000006",
+      "id": "e2b17a14-3d9a-4e6b-8f2c-5a21c90e4d52",
       "title": "Pop Internationale — Hits Mondiaux",
       "themeKey": "popIntl",
       "questions": [
         {
-          "question": "Quel album d'Adele contient le titre 'Rolling in the Deep' ?",
-          "difficulty": "facile",
-          "funFact": "L'album 21 a été vendu à plus de 31 millions de copies dans le monde.",
+          "question": "De quelle nationalité est la chanteuse Shania Twain, dont l'album « Come On Over » est le plus vendu de la carrière d'une artiste solo ?",
           "answers": [
-            "21"
-          ]
+            "Canadienne"
+          ],
+          "difficulty": "facile",
+          "funFact": null
         },
         {
-          "question": "Qui chante 'Shallow' avec Lady Gaga dans le film A Star is Born en 2018 ?",
+          "question": "De quel pays est originaire le groupe ABBA, qui a connu un immense succès mondial entre 1972 et 1982 ?",
+          "answers": [
+            "Suède"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe britannique a publié en 1967 l'album « Sgt. Pepper's Lonely Hearts Club Band », considéré comme un chef-d'œuvre de la pop ?",
+          "answers": [
+            "The Beatles"
+          ],
+          "difficulty": "facile",
+          "funFact": "La maturité de la musique pop est souvent associée à l'avènement de ce groupe."
+        },
+        {
+          "question": "Quel groupe de rock est l'interprète de l'album « The Dark Side of the Moon », resté plus de 900 semaines dans le classement Billboard 200 ?",
+          "answers": [
+            "Pink Floyd"
+          ],
           "difficulty": "moyen",
-          "funFact": "Shallow a remporté l'Oscar de la meilleure chanson originale et le Grammy Award de la meilleure chanson écrite pour le cinéma en 2019.",
-          "answers": [
-            "Bradley Cooper"
-          ]
+          "funFact": null
         },
         {
-          "question": "Qui chante 'Poker Face' en 2008 ?",
-          "difficulty": "facile",
-          "funFact": "Poker Face a été le single le plus vendu au monde en 2009.",
+          "question": "Qui interprète le tube mondial « I Will Always Love You », présent sur la bande originale du film « Bodyguard » sorti en 1992 ?",
           "answers": [
-            "Lady Gaga"
-          ]
-        },
-        {
-          "question": "Quel artiste canadien chante 'One Dance' en 2016 ?",
-          "difficulty": "facile",
-          "funFact": "One Dance est le premier titre de Drake à atteindre le numéro 1 au Billboard Hot 100.",
-          "answers": [
-            "Drake"
-          ]
-        },
-        {
-          "question": "Qui chante 'Sorry' en 2015 ?",
-          "difficulty": "facile",
-          "funFact": "Sorry fait partie de l'album Purpose. Le clip vidéo sans Justin Bieber a été visionné plus d'un milliard de fois.",
-          "answers": [
-            "Justin Bieber"
-          ]
-        },
-        {
-          "question": "Quel artiste chante 'Happy' en 2013, issu du film Moi, Moche et Méchant 2 ?",
-          "difficulty": "facile",
-          "funFact": "Happy a été nommée aux Oscars 2014 pour la meilleure chanson originale.",
-          "answers": [
-            "Pharrell Williams"
-          ]
-        },
-        {
-          "question": "Qui chante 'Hello' en 2015 ?",
-          "difficulty": "facile",
-          "funFact": "Hello a battu le record de streams en une semaine sur Spotify à sa sortie.",
-          "answers": [
-            "Adele"
-          ]
-        },
-        {
-          "question": "Quel groupe australien chante 'Somebody That I Used to Know' en 2011 ?",
+            "Whitney Houston"
+          ],
           "difficulty": "moyen",
-          "funFact": "Somebody That I Used to Know a remporté 2 Grammy Awards en 2013.",
-          "answers": [
-            "Gotye ft. Kimbra"
-          ]
+          "funFact": "Cette chanson est à l'origine une reprise d'un titre de l'artiste country Dolly Parton."
         },
         {
-          "question": "Qui chante 'Rolling in the Deep' en 2010 ?",
-          "difficulty": "facile",
-          "funFact": "Rolling in the Deep a remporté 3 Grammy Awards en 2012 dont Record de l'année et Chanson de l'année.",
+          "question": "Quel artiste britannique est l'interprète du titre « Careless Whisper », single sorti en 1984 et vendu à 6 millions d'exemplaires ?",
           "answers": [
-            "Adele"
-          ]
+            "George Michael"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
         },
         {
-          "question": "Quel artiste chante 'Can't Stop the Feeling' en 2016, issu du film Les Trolls ?",
-          "difficulty": "facile",
-          "funFact": "Can't Stop the Feeling a été nommée aux Oscars 2017 pour la meilleure chanson originale.",
+          "question": "Quel groupe de rock américain a publié en 1986 l'album « Slippery When Wet », qui a popularisé le genre glam metal ?",
           "answers": [
-            "Justin Timberlake"
-          ]
+            "Bon Jovi"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe de rock, premier interprète allemand à atteindre la première place en France, chante le titre « Wind of Change » ?",
+          "answers": [
+            "Scorpions"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Quel est le titre de l'album de Santana, sorti en 1999, qui détient le record du plus grand nombre de Grammy Awards reçus par un groupe ?",
+          "answers": [
+            "Supernatural"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe américain a connu un succès mondial en 1968 avec le titre « In-A-Gadda-Da-Vida », qui a donné son nom à leur album ?",
+          "answers": [
+            "Iron Butterfly"
+          ],
+          "difficulty": "expert",
+          "funFact": "Le succès de cet album repose en grande partie sur ce seul titre éponyme devenu un tube."
         }
       ]
     },
     {
-      "id": "A1B2C3D4-0007-0000-0000-000000000007",
+      "id": "3c6a4e5d-1b2c-4a3d-8e7f-920c3f8b1d05",
       "title": "Rock — Les Légendes",
       "themeKey": "rock",
       "questions": [
         {
-          "question": "Quel groupe britannique a sorti 'Bohemian Rhapsody' en 1975 ?",
-          "difficulty": "facile",
-          "funFact": "",
+          "question": "Quel chanteur américain a popularisé le genre rockabilly en 1954 avec son premier grand succès intitulé « That's All Right (Mama) » ?",
           "answers": [
-            "Queen"
-          ]
+            "Elvis Presley"
+          ],
+          "difficulty": "facile",
+          "funFact": "Le Livre Guinness des records le désigne officiellement comme l'artiste masculin ayant vendu le plus de disques dans l'histoire."
         },
         {
-          "question": "Quel groupe chante 'Smells Like Teen Spirit' en 1991 ?",
-          "difficulty": "facile",
-          "funFact": "Kurt Cobain s'est inspiré du style des Pixies pour composer cette chanson. Elle est sortie le 10 septembre 1991.",
+          "question": "Quel groupe de rock britannique, formé en 1962 par Mick Jagger et Keith Richards, a publié en 2023 l'album « Hackney Diamonds » ?",
           "answers": [
-            "Nirvana"
-          ]
+            "The Rolling Stones"
+          ],
+          "difficulty": "facile",
+          "funFact": "Le groupe a fêté ses 60 ans de carrière en restant une figure emblématique de la culture rock mondiale."
         },
         {
-          "question": "Qui chante 'Back in Black' en 1980 ?",
-          "difficulty": "facile",
-          "funFact": "Back in Black est l'un des albums les plus vendus de l'histoire avec plus de 50 millions de copies.",
+          "question": "Quel artiste britannique est l'interprète du titre « Space Oddity », devenu numéro un en France en 2016, soit 47 ans après sa sortie originale ?",
           "answers": [
-            "AC/DC"
-          ]
+            "David Bowie"
+          ],
+          "difficulty": "facile",
+          "funFact": "Il détient le record de la plus longue période entre la sortie d'un titre et son accession à la première place du classement français."
         },
         {
-          "question": "Quel groupe chante 'Hotel California' en 1977 ?",
+          "question": "Quel guitariste virtuose, célèbre pour son jeu gaucher, a révolutionné le rock à la fin des années 1960 en utilisant des effets de phasing et de feedback ?",
+          "answers": [
+            "Jimi Hendrix"
+          ],
           "difficulty": "moyen",
-          "funFact": "Hotel California a remporté le Grammy Award du Record de l'année en 1978.",
-          "answers": [
-            "Eagles"
-          ]
+          "funFact": "Il est considéré comme une exception rare parmi les rockers noirs de l'époque, en électrifiant le blues pour ouvrir de nouveaux univers musicaux."
         },
         {
-          "question": "Qui chante 'Stairway to Heaven' en 1971 ?",
+          "question": "Quel groupe de rock britannique est considéré, avec Led Zeppelin et Black Sabbath, comme l'un des trois piliers fondateurs du hard rock à la fin des années 1960 ?",
+          "answers": [
+            "Deep Purple"
+          ],
           "difficulty": "moyen",
-          "funFact": "Stairway to Heaven dure 8 minutes et n'a jamais été sortie en single au Royaume-Uni.",
+          "funFact": "À cette époque, les termes hard rock et heavy metal étaient souvent utilisés comme synonymes."
+        },
+        {
+          "question": "Quel groupe de rock britannique a provoqué une onde de choc en 1977 avec son hymne contestataire intitulé « God Save the Queen » ?",
+          "answers": [
+            "Sex Pistols"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Le mouvement punk encourageait tout le monde à faire de la musique sans attendre de maîtriser parfaitement la technique instrumentale."
+        },
+        {
+          "question": "Quel artiste américain est l'interprète de l'album « Born in the U.S.A. », sorti en 1984 et vendu à 30 millions d'exemplaires ?",
+          "answers": [
+            "Bruce Springsteen"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Contrairement à ses contemporains modernistes, son rock s'inspirait davantage des racines des années 1950 et 60."
+        },
+        {
+          "question": "Quel groupe britannique a publié en 1971 un album sans titre officiel, souvent désigné par le chiffre romain IV ?",
           "answers": [
             "Led Zeppelin"
-          ]
+          ],
+          "difficulty": "difficile",
+          "funFact": "Cet opus est le plus gros succès de leur carrière avec 37 millions d'exemplaires vendus dans le monde."
         },
         {
-          "question": "Quel groupe chante 'Sultans of Swing' en 1978 ?",
-          "difficulty": "moyen",
-          "funFact": "Mark Knopfler joue de la guitare sans médiator, avec ses doigts, créant le son signature du groupe.",
+          "question": "Quel guitariste est considéré comme le précurseur du metal néo-classique avec la sortie de l'album « Rising Force » en 1984 ?",
           "answers": [
-            "Dire Straits"
-          ]
+            "Yngwie Malmsteen"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Ce sous-genre du rock mélange des riffs de heavy metal avec des compositions inspirées de la musique classique."
         },
         {
-          "question": "Qui chante 'Eye of the Tiger' en 1982, issu du film Rocky III ?",
-          "difficulty": "facile",
-          "funFact": "Eye of the Tiger a passé 6 semaines numéro 1 au Billboard Hot 100 en 1982.",
+          "question": "Quel batteur de jazz français a publié en 1956 ce qui est officiellement reconnu comme le tout premier disque de rock français ?",
           "answers": [
-            "Survivor"
-          ]
-        },
-        {
-          "question": "Quel groupe chante 'Under Pressure' en 1981 ?",
-          "difficulty": "moyen",
-          "funFact": "Queen et David Bowie ont enregistré Under Pressure en improvisant en une seule nuit de session.",
-          "answers": [
-            "Queen et David Bowie"
-          ]
-        },
-        {
-          "question": "Qui chante 'Enter Sandman' en 1991 ?",
-          "difficulty": "facile",
-          "funFact": "Enter Sandman est le premier titre de l'album dit 'Black Album', le plus vendu de Metallica.",
-          "answers": [
-            "Metallica"
-          ]
-        },
-        {
-          "question": "Quel groupe chante 'Zombie' en 1994 ?",
-          "difficulty": "facile",
-          "funFact": "Zombie a été écrite par Dolores O'Riordan en hommage aux victimes d'un attentat de l'IRA en 1993.",
-          "answers": [
-            "The Cranberries"
-          ]
+            "Mac Kac"
+          ],
+          "difficulty": "expert",
+          "funFact": "Son vrai nom était Baptiste Reilles et son disque comprenait une adaptation du titre « See You Later, Alligator »."
         }
       ]
     },
     {
-      "id": "A1B2C3D4-0008-0000-0000-000000000008",
+      "id": "57f6e07c-9b84-46c5-a6e5-472149b5c3e1",
       "title": "Rap FR — Les Incontournables",
       "themeKey": "rapFR",
       "questions": [
         {
-          "question": "Quel album d'Orelsan a remporté l'album de l'année aux Victoires de la musique 2018 ?",
-          "difficulty": "moyen",
-          "funFact": "La fête est finie a été certifié double platine en France.",
-          "answers": [
-            "La fête est finie"
-          ]
-        },
-        {
-          "question": "Quel est le vrai prénom d'Orelsan ?",
-          "difficulty": "moyen",
-          "funFact": "",
-          "answers": [
-            "Aurélien"
-          ]
-        },
-        {
-          "question": "Quel groupe de rap français chante 'Tout n'est pas si facile' en 2000 ?",
-          "difficulty": "moyen",
-          "funFact": "IAM est originaire de Marseille et est l'un des pionniers du rap français fondé en 1989.",
-          "answers": [
-            "IAM"
-          ]
-        },
-        {
-          "question": "Qui chante 'La Boulette' en 2006 ?",
-          "difficulty": "facile",
-          "funFact": "",
+          "question": "Quelle rappeuse française a connu un immense succès en 2006 avec le titre « La Boulette » ?",
           "answers": [
             "Diam's"
-          ]
+          ],
+          "difficulty": "facile",
+          "funFact": null
         },
         {
-          "question": "Quel groupe de rap français chante 'Police' en 1993 ?",
-          "difficulty": "moyen",
-          "funFact": "NTM, fondé à Saint-Denis en 1989, est composé de Joey Starr et de Kool Shen.",
+          "question": "Quel est le vrai nom du rappeur marseillais connu sous le pseudonyme 'Jul' ?",
+          "answers": [
+            "Julien Mari"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe de rap français, originaire de la région parisienne, a été révélé par la compilation 'Rapattitude' au début des années 90 ?",
           "answers": [
             "NTM"
-          ]
+          ],
+          "difficulty": "facile",
+          "funFact": null
         },
         {
-          "question": "Qui chante 'Quand le soleil devient froid' en 1997 ?",
-          "difficulty": "difficile",
-          "funFact": "MC Solaar, de son vrai nom Claude M'Barali, est né à Dakar au Sénégal et a grandi à Paris.",
+          "question": "Quel est le vrai nom de la rappeuse Shay, qui s'est imposée sur la scène francophone à partir des années 2010 ?",
           "answers": [
-            "MC Solaar"
-          ]
-        },
-        {
-          "question": "Quel est le vrai nom de Booba ?",
-          "difficulty": "difficile",
-          "funFact": "Booba a des origines sénégalaises et a grandi à Boulogne-Billancourt.",
-          "answers": [
-            "Élie Yaffa"
-          ]
-        },
-        {
-          "question": "Qui chante 'Mama' en 2014 ?",
+            "Vanessa Lesnicki"
+          ],
           "difficulty": "moyen",
-          "funFact": "Bigflo et Oli sont deux frères originaires de Toulouse. Florian et Olivio Ordonez.",
-          "answers": [
-            "Bigflo et Oli"
-          ]
+          "funFact": "Elle est d'origine belge et a réussi à allier un style ego-trip à une imagerie très féminine."
         },
         {
-          "question": "Quel artiste chante 'Chocolat' en 2016 ?",
-          "difficulty": "difficile",
-          "funFact": "Roméo Elvis est le frère de la chanteuse Angèle. Ils sont tous deux originaires de Belgique.",
+          "question": "Dans quelle ville française s'est formé en 1988 le groupe emblématique IAM ?",
           "answers": [
-            "Roméo Elvis"
-          ]
-        },
-        {
-          "question": "Qui chante 'Bloqué' en 2015 ?",
+            "Marseille"
+          ],
           "difficulty": "moyen",
-          "funFact": "",
+          "funFact": "Le groupe s'appelait initialement B-Boy Stance avant de devenir IAM."
+        },
+        {
+          "question": "Quel rappeur est considéré comme celui ayant introduit le style musical « trap » en France avec l'album « Or Noir » en 2013 ?",
           "answers": [
-            "Casseurs Flowters"
-          ]
+            "Kaaris"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Cet album est aujourd'hui considéré comme l'un des plus importants du rap français des années 2010."
+        },
+        {
+          "question": "Quel groupe de rap français a publié en 2016 l'album « Dans la légende », certifié disque de diamant ?",
+          "answers": [
+            "PNL"
+          ],
+          "difficulty": "moyen",
+          "funFact": "À sa sortie, cet album a été le plus streamé en 24h dans le monde sur la plateforme Deezer."
+        },
+        {
+          "question": "Sous quel pseudonyme rappait Akhenaton en anglais à la fin des années 1980, avant le succès d'IAM ?",
+          "answers": [
+            "Chill Phil"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Il utilisait ce nom lors de ses premières apparitions discographiques et sur scène avec le Lively Crew."
+        },
+        {
+          "question": "Quel rappeur a inventé le terme « Rap Zumba » en 2013 pour critiquer les sonorités pop de l'album de Gims ?",
+          "answers": [
+            "Rohff"
+          ],
+          "difficulty": "difficile",
+          "funFact": "L'expression est née d'une altercation sur Twitter en novembre 2013."
+        },
+        {
+          "question": "Quel est le titre de la chanson sortie en 1988, considérée comme le tout premier featuring rap franco-américain ?",
+          "answers": [
+            "This is the B Side"
+          ],
+          "difficulty": "expert",
+          "funFact": "Il s'agit de la face B du vinyle « Let's Make Some Noise » du groupe américain Choice MC's, sur laquelle pose Akhenaton."
         }
       ]
     },
     {
-      "id": "A1B2C3D4-0009-0000-0000-000000000009",
+      "id": "d1e4b9c2-5f3a-4e8b-a1d7-6c2e4b5931a2",
       "title": "Rap US — Golden Era & Modern",
       "themeKey": "rapUS",
       "questions": [
         {
-          "question": "Dans quelle ville est né Tupac Shakur ?",
-          "difficulty": "moyen",
-          "funFact": "Tupac est né à East Harlem, New York, mais est associé à Los Angeles où il a vécu et enregistré.",
+          "question": "Qui interprète en 1995 le tube « Gangsta's Paradise », présent sur la bande originale du film « Esprits rebelles » ?",
           "answers": [
-            "New York"
-          ]
-        },
-        {
-          "question": "Qui chante 'Lose Yourself' en 2002, issu du film 8 Mile ?",
+            "Coolio"
+          ],
           "difficulty": "facile",
-          "funFact": "Lose Yourself a remporté l'Oscar de la meilleure chanson originale en 2003. Eminem n'était pas présent à la cérémonie.",
-          "answers": [
-            "Eminem"
-          ]
+          "funFact": null
         },
         {
-          "question": "Quel rappeur chante 'HUMBLE.' en 2017 ?",
+          "question": "Quel groupe américain a sorti en 1979 le titre « Rapper's Delight », considéré comme le tout premier tube rap de l'histoire ?",
+          "answers": [
+            "Sugarhill Gang"
+          ],
           "difficulty": "facile",
-          "funFact": "Kendrick Lamar est le premier artiste de rap à remporter le Prix Pulitzer pour la musique en 2018.",
-          "answers": [
-            "Kendrick Lamar"
-          ]
+          "funFact": "La musique de ce morceau est très largement influencée par le genre funk."
         },
         {
-          "question": "Qui chante 'Sicko Mode' en 2018 ?",
-          "difficulty": "moyen",
-          "funFact": "Sicko Mode contient 3 changements de beat distincts et dure 5 minutes 12 secondes.",
+          "question": "Quel artiste américain interprète la chanson phare du film « Men in Black », classée numéro un en France en 1997 ?",
           "answers": [
-            "Travis Scott"
-          ]
-        },
-        {
-          "question": "Quel artiste chante 'God's Plan' en 2018 ?",
+            "Will Smith"
+          ],
           "difficulty": "facile",
-          "funFact": "Drake a dépensé tout le budget du clip vidéo de God's Plan en faisant des dons à des inconnus.",
-          "answers": [
-            "Drake"
-          ]
+          "funFact": null
         },
         {
-          "question": "Qui chante 'Nuthin' but a G Thang' en 1992 ?",
+          "question": "Quel est le vrai nom du célèbre DJ et pionnier du hip-hop connu sous le pseudonyme de Grandmaster Flash ?",
+          "answers": [
+            "Joseph Saddler"
+          ],
           "difficulty": "moyen",
-          "funFact": "Ce titre, issu de l'album The Chronic, a contribué à populariser le G-funk, un sous-genre du hip-hop.",
-          "answers": [
-            "Dr. Dre"
-          ]
+          "funFact": "Il est considéré comme l'un des inventeurs du DJ-ing en ayant élaboré des techniques pour répéter des boucles sonores."
         },
         {
-          "question": "Quel rappeur chante 'Juicy' en 1994 ?",
+          "question": "Quel groupe de rap a collaboré avec Aerosmith en 1986 sur le remix du titre « Walk This Way », fusionnant pour la première fois rap et rock ?",
+          "answers": [
+            "Run–DMC"
+          ],
           "difficulty": "moyen",
-          "funFact": "The Notorious B.I.G., de son vrai nom Christopher Wallace, est originaire de Brooklyn, New York.",
-          "answers": [
-            "The Notorious B.I.G."
-          ]
+          "funFact": "Ce groupe a été l'un des moteurs de l'explosion du rap aux États-Unis dans les années 1980."
         },
         {
-          "question": "Qui chante 'Gold Digger' en 2005 ?",
-          "difficulty": "facile",
-          "funFact": "Gold Digger sample le titre I Got a Woman de Ray Charles. La chanson a passé 10 semaines numéro 1 au Billboard.",
+          "question": "Dans quelle ville de Californie s'est formé en 1986 le groupe de rap emblématique N.W.A ?",
           "answers": [
-            "Kanye West"
-          ]
-        },
-        {
-          "question": "Quel artiste chante 'Power' en 2010 ?",
+            "Compton",
+            "Los Angeles"
+          ],
           "difficulty": "moyen",
-          "funFact": "Power sample le titre 21st Century Schizoid Man de King Crimson.",
-          "answers": [
-            "Kanye West"
-          ]
+          "funFact": "Le groupe était notamment composé de Dr. Dre, Ice Cube et Eazy-E."
         },
         {
-          "question": "Qui chante 'Rockstar' en 2017 ?",
-          "difficulty": "moyen",
-          "funFact": "Rockstar a passé 8 semaines numéro 1 au Billboard Hot 100.",
+          "question": "Quel est le titre du morceau de 1982 de Grandmaster Flash qui a popularisé pour la première fois le rap conscient sur les conditions de vie des ghettos ?",
           "answers": [
-            "Post Malone ft. 21 Savage"
-          ]
+            "The Message"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Bien que ce soit le rappeur Melle Mel que l'on entende sur l'enregistrement, le titre est crédité au nom du DJ."
+        },
+        {
+          "question": "Quel producteur de New York, leader du Juice Crew, est officiellement crédité dans l'histoire du rap pour l'invention du sampling ?",
+          "answers": [
+            "Marley Marl"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Le sampling consiste à extraire des échantillons d'autres morceaux pour les inclure dans de nouvelles boucles."
+        },
+        {
+          "question": "Quel rappeur américain, assassiné en 1996, figure parmi les artistes ayant vendu le plus de disques avec 75 millions de ventes annoncées ?",
+          "answers": [
+            "Tupac Shakur"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "En raison de son esprit 'do it yourself' et de ses rythmes brutaux, quel surnom a été donné au hip-hop lors de son émergence à New York ?",
+          "answers": [
+            "Le punk noir"
+          ],
+          "difficulty": "expert",
+          "funFact": "À cette époque, les rappeurs utilisaient souvent des boîtes à rythmes bon marché pour créer des sons synthétiques et agressifs."
         }
       ]
     },
     {
-      "id": "A1B2C3D4-0010-0000-0000-000000000010",
+      "id": "4b9e2d1f-8c3a-4a5b-9e1f-d7c2e4b5931a",
       "title": "Électro / Dance — Les Pionniers",
       "themeKey": "electro",
       "questions": [
         {
-          "question": "Quel est le vrai nom du duo Daft Punk ?",
-          "difficulty": "moyen",
-          "funFact": "Ils se sont rencontrés au lycée Carnot à Paris. Daft Punk s'est séparé en février 2021.",
+          "question": "Quel groupe britannique a composé la majorité des titres de la bande originale du film « La Fièvre du samedi soir » en 1977 ?",
           "answers": [
-            "Thomas Bangalter et Guy-Manuel de Homem-Christo"
-          ]
-        },
-        {
-          "question": "Quel duo français chante 'Around the World' en 1997 ?",
+            "Bee Gees"
+          ],
           "difficulty": "facile",
-          "funFact": "Le clip d'Around the World met en scène des danseurs représentant chaque son de la chanson.",
-          "answers": [
-            "Daft Punk"
-          ]
+          "funFact": "Cet album a permis de populariser le disco à l'échelle mondiale et de lancer la carrière de John Travolta."
         },
         {
-          "question": "Qui chante 'Levels' en 2011 ?",
-          "difficulty": "moyen",
-          "funFact": "Avicii, de son vrai nom Tim Bergling, avait 21 ans quand Levels est sorti. Il est décédé en avril 2018.",
+          "question": "Quel est le titre du tube planétaire du groupe Village People, sorti en 1978 et vendu à 12 millions d'exemplaires ?",
           "answers": [
-            "Avicii"
-          ]
-        },
-        {
-          "question": "Quel artiste chante 'Blue (Da Ba Dee)' en 1998 ?",
+            "Y.M.C.A."
+          ],
           "difficulty": "facile",
-          "funFact": "Eiffel 65 est un groupe italien composé de Jeffery Jey, Maurizio Lobina et Gabry Ponte.",
-          "answers": [
-            "Eiffel 65"
-          ]
+          "funFact": null
         },
         {
-          "question": "Qui chante 'One More Time' en 2000 ?",
+          "question": "De quelle nationalité est le célèbre producteur et pionnier du disco Giorgio Moroder ?",
+          "answers": [
+            "Italienne"
+          ],
           "difficulty": "facile",
-          "funFact": "One More Time est le premier single de l'album Discovery. La voix est traitée avec un vocoder.",
-          "answers": [
-            "Daft Punk"
-          ]
+          "funFact": "Installé à Munich dans les années 1970, il a grandement contribué au développement des sonorités synthétiques."
         },
         {
-          "question": "Quel DJ chante 'Animals' en 2013 ?",
+          "question": "Quel instrument électronique, fonctionnant sans contact physique, a été inventé par Léon Thérémine en 1920 ?",
+          "answers": [
+            "Le thérémine"
+          ],
           "difficulty": "moyen",
-          "funFact": "Martin Garrix avait 17 ans quand Animals est sorti. Il est originaire des Pays-Bas.",
-          "answers": [
-            "Martin Garrix"
-          ]
+          "funFact": "Aussi appelé ætherophone, cet instrument est l'un des plus anciens de la musique électronique."
         },
         {
-          "question": "Qui chante 'Sandstorm' en 1999 ?",
+          "question": "Quel artiste d'origine italienne a dominé les classements mondiaux en 1995 avec le titre instrumental trance « Children » ?",
+          "answers": [
+            "Robert Miles"
+          ],
           "difficulty": "moyen",
-          "funFact": "Sandstorm est devenu un mème internet, souvent répondu comme titre de toute chanson inconnue.",
-          "answers": [
-            "Darude"
-          ]
+          "funFact": null
         },
         {
-          "question": "Quel artiste chante 'Titanium' en 2011 ?",
-          "difficulty": "facile",
-          "funFact": "Titanium a été initialement écrite pour Alicia Keys, qui a refusé le titre.",
+          "question": "Quel groupe allemand est l'auteur de l'album « Autobahn », marquant le début d'une musique électronique mélodique et structurée ?",
           "answers": [
-            "David Guetta ft. Sia"
-          ]
-        },
-        {
-          "question": "Qui chante 'What Is Love' en 1993 ?",
+            "Kraftwerk"
+          ],
           "difficulty": "moyen",
-          "funFact": "What Is Love a été popularisée en France grâce au film Night at the Roxbury en 1998.",
-          "answers": [
-            "Haddaway"
-          ]
+          "funFact": "Le groupe se distinguait par l'utilisation de textes chantés au vocodeur et d'une imagerie robotique."
         },
         {
-          "question": "Quel artiste chante 'Scary Monsters and Nice Sprites' en 2010 ?",
-          "difficulty": "moyen",
-          "funFact": "Skrillex a remporté 3 Grammy Awards avec cet EP en 2012, dont Meilleur album dance/électronique.",
+          "question": "Dans quelle ville des États-Unis le genre musical « house » s'est-il développé au cours des années 1980 ?",
           "answers": [
-            "Skrillex"
-          ]
+            "Chicago"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Parmi les pionniers du genre, on retrouve des artistes comme Frankie Knuckles ou Marshall Jefferson."
+        },
+        {
+          "question": "Quel artiste de Détroit est considéré, avec Derrick May et Kevin Saunderson, comme l'un des trois pères fondateurs de la techno ?",
+          "answers": [
+            "Juan Atkins"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Ce trio est célèbre dans l'histoire de la musique sous le nom des « Belleville Three »."
+        },
+        {
+          "question": "Quel est le titre de l'album de 1968 sur lequel Wendy Carlos interprète des œuvres de Bach à l'aide d'un synthétiseur Moog ?",
+          "answers": [
+            "Switched-On Bach"
+          ],
+          "difficulty": "difficile",
+          "funFact": "À l'époque, l'instrument n'avait pas de mémoire et chaque sonorité devait être programmée manuellement par câblage."
+        },
+        {
+          "question": "Quel groupe britannique a produit en 1962 le premier titre de musique électronique populaire à succès mondial, intitulé « Telstar » ?",
+          "answers": [
+            "The Tornados"
+          ],
+          "difficulty": "expert",
+          "funFact": "Ce titre instrumental futuriste utilisait le son électronique du Clavioline, un instrument particulièrement mis en valeur."
         }
       ]
     },
     {
-      "id": "A1B2C3D4-0011-0000-0000-000000000011",
+      "id": "7b8e9a1c-5d2f-4c3a-8b1e-9f0a2d3b4c5d",
       "title": "R&B / Soul — Les Voix",
       "themeKey": "rnbSoul",
       "questions": [
         {
-          "question": "Quel est l'album solo de Beyoncé sorti en 2003 ?",
-          "difficulty": "moyen",
-          "funFact": "Dangerously in Love a remporté 5 Grammy Awards en 2004, dont Meilleur album contemporain R&B.",
+          "question": "Quel chanteur américain est mondialement connu sous le surnom de « Godfather of Soul » (Le parrain de la soul) ?",
           "answers": [
-            "Dangerously in Love"
-          ]
-        },
-        {
-          "question": "Qui chante 'No Scrubs' en 1999 ?",
-          "difficulty": "moyen",
-          "funFact": "TLC est composé de Tionne Watkins, Lisa Lopes et Rozonda Thomas. Lisa Lopes est décédée en 2002.",
-          "answers": [
-            "TLC"
-          ]
-        },
-        {
-          "question": "Quel artiste chante 'Yeah!' en 2004 ?",
+            "James Brown"
+          ],
           "difficulty": "facile",
-          "funFact": "Yeah! a passé 12 semaines numéro 1 au Billboard Hot 100.",
-          "answers": [
-            "Usher"
-          ]
+          "funFact": "Son groupe de musiciens s'appelait les JB's."
         },
         {
-          "question": "Qui chante 'Crazy in Love' en 2003 ?",
+          "question": "Quelle chanteuse américaine, ayant enregistré au célèbre studio Muscle Shoals, est surnommée la « Queen of Soul » ?",
+          "answers": [
+            "Aretha Franklin"
+          ],
           "difficulty": "facile",
-          "funFact": "Crazy in Love est le premier single solo de Beyoncé après la séparation de Destiny's Child.",
-          "answers": [
-            "Beyoncé"
-          ]
+          "funFact": "Muscle Shoals, situé en Alabama, était réputé pour ses compositeurs maison et son style soul classique."
         },
         {
-          "question": "Quel artiste chante 'Superstition' en 1972 ?",
-          "difficulty": "moyen",
-          "funFact": "Superstition a été initialement composée pour Jeff Beck, mais Stevie Wonder a sorti sa version en premier.",
+          "question": "Dans quel pays est né le célèbre label Motown, surnommé « la musique de la jeune Amérique » ?",
           "answers": [
-            "Stevie Wonder"
-          ]
-        },
-        {
-          "question": "Qui chante 'I Will Always Love You' repris en 1992 pour le film The Bodyguard ?",
+            "États-Unis"
+          ],
           "difficulty": "facile",
-          "funFact": "La chanson a été composée à l'origine par Dolly Parton en 1973. La version de Whitney Houston a passé 14 semaines numéro 1.",
-          "answers": [
-            "Whitney Houston"
-          ]
+          "funFact": "Fondé par Berry Gordy à Détroit, Motown a été le premier label majeur dirigé par un Noir américain."
         },
         {
-          "question": "Quel artiste chante 'Let's Get It On' en 1973 ?",
-          "difficulty": "moyen",
-          "funFact": "Let's Get It On est l'une des chansons les plus vendues de l'histoire du R&B.",
+          "question": "Quel groupe américain a sorti en 1994 le titre « I'll Make Love To You », l'un des premiers grands succès RnB en France ?",
           "answers": [
-            "Marvin Gaye"
-          ]
+            "Boyz II Men"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
         },
         {
-          "question": "Qui chante 'Formation' en 2016 ?",
-          "difficulty": "moyen",
-          "funFact": "Formation a été dévoilée la veille du Super Bowl 50, où Beyoncé l'a interprétée lors du show de la mi-temps.",
+          "question": "Quelle chanteuse est considérée comme la reine du RnB depuis la sortie de son album studio intitulé « Janet. » en 1993 ?",
           "answers": [
-            "Beyoncé"
-          ]
+            "Janet Jackson"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Le style RnB contemporain mélange des éléments de rhythm and blues, de hip-hop, de pop et de funk."
         },
         {
-          "question": "Quel artiste chante 'Drunk in Love' en 2013 ?",
-          "difficulty": "moyen",
-          "funFact": "Drunk in Love fait partie de l'album surprise éponyme sorti en décembre 2013, sans promotion préalable.",
+          "question": "Quel album du chanteur Seal, composé de reprises de classiques de la musique noire, a été la deuxième meilleure vente de l'année 2009 en France ?",
           "answers": [
-            "Beyoncé ft. Jay-Z"
-          ]
+            "Soul"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Cet opus est resté classé numéro un du Top Albums français pendant 13 semaines au total."
         },
         {
-          "question": "Qui chante 'Vision of Love' en 1990 ?",
-          "difficulty": "moyen",
-          "funFact": "Vision of Love est le premier single de Mariah Carey. Il a remporté le Grammy Award de la meilleure performance pop féminine en 1991.",
+          "question": "Quel duo féminin a dominé les classements RnB en 1998 avec le titre « The Boy Is Mine » ?",
           "answers": [
-            "Mariah Carey"
-          ]
+            "Brandy et Monica"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Ce succès fait partie de la vague RnB qui a envahi les radios françaises sous le nom de « groove » à la fin des années 90."
+        },
+        {
+          "question": "Quel chanteur de soul a commencé sa carrière dans le groupe de gospel The Soul Stirrers avant de connaître le succès en solo avec « You Send Me » ?",
+          "answers": [
+            "Sam Cooke"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Sa chanson « Bring It On Home to Me », sortie en 1962, est considérée comme l'un des titres ayant défini l'expérience de la soul."
+        },
+        {
+          "question": "Quel label de Memphis, fondé par Jim Stewart, était le grand rival de la Motown en proposant un son soul plus rapide et incisif ?",
+          "answers": [
+            "Stax Records"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Contrairement à la Motown, beaucoup de musiciens de studio chez Stax étaient blancs."
+        },
+        {
+          "question": "Quel artiste est identifié comme une personnalité clé de l'émergence de la soul grâce à son titre « Just Out Of Reach » en 1961 ?",
+          "answers": [
+            "Solomon Burke"
+          ],
+          "difficulty": "expert",
+          "funFact": "Sa collaboration avec le label Atlantic Records est vue comme le véritable lancement du mouvement soul."
         }
       ]
     },
     {
-      "id": "A1B2C3D4-0012-0000-0000-000000000012",
+      "id": "f5e9d3b1-a7c4-4b5e-8d2a-1c6b4f9d3a02",
       "title": "K-Pop — Les Références",
       "themeKey": "kpop",
       "questions": [
         {
-          "question": "Combien de membres compte le groupe BTS ?",
-          "difficulty": "facile",
-          "funFact": "Les membres sont RM, Jin, Suga, J-Hope, Jimin, V et Jungkook.",
+          "question": "Quel groupe de K-pop possède le fan club officiel mondialement connu sous le nom de « ARMY » ?",
           "answers": [
-            "7"
-          ]
+            "BTS"
+          ],
+          "difficulty": "facile",
+          "funFact": "En juin 2017, le Time a nommé ce groupe comme l'une des vingt-cinq personnalités les plus influentes d'Internet."
         },
         {
-          "question": "Quel artiste coréen chante 'Gangnam Style' en 2012 ?",
-          "difficulty": "facile",
-          "funFact": "Gangnam Style a été la première vidéo YouTube à dépasser 1 milliard de vues en 2012.",
+          "question": "Dans quel pays est né le courant musical K-pop au début des années 1990 ?",
           "answers": [
-            "PSY"
-          ]
+            "Corée du Sud"
+          ],
+          "difficulty": "facile",
+          "funFact": "La K-pop a été reconnue par le magazine Time comme l'exportation la plus rentable de ce pays."
         },
         {
-          "question": "Quel groupe féminin K-pop chante 'Kill This Love' en 2019 ?",
-          "difficulty": "moyen",
-          "funFact": "BLACKPINK est composé de Jisoo, Jennie, Rosé et Lisa. C'est le groupe féminin K-pop le plus suivi sur YouTube.",
+          "question": "Quel groupe féminin est célèbre pour son concept « girl crush » et a collaboré avec Lady Gaga sur le titre « Ice Cream » ?",
           "answers": [
             "BLACKPINK"
-          ]
-        },
-        {
-          "question": "Qui chante 'Butter' en 2021 ?",
+          ],
           "difficulty": "facile",
-          "funFact": "Butter a passé 10 semaines numéro 1 au Billboard Hot 100, un record pour un groupe K-pop.",
-          "answers": [
-            "BTS"
-          ]
+          "funFact": "Elles sont le premier et seul groupe féminin de K-pop à être entré dans le classement du Billboard's Emerging Artists."
         },
         {
-          "question": "Quel groupe K-pop chante 'DNA' en 2017 ?",
-          "difficulty": "moyen",
-          "funFact": "DNA est le premier titre de BTS à entrer dans le Billboard Hot 100 américain.",
+          "question": "Quel groupe a été le premier de l'histoire de la K-pop à entrer dans le classement Billboard Hot 100 avec le single « Nobody » en 2009 ?",
           "answers": [
-            "BTS"
-          ]
+            "Wonder Girls"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
         },
         {
-          "question": "Qui chante 'Gee' en 2009, l'un des hymnes fondateurs de la K-pop moderne ?",
+          "question": "Quel groupe de la seconde génération a été le tout premier à posséder son propre « light stick » officiel, reconnaissable à sa forme de couronne jaune ?",
+          "answers": [
+            "BigBang"
+          ],
           "difficulty": "moyen",
-          "funFact": "Girls' Generation, aussi connues sous le nom SNSD, est composé à l'origine de 9 membres.",
+          "funFact": "Leur fandom officiel porte le nom de VIPs."
+        },
+        {
+          "question": "Quelle est la couleur officielle utilisée par le fan club ELF du groupe Super Junior lors des concerts ?",
+          "answers": [
+            "Bleu saphir"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Les ballons de cette couleur sont utilisés par les fans pour défendre leur groupe favori lors d'événements comme le Dream Concert."
+        },
+        {
+          "question": "En 2014, quel album du groupe 2NE1 a atteint la 61e place du Billboard 200, soit le record pour un album de K-pop à l'époque ?",
+          "answers": [
+            "Crush"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel chanteur américain d'origine coréenne est considéré comme le pionnier de la K-pop au début des années 90, bien que sa carrière n'ait duré que deux ans ?",
+          "answers": [
+            "Yang Joon-il"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Son style efféminé lui avait valu le rejet de la société sud-coréenne très conservatrice lors de ses débuts en 1991."
+        },
+        {
+          "question": "L'album « Oh! » des Girls' Generation a été le tout premier de l'histoire de la K-pop à intégrer quel objet de collection désormais emblématique du genre ?",
+          "answers": [
+            "Une photo card"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Cette méthode de marketing visait à pousser les fans à acheter plusieurs albums pour collectionner toutes les cartes."
+        },
+        {
+          "question": "Quel groupe féminin a été victime d'un « black ocean » (dix minutes de silence du public) lors du Dream Concert de 2008 ?",
           "answers": [
             "Girls' Generation"
-          ]
-        },
-        {
-          "question": "Quel groupe K-pop masculin chante 'Growl' en 2013 ?",
-          "difficulty": "difficile",
-          "funFact": "EXO a été lancé par SM Entertainment en 2012 avec 12 membres initialement divisés en deux sous-groupes.",
-          "answers": [
-            "EXO"
-          ]
-        },
-        {
-          "question": "Quel groupe K-pop féminin chante 'TT' en 2016 ?",
-          "difficulty": "moyen",
-          "funFact": "TT a popularisé le geste des mains en forme de pleurs devenu viral en Corée du Sud et sur TikTok.",
-          "answers": [
-            "TWICE"
-          ]
-        },
-        {
-          "question": "Quel groupe chante 'Fake Love' en 2018 ?",
-          "difficulty": "moyen",
-          "funFact": "Fake Love a atteint le numéro 10 du Billboard Hot 100, un record pour un groupe K-pop à l'époque.",
-          "answers": [
-            "BTS"
-          ]
-        },
-        {
-          "question": "Qui chante 'How You Like That' en 2020 ?",
-          "difficulty": "moyen",
-          "funFact": "How You Like That a battu le record du plus grand nombre de vues YouTube en 24 heures lors de sa sortie.",
-          "answers": [
-            "BLACKPINK"
-          ]
+          ],
+          "difficulty": "expert",
+          "funFact": "Malgré cet incident, elles ont remporté pour la première fois en 2010 le grand prix du meilleur album de l'année (Daesang) pour un groupe féminin."
         }
       ]
     }
