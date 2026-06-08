@@ -130,10 +130,16 @@ struct BuzzerButtonView: View {
                     .foregroundStyle(.white.opacity(0.45))
                     .multilineTextAlignment(.center)
             } else if buzzerVM.player.blockedFromBuzzing {
-                Text("Ton buzzer est bloqué !")
-                    .font(.nohemi(.headline, weight: .bold))
-                    .foregroundStyle(Color(hex: "#FB2C36"))
-                Text("Un adversaire t'a neutralisé pour cette manche")
+                if let blocker = buzzerVM.player.blockedByPlayerName {
+                    Text("\(blocker) t'a bloqué !")
+                        .font(.nohemi(.headline, weight: .bold))
+                        .foregroundStyle(Color(hex: "#FB2C36"))
+                } else {
+                    Text("Ton buzzer est bloqué !")
+                        .font(.nohemi(.headline, weight: .bold))
+                        .foregroundStyle(Color(hex: "#FB2C36"))
+                }
+                Text("Tu ne peux pas buzzer cette manche")
                     .font(.nohemi(.caption))
                     .foregroundStyle(.white.opacity(0.45))
                     .multilineTextAlignment(.center)

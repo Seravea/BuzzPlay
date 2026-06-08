@@ -407,6 +407,7 @@ extension MasterFlowViewModel {
         // Reset du blocage buzzer (single-use, se remet à 0 à chaque nouvelle manche)
         for i in players.indices where players[i].blockedFromBuzzing {
             players[i].blockedFromBuzzing = false
+            players[i].blockedByPlayerName = nil
             mpcService.sendMessage(.updatedPlayer(players[i]))
         }
 
@@ -539,9 +540,11 @@ extension MasterFlowViewModel {
             // Bouclier shieldSingle : annule le blocage et se consomme
             if players[targetIndex].hasShieldSingle {
                 players[targetIndex].hasShieldSingle = false
+                players[targetIndex].blockedByPlayerName = nil
                 print("MASTER: \(players[targetIndex].name) bouclier shieldSingle activé — blocage annulé")
             } else {
                 players[targetIndex].blockedFromBuzzing = true
+                players[targetIndex].blockedByPlayerName = buyer.name
             }
             mpcService.sendMessage(.updatedPlayer(players[targetIndex]))
 
@@ -550,9 +553,11 @@ extension MasterFlowViewModel {
                 // Bouclier shieldAll : ce joueur est exempté du blocage
                 if players[i].hasShieldAll {
                     players[i].hasShieldAll = false
+                    players[i].blockedByPlayerName = nil
                     print("MASTER: \(players[i].name) bouclier shieldAll activé — blocage annulé")
                 } else {
                     players[i].blockedFromBuzzing = true
+                    players[i].blockedByPlayerName = buyer.name
                 }
                 mpcService.sendMessage(.updatedPlayer(players[i]))
             }
