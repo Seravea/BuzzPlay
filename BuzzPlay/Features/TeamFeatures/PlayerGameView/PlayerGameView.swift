@@ -119,7 +119,7 @@ struct PlayerPulsingPill: View {
                 .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: isPulsing)
             Text(text)
                 .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(.textSoft)
         }
         .padding(.horizontal, BuzzSpacing.lg)
         .padding(.vertical, 10)
@@ -158,7 +158,7 @@ private struct GameAnnounceSheet: View {
                     VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                         Text("Le Maître lance")
                             .font(.nohemi(.subheadline, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.55))
+                            .foregroundStyle(.textSecondary)
                         Text(game.gameTitle)
                             .font(.nohemi(.title2, weight: .extraBold))
                             .foregroundStyle(.white)
@@ -183,7 +183,7 @@ private struct GameAnnounceSheet: View {
 
                 Text("Prépare-toi à buzzer !")
                     .font(.nohemi(.callout, weight: .semiBold))
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.horizontal, BuzzSpacing.xl)
@@ -240,7 +240,7 @@ private struct InterGameScoreSheet: View {
                 Text("SCORES")
                     .font(.nohemi(.caption2, weight: .bold))
                     .tracking(0.8)
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(.textMuted)
                 Text("Classement actuel")
                     .font(.nohemi(.title2, weight: .extraBold))
                     .foregroundStyle(.white)
@@ -275,7 +275,7 @@ private struct InterGameScoreSheet: View {
         HStack(spacing: BuzzSpacing.md) {
             Text("#\(rank)")
                 .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(.white.opacity(0.4))
+                .foregroundStyle(.textMuted)
                 .frame(width: 28, alignment: .leading)
 
             Circle()
@@ -345,7 +345,7 @@ private struct PlayerPodiumSheet: View {
                     Text("PARTIE TERMINÉE")
                         .font(.nohemi(.caption2, weight: .bold))
                         .tracking(0.8)
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(.textMuted)
                     Text("Classement final")
                         .font(.nohemi(.title, weight: .extraBold))
                         .foregroundStyle(.white)
@@ -415,7 +415,7 @@ private struct PlayerPodiumSheet: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Ta position")
                     .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(.textSecondary)
                 Text("\(rank)\(rankSuffix(rank)) place")
                     .font(.nohemi(.title3, weight: .extraBold))
                     .foregroundStyle(.white)
@@ -429,7 +429,7 @@ private struct PlayerPodiumSheet: View {
                     .foregroundStyle(player.teamColor.color)
                 Text("points")
                     .font(.nohemi(.caption2, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(.textSecondary)
             }
         }
         .padding(BuzzSpacing.lg)
@@ -462,14 +462,14 @@ private struct PlayerPodiumSheet: View {
             if isSelf {
                 Text("(toi)")
                     .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(.textMuted)
             }
 
             Spacer()
 
             Text("\(player.score) pts")
                 .font(.nohemi(.callout, weight: .extraBold))
-                .foregroundStyle(isSelf ? player.teamColor.color : .white.opacity(0.7))
+                .foregroundStyle(isSelf ? player.teamColor.color : .textSoft)
                 .monospacedDigit()
         }
         .padding(.horizontal, 14)

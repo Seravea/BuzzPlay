@@ -64,7 +64,7 @@ struct MasterChooseGameView: View {
         Text(text.uppercased())
             .font(.nohemi(.caption2, weight: .bold))
             .tracking(0.8)
-            .foregroundStyle(.white.opacity(0.40))
+            .foregroundStyle(.textMuted)
     }
 
     // MARK: - Launch Section
@@ -77,7 +77,7 @@ struct MasterChooseGameView: View {
                 if masterChooseGameVM.currentRound >= 1 {
                     Text("Manche \(masterChooseGameVM.currentRound)/\(masterChooseGameVM.totalRounds)")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.40))
+                        .foregroundStyle(.textMuted)
                 }
             }
             HStack(spacing: BuzzSpacing.md) {
@@ -106,7 +106,7 @@ struct MasterChooseGameView: View {
 
                 Text(game.gameTitle)
                     .font(.nohemi(.headline, weight: .bold))
-                    .foregroundStyle(isAvailable ? .white : .white.opacity(0.35))
+                    .foregroundStyle(isAvailable ? .white : .textDim)
                     .lineLimit(1)
             }
             .padding(.top, 18)
@@ -140,7 +140,7 @@ struct MasterChooseGameView: View {
                             .font(.nohemi(.subheadline, weight: .bold))
                     }
                 }
-                .foregroundStyle((isAvailable && allReady) ? .white : .white.opacity(0.40))
+                .foregroundStyle((isAvailable && allReady) ? .white : .textMuted)
                 .frame(maxWidth: .infinity)
                 .frame(height: 40)
                 .background(
@@ -175,7 +175,7 @@ struct MasterChooseGameView: View {
                 Spacer()
                 Text("mi-partie")
                     .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(.textMuted)
             }
 
             VStack(spacing: 6) {
@@ -433,7 +433,7 @@ private struct DailyPackBanner: View {
                     .foregroundStyle(.white)
                 Text(subtitle)
                     .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(.textSecondary)
             }
 
             Spacer()

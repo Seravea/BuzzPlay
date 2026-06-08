@@ -30,7 +30,7 @@ struct BlindTestSongListScreen: View {
                             .foregroundStyle(.white)
                         Text("\(blindTestVM.allSongs.count) titres · \(blindTestVM.playedSongs.count) joués")
                             .font(.nohemi(.subheadline, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(.textSecondary)
                     }
 
                     Spacer()
@@ -158,7 +158,7 @@ struct BlindTestSongRow: View {
                         .multilineTextAlignment(.leading)
                     Text(song.artist)
                         .font(.nohemi(.caption2, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(.textMuted)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -173,7 +173,7 @@ struct BlindTestSongRow: View {
                 } else if !isPlayed {
                     Image(systemName: "chevron.right")
                         .textStyle(Typography.footnoteEM)
-                        .foregroundStyle(.white.opacity(0.25))
+                        .foregroundStyle(.textFaint)
                 }
             }
             .padding(BuzzSpacing.sm)

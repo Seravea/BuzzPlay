@@ -63,6 +63,15 @@ extension Color {
     static let royalBlue     = Color(_hex: "2563EB")
     static let skyBlue       = Color(_hex: "0EA5E9")
     static let oceanBlue     = Color(_hex: "0369A1")
+
+    // Semantic text — dark mode permanent (fond violet foncé)
+    static var textPrimary:   Color { .white }
+    static var textSecondary: Color { .white.opacity(0.55) }
+    static var textTertiary:  Color { .white.opacity(0.45) }
+    static var textMuted:     Color { .white.opacity(0.40) }
+    static var textDim:       Color { .white.opacity(0.35) }
+    static var textFaint:     Color { .white.opacity(0.25) }
+    static var textSoft:      Color { .white.opacity(0.70) }
 }
 
 // MARK: - LinearGradient tokens

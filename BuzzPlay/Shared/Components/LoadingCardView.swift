@@ -31,7 +31,7 @@ struct LoadingCardView: View {
 
             Text("Cela ne devrait prendre que quelques secondes")
                 .font(.nohemi(.caption))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .padding(BuzzSpacing.xxxl)
@@ -78,7 +78,7 @@ struct EmptyStateView: View {
 
             Text(message)
                 .font(.nohemi(.subheadline))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(.textSecondary)
                 .multilineTextAlignment(.center)
 
             if let action = action, let label = actionLabel {

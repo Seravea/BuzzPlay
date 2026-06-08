@@ -18,13 +18,13 @@ struct PublicDisplayView: View {
                 VStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "hourglass")
                         .textStyle(Typography.screenTitleSoft)
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(.textMuted)
                     Text("En attente du lancement…")
                         .font(.nohemi(.title3, weight: .bold))
                         .foregroundStyle(.white)
                     Text("Le Maître va démarrer la partie")
                         .font(.nohemi(.subheadline, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.45))
+                        .foregroundStyle(.textTertiary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, BuzzSpacing.xxl)

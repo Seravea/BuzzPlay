@@ -85,7 +85,7 @@ struct BlindTestActiveScreen: View {
                     .overlay(
                         Image(systemName: "music.note")
                             .font(.title2)
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(.textSecondary)
                     )
             }
             .frame(width: 56, height: 56)
@@ -94,14 +94,14 @@ struct BlindTestActiveScreen: View {
             VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                 Text("EN COURS")
                     .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(.textMuted)
                     .tracking(0.8)
                 Text(blindTestVM.selectedMusic?.title ?? "—")
                     .font(.nohemi(.body, weight: .bold))
                     .foregroundStyle(.white)
                 Text(blindTestVM.selectedMusic?.artist ?? "—")
                     .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(.textSecondary)
             }
 
             Spacer()
@@ -125,7 +125,7 @@ struct BlindTestActiveScreen: View {
         return VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
             Text("CLASSEMENT EN DIRECT")
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.white.opacity(0.35))
+                .foregroundStyle(.textDim)
                 .tracking(0.8)
                 .padding(.leading, 2)
 
@@ -139,7 +139,7 @@ struct BlindTestActiveScreen: View {
                         RadarPulseView()
                         Text("En attente d'un buzz…")
                             .font(.nohemi(.caption, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.4))
+                            .foregroundStyle(.textMuted)
                     }
                     Spacer()
                     Button(action: onSkip) {
@@ -149,7 +149,7 @@ struct BlindTestActiveScreen: View {
                             Image(systemName: "forward.end.fill")
                                 .textStyle(Typography.caption2)
                         }
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(.textSoft)
                         .padding(.horizontal, BuzzSpacing.md)
                         .padding(.vertical, 6)
                         .background(.white.opacity(0.08), in: Capsule())

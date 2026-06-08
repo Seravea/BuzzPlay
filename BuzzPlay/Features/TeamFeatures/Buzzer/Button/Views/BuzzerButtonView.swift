@@ -112,7 +112,7 @@ struct BuzzerButtonView: View {
                 } else {
                     Text("\(teamName) a buzzé")
                         .font(.nohemi(.headline, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.40))
+                        .foregroundStyle(.textMuted)
                 }
             } else if case .counting(let n) = buzzerVM.countdownPhase {
                 Text("Prochain buzz dans…")
@@ -127,7 +127,7 @@ struct BuzzerButtonView: View {
                     .foregroundStyle(.white)
                 Text("Le plus rapide gagne le droit de répondre")
                     .font(.nohemi(.caption))
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(.textTertiary)
                     .multilineTextAlignment(.center)
             } else if buzzerVM.player.blockedFromBuzzing {
                 if let blocker = buzzerVM.player.blockedByPlayerName {
@@ -141,7 +141,7 @@ struct BuzzerButtonView: View {
                 }
                 Text("Tu ne peux pas buzzer cette manche")
                     .font(.nohemi(.caption))
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(.textTertiary)
                     .multilineTextAlignment(.center)
             } else {
                 Text("En attente d'une question…")

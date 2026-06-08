@@ -158,7 +158,7 @@ private struct QuizQuestionListScreen: View {
                         .foregroundStyle(.white)
                     Text("\(quizMasterVM.questions.count) questions · \(quizMasterVM.gameVM.players.count) équipes")
                         .font(.nohemi(.subheadline, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.5))
+                        .foregroundStyle(.textSecondary)
                 }
                 Spacer()
                 Text("\(quizMasterVM.questionsPassed.count)/\(quizMasterVM.questions.count) ✓")
@@ -239,7 +239,7 @@ private struct QuizQuestionRow: View {
                         } else if let theme = question.theme {
                             Text(theme)
                                 .font(.nohemi(.caption2, weight: .medium))
-                                .foregroundStyle(.white.opacity(0.4))
+                                .foregroundStyle(.textMuted)
                         }
                     }
                 }
@@ -252,7 +252,7 @@ private struct QuizQuestionRow: View {
                 } else if !isDisabled {
                     Image(systemName: "chevron.right")
                         .textStyle(Typography.footnoteEM)
-                        .foregroundStyle(.white.opacity(0.25))
+                        .foregroundStyle(.textFaint)
                 }
             }
             .padding(14)
@@ -315,7 +315,7 @@ struct QuizValidationOverlay: View {
 
                 Text(teamName)
                     .font(.nohemi(.body, weight: .semiBold))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(.textSoft)
             }
             .padding(BuzzSpacing.xxxl)
         }

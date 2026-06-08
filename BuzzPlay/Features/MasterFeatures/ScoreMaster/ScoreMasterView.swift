@@ -126,7 +126,7 @@ struct ScoreMasterView: View {
 
                 Text("\(rank)")
                     .font(.custom("Nohemi-Black", size: rank == 1 ? 44 : rank == 2 ? 32 : 26))
-                    .foregroundStyle(rank == 1 ? Color.sheetBg : .white.opacity(0.55))
+                    .foregroundStyle(rank == 1 ? Color.sheetBg : .textSecondary)
             }
             .frame(maxWidth: .infinity)
             .frame(height: blockHeight)
@@ -144,11 +144,11 @@ struct ScoreMasterView: View {
                 Text("ET LES AUTRES…")
                     .font(.nohemi(.caption2, weight: .bold))
                     .tracking(0.8)
-                    .foregroundStyle(.white.opacity(0.40))
+                    .foregroundStyle(.textMuted)
                 Spacer()
                 Text("\(sorted.count - 3)")
                     .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.40))
+                    .foregroundStyle(.textMuted)
             }
 
             VStack(spacing: 6) {
@@ -164,7 +164,7 @@ struct ScoreMasterView: View {
         HStack(spacing: BuzzSpacing.md) {
             Text("\(rank)")
                 .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(.textSecondary)
                 .frame(width: 18, alignment: .center)
 
             Circle()

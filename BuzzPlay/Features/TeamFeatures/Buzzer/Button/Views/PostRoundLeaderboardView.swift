@@ -77,7 +77,7 @@ struct PostRoundLeaderboardView: View {
             }
             Text("Le Maître prépare la prochaine manche…")
                 .font(.nohemi(.caption, weight: .medium))
-                .foregroundStyle(.white.opacity(0.40))
+                .foregroundStyle(.textMuted)
         }
     }
 

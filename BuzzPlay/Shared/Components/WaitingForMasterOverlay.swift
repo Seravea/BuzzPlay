@@ -46,7 +46,7 @@ struct WaitingForMasterOverlay: View {
 
                     Text("Le Maître doit lancer la partie\ndepuis son appareil")
                         .font(.nohemi(.subheadline, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.55))
+                        .foregroundStyle(.textSecondary)
                         .multilineTextAlignment(.center)
                 }
 
@@ -79,7 +79,7 @@ private struct DotsIndicator: View {
 
     var body: some View {
         Circle()
-            .fill(isActive ? Color.buzzHotPink : Color.white.opacity(0.25))
+            .fill(isActive ? Color.buzzHotPink : Color.textFaint)
             .frame(width: 7, height: 7)
             .scaleEffect(isActive ? 1.2 : 1.0)
             .animation(.easeInOut(duration: 0.5).delay(Double(index) * 0.18).repeatForever(autoreverses: true), value: isActive)

@@ -19,7 +19,7 @@ struct HomeView: View {
                     Text("BUZZ · QUIZ · BLIND TEST")
                         .font(.nohemi(.caption2, weight: .bold))
                         .tracking(0.8)
-                        .foregroundStyle(.white.opacity(0.55))
+                        .foregroundStyle(.textSecondary)
                         .padding(.bottom, BuzzSpacing.md)
 
                     BPWordmarkView(size: 64)

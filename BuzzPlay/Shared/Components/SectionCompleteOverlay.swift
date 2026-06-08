@@ -45,7 +45,7 @@ struct SectionCompleteOverlay: View {
 
                     Text("\(roundsDone) manche\(roundsDone > 1 ? "s" : "") jouée\(roundsDone > 1 ? "s" : "")")
                         .font(.nohemi(.body, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.55))
+                        .foregroundStyle(.textSecondary)
                 }
 
                 PlayerPulsingPill(text: "Retour au menu…")

@@ -64,7 +64,7 @@ struct AIQuizReviewView: View {
                             .font(.nohemi(.body, weight: .semiBold))
                         Text("\(questions.count) questions")
                             .font(.nohemi(.caption, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(.textSecondary)
                     }
                 }
                 .padding(.horizontal, BuzzSpacing.xl)
@@ -87,7 +87,7 @@ struct AIQuizReviewView: View {
                             Spacer(minLength: 8)
                             Image(systemName: "xmark")
                                 .textStyle(Typography.caption2EM)
-                                .foregroundStyle(.white.opacity(0.4))
+                                .foregroundStyle(.textMuted)
                         }
                         .padding(.horizontal, BuzzSpacing.md)
                         .padding(.vertical, 10)
@@ -107,11 +107,11 @@ struct AIQuizReviewView: View {
                             .tint(Color.purpleLeading)
                         Text("Ajout de questions en cours…")
                             .font(.nohemi(.caption, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(.textSoft)
                         Spacer()
                         Text("\(questions.count)/\(targetCount)")
                             .font(.nohemi(.caption, weight: .semiBold))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(.textSecondary)
                     }
                     .padding(.horizontal, BuzzSpacing.lg)
                     .padding(.vertical, 10)
@@ -149,7 +149,7 @@ struct AIQuizReviewView: View {
                         Text("\(missingCount) question\(missingCount > 1 ? "s" : "") classique\(missingCount > 1 ? "s" : "") ajoutée\(missingCount > 1 ? "s" : "") au lancement")
                             .font(.nohemi(.caption2, weight: .regular))
                     }
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.horizontal, BuzzSpacing.lg)
                     .padding(.top, BuzzSpacing.sm)
@@ -255,10 +255,10 @@ private struct QuestionCardAI: View {
                 HStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "arrow.right")
                         .textStyle(Typography.caption)
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(.textMuted)
                     Text(question.correctAnswers.joined(separator: " • "))
                         .font(.nohemi(.caption, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(.textSoft)
                 }
                 .padding(.leading, 28)
             }

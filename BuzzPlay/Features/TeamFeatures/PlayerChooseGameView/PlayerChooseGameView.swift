@@ -83,7 +83,7 @@ struct PlayerChooseGameView: View {
             Text("EN ATTENTE DU MAÎTRE")
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
-                .foregroundStyle(.white.opacity(0.40))
+                .foregroundStyle(.textMuted)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text("La partie démarre dès\nque l'hôte lance.")
@@ -113,7 +113,7 @@ struct PlayerChooseGameView: View {
                     .foregroundStyle(.white)
                 Text("C'est toi")
                     .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(.textSecondary)
             }
 
             Spacer()
@@ -152,7 +152,7 @@ struct PlayerChooseGameView: View {
                     .foregroundStyle(.white)
                 Text("Appuie le plus vite possible\ndès que tu as la réponse.")
                     .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(.textSecondary)
                     .lineSpacing(2)
             }
 
@@ -171,10 +171,10 @@ struct PlayerChooseGameView: View {
                 Text("AUTRES JOUEURS")
                     .font(.nohemi(.caption2, weight: .bold))
                     .tracking(0.8)
-                    .foregroundStyle(.white.opacity(0.40))
+                    .foregroundStyle(.textMuted)
                 Text("· \(otherPlayers.count)")
                     .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.40))
+                    .foregroundStyle(.textMuted)
                 Rectangle()
                     .fill(.white.opacity(0.08))
                     .frame(height: 1)
@@ -229,7 +229,7 @@ private struct PulsingPill: View {
                 .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: isPulsing)
             Text("Le Maître prépare la partie…")
                 .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(.textSoft)
         }
         .padding(.horizontal, BuzzSpacing.lg)
         .padding(.vertical, 10)

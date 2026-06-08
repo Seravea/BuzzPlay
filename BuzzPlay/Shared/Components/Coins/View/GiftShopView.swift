@@ -58,7 +58,7 @@ struct GiftBottomBar: View {
 
                     Image(systemName: "chevron.up")
                         .textStyle(Typography.caption2Bold)
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(.textMuted)
                 }
                 .padding(.horizontal, 18)
                 .padding(.vertical, 13)
@@ -116,7 +116,7 @@ struct GiftShopSheet: View {
         VStack(spacing: 0) {
             // Drag handle
             RoundedRectangle(cornerRadius: 3)
-                .fill(.white.opacity(0.25))
+                .fill(.textFaint)
                 .frame(width: 36, height: 4)
                 .padding(.top, BuzzSpacing.md)
                 .padding(.bottom, BuzzSpacing.xxl)
@@ -129,7 +129,7 @@ struct GiftShopSheet: View {
                         .foregroundStyle(.white)
                     Text("Active un cadeau pour changer le jeu")
                         .font(.nohemi(.caption, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.45))
+                        .foregroundStyle(.textTertiary)
                 }
 
                 Spacer()
@@ -148,7 +148,7 @@ struct GiftShopSheet: View {
                     }
                     Text("Notes disponibles")
                         .font(.nohemi(.caption2, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(.textMuted)
                 }
             }
             .padding(.horizontal, BuzzSpacing.xl)
@@ -376,7 +376,7 @@ struct SoundPickerSheet: View {
 
                                 Image(systemName: "play.circle")
                                     .textStyle(Typography.cardTitle)
-                                    .foregroundStyle(.white.opacity(0.4))
+                                    .foregroundStyle(.textMuted)
                             }
                             .padding(.horizontal, BuzzSpacing.xl)
                             .padding(.vertical, BuzzSpacing.md)
@@ -412,7 +412,7 @@ struct SoundPickerSheet: View {
                     Text(selectedSound == nil ? "Choisir un son d'abord" : "Confirmer — 20 🎵")
                         .font(.nohemi(.body, weight: .bold))
                 }
-                .foregroundStyle(selectedSound == nil ? .white.opacity(0.4) : .white)
+                .foregroundStyle(selectedSound == nil ? .textMuted : .white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(
