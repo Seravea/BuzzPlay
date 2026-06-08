@@ -47,7 +47,7 @@ struct BuzzerButtonView: View {
                 // Bouton principal
                 ZStack {
                     let isBlocked = buzzerVM.player.blockedFromBuzzing
-                    let circleColor: Color = isBlocked ? Color(hex: "#FB2C36") : playerColor
+                    let circleColor: Color = isBlocked ? Color.redLeading : playerColor
 
                     Circle()
                         .fill(
@@ -133,11 +133,11 @@ struct BuzzerButtonView: View {
                 if let blocker = buzzerVM.player.blockedByPlayerName {
                     Text("\(blocker) t'a bloqué !")
                         .font(.nohemi(.headline, weight: .bold))
-                        .foregroundStyle(Color(hex: "#FB2C36"))
+                        .foregroundStyle(Color.redLeading)
                 } else {
                     Text("Ton buzzer est bloqué !")
                         .font(.nohemi(.headline, weight: .bold))
-                        .foregroundStyle(Color(hex: "#FB2C36"))
+                        .foregroundStyle(Color.redLeading)
                 }
                 Text("Tu ne peux pas buzzer cette manche")
                     .font(.nohemi(.caption))

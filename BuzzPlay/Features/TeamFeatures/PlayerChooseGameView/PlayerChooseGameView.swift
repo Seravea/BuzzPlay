@@ -139,11 +139,11 @@ struct PlayerChooseGameView: View {
         HStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(Color(hex: "#FF2D78").opacity(0.15))
+                    .fill(Color.buzzHotPink.opacity(0.15))
                     .frame(width: 52, height: 52)
                 Image(systemName: "hand.point.up.left.fill")
                     .font(.system(size: 24))
-                    .foregroundStyle(Color(hex: "#FF2D78"))
+                    .foregroundStyle(Color.buzzHotPink)
             }
 
             VStack(alignment: .leading, spacing: 4) {
@@ -159,8 +159,8 @@ struct PlayerChooseGameView: View {
             Spacer()
         }
         .padding(16)
-        .background(Color(hex: "#FF2D78").opacity(0.07), in: RoundedRectangle(cornerRadius: 18))
-        .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(Color(hex: "#FF2D78").opacity(0.2), lineWidth: 1))
+        .background(Color.buzzHotPink.opacity(0.07), in: RoundedRectangle(cornerRadius: 18))
+        .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(Color.buzzHotPink.opacity(0.2), lineWidth: 1))
     }
 
     // MARK: - Others Grid

@@ -62,7 +62,7 @@ struct QuizActiveQuestionScreen: View {
         HStack {
             Text(quizMasterVM.formattedTime)
                 .font(.nohemi(.largeTitle, weight: .extraBold))
-                .foregroundStyle(buzzedPlayer != nil ? Color(hex: "#F6339A") : Color.mustardYellow)
+                .foregroundStyle(buzzedPlayer != nil ? Color.purpleTrailing : Color.mustardYellow)
                 .tracking(3)
                 .contentTransition(.numericText())
                 .animation(.default, value: quizMasterVM.formattedTime)
@@ -94,10 +94,10 @@ struct QuizActiveQuestionScreen: View {
                 if isRebus {
                     Text("🎭 RÉBUS")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(Color(hex: "#AD46FF"))
+                        .foregroundStyle(Color.purpleLeading)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(Color(hex: "#AD46FF").opacity(0.15), in: Capsule())
+                        .background(Color.purpleLeading.opacity(0.15), in: Capsule())
                 }
             }
             if let q = question {
@@ -121,7 +121,7 @@ struct QuizActiveQuestionScreen: View {
         .padding(18)
         .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
         .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(
-            isRebus ? Color(hex: "#AD46FF").opacity(0.25) : .white.opacity(0.1),
+            isRebus ? Color.purpleLeading.opacity(0.25) : .white.opacity(0.1),
             lineWidth: 1
         ))
     }
@@ -141,13 +141,13 @@ struct QuizActiveQuestionScreen: View {
                     ForEach(answers, id: \.self) { answer in
                         Text(answer)
                             .font(.nohemi(.subheadline, weight: .semiBold))
-                            .foregroundStyle(Color(hex: "#7DFFA0"))
+                            .foregroundStyle(Color.greenGlow)
                             .multilineTextAlignment(.center)
                             .padding(.vertical, 12)
                             .padding(.horizontal, 14)
                             .frame(maxWidth: .infinity)
-                            .background(Color(hex: "#00C950").opacity(0.12), in: RoundedRectangle(cornerRadius: 14))
-                            .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color(hex: "#00C950").opacity(0.25), lineWidth: 1))
+                            .background(Color.greenButtonLeading.opacity(0.12), in: RoundedRectangle(cornerRadius: 14))
+                            .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.greenButtonLeading.opacity(0.25), lineWidth: 1))
                     }
                 }
             }
@@ -338,18 +338,18 @@ struct QuizBuzzSheet: View {
             Button(action: onReject) {
                 Text("Refuser la réponse ✕")
                     .font(.nohemi(.body, weight: .bold))
-                    .foregroundStyle(Color(hex: "#FF6B70"))
+                    .foregroundStyle(Color.redSoft)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 13)
-                    .background(Color(hex: "#FB2C36").opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
-                    .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color(hex: "#FB2C36").opacity(0.35), lineWidth: 1.5))
+                    .background(Color.redLeading.opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
+                    .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.redLeading.opacity(0.35), lineWidth: 1.5))
             }
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 20)
         .padding(.top, 12)
         .padding(.bottom, 40)
-        .background(Color(hex: "#1A0535"), in: RoundedRectangle(cornerRadius: 28))
+        .background(Color.sheetBg, in: RoundedRectangle(cornerRadius: 28))
         .ignoresSafeArea(edges: .bottom)
     }
 

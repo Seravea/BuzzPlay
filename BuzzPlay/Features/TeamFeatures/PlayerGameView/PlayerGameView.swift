@@ -192,10 +192,10 @@ private struct GameAnnounceSheet: View {
         }
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(hex: "#1A0535"))
+        .background(Color.sheetBg)
         .presentationDetents([.height(220)])
         .presentationDragIndicator(.hidden)
-        .presentationBackground(Color(hex: "#1A0535"))
+        .presentationBackground(Color.sheetBg)
         .onAppear { startCountdown() }
         .onDisappear { timer?.invalidate() }
     }
@@ -264,10 +264,10 @@ private struct InterGameScoreSheet: View {
                 .padding(.vertical, 16)
         }
         .foregroundStyle(.white)
-        .background(Color(hex: "1A0535"))
+        .background(Color.sheetBg)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.hidden)
-        .presentationBackground(Color(hex: "1A0535"))
+        .presentationBackground(Color.sheetBg)
         .interactiveDismissDisabled()
     }
 
@@ -391,7 +391,7 @@ private struct PlayerPodiumSheet: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
                             .background(
-                                LinearGradient(colors: [Color(hex: "#AD46FF"), Color(hex: "#F6339A")],
+                                LinearGradient(colors: [Color.purpleLeading, Color.purpleTrailing],
                                                startPoint: .leading, endPoint: .trailing),
                                 in: RoundedRectangle(cornerRadius: 16)
                             )

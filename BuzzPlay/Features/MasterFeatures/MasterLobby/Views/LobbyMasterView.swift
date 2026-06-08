@@ -308,7 +308,7 @@ struct LobbyMasterView: View {
         .padding(.top, 12)
         .background(
             LinearGradient(
-                colors: [Color(hex: "1A0535").opacity(0), Color(hex: "1A0535")],
+                colors: [Color.sheetBg.opacity(0), Color.sheetBg],
                 startPoint: .top, endPoint: .bottom
             )
             .ignoresSafeArea()

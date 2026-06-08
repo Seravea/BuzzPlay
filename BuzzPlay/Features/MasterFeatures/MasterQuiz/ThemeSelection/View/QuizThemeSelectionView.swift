@@ -60,7 +60,7 @@ struct QuizThemeSelectionView: View {
                     },
                     onDismiss: { showAIGeneratorSheet = false }
                 )
-                .presentationBackground(Color(hex: "#1A0535"))
+                .presentationBackground(Color.sheetBg)
                 #else
                 EmptyView()
                 #endif
@@ -82,7 +82,7 @@ struct QuizThemeSelectionView: View {
                     },
                     onBack: { showAIReviewSheet = false }
                 )
-                .presentationBackground(Color(hex: "#1A0535"))
+                .presentationBackground(Color.sheetBg)
                 #else
                 EmptyView()
                 #endif
@@ -164,10 +164,10 @@ struct QuizThemeSelectionView: View {
             .foregroundStyle(enabled ? .white : .white.opacity(0.40))
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background(Color(hex: "#AD46FF").opacity(enabled ? 0.2 : 0.08), in: RoundedRectangle(cornerRadius: 10))
+            .background(Color.purpleLeading.opacity(enabled ? 0.2 : 0.08), in: RoundedRectangle(cornerRadius: 10))
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .strokeBorder(Color(hex: "#AD46FF").opacity(enabled ? 0.3 : 0.12), lineWidth: 1)
+                    .strokeBorder(Color.purpleLeading.opacity(enabled ? 0.3 : 0.12), lineWidth: 1)
             )
         }
     }
@@ -265,21 +265,21 @@ private struct ThemeAIOnlyCard: View {
                         .foregroundStyle(.white)
                     Text("Générer avec l'IA ✦")
                         .font(.nohemi(.caption, weight: .medium))
-                        .foregroundStyle(Color(hex: "#AD46FF").opacity(0.8))
+                        .foregroundStyle(Color.purpleLeading.opacity(0.8))
                 }
 
                 Spacer()
 
                 Image(systemName: "sparkles")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#AD46FF"))
+                    .foregroundStyle(Color.purpleLeading)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
             .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 16))
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(Color(hex: "#AD46FF").opacity(0.20), lineWidth: 1)
+                    .strokeBorder(Color.purpleLeading.opacity(0.20), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

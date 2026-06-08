@@ -17,7 +17,7 @@ struct GamePausedOverlay: View {
             VStack(spacing: 24) {
                 ZStack {
                     Circle()
-                        .fill(Color(hex: "#F0B100").opacity(0.15))
+                        .fill(Color.yellowLeading.opacity(0.15))
                         .frame(width: 88, height: 88)
                         .scaleEffect(isPulsing ? 1.25 : 1.0)
                         .opacity(isPulsing ? 0.0 : 0.6)
@@ -25,7 +25,7 @@ struct GamePausedOverlay: View {
 
                     Image(systemName: "pause.circle.fill")
                         .font(.system(size: 52, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#F0B100"))
+                        .foregroundStyle(Color.yellowLeading)
                 }
 
                 VStack(spacing: 8) {

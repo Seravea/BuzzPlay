@@ -81,7 +81,7 @@ struct ScoreMasterView: View {
         let avatarSize: CGFloat = rank == 1 ? 72 : rank == 2 ? 56 : 48
         let blockHeight: CGFloat = rank == 1 ? 120 : rank == 2 ? 80 : 56
         let blockGradient: AnyShapeStyle = rank == 1
-            ? AnyShapeStyle(LinearGradient(colors: [Color.mustardYellow, Color(hex: "FF6900")], startPoint: .top, endPoint: .bottom))
+            ? AnyShapeStyle(LinearGradient(colors: [Color.mustardYellow, Color.yellowTrailing], startPoint: .top, endPoint: .bottom))
             : AnyShapeStyle(.white.opacity(rank == 2 ? 0.12 : 0.08))
         let blockRadius: CGFloat = rank == 1 ? 14 : 10
 
@@ -126,7 +126,7 @@ struct ScoreMasterView: View {
 
                 Text("\(rank)")
                     .font(.custom("Nohemi-Black", size: rank == 1 ? 44 : rank == 2 ? 32 : 26))
-                    .foregroundStyle(rank == 1 ? Color(hex: "1A0535") : .white.opacity(0.55))
+                    .foregroundStyle(rank == 1 ? Color.sheetBg : .white.opacity(0.55))
             }
             .frame(maxWidth: .infinity)
             .frame(height: blockHeight)
@@ -242,7 +242,7 @@ struct ScoreMasterView: View {
         .padding(.top, 12)
         .background(
             LinearGradient(
-                colors: [Color(hex: "1A0535").opacity(0), Color(hex: "1A0535")],
+                colors: [Color.sheetBg.opacity(0), Color.sheetBg],
                 startPoint: .top, endPoint: .bottom
             )
             .ignoresSafeArea()

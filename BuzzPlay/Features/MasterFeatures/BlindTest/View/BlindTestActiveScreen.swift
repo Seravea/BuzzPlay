@@ -58,7 +58,7 @@ struct BlindTestActiveScreen: View {
         HStack {
             Text(blindTestVM.formattedTime)
                 .font(.nohemi(.largeTitle, weight: .extraBold))
-                .foregroundStyle(buzzedPlayer != nil ? Color(hex: "#F6339A") : .mustardYellow)
+                .foregroundStyle(buzzedPlayer != nil ? Color.purpleTrailing : .mustardYellow)
                 .tracking(3)
                 .contentTransition(.numericText())
                 .animation(.default, value: blindTestVM.formattedTime)

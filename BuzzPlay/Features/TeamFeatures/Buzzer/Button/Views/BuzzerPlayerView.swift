@@ -159,11 +159,11 @@ struct BuzzerPlayerView: View {
                     Text(playerGameVM.player.hasShieldAll ? "×Tous" : "×1")
                         .font(.nohemi(.caption2, weight: .bold))
                 }
-                .foregroundStyle(Color(hex: "2B7FFF"))
+                .foregroundStyle(Color.blueLeading)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-                .background(Color(hex: "2B7FFF").opacity(0.18), in: Capsule())
-                .overlay(Capsule().strokeBorder(Color(hex: "2B7FFF").opacity(0.4), lineWidth: 1))
+                .background(Color.blueLeading.opacity(0.18), in: Capsule())
+                .overlay(Capsule().strokeBorder(Color.blueLeading.opacity(0.4), lineWidth: 1))
                 .transition(.scale.combined(with: .opacity))
             }
 
@@ -249,9 +249,9 @@ private struct AnswerFeedbackOverlay: View {
 
     private var gradientColors: [Color] {
         switch result {
-        case .correct:      [Color(hex: "#00C950"), Color(hex: "#009966")]
-        case .incorrect:    [Color(hex: "#FB2C36"), Color(hex: "#F6339A")]
-        case .otherCorrect: [Color(hex: "#F0B100"), Color(hex: "#FF6900")]
+        case .correct:      [Color.greenButtonLeading, Color.greenTrailing]
+        case .incorrect:    [Color.redLeading, Color.purpleTrailing]
+        case .otherCorrect: [Color.yellowLeading, Color.yellowTrailing]
         }
     }
 
@@ -363,7 +363,7 @@ private struct NewGameNotificationOverlay: View {
             VStack(spacing: 16) {
                 Image(systemName: "arrow.counterclockwise.circle.fill")
                     .font(.system(size: 56, weight: .bold))
-                    .foregroundStyle(Color(hex: "#AD46FF"))
+                    .foregroundStyle(Color.purpleLeading)
 
                 VStack(spacing: 6) {
                     Text("Nouvelle partie !")
@@ -380,7 +380,7 @@ private struct NewGameNotificationOverlay: View {
                 RoundedRectangle(cornerRadius: 28)
                     .fill(.ultraThinMaterial.opacity(0.9))
                     .overlay(RoundedRectangle(cornerRadius: 28)
-                        .strokeBorder(Color(hex: "#AD46FF").opacity(0.35), lineWidth: 1.5))
+                        .strokeBorder(Color.purpleLeading.opacity(0.35), lineWidth: 1.5))
             )
             .padding(.horizontal, 40)
         }

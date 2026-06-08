@@ -17,23 +17,23 @@ private struct CategoryItem: Identifiable {
 }
 
 private let generations: [CategoryItem] = [
-    .init(label: "70s", query: "années 70",   icon: "waveform.circle.fill",  colors: [Color(hex: "#FF6B35"), Color(hex: "#FF3E3E")]),
-    .init(label: "80s", query: "années 80",   icon: "radio.fill",            colors: [Color(hex: "#C026D3"), Color(hex: "#7C3AED")]),
-    .init(label: "90s", query: "années 90",   icon: "opticaldisc",           colors: [Color(hex: "#2563EB"), Color(hex: "#0EA5E9")]),
-    .init(label: "00s", query: "années 2000", icon: "music.note.list",       colors: [Color(hex: "#EA580C"), Color(hex: "#F59E0B")]),
-    .init(label: "10s", query: "années 2010", icon: "headphones",            colors: [Color(hex: "#0369A1"), Color(hex: "#0F172A")]),
-    .init(label: "20s", query: "années 2020", icon: "dot.radiowaves.left.and.right", colors: [Color(hex: "#059669"), Color(hex: "#10B981")]),
+    .init(label: "70s", query: "années 70",   icon: "waveform.circle.fill",  colors: [Color.coral, Color.crimson]),
+    .init(label: "80s", query: "années 80",   icon: "radio.fill",            colors: [Color.violet, Color.buzzIndigo]),
+    .init(label: "90s", query: "années 90",   icon: "opticaldisc",           colors: [Color.royalBlue, Color.skyBlue]),
+    .init(label: "00s", query: "années 2000", icon: "music.note.list",       colors: [Color.burnOrange, Color.amberWarm]),
+    .init(label: "10s", query: "années 2010", icon: "headphones",            colors: [Color.oceanBlue, Color.deepDark]),
+    .init(label: "20s", query: "années 2020", icon: "dot.radiowaves.left.and.right", colors: [Color.teal, Color.emerald]),
 ]
 
 private let genres: [CategoryItem] = [
-    .init(label: "Pop",        query: "pop hits",           icon: "star.fill",   colors: [Color(hex: "#EC4899"), Color(hex: "#F43F5E")]),
-    .init(label: "Rock",       query: "rock",               icon: "bolt.fill",   colors: [Color(hex: "#DC2626"), Color(hex: "#EA580C")]),
-    .init(label: "Hip-Hop",    query: "hip hop",            icon: "mic.fill",    colors: [Color(hex: "#7C3AED"), Color(hex: "#6366F1")]),
-    .init(label: "Électro",    query: "electro dance",      icon: "waveform",    colors: [Color(hex: "#0EA5E9"), Color(hex: "#6366F1")]),
-    .init(label: "R&B · Soul", query: "r&b soul",           icon: "heart.fill",  colors: [Color(hex: "#F59E0B"), Color(hex: "#EF4444")]),
-    .init(label: "Variété FR", query: "variété française",  icon: "music.note",  colors: [Color(hex: "#2563EB"), Color(hex: "#7C3AED")]),
-    .init(label: "K-Pop",      query: "k-pop",              icon: "crown.fill",  colors: [Color(hex: "#EC4899"), Color(hex: "#7C3AED")]),
-    .init(label: "Latino",     query: "latino hits",        icon: "flame.fill",  colors: [Color(hex: "#F97316"), Color(hex: "#EF4444")]),
+    .init(label: "Pop",        query: "pop hits",           icon: "star.fill",   colors: [Color.vibrantPink, Color.fuchsia]),
+    .init(label: "Rock",       query: "rock",               icon: "bolt.fill",   colors: [Color.scarlet, Color.burnOrange]),
+    .init(label: "Hip-Hop",    query: "hip hop",            icon: "mic.fill",    colors: [Color.buzzIndigo, Color.softIndigo]),
+    .init(label: "Électro",    query: "electro dance",      icon: "waveform",    colors: [Color.skyBlue, Color.softIndigo]),
+    .init(label: "R&B · Soul", query: "r&b soul",           icon: "heart.fill",  colors: [Color.amberWarm, Color.errorLight]),
+    .init(label: "Variété FR", query: "variété française",  icon: "music.note",  colors: [Color.royalBlue, Color.buzzIndigo]),
+    .init(label: "K-Pop",      query: "k-pop",              icon: "crown.fill",  colors: [Color.vibrantPink, Color.buzzIndigo]),
+    .init(label: "Latino",     query: "latino hits",        icon: "flame.fill",  colors: [Color.tangerine, Color.errorLight]),
 ]
 
 // MARK: - Main View

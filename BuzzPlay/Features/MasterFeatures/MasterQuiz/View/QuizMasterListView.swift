@@ -235,7 +235,7 @@ private struct QuizQuestionRow: View {
                         if question.questionType == .rebus {
                             Text("🎭 Rébus")
                                 .font(.nohemi(.caption2, weight: .semiBold))
-                                .foregroundStyle(Color(hex: "#AD46FF").opacity(0.9))
+                                .foregroundStyle(Color.purpleLeading.opacity(0.9))
                         } else if let theme = question.theme {
                             Text(theme)
                                 .font(.nohemi(.caption2, weight: .medium))
@@ -292,7 +292,7 @@ struct QuizValidationOverlay: View {
                 ZStack {
                     // Glow circles
                     Circle()
-                        .fill(Color(hex: "#7DFFA0").opacity(0.15))
+                        .fill(Color.greenGlow.opacity(0.15))
                         .frame(width: 120, height: 120)
                         .blur(radius: 16)
 
@@ -301,7 +301,7 @@ struct QuizValidationOverlay: View {
                             .font(.system(size: 56))
                         Text("+\(points)")
                             .font(.nohemi(.largeTitle, weight: .black))
-                            .foregroundStyle(Color(hex: "#7DFFA0"))
+                            .foregroundStyle(Color.greenGlow)
                             .tracking(1)
                     }
                 }

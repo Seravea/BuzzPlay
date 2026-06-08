@@ -51,10 +51,10 @@ enum QuizDifficulty: String, CaseIterable, Identifiable, Codable, Hashable {
 
     var color: Color {
         switch self {
-        case .facile: Color(hex: "#00C950")
-        case .moyen: Color(hex: "#F0B100")
-        case .difficile: Color(hex: "#FF6900")
-        case .expert: Color(hex: "#FB2C36")
+        case .facile: Color.greenButtonLeading
+        case .moyen: Color.yellowLeading
+        case .difficile: Color.yellowTrailing
+        case .expert: Color.redLeading
         }
     }
 }

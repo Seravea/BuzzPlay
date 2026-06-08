@@ -42,7 +42,7 @@ struct AIQuizReviewView: View {
     var body: some View {
         ZStack {
             // Fond géré par .presentationBackground dans la sheet parente (#A2)
-            Color(hex: "#1A0535").ignoresSafeArea()
+            Color.sheetBg.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Header
@@ -104,7 +104,7 @@ struct AIQuizReviewView: View {
                     HStack(spacing: 8) {
                         ProgressView()
                             .controlSize(.mini)
-                            .tint(Color(hex: "#AD46FF"))
+                            .tint(Color.purpleLeading)
                         Text("Ajout de questions en cours…")
                             .font(.nohemi(.caption, weight: .regular))
                             .foregroundStyle(.white.opacity(0.7))
@@ -115,8 +115,8 @@ struct AIQuizReviewView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
-                    .background(Color(hex: "#AD46FF").opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
-                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color(hex: "#AD46FF").opacity(0.2), lineWidth: 1))
+                    .background(Color.purpleLeading.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.purpleLeading.opacity(0.2), lineWidth: 1))
                     .padding(.horizontal, 16)
                     .padding(.top, 6)
                 }
@@ -185,7 +185,7 @@ struct AIQuizReviewView: View {
                             .frame(height: 48)
                             .background(
                                 canLaunch
-                                    ? LinearGradient(colors: [Color(hex: "#AD46FF"), Color(hex: "#F6339A")], startPoint: .topLeading, endPoint: .bottomTrailing)
+                                    ? LinearGradient(colors: [Color.purpleLeading, Color.purpleTrailing], startPoint: .topLeading, endPoint: .bottomTrailing)
                                     : LinearGradient(colors: [Color.white.opacity(0.08), Color.white.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing),
                                 in: RoundedRectangle(cornerRadius: 12)
                             )

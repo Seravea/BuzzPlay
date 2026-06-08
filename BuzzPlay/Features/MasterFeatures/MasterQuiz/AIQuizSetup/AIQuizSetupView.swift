@@ -35,7 +35,7 @@ struct AIQuizSetupView: View {
     var body: some View {
         ZStack {
             // Fond géré par .presentationBackground dans la sheet parente (#A2)
-            Color(hex: "#1A0535").ignoresSafeArea()
+            Color.sheetBg.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Header
@@ -130,7 +130,7 @@ struct AIQuizSetupView: View {
                         let infoIsWarning = themeCount == 0 || selectedDifficulty == nil
                         HStack(spacing: 8) {
                             Image(systemName: infoIsWarning ? "arrow.down.circle.fill" : "checkmark.circle.fill")
-                                .foregroundStyle(infoIsWarning ? Color(hex: "#AD46FF").opacity(0.7) : .white.opacity(0.4))
+                                .foregroundStyle(infoIsWarning ? Color.purpleLeading.opacity(0.7) : .white.opacity(0.4))
                             Text(infoText)
                                 .font(.nohemi(.caption, weight: infoIsWarning ? .semiBold : .regular))
                                 .foregroundStyle(infoIsWarning ? .white.opacity(0.8) : .white.opacity(0.6))
@@ -139,7 +139,7 @@ struct AIQuizSetupView: View {
                         .padding(.vertical, 10)
                         .background(
                             infoIsWarning
-                                ? Color(hex: "#AD46FF").opacity(0.06)
+                                ? Color.purpleLeading.opacity(0.06)
                                 : Color.white.opacity(0.04),
                             in: RoundedRectangle(cornerRadius: 10)
                         )
@@ -173,7 +173,7 @@ struct AIQuizSetupView: View {
                     VStack(spacing: 8) {
                         HStack(spacing: 10) {
                             ProgressView(value: generator.generationProgress, total: 1.0)
-                                .tint(Color(hex: "#AD46FF"))
+                                .tint(Color.purpleLeading)
                             Text("\(generator.generatedQuestions.count)/\(quizRoundsTotal)")
                                 .font(.nohemi(.caption, weight: .semiBold))
                                 .foregroundStyle(.white.opacity(0.7))
@@ -196,7 +196,7 @@ struct AIQuizSetupView: View {
                     .frame(height: 52)
                     .background(
                         canGenerate
-                            ? LinearGradient(colors: [Color(hex: "#AD46FF"), Color(hex: "#F6339A")], startPoint: .topLeading, endPoint: .bottomTrailing)
+                            ? LinearGradient(colors: [Color.purpleLeading, Color.purpleTrailing], startPoint: .topLeading, endPoint: .bottomTrailing)
                             : LinearGradient(colors: [Color.white.opacity(0.08), Color.white.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing),
                         in: RoundedRectangle(cornerRadius: 14)
                     )
@@ -294,7 +294,7 @@ private struct ThemeCardAI: View {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 14, weight: .bold))
                             .foregroundStyle(theme.color)
-                            .background(Color(hex: "#1A0535"), in: Circle())
+                            .background(Color.sheetBg, in: Circle())
                             .offset(x: 6, y: -6)
                     }
                 }

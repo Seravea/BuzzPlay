@@ -21,14 +21,14 @@ struct SectionCompleteOverlay: View {
             VStack(spacing: 24) {
                 ZStack {
                     Circle()
-                        .fill(Color(hex: "#00C950").opacity(0.06))
+                        .fill(Color.greenButtonLeading.opacity(0.06))
                         .frame(width: 140, height: 140)
                     Circle()
-                        .fill(Color(hex: "#00C950").opacity(0.12))
+                        .fill(Color.greenButtonLeading.opacity(0.12))
                         .frame(width: 108, height: 108)
                     Image(systemName: "flag.checkered")
                         .font(.system(size: 50, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#00C950"))
+                        .foregroundStyle(Color.greenButtonLeading)
                 }
                 .scaleEffect(scale)
                 .onAppear {

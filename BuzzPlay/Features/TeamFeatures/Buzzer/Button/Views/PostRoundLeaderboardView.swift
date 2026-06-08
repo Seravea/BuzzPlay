@@ -127,7 +127,7 @@ private struct PostRoundRow: View {
                 .frame(width: 34, height: 34)
             Text("\(rank)")
                 .font(.nohemi(.subheadline, weight: .black))
-                .foregroundStyle(rank <= 3 ? Color(hex: "1A0535") : .white)
+                .foregroundStyle(rank <= 3 ? Color.sheetBg : .white)
         }
     }
 
@@ -161,11 +161,11 @@ private struct PostRoundRow: View {
             if scoreDelta > 0 {
                 Text("+\(scoreDelta)")
                     .font(.nohemi(.caption, weight: .extraBold))
-                    .foregroundStyle(Color(hex: "00C875"))
+                    .foregroundStyle(Color.greenButtonLeading)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
-                    .background(Color(hex: "00C875").opacity(0.15), in: Capsule())
-                    .overlay(Capsule().strokeBorder(Color(hex: "00C875").opacity(0.35), lineWidth: 1))
+                    .background(Color.greenButtonLeading.opacity(0.15), in: Capsule())
+                    .overlay(Capsule().strokeBorder(Color.greenButtonLeading.opacity(0.35), lineWidth: 1))
                     .transition(.scale(scale: 0.6).combined(with: .opacity))
             }
 
@@ -177,11 +177,11 @@ private struct PostRoundRow: View {
                     Text("\(abs(rankDelta))")
                         .font(.nohemi(.caption2, weight: .extraBold))
                 }
-                .foregroundStyle(up ? Color(hex: "00C875") : Color(hex: "FF6B70"))
+                .foregroundStyle(up ? Color.greenButtonLeading : Color.redSoft)
                 .padding(.horizontal, 7)
                 .padding(.vertical, 3)
                 .background(
-                    (up ? Color(hex: "00C875") : Color(hex: "FF6B70")).opacity(0.12),
+                    (up ? Color.greenButtonLeading : Color.redSoft).opacity(0.12),
                     in: Capsule()
                 )
                 .transition(.scale(scale: 0.6).combined(with: .opacity))
@@ -193,9 +193,9 @@ private struct PostRoundRow: View {
 
     private var rankCircleColor: Color {
         switch rank {
-        case 1: Color(hex: "FFD700")
-        case 2: Color(hex: "C0C0C0")
-        case 3: Color(hex: "CD7F32")
+        case 1: Color.amberWarm
+        case 2: Color.white
+        case 3: Color.burnOrange
         default: .white.opacity(0.12)
         }
     }

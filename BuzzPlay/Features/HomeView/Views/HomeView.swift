@@ -163,7 +163,7 @@ private struct MasterConfirmOverlay: View {
                     Image(systemName: "gamecontroller.fill")
                         .font(.system(size: 36, weight: .semibold))
                         .foregroundStyle(LinearGradient(
-                            colors: [Color(hex: "#2B7FFF"), Color(hex: "#00B8DB")],
+                            colors: [Color.blueLeading, Color.blueTrailing],
                             startPoint: .topLeading, endPoint: .bottomTrailing
                         ))
 
@@ -197,7 +197,7 @@ private struct MasterConfirmOverlay: View {
                             .frame(height: 50)
                             .background(
                                 LinearGradient(
-                                    colors: [Color(hex: "#00C950"), Color(hex: "#009966")],
+                                    colors: [Color.greenButtonLeading, Color.greenTrailing],
                                     startPoint: .topLeading, endPoint: .bottomTrailing
                                 ),
                                 in: RoundedRectangle(cornerRadius: 14)
@@ -207,7 +207,7 @@ private struct MasterConfirmOverlay: View {
             }
             .padding(28)
             .background(
-                Color(hex: "#1A0535"),
+                Color.sheetBg,
                 in: RoundedRectangle(cornerRadius: 28)
             )
             .overlay(

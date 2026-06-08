@@ -73,39 +73,108 @@ Deux modes de jeu : **Quiz** (questions/réponses avec buzzer) et **Blind Test**
 
 ## Design System (respecter absolument)
 
-### Couleurs
+> ⚠️ **RÈGLES D'ENFORCEMENT — À lire avant chaque vue créée ou modifiée**
+> Ces règles sont vérifiées par des warnings Xcode. Toute violation est un warning visible dans le build.
+
+### ❌ Ce qu'il ne faut JAMAIS faire dans une vue
+
+```swift
+// ❌ INTERDIT — Color(hex:) est @available(*, deprecated)
+Color(hex: "#AD46FF")
+
+// ❌ INTERDIT — taille fixe arbitraire
+.font(.system(size: 24, weight: .bold))
+.font(.system(size: 13))
+
+// ❌ INTERDIT — valeurs de padding/spacing en dur
+.padding(16)
+.padding(.horizontal, 24)
+.cornerRadius(12)
+
+// ❌ INTERDIT — gradient inline
+LinearGradient(colors: [Color(hex: "#AD46FF"), Color(hex: "#F6339A")], ...)
+```
+
+### ✅ Ce qu'il faut utiliser à la place
+
+```swift
+// ✅ Couleurs — tokens depuis Colors.swift (extension Color)
+Color.buzzPurple       // #AD46FF
+Color.buzzDark         // #1A0535
+Color.greenButtonLeading
+Color.redLeading
+// → Voir Shared/Styles/Colors.swift pour la liste complète
+
+// ✅ Typographie — tokens depuis Typography.swift
+.textStyle(Typography.screenTitle)    // titre principal vue
+.textStyle(Typography.sectionTitle)   // titre de section
+.textStyle(Typography.label)          // label, bouton
+.textStyle(Typography.score)          // chiffre de score (large + black)
+.textStyle(Typography.tag)            // badge, pill
+// → Voir Shared/Extensions/TextExtensions.swift + Shared/Styles/Typography.swift
+
+// ✅ Spacing — constantes depuis BuzzLayout.swift
+.padding(BuzzSpacing.md)             // 16pt
+.padding(.horizontal, BuzzSpacing.lg) // 24pt
+.cornerRadius(BuzzRadius.md)          // 12pt
+// → Voir Shared/Styles/BuzzLayout.swift
+
+// ✅ Gradients — tokens depuis Colors.swift
+LinearGradient.buzzPrimary    // purple → pink
+LinearGradient.buzzSuccess    // green CTA
+LinearGradient.buzzDanger     // red → pink
+LinearGradient.buzzAmber      // yellow → orange
+LinearGradient.buzzBlue       // blue Master
+// → Voir Shared/Styles/Colors.swift
+
+// ✅ Animations — tokens depuis BuzzLayout.swift
+.animation(.buzzSnappy, value: isActive)
+.animation(.buzzBouncy, value: isBuzzed)
+
+// ✅ ViewModifiers composites — depuis Theme.swift
+.buzzerScoreStyle()    // chiffre géant score buzzer
+.cardStyle()           // card semi-transparente standard
+.overlayLabelStyle()   // texte blanc sur fond sombre
+```
+
+### Couleurs disponibles (Colors.swift)
 ```swift
 // Fond global — dégradé diagonal via BackgroundAppView
-// #1A0535 (0%) → #2A0944 (50%) → #3B185F (100%)
+// darkestPurple (#1A0535) → darkPurple (#2A0944) → darkPink (#A12568)
 
-let darkestPurple = Color(hex: "#1A0535")
-let darkPurple    = Color(hex: "#2A0944")
-let darkPink      = Color(hex: "#A12568")
-let mustardYellow = Color(hex: "#FEC260")
+// Primaires
+Color.buzzPurple        // #AD46FF — accent principal
+Color.buzzDark          // #1A0535 — fond sheet
+Color.buzzPink          // #F6339A — accent secondaire
+Color.buzzHotPink       // #FF2D78
+Color.buzzAmber         // #F0B100
+Color.buzzOrange        // #FF6900
+Color.buzzCyan          // #00B8DB
+Color.successGlow       // #7DFFA0
 
-// Gradients (LinearGradient horizontal)
-let gradientGreen  = [Color(hex: "#00C950"), Color(hex: "#009966")] // CTA principal
-let gradientRed    = [Color(hex: "#FB2C36"), Color(hex: "#F6339A")] // Destructif
-let gradientPurple = [Color(hex: "#AD46FF"), Color(hex: "#F6339A")] // Buzzer / Player
-let gradientYellow = [Color(hex: "#F0B100"), Color(hex: "#FF6900")] // Notes / cadeaux
-let gradientBlue   = [Color(hex: "#2B7FFF"), Color(hex: "#00B8DB")] // Master
-let gradientGreenCTA = [Color(hex: "#00C950"), Color(hex: "#00BC7D")] // Boutons action
+// Gradients (déjà dans Colors.swift)
+Color.greenButtonLeading / greenButtonTrailing   // CTA principal
+Color.redLeading / redTrailing                   // Destructif
+Color.purpleLeading / purpleTrailing             // Buzzer / Player
+Color.yellowLeading / yellowTrailing             // Notes / cadeaux
+Color.blueLeading / blueTrailing                 // Master
 ```
 
 ### Typographie
 ```swift
 // Police exclusive : Nohemi (custom font, déjà intégrée)
-.font(.nohemi(.body, weight: .semiBold))
-// Graisses : Thin, ExtraLight, Light, Regular, Medium, SemiBold, Bold, ExtraBold, Black
+// Toujours passer par .textStyle(Typography.xxx) ou .font(.nohemi(...))
+// JAMAIS .font(.system(size:))
+// Graisses disponibles : thin, extraLight, light, regular, medium, semiBold, bold, extraBold, black
 ```
 
 ### Règles visuelles
-- Boutons : `RoundedRectangle(cornerRadius: 14–16)` + gradient linéaire horizontal
-- Cards : `.background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))` + border `.white.opacity(0.10)`
+- Boutons : `RoundedRectangle(cornerRadius: BuzzRadius.md)` + gradient linéaire horizontal
+- Cards : `.background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))` + border `.white.opacity(0.10)`
 - Textes secondaires : `.white.opacity(0.45)`
 - Icônes : SF Symbols, `.white` ou `.white.opacity(0.25)`
 - Dark mode permanent — aucun fond clair
-- Padding horizontal contenu : 20pt / listes : 16pt
+- Padding horizontal contenu : `BuzzSpacing.md` (20pt) / listes : `BuzzSpacing.sm` (16pt)
 - Langue : **français partout**
 
 ---

@@ -199,8 +199,8 @@ struct GiftShopSheet: View {
         .background(
             LinearGradient(
                 stops: [
-                    .init(color: Color(hex: "1A0535"), location: 0),
-                    .init(color: Color(hex: "2A0944"), location: 1),
+                    .init(color: Color.sheetBg, location: 0),
+                    .init(color: Color.darkestPurple, location: 1),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -321,14 +321,14 @@ extension CoinsViewModel.Gift {
 
     var accentColor: Color {
         switch self {
-        case .scoreDoubled:         return Color(hex: "00C875")
-        case .enemyCanNotBuzz:      return Color(hex: "FF4D4D")
-        case .allEnemiesCanNotBuzz: return Color(hex: "FF8C42")
-        case .showIndicies:         return Color(hex: "FFD600")
-        case .changeBuzzColor:      return Color(hex: "B06BFF")
-        case .changeBuzzSound:      return Color(hex: "4DAAFF")
-        case .shieldSingle:         return Color(hex: "2B7FFF")
-        case .shieldAll:            return Color(hex: "00B8DB")
+        case .scoreDoubled:         return Color.greenButtonLeading
+        case .enemyCanNotBuzz:      return Color.redSoft
+        case .allEnemiesCanNotBuzz: return Color.peach
+        case .showIndicies:         return Color.yellowLeading
+        case .changeBuzzColor:      return Color.purpleLeading
+        case .changeBuzzSound:      return Color.skyBlue
+        case .shieldSingle:         return Color.blueLeading
+        case .shieldAll:            return Color.blueTrailing
         }
     }
 }
@@ -366,7 +366,7 @@ struct SoundPickerSheet: View {
                             HStack(spacing: 14) {
                                 Image(systemName: selectedSound == sound ? "checkmark.circle.fill" : "circle")
                                     .font(.system(size: 20))
-                                    .foregroundStyle(selectedSound == sound ? Color(hex: "4DAAFF") : .white.opacity(0.3))
+                                    .foregroundStyle(selectedSound == sound ? Color.skyBlue : .white.opacity(0.3))
 
                                 Text(label)
                                     .font(.nohemi(.body, weight: .medium))
@@ -381,13 +381,13 @@ struct SoundPickerSheet: View {
                             .padding(.horizontal, 20)
                             .padding(.vertical, 12)
                             .background(
-                                selectedSound == sound ? Color(hex: "4DAAFF").opacity(0.12) : .white.opacity(0.04),
+                                selectedSound == sound ? Color.skyBlue.opacity(0.12) : .white.opacity(0.04),
                                 in: RoundedRectangle(cornerRadius: 12)
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 12)
                                     .strokeBorder(
-                                        selectedSound == sound ? Color(hex: "4DAAFF").opacity(0.4) : .clear,
+                                        selectedSound == sound ? Color.skyBlue.opacity(0.4) : .clear,
                                         lineWidth: 1
                                     )
                             )
@@ -418,7 +418,7 @@ struct SoundPickerSheet: View {
                 .background(
                     selectedSound == nil
                         ? AnyShapeStyle(Color.white.opacity(0.08))
-                        : AnyShapeStyle(LinearGradient(colors: [Color(hex: "2B7FFF"), Color(hex: "00B8DB")], startPoint: .leading, endPoint: .trailing)),
+                        : AnyShapeStyle(LinearGradient(colors: [Color.blueLeading, Color.blueTrailing], startPoint: .leading, endPoint: .trailing)),
                     in: RoundedRectangle(cornerRadius: 14)
                 )
             }
@@ -430,8 +430,8 @@ struct SoundPickerSheet: View {
         .background(
             LinearGradient(
                 stops: [
-                    .init(color: Color(hex: "1A0535"), location: 0),
-                    .init(color: Color(hex: "2A0944"), location: 1),
+                    .init(color: Color.sheetBg, location: 0),
+                    .init(color: Color.darkestPurple, location: 1),
                 ],
                 startPoint: .top, endPoint: .bottom
             )

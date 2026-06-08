@@ -27,8 +27,8 @@ struct NotesShopView: View {
         .background(
             LinearGradient(
                 stops: [
-                    .init(color: Color(hex: "1A0535"), location: 0),
-                    .init(color: Color(hex: "2A0944"), location: 1),
+                    .init(color: Color.sheetBg, location: 0),
+                    .init(color: Color.darkestPurple, location: 1),
                 ],
                 startPoint: .top, endPoint: .bottom
             )
@@ -143,10 +143,10 @@ private struct PackCard: View {
                         Text("MEILLEURE VALEUR")
                             .font(.nohemi(.caption2, weight: .bold))
                             .tracking(0.4)
-                            .foregroundStyle(Color(hex: "00C950"))
+                            .foregroundStyle(Color.greenButtonLeading)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(Color(hex: "00C950").opacity(0.12), in: Capsule())
+                            .background(Color.greenButtonLeading.opacity(0.12), in: Capsule())
                     }
                 }
                 Text("\(pack.notesPerEuro) Notes / €")
@@ -175,7 +175,7 @@ private struct PackCard: View {
                 }
                 .background(
                     LinearGradient(
-                        colors: [Color(hex: "F0B100"), Color(hex: "FF6900")],
+                        colors: [Color.yellowLeading, Color.yellowTrailing],
                         startPoint: .leading, endPoint: .trailing
                     ),
                     in: RoundedRectangle(cornerRadius: 10)
@@ -191,7 +191,7 @@ private struct PackCard: View {
         .overlay(
             RoundedRectangle(cornerRadius: 18)
                 .strokeBorder(
-                    pack.isBestValue ? Color(hex: "00C950").opacity(0.30) : .white.opacity(0.09),
+                    pack.isBestValue ? Color.greenButtonLeading.opacity(0.30) : .white.opacity(0.09),
                     lineWidth: pack.isBestValue ? 1.5 : 1
                 )
         )
@@ -208,17 +208,17 @@ private struct SuccessConfirmation: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(Color(hex: "00C950"))
+                .foregroundStyle(Color.greenButtonLeading)
             Text("+\(amount) Notes ajoutées !")
                 .font(.nohemi(.callout, weight: .bold))
                 .foregroundStyle(.white)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .background(Color(hex: "00C950").opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+        .background(Color.greenButtonLeading.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color(hex: "00C950").opacity(0.30), lineWidth: 1)
+                .strokeBorder(Color.greenButtonLeading.opacity(0.30), lineWidth: 1)
         )
         .scaleEffect(scale)
         .onAppear {

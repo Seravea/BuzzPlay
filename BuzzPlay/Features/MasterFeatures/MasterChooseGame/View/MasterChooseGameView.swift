@@ -200,7 +200,7 @@ struct MasterChooseGameView: View {
                     .frame(width: 24, height: 24)
                 Text("\(rank)")
                     .font(.nohemi(.caption2, weight: .black))
-                    .foregroundStyle(rank == 1 ? Color(hex: "1A0535") : .white.opacity(0.6))
+                    .foregroundStyle(rank == 1 ? Color.sheetBg : .white.opacity(0.6))
             }
 
             Circle()
@@ -446,12 +446,12 @@ private struct DailyPackBanner: View {
                     .padding(.vertical, 7)
                     .background(
                         LinearGradient(
-                            colors: [Color(hex: "F0B100"), Color(hex: "FF6900")],
+                            colors: [Color.yellowLeading, Color.yellowTrailing],
                             startPoint: .leading, endPoint: .trailing
                         ),
                         in: Capsule()
                     )
-                    .shadow(color: Color(hex: "F0B100").opacity(glowPulse ? 0.5 : 0.2), radius: glowPulse ? 8 : 3)
+                    .shadow(color: Color.yellowLeading.opacity(glowPulse ? 0.5 : 0.2), radius: glowPulse ? 8 : 3)
             }
             .buttonStyle(.plain)
         }

@@ -82,18 +82,18 @@ struct BlindTestBuzzSheet: View {
             Button(action: onReject) {
                 Text("Refuser la réponse ✕")
                     .font(.nohemi(.body, weight: .bold))
-                    .foregroundStyle(Color(hex: "#FF6B70"))
+                    .foregroundStyle(Color.redSoft)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 13)
-                    .background(Color(hex: "#FB2C36").opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
-                    .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color(hex: "#FB2C36").opacity(0.35), lineWidth: 1.5))
+                    .background(Color.redLeading.opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
+                    .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.redLeading.opacity(0.35), lineWidth: 1.5))
             }
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 20)
         .padding(.top, 12)
         .padding(.bottom, 40)
-        .background(Color(hex: "#1A0535"), in: RoundedRectangle(cornerRadius: 28))
+        .background(Color.sheetBg, in: RoundedRectangle(cornerRadius: 28))
         .ignoresSafeArea(edges: .bottom)
     }
 
