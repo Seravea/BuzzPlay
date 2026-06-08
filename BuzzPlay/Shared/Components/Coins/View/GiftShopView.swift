@@ -22,7 +22,7 @@ struct GiftBottomBar: View {
             if isWaiting && balance > 0 {
                 HStack(spacing: 5) {
                     Image(systemName: "sparkles")
-                        .font(.system(size: 10, weight: .bold))
+                        .textStyle(Typography.caption2Bold)
                     Text("C'est le moment d'utiliser tes Notes !")
                         .font(.nohemi(.caption2, weight: .bold))
                 }
@@ -37,7 +37,7 @@ struct GiftBottomBar: View {
             Button { isSheetOpen = true } label: {
                 HStack(spacing: 10) {
                     Image(systemName: "gift.fill")
-                        .font(.system(size: 15, weight: .semibold))
+                        .textStyle(Typography.labelSM)
                         .foregroundStyle(Color.mustardYellow)
 
                     Text("Cadeaux")
@@ -52,12 +52,12 @@ struct GiftBottomBar: View {
                             .monospacedDigit()
                             .foregroundStyle(Color.mustardYellow)
                         Image(systemName: "dollarsign.bank.building.fill")
-                            .font(.system(size: 13))
+                            .textStyle(Typography.footnote)
                             .foregroundStyle(Color.mustardYellow)
                     }
 
                     Image(systemName: "chevron.up")
-                        .font(.system(size: 11, weight: .bold))
+                        .textStyle(Typography.caption2Bold)
                         .foregroundStyle(.white.opacity(0.4))
                 }
                 .padding(.horizontal, 18)
@@ -243,7 +243,7 @@ private struct GiftCardView: View {
     private var cardBody: some View {
         VStack(spacing: 10) {
             Image(systemName: gift.iconName)
-                .font(.system(size: 26, weight: .medium))
+                .textStyle(Typography.screenTitleSoft)
                 .foregroundStyle(isActive ? gift.accentColor : .white.opacity(0.22))
                 .frame(width: 54, height: 54)
                 .background(
@@ -262,7 +262,7 @@ private struct GiftCardView: View {
                 Text("\(gift.price)")
                     .font(.nohemi(.caption2, weight: .extraBold))
                 Image(systemName: "dollarsign.bank.building.fill")
-                    .font(.system(size: 10))
+                    .textStyle(Typography.caption2)
             }
             .foregroundStyle(isActive ? Color.mustardYellow : .white.opacity(0.22))
             .padding(.horizontal, 9)
@@ -365,7 +365,7 @@ struct SoundPickerSheet: View {
                         } label: {
                             HStack(spacing: 14) {
                                 Image(systemName: selectedSound == sound ? "checkmark.circle.fill" : "circle")
-                                    .font(.system(size: 20))
+                                    .textStyle(Typography.title3)
                                     .foregroundStyle(selectedSound == sound ? Color.skyBlue : .white.opacity(0.3))
 
                                 Text(label)
@@ -375,7 +375,7 @@ struct SoundPickerSheet: View {
                                 Spacer()
 
                                 Image(systemName: "play.circle")
-                                    .font(.system(size: 18))
+                                    .textStyle(Typography.cardTitle)
                                     .foregroundStyle(.white.opacity(0.4))
                             }
                             .padding(.horizontal, 20)

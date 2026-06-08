@@ -68,7 +68,7 @@ struct PostRoundLeaderboardView: View {
         VStack(spacing: 4) {
             HStack(spacing: 8) {
                 Image(systemName: "trophy.fill")
-                    .font(.system(size: 18, weight: .bold))
+                    .textStyle(Typography.cardTitleBold)
                     .foregroundStyle(Color.mustardYellow)
                 Text("CLASSEMENT")
                     .font(.nohemi(.headline, weight: .black))
@@ -173,7 +173,7 @@ private struct PostRoundRow: View {
                 let up = rankDelta > 0
                 HStack(spacing: 2) {
                     Image(systemName: up ? "arrow.up" : "arrow.down")
-                        .font(.system(size: 9, weight: .black))
+                        .textStyle(Typography.micro)
                     Text("\(abs(rankDelta))")
                         .font(.nohemi(.caption2, weight: .extraBold))
                 }

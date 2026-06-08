@@ -17,7 +17,7 @@ struct PublicDisplayView: View {
             case .waiting:
                 VStack(spacing: 8) {
                     Image(systemName: "hourglass")
-                        .font(.system(size: 28, weight: .medium))
+                        .textStyle(Typography.screenTitleSoft)
                         .foregroundStyle(.white.opacity(0.4))
                     Text("En attente du lancement…")
                         .font(.nohemi(.title3, weight: .bold))

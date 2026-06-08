@@ -161,7 +161,7 @@ private struct MasterConfirmOverlay: View {
             VStack(spacing: 24) {
                 VStack(spacing: 10) {
                     Image(systemName: "gamecontroller.fill")
-                        .font(.system(size: 36, weight: .semibold))
+                        .textStyle(Typography.largeTitle)
                         .foregroundStyle(LinearGradient(
                             colors: [Color.blueLeading, Color.blueTrailing],
                             startPoint: .topLeading, endPoint: .bottomTrailing
@@ -265,7 +265,7 @@ private struct HomeSecondaryCard: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: iconName)
-                .font(.system(size: 18, weight: .semibold))
+                .textStyle(Typography.cardTitle)
                 .foregroundStyle(.white.opacity(0.80))
                 .frame(width: 40, height: 40)
                 .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 12))
@@ -282,7 +282,7 @@ private struct HomeSecondaryCard: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 13, weight: .semibold))
+                .textStyle(Typography.footnoteEM)
                 .foregroundStyle(.white.opacity(0.50))
         }
         .padding(.horizontal, 16)

@@ -51,7 +51,7 @@ struct CreateTeamView: View {
         Button { router.path.removeLast() } label: {
             HStack(spacing: 6) {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
+                    .textStyle(Typography.label)
                 Text("Retour")
                     .font(.nohemi(.subheadline, weight: .semiBold))
             }
@@ -175,7 +175,7 @@ struct CreateTeamView: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "arrow.right.circle.fill")
-                    .font(.system(size: 18, weight: .semibold))
+                    .textStyle(Typography.cardTitle)
                 Text("Entrer dans le lobby")
                     .font(.nohemi(.body, weight: .bold))
             }

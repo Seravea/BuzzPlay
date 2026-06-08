@@ -54,7 +54,7 @@ struct ScoreMasterView: View {
             if masterFlowVM.notesRecoveredThisSession > 0 {
                 HStack(spacing: 5) {
                     Image(systemName: "arrow.uturn.left.circle.fill")
-                        .font(.system(size: 11))
+                        .textStyle(Typography.caption2)
                     Text("+\(masterFlowVM.notesRecoveredThisSession) Notes récupérées")
                         .font(.nohemi(.caption2, weight: .semiBold))
                 }
@@ -88,7 +88,7 @@ struct ScoreMasterView: View {
         return VStack(spacing: 0) {
             if rank == 1 {
                 Text("👑")
-                    .font(.system(size: 22))
+                    .textStyle(Typography.sectionTitle)
                     .padding(.bottom, 4)
             }
 

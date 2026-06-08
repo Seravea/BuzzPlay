@@ -120,7 +120,7 @@ private struct QuizQuestionListScreen: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: invited ? "checkmark.circle.fill" : "person.wave.2.fill")
-                    .font(.system(size: 13, weight: .bold))
+                    .textStyle(Typography.footnoteBold)
                 Text(invited ? "Joueurs invités" : "Inviter les joueurs")
                     .font(.nohemi(.subheadline, weight: .bold))
                 Spacer()
@@ -247,11 +247,11 @@ private struct QuizQuestionRow: View {
 
                 if isDone {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 14, weight: .semibold))
+                        .textStyle(Typography.footnoteEM)
                         .foregroundStyle(Color.greenButtonLeading)
                 } else if !isDisabled {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .semibold))
+                        .textStyle(Typography.footnoteEM)
                         .foregroundStyle(.white.opacity(0.25))
                 }
             }

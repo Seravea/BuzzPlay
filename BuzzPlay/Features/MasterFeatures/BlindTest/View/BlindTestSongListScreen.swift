@@ -17,7 +17,7 @@ struct BlindTestSongListScreen: View {
                 HStack(spacing: 12) {
                     Button(action: onBack) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold))
+                            .textStyle(Typography.label)
                             .foregroundStyle(.white)
                             .frame(width: 36, height: 36)
                             .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
@@ -90,7 +90,7 @@ struct BlindTestSongListScreen: View {
                             ProgressView().tint(.white).scaleEffect(0.9)
                         } else {
                             Image(systemName: notInvited ? "lock.fill" : "play.fill")
-                                .font(.system(size: 15, weight: .semibold))
+                                .textStyle(Typography.labelSM)
                         }
                         Text(blindTestVM.isFetching ? "Chargement…"
                              : notInvited ? "Invitez les joueurs d'abord"
@@ -146,7 +146,7 @@ struct BlindTestSongRow: View {
                             .fill(.black.opacity(0.55))
                             .frame(width: 56, height: 56)
                         Image(systemName: "checkmark")
-                            .font(.system(size: 14, weight: .bold))
+                            .textStyle(Typography.footnoteBold)
                             .foregroundStyle(.white)
                     }
                 }
@@ -168,11 +168,11 @@ struct BlindTestSongRow: View {
 
                 if isSelected && !isPlayed {
                     Image(systemName: "music.note")
-                        .font(.system(size: 13, weight: .semibold))
+                        .textStyle(Typography.footnoteEM)
                         .foregroundStyle(Color.mustardYellow)
                 } else if !isPlayed {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .semibold))
+                        .textStyle(Typography.footnoteEM)
                         .foregroundStyle(.white.opacity(0.25))
                 }
             }

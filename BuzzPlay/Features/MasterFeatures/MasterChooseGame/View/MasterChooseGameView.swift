@@ -99,7 +99,7 @@ struct MasterChooseGameView: View {
         VStack(spacing: 0) {
             VStack(spacing: 10) {
                 Image(systemName: game.iconName)
-                    .font(.system(size: 26, weight: .semibold))
+                    .textStyle(Typography.sectionTitle)
                     .foregroundStyle(.white)
                     .frame(width: 56, height: 56)
                     .background(gradient.opacity(isAvailable ? 0.25 : 0.10), in: RoundedRectangle(cornerRadius: 16))
@@ -124,7 +124,7 @@ struct MasterChooseGameView: View {
                 HStack(spacing: 6) {
                     if !isAvailable {
                         Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .semibold))
+                            .textStyle(Typography.captionEM)
                         Text("Terminé")
                             .font(.nohemi(.subheadline, weight: .bold))
                     } else if !allReady {
@@ -135,7 +135,7 @@ struct MasterChooseGameView: View {
                             .font(.nohemi(.subheadline, weight: .bold))
                     } else {
                         Image(systemName: game.iconName)
-                            .font(.system(size: 12, weight: .semibold))
+                            .textStyle(Typography.captionEM)
                         Text("Lancer")
                             .font(.nohemi(.subheadline, weight: .bold))
                     }
@@ -251,7 +251,7 @@ struct MasterChooseGameView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
                 Image(systemName: "music.note")
-                    .font(.system(size: 18, weight: .semibold))
+                    .textStyle(Typography.cardTitle)
                     .foregroundStyle(Color.mustardYellow)
                     .frame(width: 42, height: 42)
                     .background(Color.mustardYellow.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
@@ -269,7 +269,7 @@ struct MasterChooseGameView: View {
                 Button { showNotesShop = true } label: {
                     HStack(spacing: 5) {
                         Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 13))
+                            .textStyle(Typography.footnote)
                         Text("Recharger")
                             .font(.nohemi(.caption, weight: .bold))
                     }
@@ -363,7 +363,7 @@ struct MasterChooseGameView: View {
             VStack(spacing: 4) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.system(size: 22, weight: .semibold))
+                        .textStyle(Typography.sectionTitle)
                         .foregroundStyle(.white)
                         .frame(width: 42, height: 42)
                         .background(backgroundColor?.opacity(0.2) ?? Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 10))
@@ -387,7 +387,7 @@ struct MasterChooseGameView: View {
                     .frame(maxWidth: 60)
                 
                 Image(systemName: "music.note")
-                    .font(.system(size: 11, weight: .medium))
+                    .textStyle(Typography.caption2)
                     .foregroundStyle(Color.mustardYellow.opacity(0.7))
             }
             .padding(.horizontal, 10)
@@ -423,7 +423,7 @@ private struct DailyPackBanner: View {
                     .fill(Color.mustardYellow.opacity(0.18))
                     .frame(width: 40, height: 40)
                 Image(systemName: days >= 7 ? "flame.fill" : "gift.fill")
-                    .font(.system(size: 17, weight: .semibold))
+                    .textStyle(Typography.labelXL)
                     .foregroundStyle(Color.mustardYellow)
             }
 

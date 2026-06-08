@@ -157,7 +157,7 @@ struct QuizThemeSelectionView: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: "sparkles")
-                    .font(.system(size: 13, weight: .semibold))
+                    .textStyle(Typography.footnoteEM)
                 Text("Générer")
                     .font(.nohemi(.caption, weight: .bold))
             }
@@ -213,7 +213,7 @@ private struct ThemeSection: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
                 Image(systemName: theme.iconName)
-                    .font(.system(size: 18, weight: .semibold))
+                    .textStyle(Typography.cardTitle)
                     .foregroundStyle(theme.color)
                     .frame(width: 38, height: 38)
                     .background(theme.color.opacity(0.18), in: RoundedRectangle(cornerRadius: 10))
@@ -253,7 +253,7 @@ private struct ThemeAIOnlyCard: View {
         Button(action: onTap) {
             HStack(spacing: 12) {
                 Image(systemName: theme.iconName)
-                    .font(.system(size: 16, weight: .semibold))
+                    .textStyle(Typography.label)
                     .foregroundStyle(theme.color)
                     .frame(width: 36, height: 36)
                     .background(theme.color.opacity(0.14), in: RoundedRectangle(cornerRadius: 10))
@@ -271,7 +271,7 @@ private struct ThemeAIOnlyCard: View {
                 Spacer()
 
                 Image(systemName: "sparkles")
-                    .font(.system(size: 14, weight: .semibold))
+                    .textStyle(Typography.footnoteEM)
                     .foregroundStyle(Color.purpleLeading)
             }
             .padding(.horizontal, 14)
@@ -335,7 +335,7 @@ private struct QuizSetCard: View {
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .semibold))
+                    .textStyle(Typography.footnoteEM)
                     .foregroundStyle(.white.opacity(0.25))
             }
             .padding(.vertical, 14)

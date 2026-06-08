@@ -69,7 +69,7 @@ struct LobbyMasterView: View {
                     } label: {
                         VStack(spacing: 6) {
                             Image(systemName: duration.iconName)
-                                .font(.system(size: 18, weight: .semibold))
+                                .textStyle(Typography.cardTitle)
                                 .foregroundStyle(isSelected ? Color.mustardYellow : .white.opacity(0.55))
                             Text(duration.label)
                                 .font(.nohemi(.subheadline, weight: .bold))
@@ -114,7 +114,7 @@ struct LobbyMasterView: View {
                     } label: {
                         VStack(spacing: 6) {
                             Image(systemName: mode.iconName)
-                                .font(.system(size: 16, weight: .semibold))
+                                .textStyle(Typography.label)
                                 .foregroundStyle(isSelected ? .white : .white.opacity(0.55))
                             Text(mode.label)
                                 .font(.nohemi(.subheadline, weight: .bold))
@@ -184,7 +184,7 @@ struct LobbyMasterView: View {
     private var mixInfoPill: some View {
         HStack(spacing: 6) {
             Image(systemName: "brain")
-                .font(.system(size: 11, weight: .semibold))
+                .textStyle(Typography.caption2EM)
                 .foregroundStyle(Color.purpleLeading)
             Text("\(masterGameVM.quizRoundsTotal) Quiz")
                 .font(.nohemi(.caption, weight: .bold))
@@ -192,7 +192,7 @@ struct LobbyMasterView: View {
             Text("·")
                 .foregroundStyle(.white.opacity(0.3))
             Image(systemName: "music.note")
-                .font(.system(size: 11, weight: .semibold))
+                .textStyle(Typography.caption2EM)
                 .foregroundStyle(Color.blueLeading)
             Text("\(masterGameVM.blindTestRoundsTotal) Blind Test")
                 .font(.nohemi(.caption, weight: .bold))
@@ -254,7 +254,7 @@ struct LobbyMasterView: View {
                     .fill(.white.opacity(0.06))
                     .frame(width: 64, height: 64)
                 Image(systemName: "person.3")
-                    .font(.system(size: 26, weight: .medium))
+                    .textStyle(Typography.screenTitleSoft)
                     .foregroundStyle(.white.opacity(0.30))
             }
             VStack(spacing: 4) {
@@ -280,7 +280,7 @@ struct LobbyMasterView: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "play.fill")
-                    .font(.system(size: 16, weight: .bold))
+                    .textStyle(Typography.labelBold)
                 Text("Commencer la partie")
                     .font(.nohemi(.body, weight: .bold))
             }
@@ -348,7 +348,7 @@ private struct LobbyTeamRow: View {
             Spacer()
 
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 18))
+                .textStyle(Typography.cardTitle)
                 .foregroundStyle(Color.greenGlow)
         }
         .padding(.horizontal, 14)

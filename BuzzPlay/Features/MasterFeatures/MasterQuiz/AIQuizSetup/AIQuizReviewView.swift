@@ -50,7 +50,7 @@ struct AIQuizReviewView: View {
                     Button(action: onBack) {
                         HStack(spacing: 6) {
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 14, weight: .semibold))
+                                .textStyle(Typography.footnoteEM)
                             Text("Retour")
                                 .font(.nohemi(.body, weight: .semiBold))
                         }
@@ -86,7 +86,7 @@ struct AIQuizReviewView: View {
                                 .lineLimit(2)
                             Spacer(minLength: 8)
                             Image(systemName: "xmark")
-                                .font(.system(size: 11, weight: .semibold))
+                                .textStyle(Typography.caption2EM)
                                 .foregroundStyle(.white.opacity(0.4))
                         }
                         .padding(.horizontal, 12)
@@ -145,7 +145,7 @@ struct AIQuizReviewView: View {
                 if missingCount > 0 {
                     HStack(spacing: 6) {
                         Image(systemName: "info.circle")
-                            .font(.system(size: 12))
+                            .textStyle(Typography.caption)
                         Text("\(missingCount) question\(missingCount > 1 ? "s" : "") classique\(missingCount > 1 ? "s" : "") ajoutée\(missingCount > 1 ? "s" : "") au lancement")
                             .font(.nohemi(.caption2, weight: .regular))
                     }
@@ -221,7 +221,7 @@ private struct QuestionCardAI: View {
             // Question
             HStack(spacing: 8) {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 14))
+                    .textStyle(Typography.footnote)
                     .foregroundStyle(.green)
                 Text(question.title)
                     .font(.nohemi(.body, weight: .semiBold))
@@ -238,7 +238,7 @@ private struct QuestionCardAI: View {
                                     .tint(.white)
                             } else {
                                 Image(systemName: "arrow.clockwise")
-                                    .font(.system(size: 14, weight: .semibold))
+                                    .textStyle(Typography.footnoteEM)
                                     .foregroundStyle(.white.opacity(isBusy ? 0.25 : 0.65))
                             }
                         }
@@ -254,7 +254,7 @@ private struct QuestionCardAI: View {
             if !question.correctAnswers.isEmpty {
                 HStack(spacing: 8) {
                     Image(systemName: "arrow.right")
-                        .font(.system(size: 12))
+                        .textStyle(Typography.caption)
                         .foregroundStyle(.white.opacity(0.4))
                     Text(question.correctAnswers.joined(separator: " • "))
                         .font(.nohemi(.caption, weight: .regular))
@@ -267,7 +267,7 @@ private struct QuestionCardAI: View {
             if let funFact = question.funFact, !funFact.isEmpty {
                 HStack(spacing: 8) {
                     Image(systemName: "lightbulb.fill")
-                        .font(.system(size: 12))
+                        .textStyle(Typography.caption)
                         .foregroundStyle(.yellow.opacity(0.6))
                     Text(funFact)
                         .font(.nohemi(.caption2, weight: .regular))

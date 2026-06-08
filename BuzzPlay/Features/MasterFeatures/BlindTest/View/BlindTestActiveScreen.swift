@@ -147,7 +147,7 @@ struct BlindTestActiveScreen: View {
                             Text("Passer")
                                 .font(.nohemi(.caption, weight: .bold))
                             Image(systemName: "forward.end.fill")
-                                .font(.system(size: 11))
+                                .textStyle(Typography.caption2)
                         }
                         .foregroundStyle(.white.opacity(0.7))
                         .padding(.horizontal, 12)

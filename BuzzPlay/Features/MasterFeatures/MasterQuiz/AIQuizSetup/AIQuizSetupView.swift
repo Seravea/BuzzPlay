@@ -46,7 +46,7 @@ struct AIQuizSetupView: View {
                     Spacer()
                     Button(action: onDismiss) {
                         Image(systemName: "xmark")
-                            .font(.system(size: 14, weight: .semibold))
+                            .textStyle(Typography.footnoteEM)
                             .foregroundStyle(.white.opacity(0.5))
                     }
                 }
@@ -81,7 +81,7 @@ struct AIQuizSetupView: View {
                         } label: {
                             HStack(spacing: 6) {
                                 Image(systemName: allSelected ? "checkmark.circle.fill" : "circle.dotted")
-                                    .font(.system(size: 14))
+                                    .textStyle(Typography.footnote)
                                 Text(allSelected ? "Tout désélectionner" : "Tout sélectionner")
                                     .font(.nohemi(.caption, weight: .bold))
                             }
@@ -282,7 +282,7 @@ private struct ThemeCardAI: View {
             VStack(spacing: 8) {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: theme.iconName)
-                        .font(.system(size: 22, weight: .semibold))
+                        .textStyle(Typography.sectionTitle)
                         .foregroundStyle(isSelected ? theme.color : .white.opacity(0.35))
                         .frame(width: 44, height: 44)
                         .background(
@@ -292,7 +292,7 @@ private struct ThemeCardAI: View {
 
                     if isSelected {
                         Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 14, weight: .bold))
+                            .textStyle(Typography.footnoteBold)
                             .foregroundStyle(theme.color)
                             .background(Color.sheetBg, in: Circle())
                             .offset(x: 6, y: -6)

@@ -49,7 +49,7 @@ struct PublicBlindTestView: View {
             } else {
                 VStack(spacing: 10) {
                     Image(systemName: "waveform")
-                        .font(.system(size: 22, weight: .medium))
+                        .textStyle(Typography.sectionTitleSoft)
                         .foregroundStyle(Color.mustardYellow.opacity(0.8))
                         .symbolEffect(.variableColor.iterative)
 

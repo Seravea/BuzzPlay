@@ -40,7 +40,7 @@ struct PublicQuizDisplayView: View {
             } else {
                 VStack(spacing: 8) {
                     Image(systemName: "hourglass")
-                        .font(.system(size: 24, weight: .medium))
+                        .textStyle(Typography.sectionTitleSoft)
                         .foregroundStyle(.white.opacity(0.35))
                     Text("Préparez-vous…")
                         .font(.nohemi(.title3, weight: .bold))

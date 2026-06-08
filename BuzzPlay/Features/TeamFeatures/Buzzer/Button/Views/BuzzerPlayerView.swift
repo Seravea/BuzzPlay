@@ -155,7 +155,7 @@ struct BuzzerPlayerView: View {
             if hasAnyShield {
                 HStack(spacing: 3) {
                     Image(systemName: playerGameVM.player.hasShieldAll ? "shield.lefthalf.filled" : "shield.fill")
-                        .font(.system(size: 12, weight: .semibold))
+                        .textStyle(Typography.captionEM)
                     Text(playerGameVM.player.hasShieldAll ? "×Tous" : "×1")
                         .font(.nohemi(.caption2, weight: .bold))
                 }
@@ -174,7 +174,7 @@ struct BuzzerPlayerView: View {
                 }
             } label: {
                 Image(systemName: buzzerVM.isBuzzMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
-                    .font(.system(size: 18, weight: .semibold))
+                    .textStyle(Typography.cardTitle)
                     .foregroundStyle(buzzerVM.isBuzzMuted ? .white.opacity(0.35) : .white.opacity(0.85))
                     .frame(width: 44, height: 44)
             }
@@ -225,7 +225,7 @@ private struct NotesToastView: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "dollarsign.bank.building.fill")
-                .font(.system(size: 15, weight: .bold))
+                .textStyle(Typography.labelSMBold)
                 .foregroundStyle(Color.mustardYellow)
             Text("+\(amount) Notes reçues !")
                 .font(.nohemi(.subheadline, weight: .bold))

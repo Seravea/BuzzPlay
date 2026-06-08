@@ -99,7 +99,7 @@ struct BlindTestSearchScreen: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: invited ? "checkmark.circle.fill" : "person.wave.2.fill")
-                    .font(.system(size: 13, weight: .bold))
+                    .textStyle(Typography.footnoteBold)
                 Text(invited ? "Joueurs invités" : "Inviter les joueurs")
                     .font(.nohemi(.subheadline, weight: .bold))
                 Spacer()
@@ -128,7 +128,7 @@ struct BlindTestSearchScreen: View {
     private var appleMusicBanner: some View {
         HStack(spacing: 10) {
             Image(systemName: blindTestVM.canPlayCatalogContent ? "music.note" : "music.note")
-                .font(.system(size: 13, weight: .semibold))
+                .textStyle(Typography.footnoteEM)
                 .foregroundStyle(blindTestVM.canPlayCatalogContent ? Color.greenButtonLeading : Color.mustardYellow)
 
             if blindTestVM.canPlayCatalogContent {
@@ -173,7 +173,7 @@ struct BlindTestSearchScreen: View {
         HStack(spacing: 10) {
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
-                    .font(.system(size: 14, weight: .medium))
+                    .textStyle(Typography.footnoteMedium)
                     .foregroundStyle(.white.opacity(0.4))
 
                 TextField("", text: $searchText,
@@ -265,7 +265,7 @@ struct BlindTestSearchScreen: View {
                     searchText = ""
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .semibold))
+                        .textStyle(Typography.captionEM)
                         .foregroundStyle(.white.opacity(0.5))
                         .frame(width: 28, height: 28)
                         .background(.white.opacity(0.1), in: Circle())
@@ -309,7 +309,7 @@ struct BlindTestSearchScreen: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "magnifyingglass")
-                    .font(.system(size: 14, weight: .semibold))
+                    .textStyle(Typography.footnoteEM)
                     .foregroundStyle(.white.opacity(0.45))
                 Text("Chercher une playlist précise…")
                     .font(.nohemi(.body, weight: .semiBold))
@@ -352,7 +352,7 @@ private struct CategoryCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: 14))
 
                     Image(systemName: item.icon)
-                        .font(.system(size: 28, weight: .semibold))
+                        .textStyle(Typography.screenTitle)
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.2), radius: 4)
                 }
@@ -383,7 +383,7 @@ struct BlindTestPlaylistRow: View {
                                    startPoint: .topLeading, endPoint: .bottomTrailing)
                         .overlay(
                             Image(systemName: "music.note.list")
-                                .font(.system(size: 18))
+                                .textStyle(Typography.cardTitle)
                                 .foregroundStyle(.white.opacity(0.8))
                         )
                 }
@@ -411,7 +411,7 @@ struct BlindTestPlaylistRow: View {
                 }
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .semibold))
+                    .textStyle(Typography.footnoteEM)
                     .foregroundStyle(.white.opacity(0.25))
             }
             .padding(8)

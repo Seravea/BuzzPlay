@@ -150,7 +150,7 @@ private struct GameAnnounceSheet: View {
             VStack(spacing: 20) {
                 HStack(spacing: 14) {
                     Image(systemName: game.iconName)
-                        .font(.system(size: 24, weight: .semibold))
+                        .textStyle(Typography.sectionTitle)
                         .foregroundStyle(.white)
                         .frame(width: 56, height: 56)
                         .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 16))
@@ -410,7 +410,7 @@ private struct PlayerPodiumSheet: View {
     private func myRankCard(rank: Int, player: Player) -> some View {
         HStack(spacing: 14) {
             Text(rankEmoji(rank))
-                .font(.system(size: 32))
+                .textStyle(Typography.screenTitle)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Ta position")
@@ -443,7 +443,7 @@ private struct PlayerPodiumSheet: View {
     private func podiumRow(rank: Int, player: Player, isSelf: Bool) -> some View {
         HStack(spacing: 12) {
             Text(rankEmoji(rank))
-                .font(.system(size: 20))
+                .textStyle(Typography.title3)
                 .frame(width: 32)
 
             Circle()

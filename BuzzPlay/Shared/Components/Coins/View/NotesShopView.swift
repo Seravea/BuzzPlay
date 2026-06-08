@@ -51,7 +51,7 @@ struct NotesShopView: View {
         VStack(spacing: 6) {
             HStack(spacing: 8) {
                 Image(systemName: "music.note")
-                    .font(.system(size: 22, weight: .semibold))
+                    .textStyle(Typography.sectionTitle)
                     .foregroundStyle(Color.mustardYellow)
                 Text("\(currentBalance)")
                     .font(.nohemi(.largeTitle, weight: .black))
@@ -121,14 +121,14 @@ private struct PackCard: View {
             // Icône + badge meilleure valeur
             ZStack(alignment: .topTrailing) {
                 Image(systemName: "music.note.list")
-                    .font(.system(size: 22, weight: .medium))
+                    .textStyle(Typography.sectionTitleSoft)
                     .foregroundStyle(Color.mustardYellow)
                     .frame(width: 52, height: 52)
                     .background(Color.mustardYellow.opacity(0.14), in: RoundedRectangle(cornerRadius: 14))
 
                 if pack.isBestValue {
                     Text("⭐")
-                        .font(.system(size: 12))
+                        .textStyle(Typography.caption)
                         .offset(x: 6, y: -6)
                 }
             }

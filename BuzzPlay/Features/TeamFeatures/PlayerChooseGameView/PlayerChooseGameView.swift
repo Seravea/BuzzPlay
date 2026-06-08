@@ -119,7 +119,7 @@ struct PlayerChooseGameView: View {
             Spacer()
 
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 22))
+                .textStyle(Typography.sectionTitle)
                 .foregroundStyle(Color.greenGlow)
         }
         .padding(14)
@@ -142,7 +142,7 @@ struct PlayerChooseGameView: View {
                     .fill(Color.buzzHotPink.opacity(0.15))
                     .frame(width: 52, height: 52)
                 Image(systemName: "hand.point.up.left.fill")
-                    .font(.system(size: 24))
+                    .textStyle(Typography.sectionTitle)
                     .foregroundStyle(Color.buzzHotPink)
             }
 
