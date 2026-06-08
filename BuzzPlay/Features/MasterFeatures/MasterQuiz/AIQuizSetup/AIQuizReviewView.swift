@@ -251,12 +251,12 @@ private struct QuestionCardAI: View {
             }
 
             // Réponse
-            if let correctAnswer = question.correctAnswer {
+            if !question.correctAnswers.isEmpty {
                 HStack(spacing: 8) {
                     Image(systemName: "arrow.right")
                         .font(.system(size: 12))
                         .foregroundStyle(.white.opacity(0.4))
-                    Text(correctAnswer)
+                    Text(question.correctAnswers.joined(separator: " • "))
                         .font(.nohemi(.caption, weight: .regular))
                         .foregroundStyle(.white.opacity(0.7))
                 }
