@@ -30,6 +30,8 @@ class QuizMasterViewModel: BuzzDrivenGame {
 
     private var doubledScorePlayers: Set<UUID> = []
     private var usedQuestionHintIndex: [UUID: Int] = [:]  // questionID -> next hint index
+    // Joueurs ayant acheté showIndicies entre deux questions — livrés au début de la prochaine manche
+    private var pendingHintPlayers: [UUID: Player] = [:]
     private let feedbackGenerator = UINotificationFeedbackGenerator()
 
     //MARK: Timer's datas
@@ -62,7 +64,7 @@ extension QuizMasterViewModel {
     }
     
     func startRound() {
-        guard currentQuestion != nil else { return }
+        guard let question = currentQuestion else { return }
 
         // Lance countdown 3-2-1-GO avant d'activer le buzzer
         // Pas de broadcast ici — la question serait visible avant le countdown
@@ -77,6 +79,9 @@ extension QuizMasterViewModel {
             self.startReactionTimer()
             let newState = self.makePublicState()
             self.gameVM.sendPublicState(newState)
+
+            // Livrer les indices achetés entre deux questions
+            self.flushPendingHints(for: question)
         }
     }
     
@@ -228,21 +233,40 @@ extension QuizMasterViewModel {
             doubledScorePlayers.insert(player.id)
 
         case .showIndicies:
-            guard let question = currentQuestion else { return }
-            let nextIdx = usedQuestionHintIndex[question.id, default: 0]
-            guard nextIdx < question.indices.count else {
-                if let lastHint = question.indices.last {
-                    gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(lastHint), player: player)
-                }
+            guard let question = currentQuestion else {
+                // Aucune question active — stocker pour la prochaine manche
+                pendingHintPlayers[player.id] = player
                 return
             }
-            let hint = question.indices[nextIdx]
-            usedQuestionHintIndex[question.id] = nextIdx + 1
-            gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(hint), player: player)
+            sendHint(to: player, for: question)
 
         default:
             break
         }
+    }
+
+    private func sendHint(to player: Player, for question: QuizQuestion) {
+        let nextIdx = usedQuestionHintIndex[question.id, default: 0]
+        let hint: String
+        if nextIdx < question.indices.count {
+            hint = question.indices[nextIdx]
+            usedQuestionHintIndex[question.id] = nextIdx + 1
+        } else if let lastHint = question.indices.last {
+            hint = lastHint
+        } else {
+            return
+        }
+        gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(hint), player: player)
+    }
+
+    private func flushPendingHints(for question: QuizQuestion) {
+        guard !pendingHintPlayers.isEmpty else { return }
+        for player in pendingHintPlayers.values {
+            // Utilise le Player à jour (score, coins) depuis gameVM
+            let live = gameVM.players.first(where: { $0.id == player.id }) ?? player
+            sendHint(to: live, for: question)
+        }
+        pendingHintPlayers.removeAll()
     }
 }
 

@@ -83,6 +83,8 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     }
     
     private var doubledScorePlayers: Set<UUID> = []
+    // Joueurs ayant acheté showIndicies entre deux morceaux — livrés au début de la prochaine manche
+    private var pendingHintPlayers: [UUID: Player] = [:]
     private let feedbackGenerator = UINotificationFeedbackGenerator()
 
     //MARK: données de jeu
@@ -222,6 +224,8 @@ extension BlindTestMasterViewModel {
 
             gameVM.unlockBuzz()
             playPreparedMusicNow()
+            // Livrer les indices achetés entre deux morceaux
+            flushPendingHints(for: selectedMusic)
         }
     }
 
@@ -264,13 +268,27 @@ extension BlindTestMasterViewModel {
             doubledScorePlayers.insert(player.id)
 
         case .showIndicies:
-            guard let song = selectedMusic else { return }
+            guard let song = selectedMusic, case .playing = state else {
+                // Aucun morceau actif — stocker pour la prochaine manche
+                pendingHintPlayers[player.id] = player
+                return
+            }
             let hint = buildBlindTestHint(song: song)
             gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(hint), player: player)
 
         default:
             break
         }
+    }
+
+    private func flushPendingHints(for song: BlindTestSong) {
+        guard !pendingHintPlayers.isEmpty else { return }
+        let hint = buildBlindTestHint(song: song)
+        for player in pendingHintPlayers.values {
+            let live = gameVM.players.first(where: { $0.id == player.id }) ?? player
+            gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(hint), player: live)
+        }
+        pendingHintPlayers.removeAll()
     }
 
     private func buildBlindTestHint(song: BlindTestSong) -> String {
