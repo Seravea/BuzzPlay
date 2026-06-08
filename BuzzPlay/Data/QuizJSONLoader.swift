@@ -20,7 +20,7 @@ private struct QuizSetJSON: Decodable {
 
 private struct QuizQuestionJSON: Decodable {
     let question: String
-    let answer: String
+    let answers: [String]
     let difficulty: String   // "facile" | "moyen" | "difficile" | "expert"
     let funFact: String?
 }
@@ -73,12 +73,12 @@ enum QuizJSONLoader {
             let questions: [QuizQuestion] = setJSON.questions.map { q in
                 QuizQuestion(
                     title: q.question,
-                    answers: [q.answer],
+                    answers: q.answers,
                     theme: theme.title,
                     difficulty: QuizDifficulty(rawValue: q.difficulty) ?? .moyen,
                     tone: nil,
                     indices: [],
-                    correctAnswers: [q.answer],
+                    correctAnswers: q.answers,
                     funFact: q.funFact,
                     source: .bundled
                 )
