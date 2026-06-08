@@ -7,63 +7,83 @@
       "questions": [
         {
           "question": "Qui chante 'Thriller' (1982) ?",
-          "answer": "Michael Jackson",
           "difficulty": "facile",
-          "funFact": "Thriller est l'album le plus vendu de l'histoire avec plus de 70 millions de copies."
+          "funFact": "Thriller est l'album le plus vendu de l'histoire avec plus de 70 millions de copies.",
+          "answers": [
+            "Michael Jackson"
+          ]
         },
         {
           "question": "Quel groupe suédois a sorti l'album 'The Visitors' en 1981, son dernier studio ?",
-          "answer": "ABBA",
           "difficulty": "moyen",
-          "funFact": "ABBA s'est séparé en 1982 sans jamais l'annoncer officiellement."
+          "funFact": "ABBA s'est séparé en 1982 sans jamais l'annoncer officiellement.",
+          "answers": [
+            "ABBA"
+          ]
         },
         {
           "question": "Qui chante 'Billie Jean' sorti en single le 2 janvier 1983 ?",
-          "answer": "Michael Jackson",
           "difficulty": "facile",
-          "funFact": "Billie Jean est restée 7 semaines numéro 1 au Billboard Hot 100 et a remporté 2 Grammy Awards."
+          "funFact": "Billie Jean est restée 7 semaines numéro 1 au Billboard Hot 100 et a remporté 2 Grammy Awards.",
+          "answers": [
+            "Michael Jackson"
+          ]
         },
         {
           "question": "Quel album de Prince est resté 24 semaines consécutives numéro 1 au Billboard en 1984 ?",
-          "answer": "Purple Rain",
           "difficulty": "moyen",
-          "funFact": "Purple Rain a remporté l'Oscar de la meilleure musique de film en 1985 et 3 Grammy Awards."
+          "funFact": "Purple Rain a remporté l'Oscar de la meilleure musique de film en 1985 et 3 Grammy Awards.",
+          "answers": [
+            "Purple Rain"
+          ]
         },
         {
           "question": "Quel groupe chante 'Every Breath You Take' en 1983 ?",
-          "answer": "The Police",
           "difficulty": "facile",
-          "funFact": "Sting a écrit la chanson en une nuit dans la maison de Noel Coward en Jamaïque."
+          "funFact": "Sting a écrit la chanson en une nuit dans la maison de Noel Coward en Jamaïque.",
+          "answers": [
+            "The Police"
+          ]
         },
         {
           "question": "Qui chante 'Like a Virgin' en 1984 ?",
-          "answer": "Madonna",
           "difficulty": "facile",
-          "funFact": "Le clip de Like a Virgin a été tourné à Venise, en Italie."
+          "funFact": "Le clip de Like a Virgin a été tourné à Venise, en Italie.",
+          "answers": [
+            "Madonna"
+          ]
         },
         {
           "question": "Quel groupe chante 'Sweet Child O' Mine' en 1987 ?",
-          "answer": "Guns N' Roses",
           "difficulty": "facile",
-          "funFact": "Le célèbre riff de guitare a été composé par Slash comme un simple exercice d'échauffement."
+          "funFact": "Le célèbre riff de guitare a été composé par Slash comme un simple exercice d'échauffement.",
+          "answers": [
+            "Guns N' Roses"
+          ]
         },
         {
           "question": "Qui chante 'Take On Me' en 1985 ?",
-          "answer": "a-ha",
           "difficulty": "facile",
-          "funFact": "Le clip de Take On Me utilise la technique d'animation rotoscopique, mélange de dessin et de prise de vue réelle."
+          "funFact": "Le clip de Take On Me utilise la technique d'animation rotoscopique, mélange de dessin et de prise de vue réelle.",
+          "answers": [
+            "a-ha"
+          ]
         },
         {
           "question": "Quel groupe chante 'Don't You (Forget About Me)' en 1985, issu du film The Breakfast Club ?",
-          "answer": "Simple Minds",
           "difficulty": "moyen",
-          "funFact": "Simple Minds a hésité à enregistrer ce titre, pensant qu'il ne leur correspondait pas."
+          "funFact": "Simple Minds a hésité à enregistrer ce titre, pensant qu'il ne leur correspondait pas.",
+          "answers": [
+            "Simple Minds"
+          ]
         },
         {
           "question": "Qui chante 'Africa' en 1982 ?",
-          "answer": "Toto",
           "difficulty": "moyen",
-          "funFact": "Africa est devenue un mème internet dans les années 2010, ce qui a relancé la popularité du groupe."
+          "funFact": "Africa est devenue un mème internet dans les années 2010, ce qui a relancé la popularité du groupe.",
+          "answers": [
+            "Toto"
+          ]
         }
       ]
     },
@@ -74,63 +94,83 @@
       "questions": [
         {
           "question": "Quel album de Nirvana a rendu le groupe mondialement célèbre en 1991 ?",
-          "answer": "Nevermind",
           "difficulty": "facile",
-          "funFact": "Nevermind a détrôné Michael Jackson de la première place du Billboard 200 en janvier 1992."
+          "funFact": "Nevermind a détrôné Michael Jackson de la première place du Billboard 200 en janvier 1992.",
+          "answers": [
+            "Nevermind"
+          ]
         },
         {
           "question": "Qui chante 'Smells Like Teen Spirit', sorti le 10 septembre 1991 ?",
-          "answer": "Nirvana",
           "difficulty": "facile",
-          "funFact": "Kurt Cobain s'est inspiré du style soft/loud des Pixies pour composer ce titre."
+          "funFact": "Kurt Cobain s'est inspiré du style soft/loud des Pixies pour composer ce titre.",
+          "answers": [
+            "Nirvana"
+          ]
         },
         {
           "question": "Quel groupe chante 'Wannabe' en 1996 ?",
-          "answer": "Spice Girls",
           "difficulty": "facile",
-          "funFact": "Wannabe a atteint le numéro 1 dans 37 pays à travers le monde."
+          "funFact": "Wannabe a atteint le numéro 1 dans 37 pays à travers le monde.",
+          "answers": [
+            "Spice Girls"
+          ]
         },
         {
           "question": "Qui chante 'Losing My Religion' en 1991 ?",
-          "answer": "R.E.M.",
           "difficulty": "moyen",
-          "funFact": "L'expression 'losing my religion' est une expression du sud des États-Unis signifiant perdre son sang-froid."
+          "funFact": "L'expression 'losing my religion' est une expression du sud des États-Unis signifiant perdre son sang-froid.",
+          "answers": [
+            "R.E.M."
+          ]
         },
         {
           "question": "Quel groupe chante 'Wonderwall' en 1995 ?",
-          "answer": "Oasis",
           "difficulty": "facile",
-          "funFact": "Noel Gallagher a composé Wonderwall en pensant à une personne imaginaire idéale."
+          "funFact": "Noel Gallagher a composé Wonderwall en pensant à une personne imaginaire idéale.",
+          "answers": [
+            "Oasis"
+          ]
         },
         {
           "question": "Qui chante 'Baby One More Time' en 1998 ?",
-          "answer": "Britney Spears",
           "difficulty": "facile",
-          "funFact": "C'était le premier single de Britney Spears. Il a atteint le numéro 1 dans plus de 15 pays."
+          "funFact": "C'était le premier single de Britney Spears. Il a atteint le numéro 1 dans plus de 15 pays.",
+          "answers": [
+            "Britney Spears"
+          ]
         },
         {
           "question": "Quel groupe chante 'No Scrubs' en 1999 ?",
-          "answer": "TLC",
           "difficulty": "moyen",
-          "funFact": "No Scrubs a été nommée l'une des 500 plus grandes chansons de tous les temps par Rolling Stone."
+          "funFact": "No Scrubs a été nommée l'une des 500 plus grandes chansons de tous les temps par Rolling Stone.",
+          "answers": [
+            "TLC"
+          ]
         },
         {
           "question": "Qui chante 'Bitter Sweet Symphony' en 1997 ?",
-          "answer": "The Verve",
           "difficulty": "moyen",
-          "funFact": "La chanson utilise un sample orchestral des Rolling Stones. The Verve a longtemps dû céder les droits d'auteur."
+          "funFact": "La chanson utilise un sample orchestral des Rolling Stones. The Verve a longtemps dû céder les droits d'auteur.",
+          "answers": [
+            "The Verve"
+          ]
         },
         {
           "question": "Qui chante 'Creep' en 1992 ?",
-          "answer": "Radiohead",
           "difficulty": "facile",
-          "funFact": "Radiohead a longtemps refusé de jouer Creep en concert, la considérant trop simpliste."
+          "funFact": "Radiohead a longtemps refusé de jouer Creep en concert, la considérant trop simpliste.",
+          "answers": [
+            "Radiohead"
+          ]
         },
         {
           "question": "Qui chante 'My Heart Will Go On', thème du film Titanic en 1997 ?",
-          "answer": "Céline Dion",
           "difficulty": "facile",
-          "funFact": "Céline Dion avait d'abord refusé d'enregistrer ce titre. Elle l'a chanté en une seule prise."
+          "funFact": "Céline Dion avait d'abord refusé d'enregistrer ce titre. Elle l'a chanté en une seule prise.",
+          "answers": [
+            "Céline Dion"
+          ]
         }
       ]
     },
@@ -141,63 +181,83 @@
       "questions": [
         {
           "question": "Quel artiste a sorti l'album 'The College Dropout' en 2004 ?",
-          "answer": "Kanye West",
           "difficulty": "moyen",
-          "funFact": "Kanye West était producteur pour Jay-Z avant de lancer sa carrière solo."
+          "funFact": "Kanye West était producteur pour Jay-Z avant de lancer sa carrière solo.",
+          "answers": [
+            "Kanye West"
+          ]
         },
         {
           "question": "Qui chante 'Crazy in Love' en 2003 ?",
-          "answer": "Beyoncé",
           "difficulty": "facile",
-          "funFact": "Jay-Z apparaît sur ce titre. C'est le premier single solo de Beyoncé après Destiny's Child."
+          "funFact": "Jay-Z apparaît sur ce titre. C'est le premier single solo de Beyoncé après Destiny's Child.",
+          "answers": [
+            "Beyoncé"
+          ]
         },
         {
           "question": "Quel groupe chante 'Seven Nation Army' en 2003 ?",
-          "answer": "The White Stripes",
           "difficulty": "facile",
-          "funFact": "La ligne de basse iconique est en réalité jouée à la guitare avec un effet de pédale."
+          "funFact": "La ligne de basse iconique est en réalité jouée à la guitare avec un effet de pédale.",
+          "answers": [
+            "The White Stripes"
+          ]
         },
         {
           "question": "Qui chante 'In Da Club' en 2003 ?",
-          "answer": "50 Cent",
           "difficulty": "facile",
-          "funFact": "In Da Club a passé 9 semaines numéro 1 au Billboard Hot 100."
+          "funFact": "In Da Club a passé 9 semaines numéro 1 au Billboard Hot 100.",
+          "answers": [
+            "50 Cent"
+          ]
         },
         {
           "question": "Quel groupe chante 'Harder, Better, Faster, Stronger' en 2001 ?",
-          "answer": "Daft Punk",
           "difficulty": "facile",
-          "funFact": "Kanye West a samplé ce titre pour composer 'Stronger' en 2007."
+          "funFact": "Kanye West a samplé ce titre pour composer 'Stronger' en 2007.",
+          "answers": [
+            "Daft Punk"
+          ]
         },
         {
           "question": "Qui chante 'Beautiful' en 2002 ?",
-          "answer": "Christina Aguilera",
           "difficulty": "facile",
-          "funFact": "Beautiful a remporté le Grammy Award de la meilleure performance pop féminine en 2004."
+          "funFact": "Beautiful a remporté le Grammy Award de la meilleure performance pop féminine en 2004.",
+          "answers": [
+            "Christina Aguilera"
+          ]
         },
         {
           "question": "Quel artiste chante 'Yeah!' en 2004 ?",
-          "answer": "Usher",
           "difficulty": "facile",
-          "funFact": "Yeah! a passé 12 semaines consécutives numéro 1 au Billboard Hot 100."
+          "funFact": "Yeah! a passé 12 semaines consécutives numéro 1 au Billboard Hot 100.",
+          "answers": [
+            "Usher"
+          ]
         },
         {
           "question": "Qui chante 'Umbrella' en 2007 ?",
-          "answer": "Rihanna",
           "difficulty": "facile",
-          "funFact": "Britney Spears a refusé le titre avant qu’il soit proposé à Rihanna."
+          "funFact": "Britney Spears a refusé le titre avant qu’il soit proposé à Rihanna.",
+          "answers": [
+            "Rihanna"
+          ]
         },
         {
           "question": "Quel groupe chante 'Mr. Brightside' en 2003 ?",
-          "answer": "The Killers",
           "difficulty": "moyen",
-          "funFact": "Mr. Brightside est l’une des chansons les plus longtemps classées dans l’histoire du UK Singles Chart."
+          "funFact": "Mr. Brightside est l’une des chansons les plus longtemps classées dans l’histoire du UK Singles Chart.",
+          "answers": [
+            "The Killers"
+          ]
         },
         {
           "question": "Qui chante 'Toxic' en 2004 ?",
-          "answer": "Britney Spears",
           "difficulty": "facile",
-          "funFact": "Toxic a remporté le Grammy Award de la meilleure performance dance en 2005."
+          "funFact": "Toxic a remporté le Grammy Award de la meilleure performance dance en 2005.",
+          "answers": [
+            "Britney Spears"
+          ]
         }
       ]
     },
@@ -208,63 +268,83 @@
       "questions": [
         {
           "question": "Quel artiste belge a sorti 'Formidable' en 2013 ?",
-          "answer": "Stromae",
           "difficulty": "facile",
-          "funFact": "Stromae est l'anagramme de Maestro."
+          "funFact": "Stromae est l'anagramme de Maestro.",
+          "answers": [
+            "Stromae"
+          ]
         },
         {
           "question": "Qui chante 'Shape of You' en 2017 ?",
-          "answer": "Ed Sheeran",
           "difficulty": "facile",
-          "funFact": "Shape of You a été la chanson la plus écoutée sur Spotify en 2017."
+          "funFact": "Shape of You a été la chanson la plus écoutée sur Spotify en 2017.",
+          "answers": [
+            "Ed Sheeran"
+          ]
         },
         {
           "question": "Quel artiste chante 'Blinding Lights' en 2019 ?",
-          "answer": "The Weeknd",
           "difficulty": "facile",
-          "funFact": "Blinding Lights a passé 57 semaines dans le top 10 du Billboard Hot 100, un record."
+          "funFact": "Blinding Lights a passé 57 semaines dans le top 10 du Billboard Hot 100, un record.",
+          "answers": [
+            "The Weeknd"
+          ]
         },
         {
           "question": "Qui chante 'Old Town Road' en 2019 ?",
-          "answer": "Lil Nas X",
           "difficulty": "facile",
-          "funFact": "Old Town Road a passé 19 semaines consécutives numéro 1 au Billboard Hot 100, un record absolu."
+          "funFact": "Old Town Road a passé 19 semaines consécutives numéro 1 au Billboard Hot 100, un record absolu.",
+          "answers": [
+            "Lil Nas X"
+          ]
         },
         {
           "question": "Quel groupe coréen chante 'Gangnam Style' en 2012 ?",
-          "answer": "PSY",
           "difficulty": "facile",
-          "funFact": "Gangnam Style a été la première vidéo YouTube à dépasser 1 milliard de vues en 2012."
+          "funFact": "Gangnam Style a été la première vidéo YouTube à dépasser 1 milliard de vues en 2012.",
+          "answers": [
+            "PSY"
+          ]
         },
         {
           "question": "Qui chante 'Someone Like You' en 2011 ?",
-          "answer": "Adele",
           "difficulty": "facile",
-          "funFact": "Someone Like You a été numéro 1 au Royaume-Uni pendant 5 semaines."
+          "funFact": "Someone Like You a été numéro 1 au Royaume-Uni pendant 5 semaines.",
+          "answers": [
+            "Adele"
+          ]
         },
         {
           "question": "Quel groupe chante 'Get Lucky' en 2013 ?",
-          "answer": "Daft Punk",
           "difficulty": "facile",
-          "funFact": "Get Lucky fait partie de l'album Random Access Memories, qui a remporté 5 Grammy Awards en 2014."
+          "funFact": "Get Lucky fait partie de l'album Random Access Memories, qui a remporté 5 Grammy Awards en 2014.",
+          "answers": [
+            "Daft Punk"
+          ]
         },
         {
           "question": "Qui chante 'Uptown Funk' en 2014 ?",
-          "answer": "Mark Ronson ft. Bruno Mars",
           "difficulty": "moyen",
-          "funFact": "Uptown Funk a passé 14 semaines numéro 1 au Billboard Hot 100."
+          "funFact": "Uptown Funk a passé 14 semaines numéro 1 au Billboard Hot 100.",
+          "answers": [
+            "Mark Ronson ft. Bruno Mars"
+          ]
         },
         {
           "question": "Quel artiste chante 'Despacito' en 2017 ?",
-          "answer": "Luis Fonsi ft. Daddy Yankee",
           "difficulty": "moyen",
-          "funFact": "Despacito a été la première chanson en espagnol à atteindre le numéro 1 du Billboard Hot 100 depuis 'Macarena' en 1996."
+          "funFact": "Despacito a été la première chanson en espagnol à atteindre le numéro 1 du Billboard Hot 100 depuis 'Macarena' en 1996.",
+          "answers": [
+            "Luis Fonsi ft. Daddy Yankee"
+          ]
         },
         {
           "question": "Qui chante 'Bad Guy' en 2019 ?",
-          "answer": "Billie Eilish",
           "difficulty": "facile",
-          "funFact": "Billie Eilish avait 17 ans quand Bad Guy est sorti. Elle est devenue la plus jeune artiste à remporter les 4 grands Grammy Awards."
+          "funFact": "Billie Eilish avait 17 ans quand Bad Guy est sorti. Elle est devenue la plus jeune artiste à remporter les 4 grands Grammy Awards.",
+          "answers": [
+            "Billie Eilish"
+          ]
         }
       ]
     },
@@ -275,63 +355,83 @@
       "questions": [
         {
           "question": "Quel est le vrai prénom d'Aya Nakamura ?",
-          "answer": "Aya Danioko",
           "difficulty": "difficile",
-          "funFact": "Elle a choisi Nakamura en hommage au personnage de la série Heroes."
+          "funFact": "Elle a choisi Nakamura en hommage au personnage de la série Heroes.",
+          "answers": [
+            "Aya Danioko"
+          ]
         },
         {
           "question": "Stromae est l'anagramme de quel mot ?",
-          "answer": "Maestro",
           "difficulty": "moyen",
-          "funFact": "Stromae s'appelait MC Stroman avant d'adopter ce pseudonyme."
+          "funFact": "Stromae s'appelait MC Stroman avant d'adopter ce pseudonyme.",
+          "answers": [
+            "Maestro"
+          ]
         },
         {
           "question": "Quel artiste français chante 'Je veux' en 2010 ?",
-          "answer": "Zaz",
           "difficulty": "moyen",
-          "funFact": "Zaz s'appelle Isabelle Geffroy à l'état civil. Son style mêle jazz manouche et chanson française."
+          "funFact": "Zaz s'appelle Isabelle Geffroy à l'état civil. Son style mêle jazz manouche et chanson française.",
+          "answers": [
+            "Zaz"
+          ]
         },
         {
           "question": "Qui chante 'Alors on danse' en 2009 ?",
-          "answer": "Stromae",
           "difficulty": "facile",
-          "funFact": "Alors on danse est numéro 1 dans plus de 11 pays européens en 2010."
+          "funFact": "Alors on danse est numéro 1 dans plus de 11 pays européens en 2010.",
+          "answers": [
+            "Stromae"
+          ]
         },
         {
           "question": "Quel artiste chante 'Tout donner' en 2014 ?",
-          "answer": "Maître Gims",
           "difficulty": "moyen",
-          "funFact": "Maître Gims est membre du groupe Sexion d'Assaut avant sa carrière solo."
+          "funFact": "Maître Gims est membre du groupe Sexion d'Assaut avant sa carrière solo.",
+          "answers": [
+            "Maître Gims"
+          ]
         },
         {
           "question": "Qui chante 'Djadja' en 2018 ?",
-          "answer": "Aya Nakamura",
           "difficulty": "facile",
-          "funFact": "Djadja a rendu Aya Nakamura célèbre dans toute l'Europe et a été certifiée multi-platine en France."
+          "funFact": "Djadja a rendu Aya Nakamura célèbre dans toute l'Europe et a été certifiée multi-platine en France.",
+          "answers": [
+            "Aya Nakamura"
+          ]
         },
         {
           "question": "Quel artiste chante 'Le monde est stone' en 1978, titre issu de la comédie musicale Starmania ?",
-          "answer": "Diane Dufresne",
           "difficulty": "difficile",
-          "funFact": "Starmania est une comédie musicale de Michel Berger et Luc Plamondon créée en 1978."
+          "funFact": "Starmania est une comédie musicale de Michel Berger et Luc Plamondon créée en 1978.",
+          "answers": [
+            "Diane Dufresne"
+          ]
         },
         {
           "question": "Qui chante 'L’Envie' en 1986 ?",
-          "answer": "Johnny Hallyday",
           "difficulty": "moyen",
-          "funFact": "Johnny Hallyday a vendu plus de 110 millions de disques au cours de sa carrière."
+          "funFact": "Johnny Hallyday a vendu plus de 110 millions de disques au cours de sa carrière.",
+          "answers": [
+            "Johnny Hallyday"
+          ]
         },
         {
           "question": "Quel artiste chante 'Papaoutai' en 2013 ?",
-          "answer": "Stromae",
           "difficulty": "facile",
-          "funFact": "Le titre Papaoutai fait référence à l'absence du père de Stromae, décédé lors du génocide rwandais de 1994."
+          "funFact": "Le titre Papaoutai fait référence à l'absence du père de Stromae, décédé lors du génocide rwandais de 1994.",
+          "answers": [
+            "Stromae"
+          ]
         },
         {
           "question": "Qui chante 'Alexandrie Alexandra' en 1977 ?",
-          "answer": "Claude François",
           "difficulty": "facile",
-          "funFact": ""
+          "funFact": "",
+          "answers": [
+            "Claude François"
+          ]
         }
       ]
     },
@@ -342,63 +442,83 @@
       "questions": [
         {
           "question": "Quel album d'Adele contient le titre 'Rolling in the Deep' ?",
-          "answer": "21",
           "difficulty": "facile",
-          "funFact": "L'album 21 a été vendu à plus de 31 millions de copies dans le monde."
+          "funFact": "L'album 21 a été vendu à plus de 31 millions de copies dans le monde.",
+          "answers": [
+            "21"
+          ]
         },
         {
           "question": "Qui chante 'Shallow' avec Lady Gaga dans le film A Star is Born en 2018 ?",
-          "answer": "Bradley Cooper",
           "difficulty": "moyen",
-          "funFact": "Shallow a remporté l'Oscar de la meilleure chanson originale et le Grammy Award de la meilleure chanson écrite pour le cinéma en 2019."
+          "funFact": "Shallow a remporté l'Oscar de la meilleure chanson originale et le Grammy Award de la meilleure chanson écrite pour le cinéma en 2019.",
+          "answers": [
+            "Bradley Cooper"
+          ]
         },
         {
           "question": "Qui chante 'Poker Face' en 2008 ?",
-          "answer": "Lady Gaga",
           "difficulty": "facile",
-          "funFact": "Poker Face a été le single le plus vendu au monde en 2009."
+          "funFact": "Poker Face a été le single le plus vendu au monde en 2009.",
+          "answers": [
+            "Lady Gaga"
+          ]
         },
         {
           "question": "Quel artiste canadien chante 'One Dance' en 2016 ?",
-          "answer": "Drake",
           "difficulty": "facile",
-          "funFact": "One Dance est le premier titre de Drake à atteindre le numéro 1 au Billboard Hot 100."
+          "funFact": "One Dance est le premier titre de Drake à atteindre le numéro 1 au Billboard Hot 100.",
+          "answers": [
+            "Drake"
+          ]
         },
         {
           "question": "Qui chante 'Sorry' en 2015 ?",
-          "answer": "Justin Bieber",
           "difficulty": "facile",
-          "funFact": "Sorry fait partie de l'album Purpose. Le clip vidéo sans Justin Bieber a été visionné plus d'un milliard de fois."
+          "funFact": "Sorry fait partie de l'album Purpose. Le clip vidéo sans Justin Bieber a été visionné plus d'un milliard de fois.",
+          "answers": [
+            "Justin Bieber"
+          ]
         },
         {
           "question": "Quel artiste chante 'Happy' en 2013, issu du film Moi, Moche et Méchant 2 ?",
-          "answer": "Pharrell Williams",
           "difficulty": "facile",
-          "funFact": "Happy a été nommée aux Oscars 2014 pour la meilleure chanson originale."
+          "funFact": "Happy a été nommée aux Oscars 2014 pour la meilleure chanson originale.",
+          "answers": [
+            "Pharrell Williams"
+          ]
         },
         {
           "question": "Qui chante 'Hello' en 2015 ?",
-          "answer": "Adele",
           "difficulty": "facile",
-          "funFact": "Hello a battu le record de streams en une semaine sur Spotify à sa sortie."
+          "funFact": "Hello a battu le record de streams en une semaine sur Spotify à sa sortie.",
+          "answers": [
+            "Adele"
+          ]
         },
         {
           "question": "Quel groupe australien chante 'Somebody That I Used to Know' en 2011 ?",
-          "answer": "Gotye ft. Kimbra",
           "difficulty": "moyen",
-          "funFact": "Somebody That I Used to Know a remporté 2 Grammy Awards en 2013."
+          "funFact": "Somebody That I Used to Know a remporté 2 Grammy Awards en 2013.",
+          "answers": [
+            "Gotye ft. Kimbra"
+          ]
         },
         {
           "question": "Qui chante 'Rolling in the Deep' en 2010 ?",
-          "answer": "Adele",
           "difficulty": "facile",
-          "funFact": "Rolling in the Deep a remporté 3 Grammy Awards en 2012 dont Record de l'année et Chanson de l'année."
+          "funFact": "Rolling in the Deep a remporté 3 Grammy Awards en 2012 dont Record de l'année et Chanson de l'année.",
+          "answers": [
+            "Adele"
+          ]
         },
         {
           "question": "Quel artiste chante 'Can't Stop the Feeling' en 2016, issu du film Les Trolls ?",
-          "answer": "Justin Timberlake",
           "difficulty": "facile",
-          "funFact": "Can't Stop the Feeling a été nommée aux Oscars 2017 pour la meilleure chanson originale."
+          "funFact": "Can't Stop the Feeling a été nommée aux Oscars 2017 pour la meilleure chanson originale.",
+          "answers": [
+            "Justin Timberlake"
+          ]
         }
       ]
     },
@@ -409,63 +529,83 @@
       "questions": [
         {
           "question": "Quel groupe britannique a sorti 'Bohemian Rhapsody' en 1975 ?",
-          "answer": "Queen",
           "difficulty": "facile",
-          "funFact": ""
+          "funFact": "",
+          "answers": [
+            "Queen"
+          ]
         },
         {
           "question": "Quel groupe chante 'Smells Like Teen Spirit' en 1991 ?",
-          "answer": "Nirvana",
           "difficulty": "facile",
-          "funFact": "Kurt Cobain s'est inspiré du style des Pixies pour composer cette chanson. Elle est sortie le 10 septembre 1991."
+          "funFact": "Kurt Cobain s'est inspiré du style des Pixies pour composer cette chanson. Elle est sortie le 10 septembre 1991.",
+          "answers": [
+            "Nirvana"
+          ]
         },
         {
           "question": "Qui chante 'Back in Black' en 1980 ?",
-          "answer": "AC/DC",
           "difficulty": "facile",
-          "funFact": "Back in Black est l'un des albums les plus vendus de l'histoire avec plus de 50 millions de copies."
+          "funFact": "Back in Black est l'un des albums les plus vendus de l'histoire avec plus de 50 millions de copies.",
+          "answers": [
+            "AC/DC"
+          ]
         },
         {
           "question": "Quel groupe chante 'Hotel California' en 1977 ?",
-          "answer": "Eagles",
           "difficulty": "moyen",
-          "funFact": "Hotel California a remporté le Grammy Award du Record de l'année en 1978."
+          "funFact": "Hotel California a remporté le Grammy Award du Record de l'année en 1978.",
+          "answers": [
+            "Eagles"
+          ]
         },
         {
           "question": "Qui chante 'Stairway to Heaven' en 1971 ?",
-          "answer": "Led Zeppelin",
           "difficulty": "moyen",
-          "funFact": "Stairway to Heaven dure 8 minutes et n'a jamais été sortie en single au Royaume-Uni."
+          "funFact": "Stairway to Heaven dure 8 minutes et n'a jamais été sortie en single au Royaume-Uni.",
+          "answers": [
+            "Led Zeppelin"
+          ]
         },
         {
           "question": "Quel groupe chante 'Sultans of Swing' en 1978 ?",
-          "answer": "Dire Straits",
           "difficulty": "moyen",
-          "funFact": "Mark Knopfler joue de la guitare sans médiator, avec ses doigts, créant le son signature du groupe."
+          "funFact": "Mark Knopfler joue de la guitare sans médiator, avec ses doigts, créant le son signature du groupe.",
+          "answers": [
+            "Dire Straits"
+          ]
         },
         {
           "question": "Qui chante 'Eye of the Tiger' en 1982, issu du film Rocky III ?",
-          "answer": "Survivor",
           "difficulty": "facile",
-          "funFact": "Eye of the Tiger a passé 6 semaines numéro 1 au Billboard Hot 100 en 1982."
+          "funFact": "Eye of the Tiger a passé 6 semaines numéro 1 au Billboard Hot 100 en 1982.",
+          "answers": [
+            "Survivor"
+          ]
         },
         {
           "question": "Quel groupe chante 'Under Pressure' en 1981 ?",
-          "answer": "Queen et David Bowie",
           "difficulty": "moyen",
-          "funFact": "Queen et David Bowie ont enregistré Under Pressure en improvisant en une seule nuit de session."
+          "funFact": "Queen et David Bowie ont enregistré Under Pressure en improvisant en une seule nuit de session.",
+          "answers": [
+            "Queen et David Bowie"
+          ]
         },
         {
           "question": "Qui chante 'Enter Sandman' en 1991 ?",
-          "answer": "Metallica",
           "difficulty": "facile",
-          "funFact": "Enter Sandman est le premier titre de l'album dit 'Black Album', le plus vendu de Metallica."
+          "funFact": "Enter Sandman est le premier titre de l'album dit 'Black Album', le plus vendu de Metallica.",
+          "answers": [
+            "Metallica"
+          ]
         },
         {
           "question": "Quel groupe chante 'Zombie' en 1994 ?",
-          "answer": "The Cranberries",
           "difficulty": "facile",
-          "funFact": "Zombie a été écrite par Dolores O'Riordan en hommage aux victimes d'un attentat de l'IRA en 1993."
+          "funFact": "Zombie a été écrite par Dolores O'Riordan en hommage aux victimes d'un attentat de l'IRA en 1993.",
+          "answers": [
+            "The Cranberries"
+          ]
         }
       ]
     },
@@ -476,63 +616,83 @@
       "questions": [
         {
           "question": "Quel album d'Orelsan a remporté l'album de l'année aux Victoires de la musique 2018 ?",
-          "answer": "La fête est finie",
           "difficulty": "moyen",
-          "funFact": "La fête est finie a été certifié double platine en France."
+          "funFact": "La fête est finie a été certifié double platine en France.",
+          "answers": [
+            "La fête est finie"
+          ]
         },
         {
           "question": "Quel est le vrai prénom d'Orelsan ?",
-          "answer": "Aurélien",
           "difficulty": "moyen",
-          "funFact": ""
+          "funFact": "",
+          "answers": [
+            "Aurélien"
+          ]
         },
         {
           "question": "Quel groupe de rap français chante 'Tout n'est pas si facile' en 2000 ?",
-          "answer": "IAM",
           "difficulty": "moyen",
-          "funFact": "IAM est originaire de Marseille et est l'un des pionniers du rap français fondé en 1989."
+          "funFact": "IAM est originaire de Marseille et est l'un des pionniers du rap français fondé en 1989.",
+          "answers": [
+            "IAM"
+          ]
         },
         {
           "question": "Qui chante 'La Boulette' en 2006 ?",
-          "answer": "Diam's",
           "difficulty": "facile",
-          "funFact": ""
+          "funFact": "",
+          "answers": [
+            "Diam's"
+          ]
         },
         {
           "question": "Quel groupe de rap français chante 'Police' en 1993 ?",
-          "answer": "NTM",
           "difficulty": "moyen",
-          "funFact": "NTM, fondé à Saint-Denis en 1989, est composé de Joey Starr et de Kool Shen."
+          "funFact": "NTM, fondé à Saint-Denis en 1989, est composé de Joey Starr et de Kool Shen.",
+          "answers": [
+            "NTM"
+          ]
         },
         {
           "question": "Qui chante 'Quand le soleil devient froid' en 1997 ?",
-          "answer": "MC Solaar",
           "difficulty": "difficile",
-          "funFact": "MC Solaar, de son vrai nom Claude M'Barali, est né à Dakar au Sénégal et a grandi à Paris."
+          "funFact": "MC Solaar, de son vrai nom Claude M'Barali, est né à Dakar au Sénégal et a grandi à Paris.",
+          "answers": [
+            "MC Solaar"
+          ]
         },
         {
           "question": "Quel est le vrai nom de Booba ?",
-          "answer": "Élie Yaffa",
           "difficulty": "difficile",
-          "funFact": "Booba a des origines sénégalaises et a grandi à Boulogne-Billancourt."
+          "funFact": "Booba a des origines sénégalaises et a grandi à Boulogne-Billancourt.",
+          "answers": [
+            "Élie Yaffa"
+          ]
         },
         {
           "question": "Qui chante 'Mama' en 2014 ?",
-          "answer": "Bigflo et Oli",
           "difficulty": "moyen",
-          "funFact": "Bigflo et Oli sont deux frères originaires de Toulouse. Florian et Olivio Ordonez."
+          "funFact": "Bigflo et Oli sont deux frères originaires de Toulouse. Florian et Olivio Ordonez.",
+          "answers": [
+            "Bigflo et Oli"
+          ]
         },
         {
           "question": "Quel artiste chante 'Chocolat' en 2016 ?",
-          "answer": "Roméo Elvis",
           "difficulty": "difficile",
-          "funFact": "Roméo Elvis est le frère de la chanteuse Angèle. Ils sont tous deux originaires de Belgique."
+          "funFact": "Roméo Elvis est le frère de la chanteuse Angèle. Ils sont tous deux originaires de Belgique.",
+          "answers": [
+            "Roméo Elvis"
+          ]
         },
         {
           "question": "Qui chante 'Bloqué' en 2015 ?",
-          "answer": "Casseurs Flowters",
           "difficulty": "moyen",
-          "funFact": ""
+          "funFact": "",
+          "answers": [
+            "Casseurs Flowters"
+          ]
         }
       ]
     },
@@ -543,63 +703,83 @@
       "questions": [
         {
           "question": "Dans quelle ville est né Tupac Shakur ?",
-          "answer": "New York",
           "difficulty": "moyen",
-          "funFact": "Tupac est né à East Harlem, New York, mais est associé à Los Angeles où il a vécu et enregistré."
+          "funFact": "Tupac est né à East Harlem, New York, mais est associé à Los Angeles où il a vécu et enregistré.",
+          "answers": [
+            "New York"
+          ]
         },
         {
           "question": "Qui chante 'Lose Yourself' en 2002, issu du film 8 Mile ?",
-          "answer": "Eminem",
           "difficulty": "facile",
-          "funFact": "Lose Yourself a remporté l'Oscar de la meilleure chanson originale en 2003. Eminem n'était pas présent à la cérémonie."
+          "funFact": "Lose Yourself a remporté l'Oscar de la meilleure chanson originale en 2003. Eminem n'était pas présent à la cérémonie.",
+          "answers": [
+            "Eminem"
+          ]
         },
         {
           "question": "Quel rappeur chante 'HUMBLE.' en 2017 ?",
-          "answer": "Kendrick Lamar",
           "difficulty": "facile",
-          "funFact": "Kendrick Lamar est le premier artiste de rap à remporter le Prix Pulitzer pour la musique en 2018."
+          "funFact": "Kendrick Lamar est le premier artiste de rap à remporter le Prix Pulitzer pour la musique en 2018.",
+          "answers": [
+            "Kendrick Lamar"
+          ]
         },
         {
           "question": "Qui chante 'Sicko Mode' en 2018 ?",
-          "answer": "Travis Scott",
           "difficulty": "moyen",
-          "funFact": "Sicko Mode contient 3 changements de beat distincts et dure 5 minutes 12 secondes."
+          "funFact": "Sicko Mode contient 3 changements de beat distincts et dure 5 minutes 12 secondes.",
+          "answers": [
+            "Travis Scott"
+          ]
         },
         {
           "question": "Quel artiste chante 'God's Plan' en 2018 ?",
-          "answer": "Drake",
           "difficulty": "facile",
-          "funFact": "Drake a dépensé tout le budget du clip vidéo de God's Plan en faisant des dons à des inconnus."
+          "funFact": "Drake a dépensé tout le budget du clip vidéo de God's Plan en faisant des dons à des inconnus.",
+          "answers": [
+            "Drake"
+          ]
         },
         {
           "question": "Qui chante 'Nuthin' but a G Thang' en 1992 ?",
-          "answer": "Dr. Dre",
           "difficulty": "moyen",
-          "funFact": "Ce titre, issu de l'album The Chronic, a contribué à populariser le G-funk, un sous-genre du hip-hop."
+          "funFact": "Ce titre, issu de l'album The Chronic, a contribué à populariser le G-funk, un sous-genre du hip-hop.",
+          "answers": [
+            "Dr. Dre"
+          ]
         },
         {
           "question": "Quel rappeur chante 'Juicy' en 1994 ?",
-          "answer": "The Notorious B.I.G.",
           "difficulty": "moyen",
-          "funFact": "The Notorious B.I.G., de son vrai nom Christopher Wallace, est originaire de Brooklyn, New York."
+          "funFact": "The Notorious B.I.G., de son vrai nom Christopher Wallace, est originaire de Brooklyn, New York.",
+          "answers": [
+            "The Notorious B.I.G."
+          ]
         },
         {
           "question": "Qui chante 'Gold Digger' en 2005 ?",
-          "answer": "Kanye West",
           "difficulty": "facile",
-          "funFact": "Gold Digger sample le titre I Got a Woman de Ray Charles. La chanson a passé 10 semaines numéro 1 au Billboard."
+          "funFact": "Gold Digger sample le titre I Got a Woman de Ray Charles. La chanson a passé 10 semaines numéro 1 au Billboard.",
+          "answers": [
+            "Kanye West"
+          ]
         },
         {
           "question": "Quel artiste chante 'Power' en 2010 ?",
-          "answer": "Kanye West",
           "difficulty": "moyen",
-          "funFact": "Power sample le titre 21st Century Schizoid Man de King Crimson."
+          "funFact": "Power sample le titre 21st Century Schizoid Man de King Crimson.",
+          "answers": [
+            "Kanye West"
+          ]
         },
         {
           "question": "Qui chante 'Rockstar' en 2017 ?",
-          "answer": "Post Malone ft. 21 Savage",
           "difficulty": "moyen",
-          "funFact": "Rockstar a passé 8 semaines numéro 1 au Billboard Hot 100."
+          "funFact": "Rockstar a passé 8 semaines numéro 1 au Billboard Hot 100.",
+          "answers": [
+            "Post Malone ft. 21 Savage"
+          ]
         }
       ]
     },
@@ -610,63 +790,83 @@
       "questions": [
         {
           "question": "Quel est le vrai nom du duo Daft Punk ?",
-          "answer": "Thomas Bangalter et Guy-Manuel de Homem-Christo",
           "difficulty": "moyen",
-          "funFact": "Ils se sont rencontrés au lycée Carnot à Paris. Daft Punk s'est séparé en février 2021."
+          "funFact": "Ils se sont rencontrés au lycée Carnot à Paris. Daft Punk s'est séparé en février 2021.",
+          "answers": [
+            "Thomas Bangalter et Guy-Manuel de Homem-Christo"
+          ]
         },
         {
           "question": "Quel duo français chante 'Around the World' en 1997 ?",
-          "answer": "Daft Punk",
           "difficulty": "facile",
-          "funFact": "Le clip d'Around the World met en scène des danseurs représentant chaque son de la chanson."
+          "funFact": "Le clip d'Around the World met en scène des danseurs représentant chaque son de la chanson.",
+          "answers": [
+            "Daft Punk"
+          ]
         },
         {
           "question": "Qui chante 'Levels' en 2011 ?",
-          "answer": "Avicii",
           "difficulty": "moyen",
-          "funFact": "Avicii, de son vrai nom Tim Bergling, avait 21 ans quand Levels est sorti. Il est décédé en avril 2018."
+          "funFact": "Avicii, de son vrai nom Tim Bergling, avait 21 ans quand Levels est sorti. Il est décédé en avril 2018.",
+          "answers": [
+            "Avicii"
+          ]
         },
         {
           "question": "Quel artiste chante 'Blue (Da Ba Dee)' en 1998 ?",
-          "answer": "Eiffel 65",
           "difficulty": "facile",
-          "funFact": "Eiffel 65 est un groupe italien composé de Jeffery Jey, Maurizio Lobina et Gabry Ponte."
+          "funFact": "Eiffel 65 est un groupe italien composé de Jeffery Jey, Maurizio Lobina et Gabry Ponte.",
+          "answers": [
+            "Eiffel 65"
+          ]
         },
         {
           "question": "Qui chante 'One More Time' en 2000 ?",
-          "answer": "Daft Punk",
           "difficulty": "facile",
-          "funFact": "One More Time est le premier single de l'album Discovery. La voix est traitée avec un vocoder."
+          "funFact": "One More Time est le premier single de l'album Discovery. La voix est traitée avec un vocoder.",
+          "answers": [
+            "Daft Punk"
+          ]
         },
         {
           "question": "Quel DJ chante 'Animals' en 2013 ?",
-          "answer": "Martin Garrix",
           "difficulty": "moyen",
-          "funFact": "Martin Garrix avait 17 ans quand Animals est sorti. Il est originaire des Pays-Bas."
+          "funFact": "Martin Garrix avait 17 ans quand Animals est sorti. Il est originaire des Pays-Bas.",
+          "answers": [
+            "Martin Garrix"
+          ]
         },
         {
           "question": "Qui chante 'Sandstorm' en 1999 ?",
-          "answer": "Darude",
           "difficulty": "moyen",
-          "funFact": "Sandstorm est devenu un mème internet, souvent répondu comme titre de toute chanson inconnue."
+          "funFact": "Sandstorm est devenu un mème internet, souvent répondu comme titre de toute chanson inconnue.",
+          "answers": [
+            "Darude"
+          ]
         },
         {
           "question": "Quel artiste chante 'Titanium' en 2011 ?",
-          "answer": "David Guetta ft. Sia",
           "difficulty": "facile",
-          "funFact": "Titanium a été initialement écrite pour Alicia Keys, qui a refusé le titre."
+          "funFact": "Titanium a été initialement écrite pour Alicia Keys, qui a refusé le titre.",
+          "answers": [
+            "David Guetta ft. Sia"
+          ]
         },
         {
           "question": "Qui chante 'What Is Love' en 1993 ?",
-          "answer": "Haddaway",
           "difficulty": "moyen",
-          "funFact": "What Is Love a été popularisée en France grâce au film Night at the Roxbury en 1998."
+          "funFact": "What Is Love a été popularisée en France grâce au film Night at the Roxbury en 1998.",
+          "answers": [
+            "Haddaway"
+          ]
         },
         {
           "question": "Quel artiste chante 'Scary Monsters and Nice Sprites' en 2010 ?",
-          "answer": "Skrillex",
           "difficulty": "moyen",
-          "funFact": "Skrillex a remporté 3 Grammy Awards avec cet EP en 2012, dont Meilleur album dance/électronique."
+          "funFact": "Skrillex a remporté 3 Grammy Awards avec cet EP en 2012, dont Meilleur album dance/électronique.",
+          "answers": [
+            "Skrillex"
+          ]
         }
       ]
     },
@@ -677,63 +877,83 @@
       "questions": [
         {
           "question": "Quel est l'album solo de Beyoncé sorti en 2003 ?",
-          "answer": "Dangerously in Love",
           "difficulty": "moyen",
-          "funFact": "Dangerously in Love a remporté 5 Grammy Awards en 2004, dont Meilleur album contemporain R&B."
+          "funFact": "Dangerously in Love a remporté 5 Grammy Awards en 2004, dont Meilleur album contemporain R&B.",
+          "answers": [
+            "Dangerously in Love"
+          ]
         },
         {
           "question": "Qui chante 'No Scrubs' en 1999 ?",
-          "answer": "TLC",
           "difficulty": "moyen",
-          "funFact": "TLC est composé de Tionne Watkins, Lisa Lopes et Rozonda Thomas. Lisa Lopes est décédée en 2002."
+          "funFact": "TLC est composé de Tionne Watkins, Lisa Lopes et Rozonda Thomas. Lisa Lopes est décédée en 2002.",
+          "answers": [
+            "TLC"
+          ]
         },
         {
           "question": "Quel artiste chante 'Yeah!' en 2004 ?",
-          "answer": "Usher",
           "difficulty": "facile",
-          "funFact": "Yeah! a passé 12 semaines numéro 1 au Billboard Hot 100."
+          "funFact": "Yeah! a passé 12 semaines numéro 1 au Billboard Hot 100.",
+          "answers": [
+            "Usher"
+          ]
         },
         {
           "question": "Qui chante 'Crazy in Love' en 2003 ?",
-          "answer": "Beyoncé",
           "difficulty": "facile",
-          "funFact": "Crazy in Love est le premier single solo de Beyoncé après la séparation de Destiny's Child."
+          "funFact": "Crazy in Love est le premier single solo de Beyoncé après la séparation de Destiny's Child.",
+          "answers": [
+            "Beyoncé"
+          ]
         },
         {
           "question": "Quel artiste chante 'Superstition' en 1972 ?",
-          "answer": "Stevie Wonder",
           "difficulty": "moyen",
-          "funFact": "Superstition a été initialement composée pour Jeff Beck, mais Stevie Wonder a sorti sa version en premier."
+          "funFact": "Superstition a été initialement composée pour Jeff Beck, mais Stevie Wonder a sorti sa version en premier.",
+          "answers": [
+            "Stevie Wonder"
+          ]
         },
         {
           "question": "Qui chante 'I Will Always Love You' repris en 1992 pour le film The Bodyguard ?",
-          "answer": "Whitney Houston",
           "difficulty": "facile",
-          "funFact": "La chanson a été composée à l'origine par Dolly Parton en 1973. La version de Whitney Houston a passé 14 semaines numéro 1."
+          "funFact": "La chanson a été composée à l'origine par Dolly Parton en 1973. La version de Whitney Houston a passé 14 semaines numéro 1.",
+          "answers": [
+            "Whitney Houston"
+          ]
         },
         {
           "question": "Quel artiste chante 'Let's Get It On' en 1973 ?",
-          "answer": "Marvin Gaye",
           "difficulty": "moyen",
-          "funFact": "Let's Get It On est l'une des chansons les plus vendues de l'histoire du R&B."
+          "funFact": "Let's Get It On est l'une des chansons les plus vendues de l'histoire du R&B.",
+          "answers": [
+            "Marvin Gaye"
+          ]
         },
         {
           "question": "Qui chante 'Formation' en 2016 ?",
-          "answer": "Beyoncé",
           "difficulty": "moyen",
-          "funFact": "Formation a été dévoilée la veille du Super Bowl 50, où Beyoncé l'a interprétée lors du show de la mi-temps."
+          "funFact": "Formation a été dévoilée la veille du Super Bowl 50, où Beyoncé l'a interprétée lors du show de la mi-temps.",
+          "answers": [
+            "Beyoncé"
+          ]
         },
         {
           "question": "Quel artiste chante 'Drunk in Love' en 2013 ?",
-          "answer": "Beyoncé ft. Jay-Z",
           "difficulty": "moyen",
-          "funFact": "Drunk in Love fait partie de l'album surprise éponyme sorti en décembre 2013, sans promotion préalable."
+          "funFact": "Drunk in Love fait partie de l'album surprise éponyme sorti en décembre 2013, sans promotion préalable.",
+          "answers": [
+            "Beyoncé ft. Jay-Z"
+          ]
         },
         {
           "question": "Qui chante 'Vision of Love' en 1990 ?",
-          "answer": "Mariah Carey",
           "difficulty": "moyen",
-          "funFact": "Vision of Love est le premier single de Mariah Carey. Il a remporté le Grammy Award de la meilleure performance pop féminine en 1991."
+          "funFact": "Vision of Love est le premier single de Mariah Carey. Il a remporté le Grammy Award de la meilleure performance pop féminine en 1991.",
+          "answers": [
+            "Mariah Carey"
+          ]
         }
       ]
     },
@@ -744,63 +964,83 @@
       "questions": [
         {
           "question": "Combien de membres compte le groupe BTS ?",
-          "answer": "7",
           "difficulty": "facile",
-          "funFact": "Les membres sont RM, Jin, Suga, J-Hope, Jimin, V et Jungkook."
+          "funFact": "Les membres sont RM, Jin, Suga, J-Hope, Jimin, V et Jungkook.",
+          "answers": [
+            "7"
+          ]
         },
         {
           "question": "Quel artiste coréen chante 'Gangnam Style' en 2012 ?",
-          "answer": "PSY",
           "difficulty": "facile",
-          "funFact": "Gangnam Style a été la première vidéo YouTube à dépasser 1 milliard de vues en 2012."
+          "funFact": "Gangnam Style a été la première vidéo YouTube à dépasser 1 milliard de vues en 2012.",
+          "answers": [
+            "PSY"
+          ]
         },
         {
           "question": "Quel groupe féminin K-pop chante 'Kill This Love' en 2019 ?",
-          "answer": "BLACKPINK",
           "difficulty": "moyen",
-          "funFact": "BLACKPINK est composé de Jisoo, Jennie, Rosé et Lisa. C'est le groupe féminin K-pop le plus suivi sur YouTube."
+          "funFact": "BLACKPINK est composé de Jisoo, Jennie, Rosé et Lisa. C'est le groupe féminin K-pop le plus suivi sur YouTube.",
+          "answers": [
+            "BLACKPINK"
+          ]
         },
         {
           "question": "Qui chante 'Butter' en 2021 ?",
-          "answer": "BTS",
           "difficulty": "facile",
-          "funFact": "Butter a passé 10 semaines numéro 1 au Billboard Hot 100, un record pour un groupe K-pop."
+          "funFact": "Butter a passé 10 semaines numéro 1 au Billboard Hot 100, un record pour un groupe K-pop.",
+          "answers": [
+            "BTS"
+          ]
         },
         {
           "question": "Quel groupe K-pop chante 'DNA' en 2017 ?",
-          "answer": "BTS",
           "difficulty": "moyen",
-          "funFact": "DNA est le premier titre de BTS à entrer dans le Billboard Hot 100 américain."
+          "funFact": "DNA est le premier titre de BTS à entrer dans le Billboard Hot 100 américain.",
+          "answers": [
+            "BTS"
+          ]
         },
         {
           "question": "Qui chante 'Gee' en 2009, l'un des hymnes fondateurs de la K-pop moderne ?",
-          "answer": "Girls' Generation",
           "difficulty": "moyen",
-          "funFact": "Girls' Generation, aussi connues sous le nom SNSD, est composé à l'origine de 9 membres."
+          "funFact": "Girls' Generation, aussi connues sous le nom SNSD, est composé à l'origine de 9 membres.",
+          "answers": [
+            "Girls' Generation"
+          ]
         },
         {
           "question": "Quel groupe K-pop masculin chante 'Growl' en 2013 ?",
-          "answer": "EXO",
           "difficulty": "difficile",
-          "funFact": "EXO a été lancé par SM Entertainment en 2012 avec 12 membres initialement divisés en deux sous-groupes."
+          "funFact": "EXO a été lancé par SM Entertainment en 2012 avec 12 membres initialement divisés en deux sous-groupes.",
+          "answers": [
+            "EXO"
+          ]
         },
         {
           "question": "Quel groupe K-pop féminin chante 'TT' en 2016 ?",
-          "answer": "TWICE",
           "difficulty": "moyen",
-          "funFact": "TT a popularisé le geste des mains en forme de pleurs devenu viral en Corée du Sud et sur TikTok."
+          "funFact": "TT a popularisé le geste des mains en forme de pleurs devenu viral en Corée du Sud et sur TikTok.",
+          "answers": [
+            "TWICE"
+          ]
         },
         {
           "question": "Quel groupe chante 'Fake Love' en 2018 ?",
-          "answer": "BTS",
           "difficulty": "moyen",
-          "funFact": "Fake Love a atteint le numéro 10 du Billboard Hot 100, un record pour un groupe K-pop à l'époque."
+          "funFact": "Fake Love a atteint le numéro 10 du Billboard Hot 100, un record pour un groupe K-pop à l'époque.",
+          "answers": [
+            "BTS"
+          ]
         },
         {
           "question": "Qui chante 'How You Like That' en 2020 ?",
-          "answer": "BLACKPINK",
           "difficulty": "moyen",
-          "funFact": "How You Like That a battu le record du plus grand nombre de vues YouTube en 24 heures lors de sa sortie."
+          "funFact": "How You Like That a battu le record du plus grand nombre de vues YouTube en 24 heures lors de sa sortie.",
+          "answers": [
+            "BLACKPINK"
+          ]
         }
       ]
     }
