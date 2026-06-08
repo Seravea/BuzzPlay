@@ -51,6 +51,9 @@ struct QuizActiveQuestionScreen: View {
         }
         .animation(.spring(duration: 0.4, bounce: 0.05), value: buzzedPlayer != nil)
         .animation(.easeInOut(duration: 0.25), value: quizMasterVM.roundCountdownPhase)
+        // #D11/#C3 — empêcher la veille iPhone pendant la partie
+        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
+        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
     }
 
     // MARK: Timer

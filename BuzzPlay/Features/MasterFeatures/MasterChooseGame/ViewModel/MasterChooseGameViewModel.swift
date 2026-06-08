@@ -14,9 +14,12 @@ class MasterChooseGameViewModel {
     private let gameVM: MasterFlowViewModel
     let coinsVM: CoinsViewModel
 
+    let notesStore: NotesStore
+
     init(gameVM: MasterFlowViewModel) {
         self.gameVM = gameVM
         self.coinsVM = CoinsViewModel(masterFlowVM: gameVM)
+        self.notesStore = NotesStore(masterFlowVM: gameVM)
     }
 
     var availableGames: [GameType] = []
@@ -33,6 +36,10 @@ class MasterChooseGameViewModel {
     var isQuizCardAvailable: Bool { gameVM.isQuizAvailable }
     var isBlindTestCardAvailable: Bool { gameVM.isBlindTestAvailable }
     var masterNotesBalance: Int { gameVM.masterNotesBalance }
+    var canClaimDailyPack: Bool { gameVM.canClaimDailyPack }
+    var pendingDailyPackDays: Int { gameVM.pendingDailyPackDays }
+    var pendingDailyAmount: Int { gameVM.pendingDailyAmount }
+    func claimDailyPack() { gameVM.claimDailyPack() }
     
     
     //MARK: Datas en functions for views

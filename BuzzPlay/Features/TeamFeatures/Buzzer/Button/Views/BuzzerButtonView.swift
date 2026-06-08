@@ -46,13 +46,16 @@ struct BuzzerButtonView: View {
 
                 // Bouton principal
                 ZStack {
+                    let isBlocked = buzzerVM.player.blockedFromBuzzing
+                    let circleColor: Color = isBlocked ? Color(hex: "#FB2C36") : playerColor
+
                     Circle()
                         .fill(
                             RadialGradient(
                                 stops: [
-                                    .init(color: playerColor.opacity(0.95), location: 0),
-                                    .init(color: playerColor, location: 0.50),
-                                    .init(color: playerColor.opacity(0.72), location: 1),
+                                    .init(color: circleColor.opacity(0.95), location: 0),
+                                    .init(color: circleColor, location: 0.50),
+                                    .init(color: circleColor.opacity(0.72), location: 1),
                                 ],
                                 center: .init(x: 0.5, y: 0.35),
                                 startRadius: 0,
@@ -60,15 +63,15 @@ struct BuzzerButtonView: View {
                             )
                         )
                         .frame(width: 220, height: 220)
-                        .shadow(color: playerColor.opacity(0.18), radius: 0)
-                        .shadow(color: playerColor.opacity(0.08), radius: 8)
-                        .shadow(color: playerColor.opacity(0.40), radius: 30, y: 15)
-                        .opacity(buzzerVM.isEnabled ? 1 : (ourTeamBuzzed ? 0.65 : 0.30))
+                        .shadow(color: circleColor.opacity(0.18), radius: 0)
+                        .shadow(color: circleColor.opacity(0.08), radius: 8)
+                        .shadow(color: circleColor.opacity(0.40), radius: 30, y: 15)
+                        .opacity(buzzerVM.isEnabled ? 1 : (ourTeamBuzzed ? 0.65 : (isBlocked ? 0.55 : 0.30)))
 
                     VStack(spacing: 4) {
-                        Image(systemName: "bolt.fill")
+                        Image(systemName: isBlocked ? "lock.fill" : "bolt.fill")
                             .font(.system(size: 52, weight: .bold))
-                        Text(ourTeamBuzzed ? "BUZZÉ" : "BUZZ")
+                        Text(ourTeamBuzzed ? "BUZZÉ" : (isBlocked ? "BLOQUÉ" : "BUZZ"))
                             .font(.custom("Nohemi-Black", size: 18))
                             .tracking(2)
                     }
@@ -94,6 +97,7 @@ struct BuzzerButtonView: View {
 
             stateLabel
         }
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: buzzerVM.player.blockedFromBuzzing)
         .appDefaultTextStyle(Typography.body)
     }
 
@@ -122,6 +126,20 @@ struct BuzzerButtonView: View {
                     .font(.nohemi(.headline, weight: .bold))
                     .foregroundStyle(.white)
                 Text("Le plus rapide gagne le droit de répondre")
+                    .font(.nohemi(.caption))
+                    .foregroundStyle(.white.opacity(0.45))
+                    .multilineTextAlignment(.center)
+            } else if buzzerVM.player.blockedFromBuzzing {
+                if let blocker = buzzerVM.player.blockedByPlayerName {
+                    Text("\(blocker) t'a bloqué !")
+                        .font(.nohemi(.headline, weight: .bold))
+                        .foregroundStyle(Color(hex: "#FB2C36"))
+                } else {
+                    Text("Ton buzzer est bloqué !")
+                        .font(.nohemi(.headline, weight: .bold))
+                        .foregroundStyle(Color(hex: "#FB2C36"))
+                }
+                Text("Tu ne peux pas buzzer cette manche")
                     .font(.nohemi(.caption))
                     .foregroundStyle(.white.opacity(0.45))
                     .multilineTextAlignment(.center)

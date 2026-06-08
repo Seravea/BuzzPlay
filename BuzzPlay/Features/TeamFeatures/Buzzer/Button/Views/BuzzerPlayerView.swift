@@ -77,6 +77,9 @@ struct BuzzerPlayerView: View {
         .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
         .animation(.easeInOut(duration: 0.35), value: playerGameVM.showPostRoundLeaderboard)
         .navigationBarBackButtonHidden()
+        // #D11/#C3 — empêcher la mise en veille pendant la partie (cause de déconnexion MPC)
+        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
+        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
         .overlay(alignment: .top) {
             if let notes = playerGameVM.pendingNotesToast {
                 NotesToastView(amount: notes)

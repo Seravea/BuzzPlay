@@ -8,6 +8,7 @@ import SwiftUI
 struct MasterChooseGameView: View {
     @Bindable var masterChooseGameVM: MasterChooseGameViewModel
     @EnvironmentObject private var router: Router
+    @State private var showNotesShop = false
 
     private var hasScores: Bool {
         masterChooseGameVM.players.map(\.score).max() ?? 0 > 0
@@ -264,6 +265,38 @@ struct MasterChooseGameView: View {
                         .foregroundStyle(.white.opacity(0.6))
                 }
                 Spacer()
+
+                Button { showNotesShop = true } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 13))
+                        Text("Recharger")
+                            .font(.nohemi(.caption, weight: .bold))
+                    }
+                    .foregroundStyle(Color.mustardYellow)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.mustardYellow.opacity(0.12), in: Capsule())
+                    .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.30), lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+            }
+            .sheet(isPresented: $showNotesShop) {
+                NotesShopView(
+                    store: masterChooseGameVM.notesStore,
+                    currentBalance: masterChooseGameVM.masterNotesBalance
+                )
+                .presentationDetents([.large])
+                .presentationDragIndicator(.hidden)
+            }
+
+            if masterChooseGameVM.canClaimDailyPack {
+                DailyPackBanner(
+                    days: masterChooseGameVM.pendingDailyPackDays,
+                    amount: masterChooseGameVM.pendingDailyAmount,
+                    onClaim: { masterChooseGameVM.claimDailyPack() }
+                )
+                .transition(.move(edge: .top).combined(with: .opacity))
             }
 
             if masterChooseGameVM.players.isEmpty {
@@ -308,6 +341,7 @@ struct MasterChooseGameView: View {
             RoundedRectangle(cornerRadius: 20)
                 .strokeBorder(.white.opacity(0.10), lineWidth: 1.5)
         )
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: masterChooseGameVM.canClaimDailyPack)
     }
 
     private func notesCard(
@@ -366,6 +400,75 @@ struct MasterChooseGameView: View {
         }
     }
     }
+
+// MARK: - Daily Pack Banner
+
+private struct DailyPackBanner: View {
+    let days: Int
+    let amount: Int
+    let onClaim: () -> Void
+
+    @State private var glowPulse = false
+
+    private var subtitle: String {
+        days == 1
+            ? "+\(amount) Notes offertes aujourd'hui"
+            : "+\(amount) Notes — \(days) jours accumulés"
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(Color.mustardYellow.opacity(0.18))
+                    .frame(width: 40, height: 40)
+                Image(systemName: days >= 7 ? "flame.fill" : "gift.fill")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(Color.mustardYellow)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(days >= 7 ? "Pack soirée — max accumulé !" : "Pack soirée disponible")
+                    .font(.nohemi(.caption, weight: .bold))
+                    .foregroundStyle(.white)
+                Text(subtitle)
+                    .font(.nohemi(.caption2, weight: .regular))
+                    .foregroundStyle(.white.opacity(0.55))
+            }
+
+            Spacer()
+
+            Button(action: onClaim) {
+                Text("Récupérer")
+                    .font(.nohemi(.caption, weight: .bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 7)
+                    .background(
+                        LinearGradient(
+                            colors: [Color(hex: "F0B100"), Color(hex: "FF6900")],
+                            startPoint: .leading, endPoint: .trailing
+                        ),
+                        in: Capsule()
+                    )
+                    .shadow(color: Color(hex: "F0B100").opacity(glowPulse ? 0.5 : 0.2), radius: glowPulse ? 8 : 3)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color.mustardYellow.opacity(days >= 7 ? 0.12 : 0.07), in: RoundedRectangle(cornerRadius: 14))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .strokeBorder(Color.mustardYellow.opacity(days >= 7 ? 0.40 : 0.25), lineWidth: 1)
+        )
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: true)) {
+                glowPulse = true
+            }
+        }
+    }
+}
 
 #Preview {
     NavigationStack {
