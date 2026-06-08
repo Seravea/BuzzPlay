@@ -78,7 +78,7 @@ enum QuizJSONLoader {
                     difficulty: QuizDifficulty(rawValue: q.difficulty) ?? .moyen,
                     tone: nil,
                     indices: [],
-                    correctAnswer: q.answer,
+                    correctAnswers: [q.answer],
                     funFact: q.funFact,
                     source: .bundled
                 )
