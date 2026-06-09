@@ -17,6 +17,9 @@ enum MPCRole {
 final class MPCService: NSObject {
     //MARK: MPC Session datas
     static let serviceTypeID = "buzzplay-game"
+    /// Nom du peer Master (source unique). Permet aux Players de distinguer le Master
+    /// des autres Players dans le maillage MCSession (#7b).
+    static let masterPeerName = "Master"
     private let role: MPCRole
     private let serviceType = MPCService.serviceTypeID
     private let myPeerID: MCPeerID

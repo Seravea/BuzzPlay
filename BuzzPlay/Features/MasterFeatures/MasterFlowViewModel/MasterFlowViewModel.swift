@@ -8,6 +8,7 @@
 import Foundation
 import Observation
 import MultipeerConnectivity
+import UIKit
 
 
 // MARK: - Game Config Enums
@@ -58,14 +59,36 @@ final class MasterFlowViewModel {
     /// Noms des joueurs ayant confirmé leur présence sur le buzzer.
     private(set) var readyPlayers: Set<String> = []
 
-    /// Vrai dès que tous les joueurs connectés ont envoyé playerReady.
+    /// #E1 garde-fou — Vrai seulement si TOUS les joueurs enregistrés sont à la fois
+    /// connectés ET prêts sur le buzzer. Empêche de lancer une manche pendant qu'un
+    /// joueur est en train de se reconnecter (sinon il rate la manche).
     var allPlayersReady: Bool {
-        let game = players.filter { $0.name != "Écran Publique" }
-        guard !game.isEmpty else { return false }
-        return game.allSatisfy { readyPlayers.contains($0.name) }
+        let registered = allRegisteredPlayers.filter { $0.name != "Écran Publique" }
+        guard !registered.isEmpty else { return false }
+        return registered.allSatisfy { reg in
+            players.contains(where: { $0.name == reg.name }) && readyPlayers.contains(reg.name)
+        }
+    }
+
+    /// Nombre de joueurs prêts (connectés + ready), pour l'affichage "X/Y prêts".
+    var readyAndConnectedCount: Int {
+        allRegisteredPlayers.filter { reg in
+            reg.name != "Écran Publique"
+            && players.contains(where: { $0.name == reg.name })
+            && readyPlayers.contains(reg.name)
+        }.count
+    }
+
+    /// Retire définitivement un joueur déconnecté (a quitté pour de bon) pour
+    /// débloquer le garde-fou #E1 et permettre de relancer une manche.
+    func forgetDisconnectedPlayer(_ name: String) {
+        allRegisteredPlayers.removeAll { $0.name == name }
+        players.removeAll { $0.name == name }
+        readyPlayers.remove(name)
+        if disconnectedPlayerName == name { disconnectedPlayerName = nil }
     }
     
-    var mpcService: MPCService = MPCService(peerName: "Master", role: .master)
+    var mpcService: MPCService = MPCService(peerName: MPCService.masterPeerName, role: .master)
     private var hasStartedHosting = false
     // #C3 — debounce pour éviter de traiter des déconnexions transitoires (reconnexion rapide)
     private var disconnectDebounce: [String: Task<Void, Never>] = [:]
@@ -299,17 +322,29 @@ final class MasterFlowViewModel {
             restored.blockedFromBuzzing = saved.blockedFromBuzzing
             allRegisteredPlayers[savedIndex] = restored
             players.append(restored)
+            // #T-reco1 — un joueur qui se reconnecte (savedIndex existe) était déjà sur sa
+            // vue buzzer → on le re-marque prêt directement, sans dépendre d'un playerReady
+            // dont le timing à la reconnexion n'est pas fiable (header 2/2 mais boutons 1/2).
+            if restored.name != "Écran Publique" {
+                readyPlayers.insert(restored.name)
+            }
             mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(restored), player: restored)
             // B2 : envoyer tous les joueurs connus pour remplir knownPlayers côté Player reconnecté
             for existingPlayer in players where existingPlayer.id != restored.id {
                 mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(existingPlayer), player: restored)
             }
-            // Resync état courant du jeu si une partie est en cours
-            if currentBuzzGame != nil {
-                mpcService.sendMessagetoOnePlayer(message: .publicUpdate(currentPublicState()), player: restored)
-            }
-            if let gameType = activeGameType, currentBuzzGame != nil {
-                mpcService.sendMessagetoOnePlayer(message: .masterLaunchedGame(gameType), player: restored)
+            // #21 — reconnexion alors que la partie est terminée : router vers le classement
+            // final (podium), surtout pas vers le buzzer.
+            if isGameComplete {
+                mpcService.sendMessagetoOnePlayer(message: .masterGameComplete, player: restored)
+            } else {
+                // Resync état courant du jeu si une partie est en cours
+                if currentBuzzGame != nil {
+                    mpcService.sendMessagetoOnePlayer(message: .publicUpdate(currentPublicState()), player: restored)
+                }
+                if let gameType = activeGameType, currentBuzzGame != nil {
+                    mpcService.sendMessagetoOnePlayer(message: .masterLaunchedGame(gameType), player: restored)
+                }
             }
         } else {
             // Nouveau player
@@ -362,6 +397,9 @@ extension MasterFlowViewModel {
     func setupMPC() {
         guard !hasStartedHosting else { return }
         applyFirstInstallBonusIfNeeded()
+        // #18a/#D11 — empêcher la veille sur TOUTE la session Master (pas juste le hub).
+        // La veille coupait la MCSession pendant les jeux (QuizMaster, BlindTest, Score).
+        UIApplication.shared.isIdleTimerDisabled = true
         // MPCService dispatche déjà sur main — Task @MainActor pour garantir l'isolation.
         mpcService.onPeerConnected = { [weak self] peer in
             Task { @MainActor [weak self] in
@@ -378,9 +416,10 @@ extension MasterFlowViewModel {
                 guard let self else { return }
                 self.connectedPeers.removeAll { $0 == peer }
                 let name = peer.displayName
-                // #C3 — debounce 1s : ignore les micro-déconnexions (reconnexion rapide après veille)
+                // #C3 — debounce court : filtre les micro-glitch réseau sans latence perceptible.
+                // (1s → 300ms : une vraie déco redevient quasi-instantanée côté Master.)
                 let task = Task { @MainActor [weak self] in
-                    try? await Task.sleep(for: .milliseconds(1000))
+                    try? await Task.sleep(for: .milliseconds(300))
                     guard let self, !Task.isCancelled else { return }
                     self.players.removeAll { $0.name == name }
                     self.readyPlayers.remove(name)

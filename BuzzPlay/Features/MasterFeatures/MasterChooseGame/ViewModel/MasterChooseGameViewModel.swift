@@ -28,7 +28,8 @@ class MasterChooseGameViewModel {
     var totalPlayersCount: Int { gameVM.totalPlayersCount }
     var players: [Player] { gameVM.players }
     var allPlayersReady: Bool { gameVM.allPlayersReady }
-    var readyPlayersCount: Int { gameVM.readyPlayers.count }
+    // #E1 — "X/Y prêts" : X = connectés ET prêts, Y = total enregistrés (inclut les déconnectés)
+    var readyPlayersCount: Int { gameVM.readyAndConnectedCount }
 
     // Round progress
     var currentRound: Int { gameVM.currentRound }

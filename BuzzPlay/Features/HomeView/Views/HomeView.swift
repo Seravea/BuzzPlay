@@ -120,10 +120,17 @@ struct HomeView: View {
                     set: { if !$0 { masterFlowVM.disconnectedPlayerName = nil } }
                 )
             ) {
-                Button("OK") { masterFlowVM.disconnectedPlayerName = nil }
+                Button("Attendre", role: .cancel) { masterFlowVM.disconnectedPlayerName = nil }
+                // #E1 — échappatoire : si le joueur a quitté pour de bon, le retirer
+                // débloque le garde-fou et permet de relancer une manche sans lui.
+                if let name = masterFlowVM.disconnectedPlayerName {
+                    Button("Retirer le joueur", role: .destructive) {
+                        masterFlowVM.forgetDisconnectedPlayer(name)
+                    }
+                }
             } message: {
                 if let name = masterFlowVM.disconnectedPlayerName {
-                    Text("Le joueur « \(name) » s'est déconnecté.")
+                    Text("Le joueur « \(name) » s'est déconnecté. Tu peux l'attendre (la prochaine manche ne se lancera pas sans lui) ou le retirer de la partie.")
                 }
             }
         }
