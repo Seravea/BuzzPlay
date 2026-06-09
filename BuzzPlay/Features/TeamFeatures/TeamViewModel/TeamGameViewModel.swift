@@ -247,6 +247,14 @@ extension PlayerGameViewModel {
             // Heartbeat : répondre au Master pour prouver qu'on est vivant.
             mpc.sendMessage(.pong)
 
+        case .masterRequestRejoin:
+            // #pause-reco — le Master nous a perdus de son roster (timeout heartbeat sur une
+            // connexion half-open : on n'a jamais vu notre propre déco, donc didSentPlayer est
+            // resté true et onPeerConnected ne s'est jamais redéclenché). On force un nouvel
+            // enregistrement pour réintégrer le roster côté Master et lever sa pause.
+            didSentPlayer = true
+            mpc.sendMessage(.playerJoin(player))
+
         default:
             break
         }

@@ -331,6 +331,22 @@ extension MPCService {
         }
     }
     
+    /// Envoie un message à UN peer précis (par MCPeerID). Utilisé quand on n'a pas l'objet
+    /// Player mais seulement le peer (ex : auto-heal zombie sur réception d'un .pong).
+    func sendMessage(_ message: MPCMessage, to peer: MCPeerID) {
+        guard session.connectedPeers.contains(peer) else {
+            print("MPC: peer \(peer.displayName) not connected, can't send \(message)")
+            return
+        }
+        do {
+            let data = try JSONEncoder().encode(message)
+            try session.send(data, toPeers: [peer], with: .reliable)
+        } catch {
+            let mpcError = MPCError.sendFailed(underlying: error)
+            print("MPC error: \(mpcError), underlying: \(error)")
+        }
+    }
+
     func sendMessagetoOnePlayer(message: MPCMessage, player: Player) {
         let matches = session.connectedPeers.filter { $0.displayName == player.name }
         guard !matches.isEmpty else {
