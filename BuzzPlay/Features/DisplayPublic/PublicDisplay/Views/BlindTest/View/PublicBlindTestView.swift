@@ -70,7 +70,9 @@ struct PublicBlindTestView: View {
 
             Spacer()
 
-            // Buzz result
+            // Buzz result — #D6 : plus de placeholder "En attente d'un buzz…"
+            // (le buzzer en dessous indique déjà l'état d'attente). Rien ne s'affiche
+            // tant que personne n'a buzzé ; la carte de buzz reste centrée entre les Spacer.
             if let player = state.buzzingPlayer {
                 VStack(spacing: BuzzSpacing.md) {
                     Text("A BUZZÉ")
@@ -84,21 +86,6 @@ struct PublicBlindTestView: View {
                 .padding(.vertical, BuzzSpacing.xl)
                 .frame(maxWidth: .infinity)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
-            } else {
-                HStack(spacing: BuzzSpacing.sm) {
-                    Circle()
-                        .fill(Color.mustardYellow.opacity(0.3))
-                        .frame(width: 12, height: 12)
-
-                    Text("En attente d’un buzz…")
-                        .font(.nohemi(.title3, weight: .medium))
-                        .opacity(0.6)
-
-                    Spacer()
-                }
-                .padding(.horizontal, BuzzSpacing.xxl)
-                .padding(.vertical, BuzzSpacing.lg)
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             Spacer()

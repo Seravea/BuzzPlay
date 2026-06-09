@@ -136,11 +136,16 @@ struct BuzzerPlayerView: View {
         VStack(spacing: 0) {
             compactHeader(buzzerVM: buzzerVM)
 
+            // #14/#17/#D5 — zone de contenu à hauteur réservée = UN SEUL élément greedy.
+            // Avant : ce conteneur ET un Spacer() étaient tous deux maxHeight:.infinity → ils se
+            // battaient pour l'espace et le partage 50/50 se recalculait à chaque changement de
+            // contenu (question révélée, buzz), faisant bouger le buzzer et pousser le header.
+            // Le contenu variable (question/titre/buzz) bouge maintenant À L'INTÉRIEUR de cette
+            // zone fixe, top-aligné : le buzzer reste ancré et le header reste figé en haut.
             PublicDisplayView(playerGameVM: playerGameVM, gameType: gameType)
                 .padding(.horizontal, BuzzSpacing.md)
                 .padding(.top, BuzzSpacing.md)
-
-            Spacer()
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
             BuzzerButtonView(buzzerVM: buzzerVM, showInlineCountdown: isQuizQuestionRevealed)
                 .padding(.bottom, BuzzSpacing.xl)
