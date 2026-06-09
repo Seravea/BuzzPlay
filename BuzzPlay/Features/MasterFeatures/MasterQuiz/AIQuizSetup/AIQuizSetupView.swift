@@ -34,7 +34,8 @@ struct AIQuizSetupView: View {
 
     var body: some View {
         ZStack {
-            BackgroundAppView().ignoresSafeArea()
+            // Fond géré par .presentationBackground dans la sheet parente (#A2)
+            Color(hex: "#1A0535").ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Header
@@ -245,13 +246,11 @@ struct AIQuizSetupView: View {
         isGenerating = true
 
         generationTask = Task {
-            if #available(iOS 26.0, *) {
-                await generator.generateInitialPass(
-                    themes: selectedThemes,
-                    difficulty: difficulty,
-                    count: quizRoundsTotal
-                )
-            }
+            await generator.generateInitialPass(
+                themes: selectedThemes,
+                difficulty: difficulty,
+                count: quizRoundsTotal
+            )
             isGenerating = false
 
             // Sheet fermée pendant la génération : on n'ouvre pas la review.

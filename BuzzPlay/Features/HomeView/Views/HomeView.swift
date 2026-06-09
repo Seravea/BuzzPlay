@@ -133,6 +133,8 @@ struct HomeView: View {
             if showMasterConfirmation {
                 MasterConfirmOverlay(
                     onConfirm: {
+                        // Démarre MPC immédiatement → alerte réseau local dès le tap (#A1)
+                        masterFlowVM.setupMPC()
                         showMasterConfirmation = false
                         router.push(Route.masterLobbyView)
                     },
@@ -195,7 +197,7 @@ private struct MasterConfirmOverlay: View {
                             .frame(height: 50)
                             .background(
                                 LinearGradient(
-                                    colors: [Color(hex: "#2B7FFF"), Color(hex: "#00B8DB")],
+                                    colors: [Color(hex: "#00C950"), Color(hex: "#009966")],
                                     startPoint: .topLeading, endPoint: .bottomTrailing
                                 ),
                                 in: RoundedRectangle(cornerRadius: 14)

@@ -39,6 +39,8 @@ final class PlayerGameViewModel {
 
     // Master a lancé une nouvelle partie → retourner au lobby player
     var shouldReturnToLobby: Bool = false
+    // Notification brève avant redirection (#B6)
+    var showNewGameNotification: Bool = false
 
     // Toast Notes reçues (🎵) — auto-dismiss géré dans la vue
     var pendingNotesToast: Int? = nil
@@ -53,6 +55,8 @@ final class PlayerGameViewModel {
     var formattedTime: String = "00:00"
     private var timer: Timer?
     private var lastMasterFormattedTime: String = "00:00"
+    // Masque le timer jusqu'au 1er .timerStarted pour éviter le drift sur la 1re question (#A4)
+    var hasReceivedFirstTimer: Bool = false
 
     // MARK: - Reconnect auto
     private var reconnectTimer: Timer?
@@ -72,8 +76,6 @@ extension PlayerGameViewModel {
         guard !hasSetupMPC else { return }
         hasSetupMPC = true
 
-        // MPCService dispatche déjà sur le main thread — on utilise Task @MainActor pour
-        // garantir l'isolation sans double-dispatch.
         mpc.onPeerConnected = { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self else { return }
@@ -83,6 +85,13 @@ extension PlayerGameViewModel {
                 guard !self.didSentPlayer else { return }
                 self.didSentPlayer = true
                 self.mpc.sendMessage(.playerJoin(self.player))
+                // #C7 — re-confirmer la présence si une partie est déjà en cours
+                // (reconnexion MPC sans transition foreground)
+                if self.hasPartyStarted {
+                    try? await Task.sleep(for: .milliseconds(500))
+                    guard !Task.isCancelled else { return }
+                    self.mpc.sendMessage(.playerReady)
+                }
             }
         }
 
@@ -115,6 +124,9 @@ extension PlayerGameViewModel {
         hasStartedBrowsing = true
         print("PLAYER Starting MPC browsing...")
         mpc.startBrowsingIfNeeded()
+        // #C1 — watchdog : relance le scan toutes les 6s si connexion non établie
+        // (couvre les invitations expirées sans callback onPeerConnected)
+        startReconnectTimer()
     }
 
 }
@@ -146,6 +158,10 @@ extension PlayerGameViewModel {
                 if delta > 0 { pendingNotesToast = delta }
                 self.player = updatedPlayer
                 currentBuzzerVM?.player = updatedPlayer
+                // #C5 — bloquer immédiatement le buzzer si le cadeau adverse vient d'arriver
+                if updatedPlayer.blockedFromBuzzing {
+                    currentBuzzerVM?.lockBuzz(teamNameHasBuzz: "")
+                }
             }
             if let idx = knownPlayers.firstIndex(where: { $0.id == updatedPlayer.id }) {
                 knownPlayers[idx] = updatedPlayer
@@ -155,6 +171,7 @@ extension PlayerGameViewModel {
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
             hasPartyStarted = true  // reconnexion après kill app : la partie est déjà lancée
+            hasReceivedFirstTimer = false  // reset pour chaque nouveau jeu (#A4)
             if game == .score {
                 leaderboardTask?.cancel()
                 showPostRoundLeaderboard = false
@@ -174,9 +191,16 @@ extension PlayerGameViewModel {
             currentBuzzerVM = nil
             showPostRoundLeaderboard = false
             leaderboardTask?.cancel()
-            shouldReturnToLobby = true
+            // Affiche notification brève avant redirection (#B6)
+            showNewGameNotification = true
+            Task { @MainActor [weak self] in
+                try? await Task.sleep(for: .seconds(2))
+                self?.showNewGameNotification = false
+                self?.shouldReturnToLobby = true
+            }
 
         case .timerStarted(let payload):
+            hasReceivedFirstTimer = true
             startLocalReactionTimer(masterTimestamp: payload.masterTimestamp)
 
         case .answerResult(let payload):

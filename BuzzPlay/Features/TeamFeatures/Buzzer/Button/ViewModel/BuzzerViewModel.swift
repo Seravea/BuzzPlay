@@ -23,7 +23,16 @@ enum AnswerResult {
 @Observable
 class BuzzerViewModel {
 
-    var player: Player
+    var player: Player {
+        didSet {
+            guard player.customBuzzSound != oldValue.customBuzzSound else { return }
+            if let soundName = player.customBuzzSound {
+                preloadCustomSound(soundName)
+            } else {
+                customSoundPlayer = nil
+            }
+        }
+    }
     let mode: BuzzerGameMode
 
     var isEnabled: Bool = false
@@ -70,6 +79,12 @@ class BuzzerViewModel {
         defaultBuzzPlayer?.prepareToPlay()
     }
 
+    private func preloadCustomSound(_ soundName: String) {
+        guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return }
+        customSoundPlayer = try? AVAudioPlayer(contentsOf: url)
+        customSoundPlayer?.prepareToPlay()
+    }
+
     
     
 }
@@ -84,14 +99,10 @@ extension BuzzerViewModel {
 
     private func playBuzzSound() {
         guard !isBuzzMuted else { return }
-        if let soundName = player.customBuzzSound {
-            // Son custom choisi par le Player (cadeau changeBuzzSound)
-            guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return }
-            customSoundPlayer?.stop()
-            customSoundPlayer = try? AVAudioPlayer(contentsOf: url)
-            customSoundPlayer?.play()
+        if let custom = customSoundPlayer {
+            custom.currentTime = 0
+            custom.play()
         } else {
-            // Son par défaut pré-chargé → zéro latence
             defaultBuzzPlayer?.currentTime = 0
             defaultBuzzPlayer?.play()
         }
@@ -99,9 +110,11 @@ extension BuzzerViewModel {
 
 
     func unLockBuzz() {
-        isEnabled = true
         playerNameHasBuzz = nil
-        activeHint = nil  // reset l'indice à chaque nouvelle manche
+        activeHint = nil
+        // #C5 — ne pas réactiver si le joueur est bloqué par un cadeau adverse
+        guard !player.blockedFromBuzzing else { return }
+        isEnabled = true
     }
 
     func lockBuzz(teamNameHasBuzz: String) {

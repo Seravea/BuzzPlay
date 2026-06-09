@@ -126,7 +126,7 @@ class AIQuizGenerator {
         let themeLabel = lastThemes.map(\.title).joined(separator: "/")
 
         var seenTitles = Set((previousQuestionTitles + seed.map(\.title)).map(Self.normalizeTitle))
-        var seenAnswers = Set((previousQuestionTitles + seed.compactMap(\.correctAnswer)).map(Self.normalizeTitle).filter { !$0.isEmpty })
+        var seenAnswers = Set((previousQuestionTitles + seed.flatMap(\.correctAnswers)).map(Self.normalizeTitle).filter { !$0.isEmpty })
         var accepted = seed
         self.generatedQuestions = seed
 
@@ -154,7 +154,7 @@ class AIQuizGenerator {
                 )
 
                 let session = LanguageModelSession()
-                let stream = try session.streamResponse(
+                let stream = session.streamResponse(
                     generating: AIGeneratedQuiz.self,
                     includeSchemaInPrompt: false,
                     options: GenerationOptions(maximumResponseTokens: Self.maxBatchResponseTokens),
@@ -187,8 +187,8 @@ class AIQuizGenerator {
                             difficulty: QuizDifficulty(rawValue: aiQ.difficulty ?? "moyen") ?? .moyen,
                             tone: nil,
                             indices: [],
-                            correctAnswer: correctAnswer,
-                            funFact: nil, // retiré — trop gourmand en tokens (WWDC26)
+                            correctAnswers: [correctAnswer],
+                            funFact: nil,
                             source: .aiGenerated
                         ))
                     }
@@ -199,7 +199,7 @@ class AIQuizGenerator {
 
                 accepted = self.generatedQuestions
                 seenTitles = Set((previousQuestionTitles + accepted.map(\.title)).map(Self.normalizeTitle))
-                seenAnswers = Set((previousQuestionTitles + accepted.compactMap(\.correctAnswer)).map(Self.normalizeTitle).filter { !$0.isEmpty })
+                seenAnswers = Set((previousQuestionTitles + accepted.flatMap(\.correctAnswers)).map(Self.normalizeTitle).filter { !$0.isEmpty })
                 print("🤖 AIQuiz lot \(pass): \(accepted.count)/\(target) questions uniques")
 
                 // Lot improductif : on tolère un coup de malchance, mais on abandonne
@@ -253,7 +253,7 @@ class AIQuizGenerator {
         let themeLabel = lastThemes.map(\.title).joined(separator: "/")
         let exclude = previousQuestionTitles + generatedQuestions.map(\.title)
         let seenTitles = Set(exclude.map(Self.normalizeTitle))
-        let seenAnswers = Set((previousQuestionTitles + generatedQuestions.compactMap(\.correctAnswer)).map(Self.normalizeTitle).filter { !$0.isEmpty })
+        let seenAnswers = Set((previousQuestionTitles + generatedQuestions.flatMap(\.correctAnswers)).map(Self.normalizeTitle).filter { !$0.isEmpty })
 
         do {
             // count: 3 → marge pour qu'au moins une question soit réellement inédite.
@@ -265,7 +265,7 @@ class AIQuizGenerator {
             )
 
             let session = LanguageModelSession()
-            let stream = try session.streamResponse(
+            let stream = session.streamResponse(
                 generating: AIGeneratedQuiz.self,
                 includeSchemaInPrompt: false,
                 options: GenerationOptions(maximumResponseTokens: Self.maxBatchResponseTokens),
@@ -294,8 +294,8 @@ class AIQuizGenerator {
                         difficulty: QuizDifficulty(rawValue: aiQ.difficulty ?? "moyen") ?? .moyen,
                         tone: nil,
                         indices: [],
-                        correctAnswer: correctAnswer,
-                        funFact: nil, // retiré — trop gourmand en tokens (WWDC26)
+                        correctAnswers: [correctAnswer],
+                        funFact: nil,
                         source: .aiGenerated
                     )
                     break

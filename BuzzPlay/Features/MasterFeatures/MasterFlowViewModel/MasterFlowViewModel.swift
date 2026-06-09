@@ -70,13 +70,31 @@ final class MasterFlowViewModel {
 
     //MARK: Datas for games
     var currentBuzzPlayer: Player?
-    private static let notesBalanceKey = "buzzplay.master.notesBalance"
+    private static let notesBalanceKey        = "buzzplay.master.notesBalance"
+    private static let firstInstallBonusKey   = "buzzplay.master.firstInstallBonusClaimed"
+    private static let lastDailyClaimKey      = "buzzplay.master.lastDailyClaimDate"
+    private static let firstInstallBonus      = 50
+    private static let dailyPackAmount        = 50
+    private static let dailyPackMaxDays       = 7
+
     var masterNotesBalance: Int = {
         let saved = UserDefaults.standard.integer(forKey: notesBalanceKey)
-        return saved > 0 ? saved : 1000
+        return saved > 0 ? saved : 0
     }() {
         didSet { UserDefaults.standard.set(masterNotesBalance, forKey: Self.notesBalanceKey) }
     }
+
+    /// Nombre de jours accumulés non réclamés (max 7). 0 = déjà réclamé aujourd'hui.
+    var pendingDailyPackDays: Int {
+        let ud = UserDefaults.standard
+        guard let last = ud.object(forKey: Self.lastDailyClaimKey) as? Date else { return 1 }
+        let cal = Calendar.current
+        let days = cal.dateComponents([.day], from: cal.startOfDay(for: last), to: cal.startOfDay(for: Date())).day ?? 0
+        return min(max(days, 0), Self.dailyPackMaxDays)
+    }
+
+    var canClaimDailyPack: Bool { pendingDailyPackDays > 0 }
+    var pendingDailyAmount: Int { pendingDailyPackDays * Self.dailyPackAmount }
     var isBuzzLocked: Bool = false
     var gameState: GameState = .lobby
 
@@ -137,6 +155,39 @@ final class MasterFlowViewModel {
 
     func startParty() {
         mpcService.sendMessage(.masterStartedParty)
+    }
+
+    // MARK: - Notes bonuses
+
+    /// Notes récupérées lors de la dernière fin de partie (pour affichage dans ScoreMasterView)
+    private(set) var notesRecoveredThisSession: Int = 0
+
+    /// Récupère les Notes non-dépensées de tous les Players et les recrédite au Master.
+    /// À appeler une seule fois à l'apparition de ScoreMasterView.
+    func collectUnspentNotes() {
+        let total = players.reduce(0) { $0 + $1.accountAmount }
+        guard total > 0 else { notesRecoveredThisSession = 0; return }
+        masterNotesBalance += total
+        notesRecoveredThisSession = total
+        for i in players.indices { players[i].accountAmount = 0 }
+        for i in allRegisteredPlayers.indices { allRegisteredPlayers[i].accountAmount = 0 }
+        for player in players {
+            mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(player), player: player)
+        }
+    }
+
+    func applyFirstInstallBonusIfNeeded() {
+        let ud = UserDefaults.standard
+        guard !ud.bool(forKey: Self.firstInstallBonusKey) else { return }
+        masterNotesBalance += Self.firstInstallBonus
+        ud.set(true, forKey: Self.firstInstallBonusKey)
+    }
+
+    func claimDailyPack() {
+        let days = pendingDailyPackDays
+        guard days > 0 else { return }
+        masterNotesBalance += days * Self.dailyPackAmount
+        UserDefaults.standard.set(Date(), forKey: Self.lastDailyClaimKey)
     }
 
     /// Jeu courant qui réagit aux buzz (BlindTest, Quiz, etc.)
@@ -211,6 +262,8 @@ final class MasterFlowViewModel {
         selectedQuizSet = nil
         gameDuration = .normale
         gameMode = .quiz
+        // #C4/#B7 — vider les ready pour que les Players re-confirment sur le prochain buzzer
+        readyPlayers.removeAll()
         resetGameVMs()
         isGamePaused = false
         disconnectedPlayerName = nil
@@ -297,6 +350,8 @@ extension MasterFlowViewModel {
     }
     
     func setupMPC() {
+        guard !hasStartedHosting else { return }
+        applyFirstInstallBonusIfNeeded()
         // MPCService dispatche déjà sur main — Task @MainActor pour garantir l'isolation.
         mpcService.onPeerConnected = { [weak self] peer in
             Task { @MainActor [weak self] in
@@ -352,10 +407,11 @@ extension MasterFlowViewModel {
         // Reset du blocage buzzer (single-use, se remet à 0 à chaque nouvelle manche)
         for i in players.indices where players[i].blockedFromBuzzing {
             players[i].blockedFromBuzzing = false
+            players[i].blockedByPlayerName = nil
             mpcService.sendMessage(.updatedPlayer(players[i]))
         }
 
-        mpcService.sendMessage(.buzzUnlock)
+        mpcService.sendBuzzUnlock()
         broadcastPublicStateFromCurrentGame()
     }
     
@@ -398,8 +454,7 @@ extension MasterFlowViewModel {
         currentBuzzGame?.handleBuzz(from: player)
 
         // lock pour tout le monde + envoie le nom
-        let lockPayload = BuzzLockPayload(playerID: player.id, playerName: player.name)
-        mpcService.sendMessage(.buzzLock(lockPayload))
+        mpcService.sendBuzzLock(player: player)
 
         // Mettre à jour l'écran public (timer figé + joueur qui a buzz)
         broadcastPublicStateFromCurrentGame()
@@ -484,9 +539,11 @@ extension MasterFlowViewModel {
             // Bouclier shieldSingle : annule le blocage et se consomme
             if players[targetIndex].hasShieldSingle {
                 players[targetIndex].hasShieldSingle = false
+                players[targetIndex].blockedByPlayerName = nil
                 print("MASTER: \(players[targetIndex].name) bouclier shieldSingle activé — blocage annulé")
             } else {
                 players[targetIndex].blockedFromBuzzing = true
+                players[targetIndex].blockedByPlayerName = buyer.name
             }
             mpcService.sendMessage(.updatedPlayer(players[targetIndex]))
 
@@ -495,9 +552,11 @@ extension MasterFlowViewModel {
                 // Bouclier shieldAll : ce joueur est exempté du blocage
                 if players[i].hasShieldAll {
                     players[i].hasShieldAll = false
+                    players[i].blockedByPlayerName = nil
                     print("MASTER: \(players[i].name) bouclier shieldAll activé — blocage annulé")
                 } else {
                     players[i].blockedFromBuzzing = true
+                    players[i].blockedByPlayerName = buyer.name
                 }
                 mpcService.sendMessage(.updatedPlayer(players[i]))
             }

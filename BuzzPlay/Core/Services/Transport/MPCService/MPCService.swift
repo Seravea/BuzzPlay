@@ -171,30 +171,24 @@ extension MPCService {
 
 extension MPCService: MCSessionDelegate {
     func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
-        DispatchQueue.main.async {
-            switch state {
-            case .connected:
-                print("OK MPC: connected to : \(peerID.displayName)")
-                self.onPeerConnected?(peerID)
-            case .notConnected:
-                print("PAS OK MPC: disconnected from \(peerID.displayName)")
-                self.onPeerDisconnected?(peerID)
-            case .connecting:
-                print("LOAD MPC: is connecting to \(peerID.displayName)")
-            @unknown default:
-                break
-            }
+        // Callbacks appelés depuis le thread interne MPC — les callers wrappent dans Task { @MainActor }
+        switch state {
+        case .connected:
+            print("OK MPC: connected to : \(peerID.displayName)")
+            onPeerConnected?(peerID)
+        case .notConnected:
+            print("PAS OK MPC: disconnected from \(peerID.displayName)")
+            onPeerDisconnected?(peerID)
+        case .connecting:
+            print("LOAD MPC: is connecting to \(peerID.displayName)")
+        @unknown default:
+            break
         }
     }
-    
-    func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
-        // Always forward raw data to the app layer.
-        DispatchQueue.main.async {
-            self.onMessage?(data, peerID)
-        }
 
-        // Optional debug log (avoid assuming the payload is UTF-8).
+    func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
         print("MPC received \(data.count) bytes from \(peerID.displayName)")
+        onMessage?(data, peerID)
     }
     
     func session(_ session: MCSession,

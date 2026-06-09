@@ -16,7 +16,7 @@ struct QuizQuestion: Identifiable, Codable, Hashable {
     let difficulty: QuizDifficulty?
     let tone: String?
     var indices: [String] = []
-    var correctAnswer: String?
+    var correctAnswers: [String] = []
     var funFact: String?
     var source: QuizSource = .bundled
     var questionType: QuizQuestionType = .standard

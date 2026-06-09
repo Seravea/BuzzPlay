@@ -60,6 +60,7 @@ struct QuizThemeSelectionView: View {
                     },
                     onDismiss: { showAIGeneratorSheet = false }
                 )
+                .presentationBackground(Color(hex: "#1A0535"))
                 #else
                 EmptyView()
                 #endif
@@ -81,6 +82,7 @@ struct QuizThemeSelectionView: View {
                     },
                     onBack: { showAIReviewSheet = false }
                 )
+                .presentationBackground(Color(hex: "#1A0535"))
                 #else
                 EmptyView()
                 #endif

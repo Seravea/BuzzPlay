@@ -10,11 +10,12 @@ import SwiftUI
 struct PublicQuizDisplayView: View {
     var state: PublicQuizState
     var timer: String
+    var timerReady: Bool = true
 
     var body: some View {
         VStack(spacing: 14) {
-            // Timer badge
-            TimerBadge(time: timer)
+            // Timer badge — masqué avant réception du 1er timerStarted (#A4)
+            TimerBadge(time: timerReady ? timer : "—")
                 .frame(maxWidth: .infinity, alignment: .trailing)
 
             // Question Card — masquée jusqu'à la fin du premier countdown
@@ -28,6 +29,8 @@ struct PublicQuizDisplayView: View {
                     Text(state.question.title)
                         .font(.nohemi(.title3, weight: .bold))
                         .foregroundStyle(.white)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(18)

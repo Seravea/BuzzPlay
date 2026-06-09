@@ -35,6 +35,7 @@ struct ScoreMasterView: View {
         }
         .navigationBarBackButtonHidden()
         .appDefaultTextStyle(Typography.body)
+        .onAppear { masterFlowVM.collectUnspentNotes() }
     }
 
     // MARK: - Header
@@ -49,6 +50,17 @@ struct ScoreMasterView: View {
             Text("Classement final")
                 .font(.nohemi(.title, weight: .black))
                 .foregroundStyle(.white)
+
+            if masterFlowVM.notesRecoveredThisSession > 0 {
+                HStack(spacing: 5) {
+                    Image(systemName: "arrow.uturn.left.circle.fill")
+                        .font(.system(size: 11))
+                    Text("+\(masterFlowVM.notesRecoveredThisSession) Notes récupérées")
+                        .font(.nohemi(.caption2, weight: .semiBold))
+                }
+                .foregroundStyle(Color.mustardYellow.opacity(0.75))
+                .padding(.top, 4)
+            }
         }
         .padding(.top, 12)
         .padding(.bottom, 28)
