@@ -411,7 +411,7 @@ extension MasterFlowViewModel {
             mpcService.sendMessage(.updatedPlayer(players[i]))
         }
 
-        mpcService.sendMessage(.buzzUnlock)
+        mpcService.sendBuzzUnlock()
         broadcastPublicStateFromCurrentGame()
     }
     
@@ -454,8 +454,7 @@ extension MasterFlowViewModel {
         currentBuzzGame?.handleBuzz(from: player)
 
         // lock pour tout le monde + envoie le nom
-        let lockPayload = BuzzLockPayload(playerID: player.id, playerName: player.name)
-        mpcService.sendMessage(.buzzLock(lockPayload))
+        mpcService.sendBuzzLock(player: player)
 
         // Mettre à jour l'écran public (timer figé + joueur qui a buzz)
         broadcastPublicStateFromCurrentGame()
