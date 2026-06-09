@@ -39,6 +39,9 @@ final class PlayerGameViewModel {
 
     // Master a lancé une nouvelle partie → retourner au lobby player
     var shouldReturnToLobby: Bool = false
+    // #quit-teardown — true quand le Master a explicitement quitté la partie : on rentre à
+    // l'accueil et on NE tente PAS de se reconnecter (≠ déconnexion accidentelle).
+    var masterDidLeave: Bool = false
     // Notification brève avant redirection (#B6)
     var showNewGameNotification: Bool = false
 
@@ -110,6 +113,9 @@ extension PlayerGameViewModel {
                 guard peer.displayName == MPCService.masterPeerName else { return }
                 self.isConnectedToMaster = false
                 self.didSentPlayer = false
+                // #quit-teardown — si le Master a quitté volontairement, ne pas relancer le
+                // watchdog de reconnexion (sinon le Player tente de rejoindre un Master parti).
+                guard !self.masterDidLeave else { return }
                 self.startReconnectTimer()
             }
         }
@@ -242,6 +248,11 @@ extension PlayerGameViewModel {
 
         case .hintRevealedToPlayer(let hint):
             currentBuzzerVM?.showHint(hint)
+
+        case .masterLeftParty:
+            // #quit-teardown — le Master a quitté : on coupe le watchdog de reco et on
+            // renvoie le Player à l'accueil (PlayerGameView observe `masterDidLeave`).
+            masterDidLeave = true
 
         case .ping:
             // Heartbeat : répondre au Master pour prouver qu'on est vivant.
@@ -396,6 +407,14 @@ extension PlayerGameViewModel {
         // Retour foreground sans connexion → scan immédiat + timer de retry
         mpc.restartBrowsing()
         startReconnectTimer()
+    }
+
+    // #quit-teardown — le Player quitte la partie ("Quitter" sur le podium) OU suit le Master
+    // qui est parti : on coupe le watchdog de reco et on se déconnecte proprement de la session.
+    func leaveSession() {
+        stopReconnectTimer()
+        mpc.leaveAsPlayer()
+        isConnectedToMaster = false
     }
 
     // MARK: - Reconnect auto

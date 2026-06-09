@@ -165,6 +165,18 @@ extension QuizMasterViewModel {
         playerHasBuzz = player
         pauseReactionTimer()
     }
+
+    // #pause-reco — uniquement si la question est révélée ET que personne n'a buzzé
+    // (= timer en cours). Un buzz en attente de validation a déjà mis le timer en pause.
+    func pauseForDisconnect() {
+        guard isQuestionRevealed, playerHasBuzz == nil else { return }
+        pauseReactionTimer()
+    }
+
+    func resumeFromDisconnect() {
+        guard isQuestionRevealed, playerHasBuzz == nil else { return }
+        startReactionTimer()
+    }
     
     func skipQuestion() {
         playerHasBuzz = nil
