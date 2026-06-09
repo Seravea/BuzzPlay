@@ -83,12 +83,19 @@ struct PlayerGameView: View {
         if game == .score {
             if !playerGameVM.isGameComplete {
                 showInterGameScore = true
+                // #C4/#B7 — signale au Master que le Player a reçu le score inter-manche
+                // et est prêt à recevoir la prochaine invitation
+                playerGameVM.sendPlayerReady()
             }
         } else {
             currentGameType = game
-            playerGameVM.currentBuzzerVM = playerFlowVM.makeBuzzerViewModel(
-                for: game == .quiz ? .quiz : .blindTest
-            )
+            // #C7 — si un BuzzerVM existe déjà (reconnexion mid-game), sync l'état
+            // au lieu de recréer pour ne pas perdre le lock/unlock courant
+            if playerGameVM.currentBuzzerVM == nil {
+                playerGameVM.currentBuzzerVM = playerFlowVM.makeBuzzerViewModel(
+                    for: game == .quiz ? .quiz : .blindTest
+                )
+            }
             // Re-confirme la présence au Master (#B7 : BuzzerPlayerView déjà à l'écran → onAppear ne refire pas)
             playerGameVM.sendPlayerReady()
             if showInterGameScore {

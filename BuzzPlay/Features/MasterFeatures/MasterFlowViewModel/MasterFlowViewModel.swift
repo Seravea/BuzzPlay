@@ -396,8 +396,21 @@ extension MasterFlowViewModel {
 //MARK: sending TO Peer connected
 extension MasterFlowViewModel {
     func broadcastGameLaunch(_ game: GameType) {
-        readyPlayers.removeAll()  // players devront re-confirmer leur présence sur le nouveau buzzer
+        readyPlayers.removeAll()
         mpcService.sendMessage(.masterLaunchedGame(game))
+        // #E1 — retry pour les Players qui n'ont pas reçu l'invitation MPC
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(2))
+            guard let self else { return }
+            let missing = self.players.filter {
+                $0.name != "Écran Publique" && !self.readyPlayers.contains($0.name)
+            }
+            guard !missing.isEmpty else { return }
+            print("MASTER: \(missing.count) joueur(s) n'ont pas confirmé — renvoi de l'invitation")
+            for player in missing {
+                self.mpcService.sendMessagetoOnePlayer(message: .masterLaunchedGame(game), player: player)
+            }
+        }
     }
     
     func unlockBuzz() {

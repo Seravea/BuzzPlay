@@ -156,11 +156,14 @@ extension PlayerGameViewModel {
             if updatedPlayer.id == self.player.id {
                 let delta = updatedPlayer.accountAmount - self.player.accountAmount
                 if delta > 0 { pendingNotesToast = delta }
+                let wasBlocked = self.player.blockedFromBuzzing
                 self.player = updatedPlayer
                 currentBuzzerVM?.player = updatedPlayer
-                // #C5 — bloquer immédiatement le buzzer si le cadeau adverse vient d'arriver
+                // #C5 — gift block séparé du buzz lock global pour permettre le unlock correct
                 if updatedPlayer.blockedFromBuzzing {
-                    currentBuzzerVM?.lockBuzz(teamNameHasBuzz: "")
+                    currentBuzzerVM?.setGiftBlock(true)
+                } else if wasBlocked {
+                    currentBuzzerVM?.setGiftBlock(false)
                 }
             }
             if let idx = knownPlayers.firstIndex(where: { $0.id == updatedPlayer.id }) {
