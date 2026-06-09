@@ -178,7 +178,12 @@ final class MasterFlowViewModel {
         }
     }
 
+    /// Vrai dès que le Master a quitté le lobby pour le hub de jeux.
+    /// Sert à re-notifier un joueur qui (re)joint après le broadcast initial (#rejoin).
+    private(set) var hasPartyStarted = false
+
     func startParty() {
+        hasPartyStarted = true
         mpcService.sendMessage(.masterStartedParty)
     }
 
@@ -350,6 +355,14 @@ final class MasterFlowViewModel {
             // Nouveau player
             players.append(player)
             allRegisteredPlayers.append(player)
+        }
+
+        // #rejoin — re-notifier que la partie a démarré pour TOUT joueur qui (re)joint
+        // après le broadcast initial (fire-and-forget depuis le Lobby). Sinon son app
+        // (surtout après un kill) reste coincée sur PlayerChooseGameView, n'atteint jamais
+        // le buzzer et n'envoie jamais playerReady → bloqué à "X/Y" incomplet.
+        if hasPartyStarted {
+            mpcService.sendMessagetoOnePlayer(message: .masterStartedParty, player: player)
         }
     }
 
