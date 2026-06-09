@@ -377,7 +377,8 @@ extension PlayerGameViewModel {
 
     private func startReconnectTimer() {
         stopReconnectTimer()
-        reconnectTimer = Timer.scheduledTimer(withTimeInterval: 6, repeats: true) { [weak self] _ in
+        // #C1 — watchdog réduit à 3s pour récupérer plus vite les invitations expirées
+        reconnectTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self, !self.isConnectedToMaster else {
                     self?.stopReconnectTimer()

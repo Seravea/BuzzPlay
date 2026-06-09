@@ -250,7 +250,8 @@ extension MPCService: MCNearbyServiceBrowserDelegate {
 
         invitedPeers.insert(name)
         print("👀 MPC: found master \(name), inviting…")
-        browser.invitePeer(peerID, to: session, withContext: nil, timeout: 10)
+        // #C1 — timeout allongé à 30s pour les environnements Wi-Fi lents ou encombrés
+        browser.invitePeer(peerID, to: session, withContext: nil, timeout: 30)
     }
 
         func browser(_ browser: MCNearbyServiceBrowser,

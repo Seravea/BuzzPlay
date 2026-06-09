@@ -39,7 +39,12 @@ struct HomeView: View {
                 // CTA cards
                 VStack(spacing: 10) {
                     // Rejoindre — bouton principal
-                    Button { router.push(Route.createTeamView) } label: {
+                    Button {
+                        // #A1 — démarre MPC dès le tap pour déclencher la permission réseau local
+                        // avant que le joueur arrive sur CreateTeamView
+                        playerFlowVM.prewarmMPC()
+                        router.push(Route.createTeamView)
+                    } label: {
                         HomeRoleCard(
                             title: "Rejoindre",
                             subtitle: "Rejoins la partie d'un hôte",

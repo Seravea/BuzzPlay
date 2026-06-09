@@ -117,6 +117,16 @@ class PlayerFlowViewModel {
         return createTeamVM
     }
 
+    // #A1 — déclenche le browsing MPC immédiatement pour obtenir la permission réseau local
+    // avant que le joueur arrive sur CreateTeamView et tente de rejoindre
+    func prewarmMPC() {
+        guard mpc == nil else { return }
+        let warmup = MPCService(peerName: "warmup", role: .team)
+        warmup.startBrowsingIfNeeded()
+        // On garde une référence temporaire juste le temps que la permission s'affiche
+        self.mpc = warmup
+    }
+
 
     func makeBuzzerViewModel(for mode: BuzzerGameMode) -> BuzzerViewModel {
         guard let playerVM = playerGameVM else {
