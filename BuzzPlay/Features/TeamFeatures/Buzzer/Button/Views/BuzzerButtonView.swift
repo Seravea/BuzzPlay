@@ -104,7 +104,19 @@ struct BuzzerButtonView: View {
     @ViewBuilder
     private var stateLabel: some View {
         VStack(spacing: BuzzSpacing.xs) {
-            if let teamName = buzzerVM.playerNameHasBuzz {
+            // #E3 — le countdown prend la priorité d'affichage (reprise après refus)
+            if case .counting(let n) = buzzerVM.countdownPhase {
+                Text("Prochain buzz dans…")
+                    .font(.nohemi(.headline, weight: .bold))
+                    .foregroundStyle(.white)
+                Text("\(n)")
+                    .font(.custom("Nohemi-Black", size: 28))
+                    .foregroundStyle(playerColor)
+            } else if case .go = buzzerVM.countdownPhase {
+                Text("À toi de buzzer !")
+                    .font(.nohemi(.headline, weight: .bold))
+                    .foregroundStyle(playerColor)
+            } else if let teamName = buzzerVM.playerNameHasBuzz, !teamName.isEmpty {
                 if teamName == buzzerVM.player.name {
                     Text("Tu as buzzé !")
                         .font(.nohemi(.headline, weight: .bold))
@@ -114,13 +126,6 @@ struct BuzzerButtonView: View {
                         .font(.nohemi(.headline, weight: .regular))
                         .foregroundStyle(Color.textMuted)
                 }
-            } else if case .counting(let n) = buzzerVM.countdownPhase {
-                Text("Prochain buzz dans…")
-                    .font(.nohemi(.headline, weight: .bold))
-                    .foregroundStyle(.white)
-                Text("\(n)")
-                    .font(.custom("Nohemi-Black", size: 28))
-                    .foregroundStyle(playerColor)
             } else if buzzerVM.isEnabled {
                 Text("Appuie pour buzzer !")
                     .font(.nohemi(.headline, weight: .bold))

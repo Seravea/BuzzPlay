@@ -18,6 +18,12 @@ struct BuzzerPlayerView: View {
         self._coinsVM = State(initialValue: CoinsViewModel(playerGameVM: playerGameVM))
     }
 
+    // #E3 — vrai si une question Quiz est actuellement révélée (utilisé pour le countdown de reprise)
+    private var isQuizQuestionRevealed: Bool {
+        if case .quiz(let state) = playerGameVM.publicState { return state.isQuestionRevealed }
+        return false
+    }
+
     var body: some View {
         ZStack {
             BackgroundAppView().ignoresSafeArea()
@@ -31,7 +37,9 @@ struct BuzzerPlayerView: View {
                         .zIndex(100)
                 }
 
-                if buzzerVM.countdownPhase != .hidden && buzzerVM.answerResult == nil {
+                // #E3 — overlay plein écran uniquement au démarrage de manche (question pas encore révélée).
+                // Au refus (question déjà révélée), le décompte s'affiche discrètement sous le buzzer.
+                if buzzerVM.countdownPhase != .hidden && buzzerVM.answerResult == nil && !isQuizQuestionRevealed {
                     CountdownOverlay(phase: buzzerVM.countdownPhase)
                         .transition(.opacity)
                         .zIndex(99)
