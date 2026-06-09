@@ -314,18 +314,16 @@ extension MPCService {
     
     func sendMessagetoOnePlayer(message: MPCMessage, player: Player) {
         let matches = session.connectedPeers.filter { $0.displayName == player.name }
-        guard let targetPeer = matches.first else {
+        guard !matches.isEmpty else {
             print("MPC: no connected peer found for player \(player.name)")
             return
         }
-        if matches.count > 1 {
-            // Deux joueurs avec le même nom : le message va au premier trouvé.
-            // Empêcher les doublons de noms dans CreateTeamView pour éviter ce cas.
-            print("⚠️ MPC: multiple peers named \(player.name) — sending to first match only")
-        }
+        // Routage robuste : après un kill+rejoin, un peer zombie (mort) peut coexister
+        // avec le peer vivant sous le même nom. On envoie à TOUS les matches : le zombie
+        // ignore (il est mort), le vivant reçoit. Évite que le message parte dans le vide.
         do {
             let data = try JSONEncoder().encode(message)
-            try session.send(data, toPeers: [targetPeer], with: .reliable)
+            try session.send(data, toPeers: matches, with: .reliable)
         } catch {
             let mpcError = MPCError.sendFailed(underlying: error)
             print("MPC error: \(mpcError), underlying: \(error)")

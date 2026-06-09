@@ -93,6 +93,12 @@ final class MasterFlowViewModel {
     // #C3 — debounce pour éviter de traiter des déconnexions transitoires (reconnexion rapide)
     private var disconnectDebounce: [String: Task<Void, Never>] = [:]
 
+    // MARK: - Heartbeat (détection fiable des déconnexions, même quand MPC ne signale rien)
+    private var heartbeatTimer: Timer?
+    private var lastSeen: [String: Date] = [:]
+    private static let heartbeatInterval: TimeInterval = 2   // fréquence des pings
+    private static let heartbeatTimeout: TimeInterval = 6    // sans réponse → déconnecté
+
     //MARK: Datas for games
     var currentBuzzPlayer: Player?
     private static let notesBalanceKey        = "buzzplay.master.notesBalance"
@@ -399,7 +405,7 @@ extension MasterFlowViewModel {
         case .publicUpdate(let update):
             sendPublicState(update)
         case .pong:
-            print("pong reçus")
+            break   // heartbeat : lastSeen déjà mis à jour dans onMessage
         case .updatedPlayer(let player):
             sendUpdatedPlayer(player: player)
         default:
@@ -420,6 +426,7 @@ extension MasterFlowViewModel {
                 // #C3 — annule le debounce de déconnexion si le peer reconnecte dans la foulée
                 self.disconnectDebounce[peer.displayName]?.cancel()
                 self.disconnectDebounce.removeValue(forKey: peer.displayName)
+                self.lastSeen[peer.displayName] = Date()   // heartbeat : signe de vie
                 self.connectedPeers.append(peer)
             }
         }
@@ -430,17 +437,10 @@ extension MasterFlowViewModel {
                 self.connectedPeers.removeAll { $0 == peer }
                 let name = peer.displayName
                 // #C3 — debounce court : filtre les micro-glitch réseau sans latence perceptible.
-                // (1s → 300ms : une vraie déco redevient quasi-instantanée côté Master.)
                 let task = Task { @MainActor [weak self] in
                     try? await Task.sleep(for: .milliseconds(300))
                     guard let self, !Task.isCancelled else { return }
-                    self.players.removeAll { $0.name == name }
-                    self.readyPlayers.remove(name)
-                    guard name != "Écran Publique" else { return }
-                    self.disconnectedPlayerName = name
-                    if self.activeGameType != nil && self.connectedPlayersCount == 0 {
-                        self.isGamePaused = true
-                    }
+                    self.handlePlayerDisconnect(name: name)
                 }
                 self.disconnectDebounce[name] = task
             }
@@ -449,6 +449,8 @@ extension MasterFlowViewModel {
         mpcService.onMessage = { [weak self] data, peer in
             Task { @MainActor [weak self] in
                 guard let self else { return }
+                // Heartbeat : tout message reçu (dont pong) prouve que le peer est vivant.
+                self.lastSeen[peer.displayName] = Date()
                 do {
                     let message = try JSONDecoder().decode(MPCMessage.self, from: data)
                     self.handle(message: message, from: peer)
@@ -457,10 +459,52 @@ extension MasterFlowViewModel {
                 }
             }
         }
-        
+
         print("Master start advertising")
         mpcService.startHostingIfNeeded()
+        startHeartbeat()
         hasStartedHosting = true
+    }
+
+    /// Traite la déconnexion d'un joueur (appelé par le debounce MPC OU le timeout heartbeat).
+    private func handlePlayerDisconnect(name: String) {
+        disconnectDebounce[name]?.cancel()
+        disconnectDebounce.removeValue(forKey: name)
+        players.removeAll { $0.name == name }
+        readyPlayers.remove(name)
+        lastSeen.removeValue(forKey: name)
+        guard name != "Écran Publique" else { return }
+        disconnectedPlayerName = name
+        if activeGameType != nil && connectedPlayersCount == 0 {
+            isGamePaused = true
+        }
+    }
+
+    // MARK: - Heartbeat
+    private func startHeartbeat() {
+        heartbeatTimer?.invalidate()
+        heartbeatTimer = Timer.scheduledTimer(withTimeInterval: Self.heartbeatInterval, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                guard !self.connectedPeers.isEmpty else { return }
+                self.mpcService.sendMessage(.ping)
+                self.checkHeartbeats()
+            }
+        }
+    }
+
+    /// Déclare déconnecté tout joueur qui n'a pas donné signe de vie depuis le timeout,
+    /// même si MPC n'a jamais signalé la déco (cas du kill app → peer zombie).
+    private func checkHeartbeats() {
+        let now = Date()
+        let stale = players
+            .filter { $0.name != "Écran Publique" }
+            .filter { now.timeIntervalSince(lastSeen[$0.name] ?? now) > Self.heartbeatTimeout }
+            .map(\.name)
+        for name in stale {
+            print("MASTER: \(name) timeout heartbeat (>\(Self.heartbeatTimeout)s) → déconnecté")
+            handlePlayerDisconnect(name: name)
+        }
     }
 }
        
