@@ -410,9 +410,10 @@ extension MasterFlowViewModel {
                 guard let self else { return }
                 self.connectedPeers.removeAll { $0 == peer }
                 let name = peer.displayName
-                // #C3 — debounce 1s : ignore les micro-déconnexions (reconnexion rapide après veille)
+                // #C3 — debounce court : filtre les micro-glitch réseau sans latence perceptible.
+                // (1s → 300ms : une vraie déco redevient quasi-instantanée côté Master.)
                 let task = Task { @MainActor [weak self] in
-                    try? await Task.sleep(for: .milliseconds(1000))
+                    try? await Task.sleep(for: .milliseconds(300))
                     guard let self, !Task.isCancelled else { return }
                     self.players.removeAll { $0.name == name }
                     self.readyPlayers.remove(name)
