@@ -322,6 +322,12 @@ final class MasterFlowViewModel {
             restored.blockedFromBuzzing = saved.blockedFromBuzzing
             allRegisteredPlayers[savedIndex] = restored
             players.append(restored)
+            // #T-reco1 — un joueur qui se reconnecte (savedIndex existe) était déjà sur sa
+            // vue buzzer → on le re-marque prêt directement, sans dépendre d'un playerReady
+            // dont le timing à la reconnexion n'est pas fiable (header 2/2 mais boutons 1/2).
+            if restored.name != "Écran Publique" {
+                readyPlayers.insert(restored.name)
+            }
             mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(restored), player: restored)
             // B2 : envoyer tous les joueurs connus pour remplir knownPlayers côté Player reconnecté
             for existingPlayer in players where existingPlayer.id != restored.id {
