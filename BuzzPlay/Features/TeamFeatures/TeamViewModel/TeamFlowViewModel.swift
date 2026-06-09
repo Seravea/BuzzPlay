@@ -117,14 +117,11 @@ class PlayerFlowViewModel {
         return createTeamVM
     }
 
-    // #A1 — déclenche le browsing MPC immédiatement pour obtenir la permission réseau local
-    // avant que le joueur arrive sur CreateTeamView et tente de rejoindre
+    // #A1/#R1 — déclenche la permission réseau local au plus tôt SANS créer de peer.
+    // (L'ancienne version créait un MPCService "warmup" qui rejoignait réellement la
+    //  session → faux joueur fantôme côté Master. Corrigé : browser éphémère sans session.)
     func prewarmMPC() {
-        guard mpc == nil else { return }
-        let warmup = MPCService(peerName: "warmup", role: .team)
-        warmup.startBrowsingIfNeeded()
-        // On garde une référence temporaire juste le temps que la permission s'affiche
-        self.mpc = warmup
+        MPCService.primeLocalNetworkPermission()
     }
 
 
