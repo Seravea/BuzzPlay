@@ -79,15 +79,19 @@ extension PlayerGameViewModel {
         mpc.onPeerConnected = { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self else { return }
+                // Distingue une RE-connexion d'un 1er connect : au 1er connect c'est le
+                // .task de BuzzerPlayerView qui envoie playerReady (après que la vue soit
+                // visible — évite #A5). À la reco, la vue est déjà à l'écran → on renvoie ici.
+                let isReconnect = self.hasEverConnectedToMaster
                 self.isConnectedToMaster = true
                 self.hasEverConnectedToMaster = true
                 self.stopReconnectTimer()
                 guard !self.didSentPlayer else { return }
                 self.didSentPlayer = true
                 self.mpc.sendMessage(.playerJoin(self.player))
-                // #C7 — re-confirmer la présence si une partie est déjà en cours
-                // (reconnexion MPC sans transition foreground)
-                if self.hasPartyStarted {
+                // #T-reco1/#C7 — à toute reconnexion (hub OU partie en cours), renvoyer
+                // playerReady pour réintégrer readyPlayers côté Master (sinon "1/2" bloqué).
+                if isReconnect {
                     try? await Task.sleep(for: .milliseconds(500))
                     guard !Task.isCancelled else { return }
                     self.mpc.sendMessage(.playerReady)
