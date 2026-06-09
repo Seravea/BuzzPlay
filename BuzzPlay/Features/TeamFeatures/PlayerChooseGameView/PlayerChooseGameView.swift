@@ -51,6 +51,12 @@ struct PlayerChooseGameView: View {
         }
         .navigationBarBackButtonHidden()
         .appDefaultTextStyle(Typography.body)
+        .onAppear {
+            // #rejoin — si la partie a déjà démarré au moment où la vue apparaît
+            // (reconnexion/kill : masterStartedParty arrivé avant le montage de la vue),
+            // .onChange ne se déclenchera pas → on route ici.
+            if playerGameVM.hasPartyStarted { router.push(.playerGameView) }
+        }
         .onChange(of: playerGameVM.hasPartyStarted) { _, started in
             if started { router.push(.playerGameView) }
         }
