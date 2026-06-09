@@ -44,7 +44,6 @@ struct BlindTestSearchScreen: View {
 
     @FocusState private var searchFocused: Bool
     @State private var searchText = ""
-    @State private var showSearchBar = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -57,15 +56,13 @@ struct BlindTestSearchScreen: View {
             // Lancer le Blind Test — invite les players sur leur buzzer
             launchButton
                 .padding(.horizontal, BuzzSpacing.xl)
-                .padding(.bottom, BuzzSpacing.lg)
+                .padding(.bottom, BuzzSpacing.md)
 
-            // Inline search bar (slides in from top)
-            if showSearchBar {
-                searchBarRow
-                    .padding(.horizontal, BuzzSpacing.xl)
-                    .padding(.bottom, BuzzSpacing.lg)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
+            // #BT-search — barre de recherche permanente en haut (au lieu d'un CTA caché en
+            // bas) : découvrable immédiatement, les catégories en dessous sont des raccourcis.
+            searchBarRow
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.bottom, BuzzSpacing.lg)
 
             // Content area
             if blindTestVM.isFetching {
@@ -77,14 +74,6 @@ struct BlindTestSearchScreen: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .safeAreaInset(edge: .bottom) {
-            if !showSearchBar && blindTestVM.playlists.isEmpty && !blindTestVM.isFetching {
-                bottomSearchCTA
-                    .padding(.horizontal, BuzzSpacing.xl)
-                    .padding(.bottom, BuzzSpacing.lg)
-            }
-        }
-        .animation(.spring(duration: 0.3, bounce: 0.05), value: showSearchBar)
         .animation(.spring(duration: 0.3, bounce: 0.05), value: blindTestVM.playlists.isEmpty)
         .animation(.spring(duration: 0.3, bounce: 0.05), value: blindTestVM.isFetching)
     }
@@ -170,61 +159,59 @@ struct BlindTestSearchScreen: View {
     // MARK: Inline Search Bar
 
     private var searchBarRow: some View {
-        HStack(spacing: 10) {
-            HStack(spacing: BuzzSpacing.sm) {
+        HStack(spacing: BuzzSpacing.sm) {
+            // #BT-search — loupe tappable = vraie action "Chercher" (en plus de la touche
+            // "Rechercher" du clavier via submitLabel). Plus besoin de deviner "retour".
+            Button { doSearch() } label: {
                 Image(systemName: "magnifyingglass")
                     .textStyle(Typography.footnoteMedium)
-                    .foregroundStyle(Color.textMuted)
-
-                TextField("", text: $searchText,
-                          prompt: Text("Nom d'une playlist…").foregroundStyle(Color.textDim))
-                    .font(.nohemi(.body))
-                    .foregroundStyle(.white)
-                    .focused($searchFocused)
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-                    .onSubmit { doSearch() }
-
-                if !searchText.isEmpty {
-                    Button { searchText = "" } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(Color.textDim)
-                    }
-                    .buttonStyle(.plain)
-                }
+                    .foregroundStyle(searchText.isEmpty ? Color.textMuted : Color.mustardYellow)
             }
-            .padding(.horizontal, BuzzSpacing.md)
-            .padding(.vertical, 11)
-            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
-            .overlay(
-                RoundedRectangle(cornerRadius: BuzzRadius.md)
-                    .strokeBorder(Color.mustardYellow.opacity(0.5), lineWidth: 1)
-            )
-
-            Button("Annuler") {
-                showSearchBar = false
-                searchText = ""
-                searchFocused = false
-            }
-            .font(.nohemi(.body, weight: .semiBold))
-            .foregroundStyle(Color.textSoft)
             .buttonStyle(.plain)
+            .disabled(searchText.isEmpty)
+
+            TextField("", text: $searchText,
+                      prompt: Text("Rechercher une playlist…").foregroundStyle(Color.textDim))
+                .font(.nohemi(.body))
+                .foregroundStyle(.white)
+                .focused($searchFocused)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .submitLabel(.search)
+                .onSubmit { doSearch() }
+
+            if !searchText.isEmpty {
+                Button { searchText = ""; searchFocused = true } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(Color.textDim)
+                }
+                .buttonStyle(.plain)
+            }
         }
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { searchFocused = true }
-        }
+        .padding(.horizontal, BuzzSpacing.md)
+        .padding(.vertical, 11)
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+        .overlay(
+            RoundedRectangle(cornerRadius: BuzzRadius.md)
+                .strokeBorder(
+                    searchFocused ? Color.mustardYellow.opacity(0.5) : .white.opacity(0.12),
+                    lineWidth: 1
+                )
+        )
+        .animation(.easeInOut(duration: 0.15), value: searchFocused)
     }
 
     // MARK: Categories
 
     private var categoriesSection: some View {
-        ScrollView() {
+        ScrollView {
             VStack(alignment: .leading, spacing: BuzzSpacing.xxl) {
                 categoryRow(label: "GÉNÉRATION", items: generations)
                 categoryRow(label: "GENRE", items: genres)
             }
-            .padding(.bottom, 80)
+            .padding(.bottom, BuzzSpacing.xl)
         }
+        .scrollIndicators(.hidden)
     }
 
     private func categoryRow(label: String, items: [CategoryItem]) -> some View {
@@ -241,8 +228,11 @@ struct BlindTestSearchScreen: View {
                         CategoryCard(item: item) { doSearch(query: item.query) }
                     }
                 }
-                .padding(.horizontal, BuzzSpacing.xl)
             }
+            // #BT-search/#13 — insets propres via contentMargins (au lieu de padder le
+            // HStack, qui rognait la 1re card) + scroll indicators masqués.
+            .contentMargins(.horizontal, BuzzSpacing.xl, for: .scrollContent)
+            .scrollIndicators(.hidden)
         }
     }
 
@@ -261,7 +251,6 @@ struct BlindTestSearchScreen: View {
 
                 Button {
                     withAnimation { blindTestVM.playlists = [] }
-                    showSearchBar = false
                     searchText = ""
                 } label: {
                     Image(systemName: "xmark")
@@ -301,36 +290,12 @@ struct BlindTestSearchScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    // MARK: Bottom CTA
-
-    private var bottomSearchCTA: some View {
-        Button {
-            withAnimation { showSearchBar = true }
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: "magnifyingglass")
-                    .textStyle(Typography.footnoteEM)
-                    .foregroundStyle(Color.textTertiary)
-                Text("Chercher une playlist précise…")
-                    .font(.nohemi(.body, weight: .semiBold))
-                    .foregroundStyle(.white.opacity(0.65))
-                Spacer()
-            }
-            .padding(.horizontal, BuzzSpacing.lg)
-            .padding(.vertical, 14)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
-            .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg).strokeBorder(.white.opacity(0.1), lineWidth: 1))
-        }
-        .buttonStyle(.plain)
-    }
-
     // MARK: Helpers
 
     private func doSearch(query: String? = nil) {
         let q = query ?? searchText
         guard !q.isEmpty else { return }
         searchFocused = false
-        withAnimation { showSearchBar = false }
         withAnimation { blindTestVM.playlists = [] }
         Task { await blindTestVM.search(query: q) }
     }
