@@ -316,7 +316,11 @@ final class MasterFlowViewModel {
     func addPlayer(_ player: Player) {
         // Éviter les doublons si le player envoie playerJoin plusieurs fois dans la même session
         guard !players.contains(where: { $0.name == player.name }) else { return }
+        // #pause-reco — un (re)join réintègre un vrai joueur : lève la pause ET retire l'alerte
+        // déco pour CE joueur (sinon le binding `disconnectedPlayerName != nil && !isGamePaused`
+        // fait popper une fausse alerte "joueur déconnecté" sur celui qui vient de revenir).
         isGamePaused = false
+        if disconnectedPlayerName == player.name { disconnectedPlayerName = nil }
 
         if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == player.name }) {
             // Reconnexion : restaurer l'état sauvegardé (le nom est la clé — l'UUID peut changer)
@@ -405,7 +409,12 @@ extension MasterFlowViewModel {
         case .publicUpdate(let update):
             sendPublicState(update)
         case .pong:
-            break   // heartbeat : lastSeen déjà mis à jour dans onMessage
+            // heartbeat : lastSeen déjà mis à jour dans onMessage.
+            // #pause-reco — auto-heal "zombie revival" : ce peer est vivant (il vient de
+            // ponger) mais a pu être retiré de `players` par le timeout heartbeat sur une
+            // connexion half-open. Dans ce cas le Player ne voit jamais sa propre déco et
+            // ne renvoie jamais playerJoin de lui-même → on le lui demande explicitement.
+            requestRejoinIfMissing(from: peer)
         case .updatedPlayer(let player):
             sendUpdatedPlayer(player: player)
         default:
@@ -478,6 +487,20 @@ extension MasterFlowViewModel {
         if activeGameType != nil && connectedPlayersCount == 0 {
             isGamePaused = true
         }
+    }
+
+    /// #pause-reco — auto-heal d'une connexion half-open : un peer encore vivant (il vient de
+    /// ponger) mais ABSENT de `players` a été retiré par le timeout heartbeat alors que sa
+    /// MCSession n'est jamais tombée côté Player. Le Player ne renverra donc jamais playerJoin
+    /// spontanément. On le lui demande : le playerJoin repassera par `addPlayer` (réintègre le
+    /// roster + readyPlayers + resync état + lève la pause), sans clear sur liveness brute.
+    /// Idempotent : dès que le joueur est re-listé, le guard stoppe les demandes.
+    private func requestRejoinIfMissing(from peer: MCPeerID) {
+        let name = peer.displayName
+        guard name != "Écran Publique", name != MPCService.masterPeerName else { return }
+        guard !players.contains(where: { $0.name == name }) else { return }
+        print("MASTER: \(name) vivant (pong) mais absent du roster → demande de re-join")
+        mpcService.sendMessage(.masterRequestRejoin, to: peer)
     }
 
     // MARK: - Heartbeat
