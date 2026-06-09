@@ -88,7 +88,8 @@ extension QuizMasterViewModel {
     func validateAnswer(points: Int) {
         if let player = gameVM.currentBuzzPlayer {
             feedbackGenerator.notificationOccurred(.success)
-            let finalPoints = doubledScorePlayers.remove(player.id) != nil ? points * 2 : points
+            let wasDoubled = doubledScorePlayers.remove(player.id) != nil
+            let finalPoints = wasDoubled ? points * 2 : points
             gameVM.quizRoundsPlayed += 1
 
             // .answerResult envoyé EN PREMIER → Player snapshote knownPlayers avant la mise à jour du score
@@ -96,7 +97,7 @@ extension QuizMasterViewModel {
             let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: allAnswers)
             gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
-            gameVM.addPointToPlayer(player, points: finalPoints)
+            gameVM.addPointToPlayer(player, points: finalPoints, consumeScoreDouble: wasDoubled)
 
             goToSelectNewQuestion()
             playerHasBuzz = nil
