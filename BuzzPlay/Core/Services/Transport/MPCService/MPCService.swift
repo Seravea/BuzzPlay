@@ -16,8 +16,9 @@ enum MPCRole {
 
 final class MPCService: NSObject {
     //MARK: MPC Session datas
+    static let serviceTypeID = "buzzplay-game"
     private let role: MPCRole
-    private let serviceType = "buzzplay-game"
+    private let serviceType = MPCService.serviceTypeID
     private let myPeerID: MCPeerID
     private let session: MCSession
     private var invitedPeers = Set<String>()
@@ -44,6 +45,30 @@ final class MPCService: NSObject {
         session.delegate = self
     }
     
+}
+
+//MARK: Local network permission priming (#R1 / #A1)
+extension MPCService {
+    /// Browser éphémère retenu le temps de déclencher la popup de permission.
+    private static var permissionPrimerBrowser: MCNearbyServiceBrowser?
+
+    /// Déclenche la popup iOS "réseau local" SANS rejoindre de session.
+    /// Crée un browser qui ne fait QUE scanner : aucun delegate → aucune invitation,
+    /// aucune MCSession, aucun peer fantôme côté Master. Le simple `startBrowsingForPeers`
+    /// suffit à déclencher la permission. Le browser est arrêté après 3s.
+    @MainActor
+    static func primeLocalNetworkPermission() {
+        guard permissionPrimerBrowser == nil else { return }
+        let primerPeer = MCPeerID(displayName: "primer")
+        let browser = MCNearbyServiceBrowser(peer: primerPeer, serviceType: serviceTypeID)
+        // Pas de delegate volontairement : on ne réagit à aucun peer trouvé → aucune invitation.
+        browser.startBrowsingForPeers()
+        permissionPrimerBrowser = browser
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            permissionPrimerBrowser?.stopBrowsingForPeers()
+            permissionPrimerBrowser = nil
+        }
+    }
 }
 
 //MARK: Advertiser Master
