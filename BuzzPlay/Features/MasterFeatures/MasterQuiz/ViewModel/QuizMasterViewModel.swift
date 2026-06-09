@@ -90,7 +90,6 @@ extension QuizMasterViewModel {
             feedbackGenerator.notificationOccurred(.success)
             let wasDoubled = doubledScorePlayers.remove(player.id) != nil
             let finalPoints = wasDoubled ? points * 2 : points
-            gameVM.quizRoundsPlayed += 1
 
             // .answerResult envoyé EN PREMIER → Player snapshote knownPlayers avant la mise à jour du score
             let allAnswers = currentQuestion.flatMap { $0.answers.isEmpty ? nil : $0.answers.joined(separator: " • ") }
@@ -99,13 +98,10 @@ extension QuizMasterViewModel {
 
             gameVM.addPointToPlayer(player, points: finalPoints, consumeScoreDouble: wasDoubled)
 
+            // #BugQ1 — l'incrément de manche + auto-finish est géré dans goToSelectNewQuestion
             goToSelectNewQuestion()
             playerHasBuzz = nil
             gameVM.currentBuzzPlayer = nil
-
-            if questionsPassed.count >= questions.count {
-                shouldAutoFinish = true
-            }
         }
     }
     
@@ -120,17 +116,31 @@ extension QuizMasterViewModel {
         let state = makePublicState()
         gameVM.sendPublicState(state)
 
-        // Délai simple sans countdown broadcasté : évite que le CountdownOverlay
-        // couvre la question côté Player (le buzz se re-déverrouille silencieusement)
+        // #E3/#B4 — countdown discret visible sur le buzzer (la question reste affichée).
+        // Diffusé via countdownPhase → le stateLabel du buzzer affiche "Prochain buzz dans… N".
+        // Le CountdownOverlay plein écran est supprimé côté Player quand la question est révélée,
+        // donc seul le décompte sous le buzzer apparaît. On attend la fin de l'overlay
+        // "Mauvaise réponse" (1.5s) avant de lancer le décompte.
         countdownTask?.cancel()
         countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
-            try? await Task.sleep(for: .seconds(2))
+            try? await Task.sleep(for: .milliseconds(1500))
             guard !Task.isCancelled else { return }
-            self.startReactionTimer()
-            self.gameVM.unlockBuzz()
-            let newState = self.makePublicState()
-            self.gameVM.sendPublicState(newState)
+            await runCountdown(
+                startCount: 2,
+                onPhaseChange: { [weak self] phase in
+                    self?.roundCountdownPhase = phase
+                    self?.gameVM.broadcastPublicStateFromCurrentGame()
+                },
+                onComplete: { [weak self] in
+                    guard let self else { return }
+                    self.roundCountdownPhase = .hidden
+                    self.startReactionTimer()
+                    self.gameVM.unlockBuzz()
+                    let newState = self.makePublicState()
+                    self.gameVM.sendPublicState(newState)
+                }
+            )
         }
     }
 
@@ -166,9 +176,16 @@ extension QuizMasterViewModel {
     func goToSelectNewQuestion() {
         if let currentQuestion = currentQuestion {
             questionsPassed.append(currentQuestion)
+            // #BugQ1 — toute question terminée (validée OU skippée) consomme une manche
+            gameVM.quizRoundsPlayed += 1
         }
         currentQuestion = nil
         stopReactionTimer()
+
+        // #BugQ1 — auto-finish quand toutes les questions de la manche ont été jouées
+        if questionsPassed.count >= questions.count {
+            shouldAutoFinish = true
+        }
 
         let state = makePublicState()
         gameVM.sendPublicState(state)

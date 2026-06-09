@@ -9,6 +9,10 @@ import UIKit
 struct BuzzerButtonView: View {
     @State private var isTapped: Bool = false
     @Bindable var buzzerVM: BuzzerViewModel
+    // #R3 — countdown inline (sous le buzzer) UNIQUEMENT au refus Quiz (question révélée).
+    // Au démarrage de manche (Quiz + BlindTest), c'est le CountdownOverlay plein écran qui gère
+    // → évite le double countdown.
+    var showInlineCountdown: Bool = false
 
     private var ourTeamBuzzed: Bool { buzzerVM.playerNameHasBuzz == buzzerVM.player.name }
     private var hasBuzzed: Bool { buzzerVM.playerNameHasBuzz != nil }
@@ -104,7 +108,19 @@ struct BuzzerButtonView: View {
     @ViewBuilder
     private var stateLabel: some View {
         VStack(spacing: BuzzSpacing.xs) {
-            if let teamName = buzzerVM.playerNameHasBuzz {
+            // #E3/#R3 — countdown inline seulement au refus Quiz (showInlineCountdown)
+            if showInlineCountdown, case .counting(let n) = buzzerVM.countdownPhase {
+                Text("Prochain buzz dans…")
+                    .font(.nohemi(.headline, weight: .bold))
+                    .foregroundStyle(.white)
+                Text("\(n)")
+                    .font(.custom("Nohemi-Black", size: 28))
+                    .foregroundStyle(playerColor)
+            } else if showInlineCountdown, case .go = buzzerVM.countdownPhase {
+                Text("À toi de buzzer !")
+                    .font(.nohemi(.headline, weight: .bold))
+                    .foregroundStyle(playerColor)
+            } else if let teamName = buzzerVM.playerNameHasBuzz, !teamName.isEmpty {
                 if teamName == buzzerVM.player.name {
                     Text("Tu as buzzé !")
                         .font(.nohemi(.headline, weight: .bold))
@@ -114,13 +130,6 @@ struct BuzzerButtonView: View {
                         .font(.nohemi(.headline, weight: .regular))
                         .foregroundStyle(Color.textMuted)
                 }
-            } else if case .counting(let n) = buzzerVM.countdownPhase {
-                Text("Prochain buzz dans…")
-                    .font(.nohemi(.headline, weight: .bold))
-                    .foregroundStyle(.white)
-                Text("\(n)")
-                    .font(.custom("Nohemi-Black", size: 28))
-                    .foregroundStyle(playerColor)
             } else if buzzerVM.isEnabled {
                 Text("Appuie pour buzzer !")
                     .font(.nohemi(.headline, weight: .bold))
@@ -151,6 +160,8 @@ struct BuzzerButtonView: View {
         }
         .padding(.horizontal, BuzzSpacing.xxxl)
         .multilineTextAlignment(.center)
+        // #R2 — hauteur fixe : les états à 1 ou 2 lignes ne font plus bouger le buzzer
+        .frame(height: 72, alignment: .top)
     }
 }
 
