@@ -260,7 +260,7 @@ private struct GiftCardView: View {
                             .foregroundStyle(.white)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 2)
-                            .background(Color(hex: "#00C950"), in: Capsule())
+                            .background(Color.greenButtonLeading, in: Capsule())
                             .offset(x: 6, y: -6)
                     }
                 }
