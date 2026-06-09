@@ -184,6 +184,9 @@ extension PlayerGameViewModel {
             hasPartyStarted = true
 
         case .masterGameComplete:
+            // #C6 — cancel le leaderboard avant le podium pour éviter le flash
+            leaderboardTask?.cancel()
+            showPostRoundLeaderboard = false
             isGameComplete = true
 
         case .masterResetGame:

@@ -41,7 +41,7 @@ struct PostRoundLeaderboardView: View {
                 }
             }
         }
-        .animation(.spring(response: 0.60, dampingFraction: 0.76), value: displayedPlayers.map(\.id))
+        // #D7/#D8 — une seule source d'animation pour éviter le conflit shape/contenu
         .animation(.buzzFade, value: showDeltas)
         .onAppear {
             // Étape 1 : affichage en ANCIEN ordre (avec les scores déjà mis à jour)
@@ -50,7 +50,7 @@ struct PostRoundLeaderboardView: View {
                 .compactMap { old in currentRanking.first(where: { $0.id == old.id }) }
             displayedPlayers = orderedByOld
 
-            // Étape 2 : après 1s, animer vers le NOUVEL ordre
+            // Étape 2 : après 1s, animer vers le NOUVEL ordre via withAnimation explicite
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 withAnimation(.spring(response: 0.65, dampingFraction: 0.76)) {
                     displayedPlayers = currentRanking.sorted { $0.score > $1.score }
@@ -75,7 +75,8 @@ struct PostRoundLeaderboardView: View {
                     .tracking(2)
                     .foregroundStyle(.white)
             }
-            Text("Le Maître prépare la prochaine manche…")
+            // #E2 — message neutre : fonctionne pour mid-game et dernière manche
+            Text("Le Maître prépare la suite…")
                 .font(.nohemi(.caption, weight: .medium))
                 .foregroundStyle(Color.textMuted)
         }
@@ -200,14 +201,24 @@ private struct PostRoundRow: View {
         }
     }
 
+    // #B10 — fond neutre basé sur le rang, pas sur la teamColor du joueur
+    // (évite la collision rouge/vert avec le feedback bonne/mauvaise réponse)
     private var rowBackground: AnyShapeStyle {
-        rank <= 3
-            ? AnyShapeStyle(player.teamColor.color.opacity(0.13))
-            : AnyShapeStyle(Color.white.opacity(0.05))
+        switch rank {
+        case 1: AnyShapeStyle(Color.amberWarm.opacity(0.10))
+        case 2: AnyShapeStyle(Color.white.opacity(0.08))
+        case 3: AnyShapeStyle(Color.burnOrange.opacity(0.08))
+        default: AnyShapeStyle(Color.white.opacity(0.04))
+        }
     }
 
     private var rowBorder: Color {
-        rank <= 3 ? player.teamColor.color.opacity(0.28) : .white.opacity(0.07)
+        switch rank {
+        case 1: Color.amberWarm.opacity(0.30)
+        case 2: .white.opacity(0.15)
+        case 3: Color.burnOrange.opacity(0.22)
+        default: .white.opacity(0.07)
+        }
     }
 }
 
