@@ -37,6 +37,8 @@ class BuzzerViewModel {
 
     var isEnabled: Bool = false
     var playerNameHasBuzz: String?
+    // Séparé du buzz lock global : bloqué par un cadeau adverse (enemyCanNotBuzz)
+    private(set) var isGiftBlocked: Bool = false
 
     // MARK: - Retour visuel de réponse
     var answerResult: AnswerResult? = nil
@@ -112,14 +114,22 @@ extension BuzzerViewModel {
     func unLockBuzz() {
         playerNameHasBuzz = nil
         activeHint = nil
-        // #C5 — ne pas réactiver si le joueur est bloqué par un cadeau adverse
-        guard !player.blockedFromBuzzing else { return }
+        guard !player.blockedFromBuzzing && !isGiftBlocked else { return }
         isEnabled = true
     }
 
     func lockBuzz(teamNameHasBuzz: String) {
         self.playerNameHasBuzz = teamNameHasBuzz
         isEnabled = false
+    }
+
+    func setGiftBlock(_ blocked: Bool) {
+        isGiftBlocked = blocked
+        if blocked {
+            isEnabled = false
+        } else if playerNameHasBuzz == nil {
+            isEnabled = true
+        }
     }
 
     func clearBuzzState() {

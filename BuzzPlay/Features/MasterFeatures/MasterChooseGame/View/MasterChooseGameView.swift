@@ -56,6 +56,9 @@ struct MasterChooseGameView: View {
         }
         .navigationBarBackButtonHidden()
         .appDefaultTextStyle(Typography.body)
+        // #D11 — empêcher la mise en veille pendant la session Master (cause de déconnexion MPC)
+        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
+        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
     }
 
     // MARK: - Eyebrow
