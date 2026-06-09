@@ -67,6 +67,8 @@ final class MasterFlowViewModel {
     
     var mpcService: MPCService = MPCService(peerName: "Master", role: .master)
     private var hasStartedHosting = false
+    // #C3 — debounce pour éviter de traiter des déconnexions transitoires (reconnexion rapide)
+    private var disconnectDebounce: [String: Task<Void, Never>] = [:]
 
     //MARK: Datas for games
     var currentBuzzPlayer: Player?
@@ -363,7 +365,11 @@ extension MasterFlowViewModel {
         // MPCService dispatche déjà sur main — Task @MainActor pour garantir l'isolation.
         mpcService.onPeerConnected = { [weak self] peer in
             Task { @MainActor [weak self] in
-                self?.connectedPeers.append(peer)
+                guard let self else { return }
+                // #C3 — annule le debounce de déconnexion si le peer reconnecte dans la foulée
+                self.disconnectDebounce[peer.displayName]?.cancel()
+                self.disconnectDebounce.removeValue(forKey: peer.displayName)
+                self.connectedPeers.append(peer)
             }
         }
 
@@ -372,14 +378,19 @@ extension MasterFlowViewModel {
                 guard let self else { return }
                 self.connectedPeers.removeAll { $0 == peer }
                 let name = peer.displayName
-                self.players.removeAll { $0.name == name }
-                self.readyPlayers.remove(name)
-                guard name != "Écran Publique" else { return }
-                self.disconnectedPlayerName = name
-                // Pause si plus aucun joueur pendant une partie active
-                if self.activeGameType != nil && self.connectedPlayersCount == 0 {
-                    self.isGamePaused = true
+                // #C3 — debounce 1s : ignore les micro-déconnexions (reconnexion rapide après veille)
+                let task = Task { @MainActor [weak self] in
+                    try? await Task.sleep(for: .milliseconds(1000))
+                    guard let self, !Task.isCancelled else { return }
+                    self.players.removeAll { $0.name == name }
+                    self.readyPlayers.remove(name)
+                    guard name != "Écran Publique" else { return }
+                    self.disconnectedPlayerName = name
+                    if self.activeGameType != nil && self.connectedPlayersCount == 0 {
+                        self.isGamePaused = true
+                    }
                 }
+                self.disconnectDebounce[name] = task
             }
         }
 
