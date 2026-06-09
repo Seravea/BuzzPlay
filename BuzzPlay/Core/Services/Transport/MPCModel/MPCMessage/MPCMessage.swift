@@ -56,6 +56,7 @@ enum MPCMessage: Codable {
     // Master -> Team : le Master lance une nouvelle partie (reset scores, retour au lobby)
     case masterResetGame
 
-    //TEST
+    // Heartbeat : le Master ping périodiquement, le Player répond pong.
+    case ping
     case pong
 }

@@ -243,6 +243,10 @@ extension PlayerGameViewModel {
         case .hintRevealedToPlayer(let hint):
             currentBuzzerVM?.showHint(hint)
 
+        case .ping:
+            // Heartbeat : répondre au Master pour prouver qu'on est vivant.
+            mpc.sendMessage(.pong)
+
         default:
             break
         }
