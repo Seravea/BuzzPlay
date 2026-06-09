@@ -56,9 +56,8 @@ struct MasterChooseGameView: View {
         }
         .navigationBarBackButtonHidden()
         .appDefaultTextStyle(Typography.body)
-        // #D11 — empêcher la mise en veille pendant la session Master (cause de déconnexion MPC)
-        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
-        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
+        // #18a — la veille est désormais désactivée pour TOUTE la session Master
+        // dans MasterFlowViewModel.setupMPC() (couvre aussi les écrans de jeu).
     }
 
     // MARK: - Eyebrow
@@ -97,7 +96,8 @@ struct MasterChooseGameView: View {
             : masterChooseGameVM.isBlindTestCardAvailable
         let allReady = masterChooseGameVM.allPlayersReady
         let readyCount = masterChooseGameVM.readyPlayersCount
-        let totalCount = masterChooseGameVM.connectedPlayersCount
+        // #E1 — dénominateur = total enregistrés (inclut un joueur déconnecté en reconnexion)
+        let totalCount = masterChooseGameVM.totalPlayersCount
 
         VStack(spacing: 0) {
             VStack(spacing: 10) {
