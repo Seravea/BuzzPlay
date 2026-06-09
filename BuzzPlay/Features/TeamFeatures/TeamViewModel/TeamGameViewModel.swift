@@ -76,9 +76,13 @@ extension PlayerGameViewModel {
         guard !hasSetupMPC else { return }
         hasSetupMPC = true
 
-        mpc.onPeerConnected = { [weak self] _ in
+        mpc.onPeerConnected = { [weak self] peer in
             Task { @MainActor [weak self] in
                 guard let self else { return }
+                // #7b — en MCSession (maillage), un Player est connecté au Master ET aux
+                // autres Players. On ne réagit qu'aux événements du MASTER : sinon la
+                // connexion/déconnexion d'un autre Player flippe à tort isConnectedToMaster.
+                guard peer.displayName == MPCService.masterPeerName else { return }
                 // Distingue une RE-connexion d'un 1er connect : au 1er connect c'est le
                 // .task de BuzzerPlayerView qui envoie playerReady (après que la vue soit
                 // visible — évite #A5). À la reco, la vue est déjà à l'écran → on renvoie ici.
@@ -99,9 +103,11 @@ extension PlayerGameViewModel {
             }
         }
 
-        mpc.onPeerDisconnected = { [weak self] _ in
+        mpc.onPeerDisconnected = { [weak self] peer in
             Task { @MainActor [weak self] in
                 guard let self else { return }
+                // #7b — ignorer la déconnexion d'un autre Player ; seul le Master compte.
+                guard peer.displayName == MPCService.masterPeerName else { return }
                 self.isConnectedToMaster = false
                 self.didSentPlayer = false
                 self.startReconnectTimer()

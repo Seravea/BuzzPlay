@@ -88,7 +88,7 @@ final class MasterFlowViewModel {
         if disconnectedPlayerName == name { disconnectedPlayerName = nil }
     }
     
-    var mpcService: MPCService = MPCService(peerName: "Master", role: .master)
+    var mpcService: MPCService = MPCService(peerName: MPCService.masterPeerName, role: .master)
     private var hasStartedHosting = false
     // #C3 — debounce pour éviter de traiter des déconnexions transitoires (reconnexion rapide)
     private var disconnectDebounce: [String: Task<Void, Never>] = [:]
