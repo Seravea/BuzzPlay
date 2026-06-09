@@ -142,7 +142,7 @@ struct BuzzerPlayerView: View {
 
             Spacer()
 
-            BuzzerButtonView(buzzerVM: buzzerVM)
+            BuzzerButtonView(buzzerVM: buzzerVM, showInlineCountdown: isQuizQuestionRevealed)
                 .padding(.bottom, BuzzSpacing.xl)
 
             GiftBottomBar(coinsVM: coinsVM, isSheetOpen: $isGiftSheetOpen, isWaiting: playerGameVM.publicState == .waiting)

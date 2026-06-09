@@ -9,6 +9,10 @@ import UIKit
 struct BuzzerButtonView: View {
     @State private var isTapped: Bool = false
     @Bindable var buzzerVM: BuzzerViewModel
+    // #R3 — countdown inline (sous le buzzer) UNIQUEMENT au refus Quiz (question révélée).
+    // Au démarrage de manche (Quiz + BlindTest), c'est le CountdownOverlay plein écran qui gère
+    // → évite le double countdown.
+    var showInlineCountdown: Bool = false
 
     private var ourTeamBuzzed: Bool { buzzerVM.playerNameHasBuzz == buzzerVM.player.name }
     private var hasBuzzed: Bool { buzzerVM.playerNameHasBuzz != nil }
@@ -104,15 +108,15 @@ struct BuzzerButtonView: View {
     @ViewBuilder
     private var stateLabel: some View {
         VStack(spacing: BuzzSpacing.xs) {
-            // #E3 — le countdown prend la priorité d'affichage (reprise après refus)
-            if case .counting(let n) = buzzerVM.countdownPhase {
+            // #E3/#R3 — countdown inline seulement au refus Quiz (showInlineCountdown)
+            if showInlineCountdown, case .counting(let n) = buzzerVM.countdownPhase {
                 Text("Prochain buzz dans…")
                     .font(.nohemi(.headline, weight: .bold))
                     .foregroundStyle(.white)
                 Text("\(n)")
                     .font(.custom("Nohemi-Black", size: 28))
                     .foregroundStyle(playerColor)
-            } else if case .go = buzzerVM.countdownPhase {
+            } else if showInlineCountdown, case .go = buzzerVM.countdownPhase {
                 Text("À toi de buzzer !")
                     .font(.nohemi(.headline, weight: .bold))
                     .foregroundStyle(playerColor)
@@ -156,6 +160,8 @@ struct BuzzerButtonView: View {
         }
         .padding(.horizontal, BuzzSpacing.xxxl)
         .multilineTextAlignment(.center)
+        // #R2 — hauteur fixe : les états à 1 ou 2 lignes ne font plus bouger le buzzer
+        .frame(height: 72, alignment: .top)
     }
 }
 
