@@ -47,7 +47,7 @@ struct AIQuizSetupView: View {
                     Button(action: onDismiss) {
                         Image(systemName: "xmark")
                             .textStyle(Typography.footnoteEM)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
                 .padding(.horizontal, BuzzSpacing.xl)
@@ -85,7 +85,7 @@ struct AIQuizSetupView: View {
                                 Text(allSelected ? "Tout désélectionner" : "Tout sélectionner")
                                     .font(.nohemi(.caption, weight: .bold))
                             }
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                             .padding(.horizontal, 14)
                             .padding(.vertical, BuzzSpacing.sm)
                             .background(.white.opacity(0.06), in: Capsule())
@@ -99,7 +99,7 @@ struct AIQuizSetupView: View {
                         VStack(alignment: .leading, spacing: BuzzSpacing.md) {
                             Text("DIFFICULTÉ")
                                 .font(.nohemi(.caption2, weight: .bold))
-                                .foregroundStyle(.textSecondary)
+                                .foregroundStyle(Color.textSecondary)
                                 .tracking(0.8)
 
                             VStack(spacing: BuzzSpacing.sm) {
@@ -130,7 +130,7 @@ struct AIQuizSetupView: View {
                         let infoIsWarning = themeCount == 0 || selectedDifficulty == nil
                         HStack(spacing: BuzzSpacing.sm) {
                             Image(systemName: infoIsWarning ? "arrow.down.circle.fill" : "checkmark.circle.fill")
-                                .foregroundStyle(infoIsWarning ? Color.purpleLeading.opacity(0.7) : .textMuted)
+                                .foregroundStyle(infoIsWarning ? Color.purpleLeading.opacity(0.7) : Color.textMuted)
                             Text(infoText)
                                 .font(.nohemi(.caption, weight: infoIsWarning ? .semiBold : .regular))
                                 .foregroundStyle(infoIsWarning ? .white.opacity(0.8) : .white.opacity(0.6))
@@ -176,12 +176,12 @@ struct AIQuizSetupView: View {
                                 .tint(Color.purpleLeading)
                             Text("\(generator.generatedQuestions.count)/\(quizRoundsTotal)")
                                 .font(.nohemi(.caption, weight: .semiBold))
-                                .foregroundStyle(.textSoft)
+                                .foregroundStyle(Color.textSoft)
                                 .frame(width: 45, alignment: .trailing)
                         }
                         Text("Génération en cours...")
                             .font(.nohemi(.caption2, weight: .regular))
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                     .padding(.horizontal, BuzzSpacing.xl)
                     .padding(.vertical, BuzzSpacing.md)
@@ -215,7 +215,7 @@ struct AIQuizSetupView: View {
         VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             Text(label.uppercased())
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
                 .tracking(0.8)
                 .padding(.horizontal, BuzzSpacing.xl)
 
@@ -283,7 +283,7 @@ private struct ThemeCardAI: View {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: theme.iconName)
                         .textStyle(Typography.sectionTitle)
-                        .foregroundStyle(isSelected ? theme.color : .textDim)
+                        .foregroundStyle(isSelected ? theme.color : Color.textDim)
                         .frame(width: 44, height: 44)
                         .background(
                             isSelected ? theme.color.opacity(0.2) : Color.white.opacity(0.05),
@@ -301,7 +301,7 @@ private struct ThemeCardAI: View {
 
                 Text(theme.title)
                     .font(.nohemi(.caption2, weight: .semiBold))
-                    .foregroundStyle(isSelected ? .white : .textSecondary)
+                    .foregroundStyle(isSelected ? .white : Color.textSecondary)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
             }

@@ -133,12 +133,12 @@ struct BlindTestSearchScreen: View {
 
             if blindTestVM.canPlayCatalogContent {
                 (Text("Titre entier · ").foregroundStyle(.white)
-                 + Text("Apple Music").foregroundStyle(.textSecondary))
+                 + Text("Apple Music").foregroundStyle(Color.textSecondary))
                     .font(.nohemi(.caption, weight: .bold))
             } else {
-                (Text("Preview ").foregroundStyle(.textSecondary)
+                (Text("Preview ").foregroundStyle(Color.textSecondary)
                  + Text("15s").foregroundStyle(.white).bold()
-                 + Text(" · Titre entier avec ").foregroundStyle(.textSecondary)
+                 + Text(" · Titre entier avec ").foregroundStyle(Color.textSecondary)
                  + Text("Apple Music").foregroundStyle(.white).bold())
                     .font(.nohemi(.caption, weight: .regular))
             }
@@ -174,10 +174,10 @@ struct BlindTestSearchScreen: View {
             HStack(spacing: BuzzSpacing.sm) {
                 Image(systemName: "magnifyingglass")
                     .textStyle(Typography.footnoteMedium)
-                    .foregroundStyle(.textMuted)
+                    .foregroundStyle(Color.textMuted)
 
                 TextField("", text: $searchText,
-                          prompt: Text("Nom d'une playlist…").foregroundStyle(.textDim))
+                          prompt: Text("Nom d'une playlist…").foregroundStyle(Color.textDim))
                     .font(.nohemi(.body))
                     .foregroundStyle(.white)
                     .focused($searchFocused)
@@ -188,7 +188,7 @@ struct BlindTestSearchScreen: View {
                 if !searchText.isEmpty {
                     Button { searchText = "" } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.textDim)
+                            .foregroundStyle(Color.textDim)
                     }
                     .buttonStyle(.plain)
                 }
@@ -207,7 +207,7 @@ struct BlindTestSearchScreen: View {
                 searchFocused = false
             }
             .font(.nohemi(.body, weight: .semiBold))
-            .foregroundStyle(.textSoft)
+            .foregroundStyle(Color.textSoft)
             .buttonStyle(.plain)
         }
         .onAppear {
@@ -231,7 +231,7 @@ struct BlindTestSearchScreen: View {
         VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             Text(label)
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.textMuted)
+                .foregroundStyle(Color.textMuted)
                 .tracking(0.8)
                 .padding(.horizontal, BuzzSpacing.xl)
 
@@ -254,7 +254,7 @@ struct BlindTestSearchScreen: View {
                 let n = blindTestVM.playlists.count
                 Text("\(n) PLAYLIST\(n > 1 ? "S" : "") TROUVÉE\(n > 1 ? "S" : "")")
                     .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(.textMuted)
+                    .foregroundStyle(Color.textMuted)
                     .tracking(0.8)
 
                 Spacer()
@@ -266,7 +266,7 @@ struct BlindTestSearchScreen: View {
                 } label: {
                     Image(systemName: "xmark")
                         .textStyle(Typography.captionEM)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .frame(width: 28, height: 28)
                         .background(.white.opacity(0.1), in: Circle())
                 }
@@ -296,7 +296,7 @@ struct BlindTestSearchScreen: View {
             ProgressView().scaleEffect(1.2).tint(.white)
             Text("Recherche en cours…")
                 .font(.nohemi(.subheadline, weight: .regular))
-                .foregroundStyle(.textMuted)
+                .foregroundStyle(Color.textMuted)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -310,7 +310,7 @@ struct BlindTestSearchScreen: View {
             HStack(spacing: 10) {
                 Image(systemName: "magnifyingglass")
                     .textStyle(Typography.footnoteEM)
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
                 Text("Chercher une playlist précise…")
                     .font(.nohemi(.body, weight: .semiBold))
                     .foregroundStyle(.white.opacity(0.65))
@@ -398,7 +398,7 @@ struct BlindTestPlaylistRow: View {
                     if let curator = playlist.curator {
                         Text(curator)
                             .font(.nohemi(.caption, weight: .medium))
-                            .foregroundStyle(.textMuted)
+                            .foregroundStyle(Color.textMuted)
                     }
                 }
 
@@ -407,12 +407,12 @@ struct BlindTestPlaylistRow: View {
                 if let count = playlist.trackCount {
                     Text("\(count) titres")
                         .font(.nohemi(.caption, weight: .semiBold))
-                        .foregroundStyle(.textMuted)
+                        .foregroundStyle(Color.textMuted)
                 }
 
                 Image(systemName: "chevron.right")
                     .textStyle(Typography.footnoteEM)
-                    .foregroundStyle(.textFaint)
+                    .foregroundStyle(Color.textFaint)
             }
             .padding(BuzzSpacing.sm)
             .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))

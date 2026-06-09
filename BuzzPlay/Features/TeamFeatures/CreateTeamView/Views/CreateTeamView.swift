@@ -66,7 +66,7 @@ struct CreateTeamView: View {
             Text("CHOISIS TON PERSO")
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
-                .foregroundStyle(.textMuted)
+                .foregroundStyle(Color.textMuted)
 
             ZStack(alignment: .bottomTrailing) {
                 Circle()
@@ -82,7 +82,7 @@ struct CreateTeamView: View {
 
             Text("Visible par tout le monde dans le lobby.")
                 .font(.nohemi(.caption))
-                .foregroundStyle(.textTertiary)
+                .foregroundStyle(Color.textTertiary)
         }
         .padding(.top, BuzzSpacing.sm)
     }
@@ -94,7 +94,7 @@ struct CreateTeamView: View {
             Text("TON PSEUDO")
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
-                .foregroundStyle(.textMuted)
+                .foregroundStyle(Color.textMuted)
 
             HStack(spacing: 10) {
                 TextField(
@@ -110,7 +110,7 @@ struct CreateTeamView: View {
                 if !createTeamVM.pseudo.isEmpty {
                     Text("\(createTeamVM.pseudo.count)/20")
                         .font(.nohemi(.caption, weight: .medium))
-                        .foregroundStyle(.textDim)
+                        .foregroundStyle(Color.textDim)
                         .monospacedDigit()
                 }
             }
@@ -137,7 +137,7 @@ struct CreateTeamView: View {
             Text("COULEUR")
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
-                .foregroundStyle(.textMuted)
+                .foregroundStyle(Color.textMuted)
 
             HStack(spacing: 14) {
                 ForEach(GameColor.allCases, id: \.self) { color in

@@ -68,7 +68,7 @@ struct ScorePlayerView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("TON SCORE")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.textMuted)
+                        .foregroundStyle(Color.textMuted)
                         .tracking(0.8)
                     Text(currentPlayer.name)
                         .font(.nohemi(.title, weight: .extraBold))
@@ -82,7 +82,7 @@ struct ScorePlayerView: View {
                         .foregroundStyle(teamColor)
                     Text("points")
                         .font(.nohemi(.subheadline, weight: .regular))
-                        .foregroundStyle(.textMuted)
+                        .foregroundStyle(Color.textMuted)
                 }
             }
 
@@ -119,13 +119,13 @@ struct ScorePlayerView: View {
         VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             Text("JOUEURS")
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.textMuted)
+                .foregroundStyle(Color.textMuted)
                 .tracking(0.8)
 
 //            if validPlayers.isEmpty {
 //                Text("Aucun joueur")
 //                    .font(.nohemi(.subheadline, weight: .regular))
-//                    .foregroundStyle(.textFaint)
+//                    .foregroundStyle(Color.textFaint)
 //            } else {
                 FlowLayout(spacing: BuzzSpacing.sm) {
 //                    ForEach(validPlayers) { player in

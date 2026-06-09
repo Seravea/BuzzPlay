@@ -175,7 +175,7 @@ struct BuzzerPlayerView: View {
             } label: {
                 Image(systemName: buzzerVM.isBuzzMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
                     .textStyle(Typography.cardTitle)
-                    .foregroundStyle(buzzerVM.isBuzzMuted ? .textDim : .white.opacity(0.85))
+                    .foregroundStyle(buzzerVM.isBuzzMuted ? Color.textDim : .white.opacity(0.85))
                     .frame(width: 44, height: 44)
             }
             .accessibilityLabel(buzzerVM.isBuzzMuted ? "Activer le son du buzzer" : "Couper le son du buzzer")
@@ -295,7 +295,7 @@ private struct AnswerFeedbackOverlay: View {
                             .padding(.horizontal, BuzzSpacing.xl)
                             .padding(.vertical, 10)
                             .background(Color.black.opacity(0.30), in: Capsule())
-                            .overlay(Capsule().strokeBorder(.textDim, lineWidth: 1))
+                            .overlay(Capsule().strokeBorder(Color.textDim, lineWidth: 1))
 
                     case .incorrect:
                         Text(label)
@@ -327,7 +327,7 @@ private struct AnswerFeedbackOverlay: View {
                             .padding(.horizontal, BuzzSpacing.xl)
                             .padding(.vertical, 10)
                             .background(Color.black.opacity(0.30), in: Capsule())
-                            .overlay(Capsule().strokeBorder(.textDim, lineWidth: 1))
+                            .overlay(Capsule().strokeBorder(Color.textDim, lineWidth: 1))
                     }
                 }
                 .frame(maxWidth: .infinity)

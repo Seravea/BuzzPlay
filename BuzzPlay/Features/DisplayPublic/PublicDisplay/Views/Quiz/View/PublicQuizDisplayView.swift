@@ -23,7 +23,7 @@ struct PublicQuizDisplayView: View {
                 VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
                     Text("QUESTION")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.textMuted)
+                        .foregroundStyle(Color.textMuted)
                         .tracking(0.8)
 
                     Text(state.question.title)
@@ -41,10 +41,10 @@ struct PublicQuizDisplayView: View {
                 VStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "hourglass")
                         .textStyle(Typography.sectionTitleSoft)
-                        .foregroundStyle(.textDim)
+                        .foregroundStyle(Color.textDim)
                     Text("Préparez-vous…")
                         .font(.nohemi(.title3, weight: .bold))
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(18)
@@ -58,7 +58,7 @@ struct PublicQuizDisplayView: View {
                 VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
                     Text("RÉPONSE")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.textMuted)
+                        .foregroundStyle(Color.textMuted)
                         .tracking(0.8)
 
                     Text(state.question.answers.first ?? "N/A")
@@ -77,7 +77,7 @@ struct PublicQuizDisplayView: View {
                 VStack(spacing: BuzzSpacing.sm) {
                     Text("A BUZZÉ")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .tracking(0.8)
 
                     TeamCardView(player: player, buzzTime: state.formattedTime, showPoints: false)

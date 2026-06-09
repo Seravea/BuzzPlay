@@ -39,7 +39,7 @@ struct NotesShopView: View {
 
     private var dragHandle: some View {
         RoundedRectangle(cornerRadius: 3)
-            .fill(.textFaint)
+            .fill(Color.textFaint)
             .frame(width: 36, height: 4)
             .padding(.top, BuzzSpacing.md)
             .padding(.bottom, BuzzSpacing.xxl)
@@ -62,7 +62,7 @@ struct NotesShopView: View {
             }
             Text("Notes disponibles")
                 .font(.nohemi(.caption, weight: .regular))
-                .foregroundStyle(.textTertiary)
+                .foregroundStyle(Color.textTertiary)
 
             if case .success(let amount) = store.purchaseState {
                 SuccessConfirmation(amount: amount)
@@ -151,7 +151,7 @@ private struct PackCard: View {
                 }
                 Text("\(pack.notesPerEuro) Notes / €")
                     .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(.textMuted)
+                    .foregroundStyle(Color.textMuted)
             }
 
             Spacer()

@@ -36,21 +36,21 @@ struct GamePausedOverlay: View {
                     if let name = playerName {
                         Text("En attente de \(name)…")
                             .font(.nohemi(.body, weight: .regular))
-                            .foregroundStyle(.textSoft)
+                            .foregroundStyle(Color.textSoft)
                     } else {
                         Text("En attente des joueurs…")
                             .font(.nohemi(.body, weight: .regular))
-                            .foregroundStyle(.textSoft)
+                            .foregroundStyle(Color.textSoft)
                     }
                 }
 
                 HStack(spacing: 6) {
                     ProgressView()
-                        .tint(.textSecondary)
+                        .tint(Color.textSecondary)
                         .scaleEffect(0.85)
                     Text("Reconnexion automatique")
                         .font(.nohemi(.caption, weight: .medium))
-                        .foregroundStyle(.textTertiary)
+                        .foregroundStyle(Color.textTertiary)
                 }
             }
             .padding(36)

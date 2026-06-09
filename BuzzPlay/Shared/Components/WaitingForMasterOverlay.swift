@@ -46,7 +46,7 @@ struct WaitingForMasterOverlay: View {
 
                     Text("Le Maître doit lancer la partie\ndepuis son appareil")
                         .font(.nohemi(.subheadline, weight: .regular))
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .multilineTextAlignment(.center)
                 }
 

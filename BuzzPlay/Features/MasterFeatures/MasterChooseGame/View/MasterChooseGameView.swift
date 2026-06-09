@@ -64,7 +64,7 @@ struct MasterChooseGameView: View {
         Text(text.uppercased())
             .font(.nohemi(.caption2, weight: .bold))
             .tracking(0.8)
-            .foregroundStyle(.textMuted)
+            .foregroundStyle(Color.textMuted)
     }
 
     // MARK: - Launch Section
@@ -77,7 +77,7 @@ struct MasterChooseGameView: View {
                 if masterChooseGameVM.currentRound >= 1 {
                     Text("Manche \(masterChooseGameVM.currentRound)/\(masterChooseGameVM.totalRounds)")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.textMuted)
+                        .foregroundStyle(Color.textMuted)
                 }
             }
             HStack(spacing: BuzzSpacing.md) {
@@ -106,7 +106,7 @@ struct MasterChooseGameView: View {
 
                 Text(game.gameTitle)
                     .font(.nohemi(.headline, weight: .bold))
-                    .foregroundStyle(isAvailable ? .white : .textDim)
+                    .foregroundStyle(isAvailable ? .white : Color.textDim)
                     .lineLimit(1)
             }
             .padding(.top, 18)
@@ -140,7 +140,7 @@ struct MasterChooseGameView: View {
                             .font(.nohemi(.subheadline, weight: .bold))
                     }
                 }
-                .foregroundStyle((isAvailable && allReady) ? .white : .textMuted)
+                .foregroundStyle((isAvailable && allReady) ? .white : Color.textMuted)
                 .frame(maxWidth: .infinity)
                 .frame(height: 40)
                 .background(
@@ -175,7 +175,7 @@ struct MasterChooseGameView: View {
                 Spacer()
                 Text("mi-partie")
                     .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(.textMuted)
+                    .foregroundStyle(Color.textMuted)
             }
 
             VStack(spacing: 6) {
@@ -226,10 +226,10 @@ struct MasterChooseGameView: View {
                 }
 
                 GeometryReader { geo in
-                    RoundedRectangle(cornerRadius: BuzzRadius.pill9)
+                    RoundedRectangle(cornerRadius: BuzzRadius.pill)
                         .fill(.white.opacity(0.10))
                         .overlay(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: BuzzRadius.pill9)
+                            RoundedRectangle(cornerRadius: BuzzRadius.pill)
                                 .fill(player.teamColor.gradient)
                                 .frame(width: geo.size.width * CGFloat(player.score) / CGFloat(maxScore))
                         }
@@ -433,7 +433,7 @@ private struct DailyPackBanner: View {
                     .foregroundStyle(.white)
                 Text(subtitle)
                     .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()

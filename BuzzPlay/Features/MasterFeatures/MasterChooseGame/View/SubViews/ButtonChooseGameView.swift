@@ -20,7 +20,7 @@ struct ButtonChooseGameView: View {
         } label: {
             
             ZStack(alignment: .topTrailing) {
-                VStack(spacing: BuzzSpacing.xs0) {
+                VStack(spacing: 40) {
                     Image(systemName: iconName)
                         .font(.largeTitle)
                         .foregroundStyle(.white)

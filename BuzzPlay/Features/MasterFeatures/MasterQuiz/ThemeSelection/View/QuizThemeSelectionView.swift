@@ -120,7 +120,7 @@ struct QuizThemeSelectionView: View {
                     .foregroundStyle(.white)
                 Text("Sélectionne le thème et la playlist")
                     .font(.nohemi(.subheadline, weight: .regular))
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
@@ -161,7 +161,7 @@ struct QuizThemeSelectionView: View {
                 Text("Générer")
                     .font(.nohemi(.caption, weight: .bold))
             }
-            .foregroundStyle(enabled ? .white : .textMuted)
+            .foregroundStyle(enabled ? .white : Color.textMuted)
             .padding(.horizontal, BuzzSpacing.md)
             .padding(.vertical, BuzzSpacing.sm)
             .background(Color.purpleLeading.opacity(enabled ? 0.2 : 0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
@@ -181,7 +181,7 @@ struct QuizThemeSelectionView: View {
             Text(label.uppercased())
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
-                .foregroundStyle(.textMuted)
+                .foregroundStyle(Color.textMuted)
                 .padding(.horizontal, BuzzSpacing.xl)
 
             VStack(spacing: 28) {
@@ -227,7 +227,7 @@ private struct ThemeSection: View {
 
                 Text("\(sets.count) quiz")
                     .font(.nohemi(.caption, weight: .semiBold))
-                    .foregroundStyle(.textMuted)
+                    .foregroundStyle(Color.textMuted)
             }
             .padding(.horizontal, BuzzSpacing.xl)
 
@@ -320,14 +320,14 @@ private struct QuizSetCard: View {
                     HStack(spacing: BuzzSpacing.sm) {
                         Label("\(set.questions.count) questions", systemImage: "list.bullet")
                             .font(.nohemi(.caption, weight: .medium))
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
 
                         if !difficultyRange.isEmpty {
                             Text("·")
                                 .foregroundStyle(.white.opacity(0.3))
                             Text(difficultyRange)
                                 .font(.nohemi(.caption, weight: .medium))
-                                .foregroundStyle(.textTertiary)
+                                .foregroundStyle(Color.textTertiary)
                         }
                     }
                 }
@@ -336,7 +336,7 @@ private struct QuizSetCard: View {
 
                 Image(systemName: "chevron.right")
                     .textStyle(Typography.footnoteEM)
-                    .foregroundStyle(.textFaint)
+                    .foregroundStyle(Color.textFaint)
             }
             .padding(.vertical, 14)
             .padding(.trailing, 14)

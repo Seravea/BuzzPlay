@@ -20,7 +20,7 @@ struct BlindTestBuzzSheet: View {
 
             Text("A BUZZÉ !")
                 .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(.textMuted)
+                .foregroundStyle(Color.textMuted)
                 .tracking(0.5)
 
             HStack(spacing: 14) {
@@ -45,7 +45,7 @@ struct BlindTestBuzzSheet: View {
                 VStack(spacing: 2) {
                     Text("RÉACTION")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .tracking(0.5)
                     Text(reactionTime)
                         .font(.nohemi(.body, weight: .extraBold))

@@ -89,7 +89,7 @@ struct QuizActiveQuestionScreen: View {
             HStack(spacing: BuzzSpacing.sm) {
                 Text("QUESTION")
                     .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(.textMuted)
+                    .foregroundStyle(Color.textMuted)
                     .tracking(0.8)
                 if isRebus {
                     Text("🎭 RÉBUS")
@@ -132,7 +132,7 @@ struct QuizActiveQuestionScreen: View {
         VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
             Text("RÉPONSES")
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.textMuted)
+                .foregroundStyle(Color.textMuted)
                 .tracking(0.8)
                 .padding(.leading, 2)
 
@@ -163,7 +163,7 @@ struct QuizActiveQuestionScreen: View {
         return VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
             Text("CLASSEMENT EN DIRECT")
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.textDim)
+                .foregroundStyle(Color.textDim)
                 .tracking(0.8)
                 .padding(.leading, 2)
 
@@ -177,7 +177,7 @@ struct QuizActiveQuestionScreen: View {
                         RadarPulseView()
                         Text("En attente d'un buzz…")
                             .font(.nohemi(.caption, weight: .medium))
-                            .foregroundStyle(.textMuted)
+                            .foregroundStyle(Color.textMuted)
                     }
                     Spacer()
                     Button(action: onSkip) {
@@ -187,7 +187,7 @@ struct QuizActiveQuestionScreen: View {
                             Image(systemName: "forward.end.fill")
                                 .textStyle(Typography.caption2)
                         }
-                        .foregroundStyle(.textSoft)
+                        .foregroundStyle(Color.textSoft)
                         .padding(.horizontal, BuzzSpacing.md)
                         .padding(.vertical, 6)
                         .background(.white.opacity(0.08), in: Capsule())
@@ -274,7 +274,7 @@ struct QuizBuzzSheet: View {
 
             Text("A BUZZÉ !")
                 .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(.textMuted)
+                .foregroundStyle(Color.textMuted)
                 .tracking(0.5)
 
             // Team card
@@ -299,7 +299,7 @@ struct QuizBuzzSheet: View {
                 VStack(spacing: 2) {
                     Text("RÉACTION")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .tracking(0.5)
                     Text(reactionTime)
                         .font(.nohemi(.body, weight: .extraBold))
@@ -392,7 +392,7 @@ struct RadarPulseView: View {
         ZStack {
             ForEach(0..<3) { i in
                 Circle()
-                    .strokeBorder(.textSecondary, lineWidth: 1.5)
+                    .strokeBorder(Color.textSecondary, lineWidth: 1.5)
                     .frame(width: animate ? 36 : 8, height: animate ? 36 : 8)
                     .opacity(animate ? 0 : 0.8)
                     .animation(
@@ -401,7 +401,7 @@ struct RadarPulseView: View {
                     )
             }
             Circle()
-                .fill(.textSecondary)
+                .fill(Color.textSecondary)
                 .frame(width: 6, height: 6)
         }
         .frame(width: 36, height: 36)

@@ -70,13 +70,13 @@ struct LobbyMasterView: View {
                         VStack(spacing: 6) {
                             Image(systemName: duration.iconName)
                                 .textStyle(Typography.cardTitle)
-                                .foregroundStyle(isSelected ? Color.mustardYellow : .textSecondary)
+                                .foregroundStyle(isSelected ? Color.mustardYellow : Color.textSecondary)
                             Text(duration.label)
                                 .font(.nohemi(.subheadline, weight: .bold))
                                 .foregroundStyle(isSelected ? .white : .white.opacity(0.70))
                             Text(duration.subtitle)
                                 .font(.nohemi(.caption2, weight: .medium))
-                                .foregroundStyle(isSelected ? .white.opacity(0.75) : .textDim)
+                                .foregroundStyle(isSelected ? .white.opacity(0.75) : Color.textDim)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -115,7 +115,7 @@ struct LobbyMasterView: View {
                         VStack(spacing: 6) {
                             Image(systemName: mode.iconName)
                                 .textStyle(Typography.label)
-                                .foregroundStyle(isSelected ? .white : .textSecondary)
+                                .foregroundStyle(isSelected ? .white : Color.textSecondary)
                             Text(mode.label)
                                 .font(.nohemi(.subheadline, weight: .bold))
                                 .foregroundStyle(isSelected ? .white : .white.opacity(0.70))
@@ -227,7 +227,7 @@ struct LobbyMasterView: View {
                 if !masterGameVM.players.isEmpty {
                     Text("· \(masterGameVM.players.count)")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.textMuted)
+                        .foregroundStyle(Color.textMuted)
                 }
                 Rectangle()
                     .fill(.white.opacity(0.08))
@@ -263,7 +263,7 @@ struct LobbyMasterView: View {
                     .foregroundStyle(.white.opacity(0.6))
                 Text("Demande aux joueurs de rejoindre la partie")
                     .font(.nohemi(.caption))
-                    .foregroundStyle(.textDim)
+                    .foregroundStyle(Color.textDim)
                     .multilineTextAlignment(.center)
             }
         }
@@ -321,7 +321,7 @@ struct LobbyMasterView: View {
         Text(text.uppercased())
             .font(.nohemi(.caption2, weight: .bold))
             .tracking(0.8)
-            .foregroundStyle(.textMuted)
+            .foregroundStyle(Color.textMuted)
     }
 }
 
