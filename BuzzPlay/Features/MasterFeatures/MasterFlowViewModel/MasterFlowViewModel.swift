@@ -92,6 +92,8 @@ final class MasterFlowViewModel {
     private var hasStartedHosting = false
     // #C3 — debounce pour éviter de traiter des déconnexions transitoires (reconnexion rapide)
     private var disconnectDebounce: [String: Task<Void, Never>] = [:]
+    // #pause-reco — debounce des demandes de re-join (auto-heal zombie), par nom de joueur
+    private var lastRejoinRequest: [String: Date] = [:]
 
     // MARK: - Heartbeat (détection fiable des déconnexions, même quand MPC ne signale rien)
     private var heartbeatTimer: Timer?
@@ -319,8 +321,12 @@ final class MasterFlowViewModel {
         // #pause-reco — un (re)join réintègre un vrai joueur : lève la pause ET retire l'alerte
         // déco pour CE joueur (sinon le binding `disconnectedPlayerName != nil && !isGamePaused`
         // fait popper une fausse alerte "joueur déconnecté" sur celui qui vient de revenir).
+        let wasPaused = isGamePaused
         isGamePaused = false
         if disconnectedPlayerName == player.name { disconnectedPlayerName = nil }
+        lastRejoinRequest.removeValue(forKey: player.name)
+        // Reprend le jeu (timer + musique) seulement s'il était en pause pour déconnexion.
+        if wasPaused { currentBuzzGame?.resumeFromDisconnect() }
 
         if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == player.name }) {
             // Reconnexion : restaurer l'état sauvegardé (le nom est la clé — l'UUID peut changer)
@@ -486,6 +492,9 @@ extension MasterFlowViewModel {
         disconnectedPlayerName = name
         if activeGameType != nil && connectedPlayersCount == 0 {
             isGamePaused = true
+            // #pause-reco — gèle réellement le jeu (timer + musique) tant qu'il n'y a personne,
+            // au lieu de laisser le timer courir en arrière-plan derrière l'overlay de pause.
+            currentBuzzGame?.pauseForDisconnect()
         }
     }
 
@@ -499,6 +508,10 @@ extension MasterFlowViewModel {
         let name = peer.displayName
         guard name != "Écran Publique", name != MPCService.masterPeerName else { return }
         guard !players.contains(where: { $0.name == name }) else { return }
+        // #pause-reco — debounce : au plus une demande toutes les 3s par joueur (les pongs
+        // arrivent ~toutes les 2s ; le playerJoin met un aller-retour à revenir).
+        if let last = lastRejoinRequest[name], Date().timeIntervalSince(last) < 3 { return }
+        lastRejoinRequest[name] = Date()
         print("MASTER: \(name) vivant (pong) mais absent du roster → demande de re-join")
         mpcService.sendMessage(.masterRequestRejoin, to: peer)
     }
@@ -514,6 +527,47 @@ extension MasterFlowViewModel {
                 self.checkHeartbeats()
             }
         }
+    }
+
+    // #quit-teardown — sans ça le heartbeat tournait à vie (même après "Quitter").
+    func stopHeartbeat() {
+        heartbeatTimer?.invalidate()
+        heartbeatTimer = nil
+    }
+
+    // MARK: - Quitter (teardown propre)
+
+    /// Le Master quitte la partie ("Quitter" sur l'écran de score). Prévient les Players,
+    /// coupe le heartbeat et la session MPC, puis remet l'état à zéro pour qu'une nouvelle
+    /// partie reparte proprement (sinon heartbeat dans le vide + peers fantômes + setupMPC
+    /// bloqué par hasStartedHosting). Voir aussi #pause-reco / #117.
+    func leaveSessionAsMaster() {
+        mpcService.sendMessage(.masterLeftParty)
+        stopHeartbeat()
+        // Laisse le message partir avant de couper la session (sinon disconnect l'annule).
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(400))
+            guard let self else { return }
+            self.mpcService.stopHosting()
+            self.resetSessionState()
+        }
+    }
+
+    private func resetSessionState() {
+        disconnectDebounce.values.forEach { $0.cancel() }
+        disconnectDebounce.removeAll()
+        lastRejoinRequest.removeAll()
+        lastSeen.removeAll()
+        connectedPeers.removeAll()
+        players.removeAll()
+        allRegisteredPlayers.removeAll()
+        readyPlayers.removeAll()
+        isGamePaused = false
+        disconnectedPlayerName = nil
+        hasPartyStarted = false
+        gameState = .lobby
+        resetGameVMs()            // caches + rounds + currentBuzzGame + activeGameType
+        hasStartedHosting = false // permet à setupMPC de réinitialiser une future partie
     }
 
     /// Déclare déconnecté tout joueur qui n'a pas donné signe de vie depuis le timeout,

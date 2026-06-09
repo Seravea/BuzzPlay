@@ -201,6 +201,8 @@ struct ScoreMasterView: View {
     private var footerButtons: some View {
         HStack(spacing: 10) {
             Button {
+                // #quit-teardown — prévient les Players, coupe heartbeat + session, reset l'état.
+                masterFlowVM.leaveSessionAsMaster()
                 router.popToRoot()
             } label: {
                 Text("Quitter")

@@ -57,6 +57,12 @@ protocol BuzzDrivenGame: AnyObject {
 
     // Apply single-use gift effects to the game
     func applyGiftEffect(_ gift: CoinsViewModel.Gift, to player: Player)
+
+    // #pause-reco — met le jeu en pause quand TOUS les joueurs sont déconnectés (timer +
+    // média), et le reprend à la reconnexion. Chaque jeu garde son propre état pour ne PAS
+    // toucher une manche déjà en attente de validation (buzz) ni un état idle.
+    func pauseForDisconnect()
+    func resumeFromDisconnect()
 }
 
 // Default gift effect implementation (no-op, games can override)
@@ -64,6 +70,11 @@ extension BuzzDrivenGame {
     func applyGiftEffect(_ gift: CoinsViewModel.Gift, to player: Player) {
         // Games override this to implement specific gift effects
     }
+
+    // Défaut sûr : pause/reprise du timer uniquement. Les jeux qui ont un média (musique)
+    // ou un état de manche surchargent pour gérer le cas proprement.
+    func pauseForDisconnect() { pauseReactionTimer() }
+    func resumeFromDisconnect() { startReactionTimer() }
 }
 
 // Timer functions

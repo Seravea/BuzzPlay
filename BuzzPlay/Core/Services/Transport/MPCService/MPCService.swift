@@ -115,6 +115,15 @@ extension MPCService {
         advertiser = nil
         session.disconnect()
     }
+
+    //MARK: Player leave — coupe le browsing et la session (sur "Quitter" / Master parti)
+    func leaveAsPlayer() {
+        guard role == .team else { return }
+        browser?.stopBrowsingForPeers()
+        browser = nil
+        invitedPeers.removeAll()
+        session.disconnect()
+    }
     
     
     

@@ -36,8 +36,7 @@ struct PlayerGameView: View {
             PlayerPodiumSheet(
                 players: playerGameVM.knownPlayers,
                 currentPlayer: playerGameVM.player,
-                onQuit: { router.popToRoot() },
-                onReplay: { router.path.removeLast() }
+                onQuit: { playerGameVM.leaveSession(); router.popToRoot() }
             )
         }
         .onAppear {
@@ -63,6 +62,15 @@ struct PlayerGameView: View {
             showPodium = false
             showInterGameScore = false
             router.path.removeLast()
+        }
+        // #quit-teardown — le Master a quitté la partie → retour à l'accueil + déconnexion.
+        .onChange(of: playerGameVM.masterDidLeave) { _, left in
+            guard left else { return }
+            playerGameVM.masterDidLeave = false
+            showPodium = false
+            showInterGameScore = false
+            playerGameVM.leaveSession()
+            router.popToRoot()
         }
     }
 
@@ -331,7 +339,6 @@ private struct PlayerPodiumSheet: View {
     let players: [Player]
     let currentPlayer: Player
     let onQuit: () -> Void
-    let onReplay: () -> Void
     @Environment(\.dismiss) private var dismiss
 
     private var sorted: [Player] {
@@ -379,8 +386,13 @@ private struct PlayerPodiumSheet: View {
                     .padding(BuzzSpacing.xl)
                 }
 
-                // Actions
-                HStack(spacing: 10) {
+                // Actions — le replay est piloté par le Maître ("Nouvelle partie" →
+                // masterResetGame → le Player est auto-routé). Ici il attend ou quitte.
+                VStack(spacing: BuzzSpacing.sm) {
+                    Text("Le Maître peut relancer une partie")
+                        .font(.nohemi(.caption, weight: .regular))
+                        .foregroundStyle(Color.textMuted)
+
                     Button(action: { dismiss(); onQuit() }) {
                         Text("Quitter")
                             .font(.nohemi(.body, weight: .bold))
@@ -388,20 +400,6 @@ private struct PlayerPodiumSheet: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
                             .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
-                    }
-                    .buttonStyle(.plain)
-
-                    Button(action: { dismiss(); onReplay() }) {
-                        Text("Rejouer")
-                            .font(.nohemi(.body, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 52)
-                            .background(
-                                LinearGradient(colors: [Color.purpleLeading, Color.purpleTrailing],
-                                               startPoint: .leading, endPoint: .trailing),
-                                in: RoundedRectangle(cornerRadius: BuzzRadius.lg)
-                            )
                     }
                     .buttonStyle(.plain)
                 }

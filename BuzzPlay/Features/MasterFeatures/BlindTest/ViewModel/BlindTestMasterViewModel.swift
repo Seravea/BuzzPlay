@@ -578,6 +578,19 @@ extension BlindTestMasterViewModel {
             Task { try? await musicPlayer.play() }
         }
     }
+
+    // #pause-reco — uniquement si une manche est réellement en cours (.playing) : on ne
+    // touche pas un état .buzzed (validation en attente, musique déjà en pause) ni .idle.
+    func pauseForDisconnect() {
+        guard case .playing = state else { return }
+        pause()                 // pauseReactionTimer + pause musique
+    }
+
+    func resumeFromDisconnect() {
+        guard case .playing = state else { return }
+        startReactionTimer()    // reprend le timer (sans reset)
+        resume()                // reprend la musique
+    }
     
     func stop() {
         player?.pause()

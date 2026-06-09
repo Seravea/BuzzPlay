@@ -56,6 +56,10 @@ enum MPCMessage: Codable {
     // Master -> Team : le Master lance une nouvelle partie (reset scores, retour au lobby)
     case masterResetGame
 
+    // Master -> Team : le Master a quitté la partie → les Players rentrent à l'accueil
+    // (et arrêtent de tenter une reconnexion). Voir #quit-teardown.
+    case masterLeftParty
+
     // Master -> Team : le Master a perdu ce joueur de son roster (timeout heartbeat sur une
     // connexion half-open) alors qu'il est toujours joignable → lui demander de se ré-annoncer
     // (renvoyer playerJoin) pour réintégrer le roster et lever la pause. Voir #pause-reco.
