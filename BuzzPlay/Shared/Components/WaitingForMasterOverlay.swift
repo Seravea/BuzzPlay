@@ -14,14 +14,14 @@ struct WaitingForMasterOverlay: View {
             Color.black.opacity(0.70)
                 .ignoresSafeArea()
 
-            VStack(spacing: 20) {
+            VStack(spacing: BuzzSpacing.xl) {
 
                 // Icône pulsante arcade
                 ZStack {
                     Circle()
                         .fill(
                             LinearGradient(
-                                colors: [Color(hex: "FF2D78").opacity(0.25), Color(hex: "AD46FF").opacity(0.15)],
+                                colors: [Color.buzzHotPink.opacity(0.25), Color.purpleLeading.opacity(0.15)],
                                 startPoint: .topLeading, endPoint: .bottomTrailing
                             )
                         )
@@ -33,20 +33,20 @@ struct WaitingForMasterOverlay: View {
                         .font(.system(size: 38, weight: .medium))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [Color(hex: "FF2D78"), Color(hex: "FEC260")],
+                                colors: [Color.buzzHotPink, Color.mustardYellow],
                                 startPoint: .topLeading, endPoint: .bottomTrailing
                             )
                         )
                 }
 
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     Text("En attente du Maître")
                         .font(.nohemi(.title2, weight: .bold))
                         .foregroundStyle(.white)
 
                     Text("Le Maître doit lancer la partie\ndepuis son appareil")
                         .font(.nohemi(.subheadline, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.55))
+                        .foregroundStyle(Color.textSecondary)
                         .multilineTextAlignment(.center)
                 }
 
@@ -58,9 +58,9 @@ struct WaitingForMasterOverlay: View {
                 }
                 .padding(.top, 4)
             }
-            .padding(.horizontal, 32)
+            .padding(.horizontal, BuzzSpacing.xxxl)
             .padding(.vertical, 28)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
         }
         .onAppear {
             withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {
@@ -79,7 +79,7 @@ private struct DotsIndicator: View {
 
     var body: some View {
         Circle()
-            .fill(isActive ? Color(hex: "FF2D78") : Color.white.opacity(0.25))
+            .fill(isActive ? Color.buzzHotPink : Color.textFaint)
             .frame(width: 7, height: 7)
             .scaleEffect(isActive ? 1.2 : 1.0)
             .animation(.easeInOut(duration: 0.5).delay(Double(index) * 0.18).repeatForever(autoreverses: true), value: isActive)

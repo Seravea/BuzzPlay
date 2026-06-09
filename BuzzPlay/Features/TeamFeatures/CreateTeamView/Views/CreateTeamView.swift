@@ -28,7 +28,7 @@ struct CreateTeamView: View {
                     Spacer(minLength: 100)
                 }
                 .padding(.horizontal, 22)
-                .padding(.top, 16)
+                .padding(.top, BuzzSpacing.lg)
             }
 
             ctaSection
@@ -51,7 +51,7 @@ struct CreateTeamView: View {
         Button { router.path.removeLast() } label: {
             HStack(spacing: 6) {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
+                    .textStyle(Typography.label)
                 Text("Retour")
                     .font(.nohemi(.subheadline, weight: .semiBold))
             }
@@ -62,11 +62,11 @@ struct CreateTeamView: View {
     // MARK: - Avatar preview
 
     private var avatarSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: BuzzSpacing.sm) {
             Text("CHOISIS TON PERSO")
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
-                .foregroundStyle(.white.opacity(0.40))
+                .foregroundStyle(Color.textMuted)
 
             ZStack(alignment: .bottomTrailing) {
                 Circle()
@@ -82,9 +82,9 @@ struct CreateTeamView: View {
 
             Text("Visible par tout le monde dans le lobby.")
                 .font(.nohemi(.caption))
-                .foregroundStyle(.white.opacity(0.45))
+                .foregroundStyle(Color.textTertiary)
         }
-        .padding(.top, 8)
+        .padding(.top, BuzzSpacing.sm)
     }
 
     // MARK: - Pseudo field
@@ -94,7 +94,7 @@ struct CreateTeamView: View {
             Text("TON PSEUDO")
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
-                .foregroundStyle(.white.opacity(0.40))
+                .foregroundStyle(Color.textMuted)
 
             HStack(spacing: 10) {
                 TextField(
@@ -110,15 +110,15 @@ struct CreateTeamView: View {
                 if !createTeamVM.pseudo.isEmpty {
                     Text("\(createTeamVM.pseudo.count)/20")
                         .font(.nohemi(.caption, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.35))
+                        .foregroundStyle(Color.textDim)
                         .monospacedDigit()
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, BuzzSpacing.lg)
             .padding(.vertical, 14)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 16))
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: BuzzRadius.lg)
                     .strokeBorder(
                         pseudoFocused
                             ? createTeamVM.playerColor.color.opacity(0.70)
@@ -133,11 +133,11 @@ struct CreateTeamView: View {
     // MARK: - Color picker
 
     private var colorSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             Text("COULEUR")
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
-                .foregroundStyle(.white.opacity(0.40))
+                .foregroundStyle(Color.textMuted)
 
             HStack(spacing: 14) {
                 ForEach(GameColor.allCases, id: \.self) { color in
@@ -175,7 +175,7 @@ struct CreateTeamView: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "arrow.right.circle.fill")
-                    .font(.system(size: 18, weight: .semibold))
+                    .textStyle(Typography.cardTitle)
                 Text("Entrer dans le lobby")
                     .font(.nohemi(.body, weight: .bold))
             }
@@ -187,7 +187,7 @@ struct CreateTeamView: View {
                     colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
                     startPoint: .leading, endPoint: .trailing
                 ),
-                in: RoundedRectangle(cornerRadius: 18)
+                in: RoundedRectangle(cornerRadius: BuzzRadius.lg2)
             )
             .shadow(color: Color.greenButtonLeading.opacity(0.32), radius: 12, y: 4)
             .opacity(createTeamVM.isPseudoValid ? 1 : 0.40)
@@ -195,8 +195,8 @@ struct CreateTeamView: View {
         .buttonStyle(.plain)
         .disabled(!createTeamVM.isPseudoValid)
         .padding(.horizontal, 22)
-        .padding(.bottom, 32)
-        .padding(.top, 12)
+        .padding(.bottom, BuzzSpacing.xxxl)
+        .padding(.top, BuzzSpacing.md)
     }
 }
 

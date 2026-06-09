@@ -11,9 +11,9 @@ struct BackgroundAppView: View {
     var body: some View {
         LinearGradient(
             stops: [
-                .init(color: Color(hex: "1A0535"), location: 0),
-                .init(color: Color(hex: "2A0944"), location: 0.5),
-                .init(color: Color(hex: "3B185F"), location: 1),
+                .init(color: Color.sheetBg, location: 0),
+                .init(color: Color.darkestPurple, location: 0.5),
+                .init(color: Color.darkPurple, location: 1),
             ],
             startPoint: .init(x: 0.2, y: 0),
             endPoint: .init(x: 0.8, y: 1)

@@ -11,7 +11,7 @@ import SwiftUI
 struct CoinsTeamView: View {
     @Bindable var coinsVM: CoinsViewModel
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: BuzzSpacing.sm) {
             HStack(spacing: 6) {
                 Text("\(coinsVM.playerGameViewModel?.player.accountAmount ?? 0)")
                     .font(.nohemi(.body, weight: .bold))
@@ -53,7 +53,7 @@ struct CoinsTeamView: View {
                 Text("Cadeaux")
                     .primaryButtonTextStyle(.filled(buttonStyle: .neutral), fontSize: Typography.body)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, BuzzSpacing.sm)
                     .background {
                         RoundedRectangle.backgroundPrimaryButton(style: .filled(buttonStyle: .secondary))
                     }

@@ -33,14 +33,14 @@ struct MasterChooseGameView: View {
             BackgroundAppView().ignoresSafeArea()
 
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: BuzzSpacing.xl) {
                     launchSection
                     if hasScores { rankingSection }
                     notesSection
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
-                .padding(.bottom, 32)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.top, BuzzSpacing.lg)
+                .padding(.bottom, BuzzSpacing.xxxl)
             }
         }
         .toolbar {
@@ -64,23 +64,23 @@ struct MasterChooseGameView: View {
         Text(text.uppercased())
             .font(.nohemi(.caption2, weight: .bold))
             .tracking(0.8)
-            .foregroundStyle(.white.opacity(0.40))
+            .foregroundStyle(Color.textMuted)
     }
 
     // MARK: - Launch Section
 
     private var launchSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             HStack {
                 eyebrow("Lancer une manche")
                 Spacer()
                 if masterChooseGameVM.currentRound >= 1 {
                     Text("Manche \(masterChooseGameVM.currentRound)/\(masterChooseGameVM.totalRounds)")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.40))
+                        .foregroundStyle(Color.textMuted)
                 }
             }
-            HStack(spacing: 12) {
+            HStack(spacing: BuzzSpacing.md) {
                 gameCard(.quiz, gradient: quizGradient)
                 gameCard(.blindTest, gradient: blindTestGradient)
             }
@@ -99,14 +99,14 @@ struct MasterChooseGameView: View {
         VStack(spacing: 0) {
             VStack(spacing: 10) {
                 Image(systemName: game.iconName)
-                    .font(.system(size: 26, weight: .semibold))
+                    .textStyle(Typography.sectionTitle)
                     .foregroundStyle(.white)
                     .frame(width: 56, height: 56)
-                    .background(gradient.opacity(isAvailable ? 0.25 : 0.10), in: RoundedRectangle(cornerRadius: 16))
+                    .background(gradient.opacity(isAvailable ? 0.25 : 0.10), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
 
                 Text(game.gameTitle)
                     .font(.nohemi(.headline, weight: .bold))
-                    .foregroundStyle(isAvailable ? .white : .white.opacity(0.35))
+                    .foregroundStyle(isAvailable ? .white : Color.textDim)
                     .lineLimit(1)
             }
             .padding(.top, 18)
@@ -124,7 +124,7 @@ struct MasterChooseGameView: View {
                 HStack(spacing: 6) {
                     if !isAvailable {
                         Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .semibold))
+                            .textStyle(Typography.captionEM)
                         Text("Terminé")
                             .font(.nohemi(.subheadline, weight: .bold))
                     } else if !allReady {
@@ -135,29 +135,29 @@ struct MasterChooseGameView: View {
                             .font(.nohemi(.subheadline, weight: .bold))
                     } else {
                         Image(systemName: game.iconName)
-                            .font(.system(size: 12, weight: .semibold))
+                            .textStyle(Typography.captionEM)
                         Text("Lancer")
                             .font(.nohemi(.subheadline, weight: .bold))
                     }
                 }
-                .foregroundStyle((isAvailable && allReady) ? .white : .white.opacity(0.40))
+                .foregroundStyle((isAvailable && allReady) ? .white : Color.textMuted)
                 .frame(maxWidth: .infinity)
                 .frame(height: 40)
                 .background(
                     (isAvailable && allReady)
                         ? AnyShapeStyle(gradient)
                         : AnyShapeStyle(Color.white.opacity(0.06)),
-                    in: RoundedRectangle(cornerRadius: 12)
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
                 )
             }
             .buttonStyle(.plain)
             .disabled(!isAvailable || !allReady)
-            .padding(.horizontal, 12)
+            .padding(.horizontal, BuzzSpacing.md)
             .padding(.vertical, 10)
         }
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 20))
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: BuzzRadius.xl)
                 .strokeBorder(.white.opacity(isAvailable ? 0.10 : 0.04), lineWidth: 1)
         )
         .opacity(isAvailable ? 1 : 0.55)
@@ -175,7 +175,7 @@ struct MasterChooseGameView: View {
                 Spacer()
                 Text("mi-partie")
                     .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(Color.textMuted)
             }
 
             VStack(spacing: 6) {
@@ -185,9 +185,9 @@ struct MasterChooseGameView: View {
             }
         }
         .padding(14)
-        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 20))
+        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: BuzzRadius.xl)
                 .strokeBorder(.white.opacity(0.07), lineWidth: 1)
         )
     }
@@ -200,7 +200,7 @@ struct MasterChooseGameView: View {
                     .frame(width: 24, height: 24)
                 Text("\(rank)")
                     .font(.nohemi(.caption2, weight: .black))
-                    .foregroundStyle(rank == 1 ? Color(hex: "1A0535") : .white.opacity(0.6))
+                    .foregroundStyle(rank == 1 ? Color.sheetBg : .white.opacity(0.6))
             }
 
             Circle()
@@ -212,7 +212,7 @@ struct MasterChooseGameView: View {
                         .foregroundStyle(.white)
                 )
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                 HStack {
                     Text(player.name)
                         .font(.nohemi(.subheadline, weight: .bold))
@@ -226,10 +226,10 @@ struct MasterChooseGameView: View {
                 }
 
                 GeometryReader { geo in
-                    RoundedRectangle(cornerRadius: 999)
+                    RoundedRectangle(cornerRadius: BuzzRadius.pill)
                         .fill(.white.opacity(0.10))
                         .overlay(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: 999)
+                            RoundedRectangle(cornerRadius: BuzzRadius.pill)
                                 .fill(player.teamColor.gradient)
                                 .frame(width: geo.size.width * CGFloat(player.score) / CGFloat(maxScore))
                         }
@@ -238,23 +238,23 @@ struct MasterChooseGameView: View {
             }
         }
         .padding(.horizontal, 10)
-        .padding(.vertical, 8)
+        .padding(.vertical, BuzzSpacing.sm)
         .background(
             rank == 1 ? Color.mustardYellow.opacity(0.08) : Color.clear,
-            in: RoundedRectangle(cornerRadius: 12)
+            in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
         )
     }
 
     // MARK: - Notes Section
 
     private var notesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             HStack(spacing: 10) {
                 Image(systemName: "music.note")
-                    .font(.system(size: 18, weight: .semibold))
+                    .textStyle(Typography.cardTitle)
                     .foregroundStyle(Color.mustardYellow)
                     .frame(width: 42, height: 42)
-                    .background(Color.mustardYellow.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
+                    .background(Color.mustardYellow.opacity(0.15), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
 
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Notes ♪")
@@ -269,7 +269,7 @@ struct MasterChooseGameView: View {
                 Button { showNotesShop = true } label: {
                     HStack(spacing: 5) {
                         Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 13))
+                            .textStyle(Typography.footnote)
                         Text("Recharger")
                             .font(.nohemi(.caption, weight: .bold))
                     }
@@ -304,7 +304,7 @@ struct MasterChooseGameView: View {
                     .font(.nohemi(.caption, weight: .regular))
                     .foregroundStyle(.white.opacity(0.3))
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, BuzzSpacing.sm)
             } else {
                 ScrollView(.horizontal) {
                     HStack(spacing: 10) {
@@ -335,10 +335,10 @@ struct MasterChooseGameView: View {
                 }
             }
         }
-        .padding(16)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 20))
+        .padding(BuzzSpacing.lg)
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: BuzzRadius.xl)
                 .strokeBorder(.white.opacity(0.10), lineWidth: 1.5)
         )
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: masterChooseGameVM.canClaimDailyPack)
@@ -360,13 +360,13 @@ struct MasterChooseGameView: View {
                 }
             }
         } label: {
-            VStack(spacing: 4) {
+            VStack(spacing: BuzzSpacing.xs) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.system(size: 22, weight: .semibold))
+                        .textStyle(Typography.sectionTitle)
                         .foregroundStyle(.white)
                         .frame(width: 42, height: 42)
-                        .background(backgroundColor?.opacity(0.2) ?? Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 10))
+                        .background(backgroundColor?.opacity(0.2) ?? Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
                 } else if let playerColor = playerColor {
                     Circle()
                         .fill(playerColor.gradient)
@@ -387,14 +387,14 @@ struct MasterChooseGameView: View {
                     .frame(maxWidth: 60)
                 
                 Image(systemName: "music.note")
-                    .font(.system(size: 11, weight: .medium))
+                    .textStyle(Typography.caption2)
                     .foregroundStyle(Color.mustardYellow.opacity(0.7))
             }
             .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
+            .padding(.vertical, BuzzSpacing.sm)
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: BuzzRadius.sm)
                     .strokeBorder(.white.opacity(0.12), lineWidth: 1)
             )
         }
@@ -417,13 +417,13 @@ private struct DailyPackBanner: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: BuzzSpacing.md) {
             ZStack {
                 Circle()
                     .fill(Color.mustardYellow.opacity(0.18))
                     .frame(width: 40, height: 40)
                 Image(systemName: days >= 7 ? "flame.fill" : "gift.fill")
-                    .font(.system(size: 17, weight: .semibold))
+                    .textStyle(Typography.labelXL)
                     .foregroundStyle(Color.mustardYellow)
             }
 
@@ -433,7 +433,7 @@ private struct DailyPackBanner: View {
                     .foregroundStyle(.white)
                 Text(subtitle)
                     .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
@@ -442,24 +442,24 @@ private struct DailyPackBanner: View {
                 Text("Récupérer")
                     .font(.nohemi(.caption, weight: .bold))
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 12)
+                    .padding(.horizontal, BuzzSpacing.md)
                     .padding(.vertical, 7)
                     .background(
                         LinearGradient(
-                            colors: [Color(hex: "F0B100"), Color(hex: "FF6900")],
+                            colors: [Color.yellowLeading, Color.yellowTrailing],
                             startPoint: .leading, endPoint: .trailing
                         ),
                         in: Capsule()
                     )
-                    .shadow(color: Color(hex: "F0B100").opacity(glowPulse ? 0.5 : 0.2), radius: glowPulse ? 8 : 3)
+                    .shadow(color: Color.yellowLeading.opacity(glowPulse ? 0.5 : 0.2), radius: glowPulse ? 8 : 3)
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, BuzzSpacing.md)
         .padding(.vertical, 10)
-        .background(Color.mustardYellow.opacity(days >= 7 ? 0.12 : 0.07), in: RoundedRectangle(cornerRadius: 14))
+        .background(Color.mustardYellow.opacity(days >= 7 ? 0.12 : 0.07), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: BuzzRadius.md)
                 .strokeBorder(Color.mustardYellow.opacity(days >= 7 ? 0.40 : 0.25), lineWidth: 1)
         )
         .onAppear {

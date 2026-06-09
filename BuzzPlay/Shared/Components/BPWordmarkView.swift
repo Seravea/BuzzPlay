@@ -21,7 +21,7 @@ struct BPWordmarkView: View {
             Circle()
                 .fill(
                     LinearGradient(
-                        colors: [Color(hex: "FB2C36"), Color(hex: "F6339A")],
+                        colors: [Color.redLeading, Color.purpleTrailing],
                         startPoint: .leading, endPoint: .trailing
                     )
                 )

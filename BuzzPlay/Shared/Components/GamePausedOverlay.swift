@@ -14,10 +14,10 @@ struct GamePausedOverlay: View {
             Color.black.opacity(0.80)
                 .ignoresSafeArea()
 
-            VStack(spacing: 24) {
+            VStack(spacing: BuzzSpacing.xxl) {
                 ZStack {
                     Circle()
-                        .fill(Color(hex: "#F0B100").opacity(0.15))
+                        .fill(Color.yellowLeading.opacity(0.15))
                         .frame(width: 88, height: 88)
                         .scaleEffect(isPulsing ? 1.25 : 1.0)
                         .opacity(isPulsing ? 0.0 : 0.6)
@@ -25,10 +25,10 @@ struct GamePausedOverlay: View {
 
                     Image(systemName: "pause.circle.fill")
                         .font(.system(size: 52, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#F0B100"))
+                        .foregroundStyle(Color.yellowLeading)
                 }
 
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     Text("Partie en pause")
                         .font(.nohemi(.title2, weight: .bold))
                         .foregroundStyle(.white)
@@ -36,25 +36,25 @@ struct GamePausedOverlay: View {
                     if let name = playerName {
                         Text("En attente de \(name)…")
                             .font(.nohemi(.body, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(Color.textSoft)
                     } else {
                         Text("En attente des joueurs…")
                             .font(.nohemi(.body, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(Color.textSoft)
                     }
                 }
 
                 HStack(spacing: 6) {
                     ProgressView()
-                        .tint(.white.opacity(0.5))
+                        .tint(Color.textSecondary)
                         .scaleEffect(0.85)
                     Text("Reconnexion automatique")
                         .font(.nohemi(.caption, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.45))
+                        .foregroundStyle(Color.textTertiary)
                 }
             }
             .padding(36)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: BuzzRadius.xxl))
             .shadow(color: .black.opacity(0.4), radius: 30, y: 10)
         }
         .onAppear { isPulsing = true }

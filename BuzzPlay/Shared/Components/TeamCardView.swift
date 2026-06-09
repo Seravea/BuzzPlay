@@ -33,7 +33,7 @@ struct TeamCardView: View {
             .padding()
             .foregroundStyle(.black)
             .background(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: BuzzRadius.lg)
                 .foregroundStyle(
                     LinearGradient(colors: [.white.opacity(0), .white.opacity(0.1), .white.opacity(0.1), .white.opacity(0.1), .white.opacity(0.2), .white.opacity(0.2)], startPoint: .leading, endPoint: .trailing)
                 )
@@ -43,7 +43,7 @@ struct TeamCardView: View {
             .padding(.leading, 6)
             .background(
                 HStack {
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: BuzzRadius.lg)
                         .foregroundStyle(
                             LinearGradient(colors: [Color(player.teamColor.rawValue).opacity(1), Color(player.teamColor.rawValue).opacity(0.7), Color(player.teamColor.rawValue).opacity(0.5),Color(player.teamColor.rawValue).opacity(0.3), Color(player.teamColor.rawValue).opacity(0.2), Color(player.teamColor.rawValue).opacity(0)], startPoint: .leading, endPoint: .trailing)
                         )

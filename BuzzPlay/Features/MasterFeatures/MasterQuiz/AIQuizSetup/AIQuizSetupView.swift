@@ -35,7 +35,7 @@ struct AIQuizSetupView: View {
     var body: some View {
         ZStack {
             // Fond géré par .presentationBackground dans la sheet parente (#A2)
-            Color(hex: "#1A0535").ignoresSafeArea()
+            Color.sheetBg.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Header
@@ -46,18 +46,18 @@ struct AIQuizSetupView: View {
                     Spacer()
                     Button(action: onDismiss) {
                         Image(systemName: "xmark")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .textStyle(Typography.footnoteEM)
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.vertical, BuzzSpacing.lg)
 
                 Divider().opacity(0.1)
 
                 // Content
                 ScrollView {
-                    VStack(spacing: 24) {
+                    VStack(spacing: BuzzSpacing.xxl) {
 
                         // THÈMES — Par décennie
                         themeGroup(
@@ -81,28 +81,28 @@ struct AIQuizSetupView: View {
                         } label: {
                             HStack(spacing: 6) {
                                 Image(systemName: allSelected ? "checkmark.circle.fill" : "circle.dotted")
-                                    .font(.system(size: 14))
+                                    .textStyle(Typography.footnote)
                                 Text(allSelected ? "Tout désélectionner" : "Tout sélectionner")
                                     .font(.nohemi(.caption, weight: .bold))
                             }
-                            .foregroundStyle(.white.opacity(0.55))
+                            .foregroundStyle(Color.textSecondary)
                             .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
+                            .padding(.vertical, BuzzSpacing.sm)
                             .background(.white.opacity(0.06), in: Capsule())
                             .overlay(Capsule().strokeBorder(.white.opacity(0.12), lineWidth: 1))
                         }
                         .buttonStyle(.plain)
                         .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, BuzzSpacing.xl)
 
                         // DIFFICULTÉ
-                        VStack(alignment: .leading, spacing: 12) {
+                        VStack(alignment: .leading, spacing: BuzzSpacing.md) {
                             Text("DIFFICULTÉ")
                                 .font(.nohemi(.caption2, weight: .bold))
-                                .foregroundStyle(.white.opacity(0.5))
+                                .foregroundStyle(Color.textSecondary)
                                 .tracking(0.8)
 
-                            VStack(spacing: 8) {
+                            VStack(spacing: BuzzSpacing.sm) {
                                 ForEach(QuizDifficulty.allCases) { difficulty in
                                     DifficultyPillAI(
                                         difficulty: difficulty,
@@ -112,7 +112,7 @@ struct AIQuizSetupView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, BuzzSpacing.xl)
 
                         // INFO / guide conditions
                         let themeCount = selectedThemeIDs.count
@@ -128,31 +128,31 @@ struct AIQuizSetupView: View {
                             }
                         }()
                         let infoIsWarning = themeCount == 0 || selectedDifficulty == nil
-                        HStack(spacing: 8) {
+                        HStack(spacing: BuzzSpacing.sm) {
                             Image(systemName: infoIsWarning ? "arrow.down.circle.fill" : "checkmark.circle.fill")
-                                .foregroundStyle(infoIsWarning ? Color(hex: "#AD46FF").opacity(0.7) : .white.opacity(0.4))
+                                .foregroundStyle(infoIsWarning ? Color.purpleLeading.opacity(0.7) : Color.textMuted)
                             Text(infoText)
                                 .font(.nohemi(.caption, weight: infoIsWarning ? .semiBold : .regular))
                                 .foregroundStyle(infoIsWarning ? .white.opacity(0.8) : .white.opacity(0.6))
                         }
-                        .padding(.horizontal, 12)
+                        .padding(.horizontal, BuzzSpacing.md)
                         .padding(.vertical, 10)
                         .background(
                             infoIsWarning
-                                ? Color(hex: "#AD46FF").opacity(0.06)
+                                ? Color.purpleLeading.opacity(0.06)
                                 : Color.white.opacity(0.04),
-                            in: RoundedRectangle(cornerRadius: 10)
+                            in: RoundedRectangle(cornerRadius: BuzzRadius.sm2)
                         )
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, BuzzSpacing.xl)
                     }
-                    .padding(.vertical, 24)
+                    .padding(.vertical, BuzzSpacing.xxl)
                 }
 
                 Divider().opacity(0.1)
 
                 // Erreur
                 if let error = generator.error {
-                    HStack(spacing: 8) {
+                    HStack(spacing: BuzzSpacing.sm) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundStyle(.orange)
                         Text(error.localizedDescription)
@@ -160,31 +160,31 @@ struct AIQuizSetupView: View {
                             .foregroundStyle(.white.opacity(0.8))
                             .lineLimit(3)
                     }
-                    .padding(.horizontal, 12)
+                    .padding(.horizontal, BuzzSpacing.md)
                     .padding(.vertical, 10)
-                    .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
-                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.orange.opacity(0.3), lineWidth: 1))
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 8)
+                    .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
+                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm2).strokeBorder(Color.orange.opacity(0.3), lineWidth: 1))
+                    .padding(.horizontal, BuzzSpacing.xl)
+                    .padding(.bottom, BuzzSpacing.sm)
                 }
 
                 // CTA
                 if isGenerating {
-                    VStack(spacing: 8) {
+                    VStack(spacing: BuzzSpacing.sm) {
                         HStack(spacing: 10) {
                             ProgressView(value: generator.generationProgress, total: 1.0)
-                                .tint(Color(hex: "#AD46FF"))
+                                .tint(Color.purpleLeading)
                             Text("\(generator.generatedQuestions.count)/\(quizRoundsTotal)")
                                 .font(.nohemi(.caption, weight: .semiBold))
-                                .foregroundStyle(.white.opacity(0.7))
+                                .foregroundStyle(Color.textSoft)
                                 .frame(width: 45, alignment: .trailing)
                         }
                         Text("Génération en cours...")
                             .font(.nohemi(.caption2, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(Color.textSecondary)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
+                    .padding(.horizontal, BuzzSpacing.xl)
+                    .padding(.vertical, BuzzSpacing.md)
                 } else {
                     Button(action: generate) {
                         Text(generator.error != nil ? "Réessayer" : "✨ Générer")
@@ -196,12 +196,12 @@ struct AIQuizSetupView: View {
                     .frame(height: 52)
                     .background(
                         canGenerate
-                            ? LinearGradient(colors: [Color(hex: "#AD46FF"), Color(hex: "#F6339A")], startPoint: .topLeading, endPoint: .bottomTrailing)
+                            ? LinearGradient(colors: [Color.purpleLeading, Color.purpleTrailing], startPoint: .topLeading, endPoint: .bottomTrailing)
                             : LinearGradient(colors: [Color.white.opacity(0.08), Color.white.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing),
-                        in: RoundedRectangle(cornerRadius: 14)
+                        in: RoundedRectangle(cornerRadius: BuzzRadius.md)
                     )
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
+                    .padding(.horizontal, BuzzSpacing.xl)
+                    .padding(.vertical, BuzzSpacing.md)
                 }
             }
         }
@@ -212,12 +212,12 @@ struct AIQuizSetupView: View {
 
     @ViewBuilder
     private func themeGroup(label: String, themes: [QuizTheme]) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             Text(label.uppercased())
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(Color.textSecondary)
                 .tracking(0.8)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
 
             LazyVGrid(
                 columns: [.init(.flexible(), spacing: 10), .init(.flexible(), spacing: 10), .init(.flexible(), spacing: 10)],
@@ -234,7 +234,7 @@ struct AIQuizSetupView: View {
                     }
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, BuzzSpacing.lg)
         }
     }
 
@@ -279,47 +279,47 @@ private struct ThemeCardAI: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: BuzzSpacing.sm) {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: theme.iconName)
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(isSelected ? theme.color : .white.opacity(0.35))
+                        .textStyle(Typography.sectionTitle)
+                        .foregroundStyle(isSelected ? theme.color : Color.textDim)
                         .frame(width: 44, height: 44)
                         .background(
                             isSelected ? theme.color.opacity(0.2) : Color.white.opacity(0.05),
-                            in: RoundedRectangle(cornerRadius: 12)
+                            in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
                         )
 
                     if isSelected {
                         Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 14, weight: .bold))
+                            .textStyle(Typography.footnoteBold)
                             .foregroundStyle(theme.color)
-                            .background(Color(hex: "#1A0535"), in: Circle())
+                            .background(Color.sheetBg, in: Circle())
                             .offset(x: 6, y: -6)
                     }
                 }
 
                 Text(theme.title)
                     .font(.nohemi(.caption2, weight: .semiBold))
-                    .foregroundStyle(isSelected ? .white : .white.opacity(0.5))
+                    .foregroundStyle(isSelected ? .white : Color.textSecondary)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
+            .padding(.vertical, BuzzSpacing.md)
             .padding(.horizontal, 4)
             .background(
                 isSelected ? theme.color.opacity(0.12) : Color.white.opacity(0.03),
-                in: RoundedRectangle(cornerRadius: 14)
+                in: RoundedRectangle(cornerRadius: BuzzRadius.md)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: BuzzRadius.md)
                     .strokeBorder(
                         isSelected ? theme.color.opacity(0.5) : Color.white.opacity(0.07),
                         lineWidth: isSelected ? 1.5 : 1
                     )
             )
-            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isSelected)
+            .animation(.buzzSnappy, value: isSelected)
         }
         .buttonStyle(.plain)
     }
@@ -335,7 +335,7 @@ private struct DifficultyPillAI: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
+            HStack(spacing: BuzzSpacing.sm) {
                 Text(difficulty.label)
                     .font(.nohemi(.body, weight: .semiBold))
                     .foregroundStyle(.white)
@@ -346,14 +346,14 @@ private struct DifficultyPillAI: View {
                 }
             }
             .padding(.horizontal, 14)
-            .padding(.vertical, 12)
+            .padding(.vertical, BuzzSpacing.md)
             .frame(maxWidth: .infinity)
             .background(
                 isSelected ? difficulty.color.opacity(0.15) : Color.white.opacity(0.04),
-                in: RoundedRectangle(cornerRadius: 12)
+                in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: BuzzRadius.sm)
                     .strokeBorder(
                         isSelected ? difficulty.color.opacity(0.4) : Color.white.opacity(0.08),
                         lineWidth: isSelected ? 1.5 : 1

@@ -18,8 +18,8 @@ struct PostRoundLeaderboardView: View {
 
             VStack(spacing: 0) {
                 header
-                    .padding(.top, 20)
-                    .padding(.bottom, 16)
+                    .padding(.top, BuzzSpacing.xl)
+                    .padding(.bottom, BuzzSpacing.lg)
 
                 ScrollView() {
                     VStack(spacing: 10) {
@@ -36,13 +36,13 @@ struct PostRoundLeaderboardView: View {
                             )
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 32)
+                    .padding(.horizontal, BuzzSpacing.xl)
+                    .padding(.bottom, BuzzSpacing.xxxl)
                 }
             }
         }
         .animation(.spring(response: 0.60, dampingFraction: 0.76), value: displayedPlayers.map(\.id))
-        .animation(.easeInOut(duration: 0.25), value: showDeltas)
+        .animation(.buzzFade, value: showDeltas)
         .onAppear {
             // Étape 1 : affichage en ANCIEN ordre (avec les scores déjà mis à jour)
             let orderedByOld = previousRanking
@@ -55,7 +55,7 @@ struct PostRoundLeaderboardView: View {
                 withAnimation(.spring(response: 0.65, dampingFraction: 0.76)) {
                     displayedPlayers = currentRanking.sorted { $0.score > $1.score }
                 }
-                withAnimation(.easeInOut(duration: 0.3).delay(0.45)) {
+                withAnimation(.buzzEase.delay(0.45)) {
                     showDeltas = true
                 }
             }
@@ -65,10 +65,10 @@ struct PostRoundLeaderboardView: View {
     // MARK: - Header
 
     private var header: some View {
-        VStack(spacing: 4) {
-            HStack(spacing: 8) {
+        VStack(spacing: BuzzSpacing.xs) {
+            HStack(spacing: BuzzSpacing.sm) {
                 Image(systemName: "trophy.fill")
-                    .font(.system(size: 18, weight: .bold))
+                    .textStyle(Typography.cardTitleBold)
                     .foregroundStyle(Color.mustardYellow)
                 Text("CLASSEMENT")
                     .font(.nohemi(.headline, weight: .black))
@@ -77,7 +77,7 @@ struct PostRoundLeaderboardView: View {
             }
             Text("Le Maître prépare la prochaine manche…")
                 .font(.nohemi(.caption, weight: .medium))
-                .foregroundStyle(.white.opacity(0.40))
+                .foregroundStyle(Color.textMuted)
         }
     }
 
@@ -104,7 +104,7 @@ private struct PostRoundRow: View {
     let showDelta: Bool
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: BuzzSpacing.md) {
             rankBadge
             playerAvatar
             nameAndScore
@@ -113,9 +113,9 @@ private struct PostRoundRow: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 11)
-        .background(rowBackground, in: RoundedRectangle(cornerRadius: 16))
+        .background(rowBackground, in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: BuzzRadius.lg)
                 .strokeBorder(rowBorder, lineWidth: 1)
         )
     }
@@ -127,7 +127,7 @@ private struct PostRoundRow: View {
                 .frame(width: 34, height: 34)
             Text("\(rank)")
                 .font(.nohemi(.subheadline, weight: .black))
-                .foregroundStyle(rank <= 3 ? Color(hex: "1A0535") : .white)
+                .foregroundStyle(rank <= 3 ? Color.sheetBg : .white)
         }
     }
 
@@ -161,11 +161,11 @@ private struct PostRoundRow: View {
             if scoreDelta > 0 {
                 Text("+\(scoreDelta)")
                     .font(.nohemi(.caption, weight: .extraBold))
-                    .foregroundStyle(Color(hex: "00C875"))
-                    .padding(.horizontal, 8)
+                    .foregroundStyle(Color.greenButtonLeading)
+                    .padding(.horizontal, BuzzSpacing.sm)
                     .padding(.vertical, 3)
-                    .background(Color(hex: "00C875").opacity(0.15), in: Capsule())
-                    .overlay(Capsule().strokeBorder(Color(hex: "00C875").opacity(0.35), lineWidth: 1))
+                    .background(Color.greenButtonLeading.opacity(0.15), in: Capsule())
+                    .overlay(Capsule().strokeBorder(Color.greenButtonLeading.opacity(0.35), lineWidth: 1))
                     .transition(.scale(scale: 0.6).combined(with: .opacity))
             }
 
@@ -173,15 +173,15 @@ private struct PostRoundRow: View {
                 let up = rankDelta > 0
                 HStack(spacing: 2) {
                     Image(systemName: up ? "arrow.up" : "arrow.down")
-                        .font(.system(size: 9, weight: .black))
+                        .textStyle(Typography.micro)
                     Text("\(abs(rankDelta))")
                         .font(.nohemi(.caption2, weight: .extraBold))
                 }
-                .foregroundStyle(up ? Color(hex: "00C875") : Color(hex: "FF6B70"))
+                .foregroundStyle(up ? Color.greenButtonLeading : Color.redSoft)
                 .padding(.horizontal, 7)
                 .padding(.vertical, 3)
                 .background(
-                    (up ? Color(hex: "00C875") : Color(hex: "FF6B70")).opacity(0.12),
+                    (up ? Color.greenButtonLeading : Color.redSoft).opacity(0.12),
                     in: Capsule()
                 )
                 .transition(.scale(scale: 0.6).combined(with: .opacity))
@@ -193,9 +193,9 @@ private struct PostRoundRow: View {
 
     private var rankCircleColor: Color {
         switch rank {
-        case 1: Color(hex: "FFD700")
-        case 2: Color(hex: "C0C0C0")
-        case 3: Color(hex: "CD7F32")
+        case 1: Color.amberWarm
+        case 2: Color.white
+        case 3: Color.burnOrange
         default: .white.opacity(0.12)
         }
     }

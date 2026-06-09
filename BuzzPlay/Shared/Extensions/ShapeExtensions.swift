@@ -17,7 +17,7 @@ extension View {
     
     @ViewBuilder
        static func backgroundPrimaryButton(style: Style) -> some View {
-           let shape = RoundedRectangle(cornerRadius: 8, style: .circular)
+           let shape = RoundedRectangle(cornerRadius: BuzzRadius.xs, style: .circular)
 
            switch style {
            case .filled:
@@ -45,6 +45,6 @@ extension View {
 }
 
 
-//    static let backgroundPrimaryButton: RoundedRectangle = RoundedRectangle(cornerRadius: 8, style: .circular).fill(Color.darkPurple)
+//    static let backgroundPrimaryButton: RoundedRectangle = RoundedRectangle(cornerRadius: BuzzRadius.xs, style: .circular).fill(Color.darkPurple)
 
 

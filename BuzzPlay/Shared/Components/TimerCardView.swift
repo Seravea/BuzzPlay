@@ -15,7 +15,7 @@ struct TimerCardView: View {
         
        
             
-        VStack(spacing: 8) {
+        VStack(spacing: BuzzSpacing.sm) {
                 
                 Text("Chrono")
                 
@@ -46,7 +46,7 @@ struct TimerBadge: View {
             .contentTransition(.numericText())
             .animation(.default, value: time)
             .frame(minWidth: 52, alignment: .center)
-            .padding(.horizontal, 12)
+            .padding(.horizontal, BuzzSpacing.md)
             .padding(.vertical, 6)
             .background(Color.mustardYellow.opacity(0.12), in: Capsule())
             .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.30), lineWidth: 1))

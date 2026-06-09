@@ -18,16 +18,16 @@ struct GiftBottomBar: View {
     private var balance: Int { coinsVM.playerGameViewModel?.player.accountAmount ?? 0 }
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: BuzzSpacing.sm) {
             if isWaiting && balance > 0 {
                 HStack(spacing: 5) {
                     Image(systemName: "sparkles")
-                        .font(.system(size: 10, weight: .bold))
+                        .textStyle(Typography.caption2Bold)
                     Text("C'est le moment d'utiliser tes Notes !")
                         .font(.nohemi(.caption2, weight: .bold))
                 }
                 .foregroundStyle(Color.mustardYellow)
-                .padding(.horizontal, 12)
+                .padding(.horizontal, BuzzSpacing.md)
                 .padding(.vertical, 5)
                 .background(Color.mustardYellow.opacity(0.12), in: Capsule())
                 .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.35), lineWidth: 1))
@@ -37,7 +37,7 @@ struct GiftBottomBar: View {
             Button { isSheetOpen = true } label: {
                 HStack(spacing: 10) {
                     Image(systemName: "gift.fill")
-                        .font(.system(size: 15, weight: .semibold))
+                        .textStyle(Typography.labelSM)
                         .foregroundStyle(Color.mustardYellow)
 
                     Text("Cadeaux")
@@ -52,22 +52,22 @@ struct GiftBottomBar: View {
                             .monospacedDigit()
                             .foregroundStyle(Color.mustardYellow)
                         Image(systemName: "dollarsign.bank.building.fill")
-                            .font(.system(size: 13))
+                            .textStyle(Typography.footnote)
                             .foregroundStyle(Color.mustardYellow)
                     }
 
                     Image(systemName: "chevron.up")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .textStyle(Typography.caption2Bold)
+                        .foregroundStyle(Color.textMuted)
                 }
                 .padding(.horizontal, 18)
                 .padding(.vertical, 13)
                 .background(
                     isWaiting ? Color.mustardYellow.opacity(0.10) : .white.opacity(0.08),
-                    in: RoundedRectangle(cornerRadius: 18)
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.lg2)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 18)
+                    RoundedRectangle(cornerRadius: BuzzRadius.lg2)
                         .strokeBorder(
                             isWaiting ? Color.mustardYellow.opacity(0.55) : .white.opacity(0.12),
                             lineWidth: isWaiting ? 1.5 : 1
@@ -80,8 +80,8 @@ struct GiftBottomBar: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 16)
-        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isWaiting)
+        .padding(.horizontal, BuzzSpacing.lg)
+        .animation(.buzzSmooth, value: isWaiting)
         .onChange(of: isWaiting) { _, waiting in
             if waiting {
                 withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
@@ -109,17 +109,17 @@ struct GiftShopSheet: View {
 
     @State private var showSoundPicker = false
 
-    private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+    private let columns = [GridItem(.flexible(), spacing: BuzzSpacing.md), GridItem(.flexible(), spacing: BuzzSpacing.md)]
     private var balance: Int { coinsVM.playerGameViewModel?.player.accountAmount ?? 0 }
 
     var body: some View {
         VStack(spacing: 0) {
             // Drag handle
             RoundedRectangle(cornerRadius: 3)
-                .fill(.white.opacity(0.25))
+                .fill(Color.textFaint)
                 .frame(width: 36, height: 4)
-                .padding(.top, 12)
-                .padding(.bottom, 24)
+                .padding(.top, BuzzSpacing.md)
+                .padding(.bottom, BuzzSpacing.xxl)
 
             // Header
             HStack(alignment: .top) {
@@ -129,7 +129,7 @@ struct GiftShopSheet: View {
                         .foregroundStyle(.white)
                     Text("Active un cadeau pour changer le jeu")
                         .font(.nohemi(.caption, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.45))
+                        .foregroundStyle(Color.textTertiary)
                 }
 
                 Spacer()
@@ -148,15 +148,15 @@ struct GiftShopSheet: View {
                     }
                     Text("Notes disponibles")
                         .font(.nohemi(.caption2, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(Color.textMuted)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 20)
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.bottom, BuzzSpacing.xl)
 
             // Erreur
             if let error = coinsVM.errorMessage {
-                HStack(spacing: 8) {
+                HStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "exclamationmark.circle.fill")
                         .foregroundStyle(.red)
                     Text(error)
@@ -164,12 +164,12 @@ struct GiftShopSheet: View {
                         .foregroundStyle(.red.opacity(0.9))
                     Spacer()
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.bottom, 14)
             }
 
             // Grille de cadeaux
-            LazyVGrid(columns: columns, spacing: 12) {
+            LazyVGrid(columns: columns, spacing: BuzzSpacing.md) {
                 ForEach(CoinsViewModel.Gift.allCases, id: \.self) { gift in
                     GiftCardView(
                         gift: gift,
@@ -188,7 +188,7 @@ struct GiftShopSheet: View {
                     )
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, BuzzSpacing.lg)
             .padding(.bottom, 40)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -200,8 +200,8 @@ struct GiftShopSheet: View {
         .background(
             LinearGradient(
                 stops: [
-                    .init(color: Color(hex: "1A0535"), location: 0),
-                    .init(color: Color(hex: "2A0944"), location: 1),
+                    .init(color: Color.sheetBg, location: 0),
+                    .init(color: Color.darkestPurple, location: 1),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -246,12 +246,12 @@ private struct GiftCardView: View {
     private var cardBody: some View {
         VStack(spacing: 10) {
             Image(systemName: gift.iconName)
-                .font(.system(size: 26, weight: .medium))
+                .textStyle(Typography.screenTitleSoft)
                 .foregroundStyle(isActive ? gift.accentColor : .white.opacity(0.22))
                 .frame(width: 54, height: 54)
                 .background(
                     isActive ? gift.accentColor.opacity(0.18) : .white.opacity(0.05),
-                    in: RoundedRectangle(cornerRadius: 14)
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.md)
                 )
                 .overlay(alignment: .topTrailing) {
                     if isOwned {
@@ -276,7 +276,7 @@ private struct GiftCardView: View {
                 Text("\(gift.price)")
                     .font(.nohemi(.caption2, weight: .extraBold))
                 Image(systemName: "dollarsign.bank.building.fill")
-                    .font(.system(size: 10))
+                    .textStyle(Typography.caption2)
             }
             .foregroundStyle(isActive ? Color.mustardYellow : .white.opacity(0.22))
             .padding(.horizontal, 9)
@@ -287,20 +287,20 @@ private struct GiftCardView: View {
             )
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
+        .padding(.vertical, BuzzSpacing.lg)
         .padding(.horizontal, 6)
         .background(
             isActive ? gift.accentColor.opacity(0.07) : .white.opacity(0.03),
-            in: RoundedRectangle(cornerRadius: 18)
+            in: RoundedRectangle(cornerRadius: BuzzRadius.lg2)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 18)
+            RoundedRectangle(cornerRadius: BuzzRadius.lg2)
                 .strokeBorder(
                     isActive ? gift.accentColor.opacity(0.28) : .white.opacity(0.05),
                     lineWidth: 1
                 )
         )
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isActive)
+        .animation(.buzzDefault, value: isActive)
     }
 }
 
@@ -352,14 +352,14 @@ extension CoinsViewModel.Gift {
 
     var accentColor: Color {
         switch self {
-        case .scoreDoubled:         return Color(hex: "00C875")
-        case .enemyCanNotBuzz:      return Color(hex: "FF4D4D")
-        case .allEnemiesCanNotBuzz: return Color(hex: "FF8C42")
-        case .showIndicies:         return Color(hex: "FFD600")
-        case .changeBuzzColor:      return Color(hex: "B06BFF")
-        case .changeBuzzSound:      return Color(hex: "4DAAFF")
-        case .shieldSingle:         return Color(hex: "2B7FFF")
-        case .shieldAll:            return Color(hex: "00B8DB")
+        case .scoreDoubled:         return Color.greenButtonLeading
+        case .enemyCanNotBuzz:      return Color.redSoft
+        case .allEnemiesCanNotBuzz: return Color.peach
+        case .showIndicies:         return Color.yellowLeading
+        case .changeBuzzColor:      return Color.purpleLeading
+        case .changeBuzzSound:      return Color.skyBlue
+        case .shieldSingle:         return Color.blueLeading
+        case .shieldAll:            return Color.blueTrailing
         }
     }
 }
@@ -384,11 +384,11 @@ struct SoundPickerSheet: View {
             Text("Choisis ton son de buzzer")
                 .font(.nohemi(.headline, weight: .bold))
                 .foregroundStyle(.white)
-                .padding(.top, 24)
-                .padding(.bottom, 16)
+                .padding(.top, BuzzSpacing.xxl)
+                .padding(.bottom, BuzzSpacing.lg)
 
             ScrollView {
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     ForEach(Array(zip(sounds, soundLabels)), id: \.0) { sound, label in
                         Button {
                             selectedSound = sound
@@ -396,8 +396,8 @@ struct SoundPickerSheet: View {
                         } label: {
                             HStack(spacing: 14) {
                                 Image(systemName: selectedSound == sound ? "checkmark.circle.fill" : "circle")
-                                    .font(.system(size: 20))
-                                    .foregroundStyle(selectedSound == sound ? Color(hex: "4DAAFF") : .white.opacity(0.3))
+                                    .textStyle(Typography.title3)
+                                    .foregroundStyle(selectedSound == sound ? Color.skyBlue : .white.opacity(0.3))
 
                                 Text(label)
                                     .font(.nohemi(.body, weight: .medium))
@@ -406,28 +406,28 @@ struct SoundPickerSheet: View {
                                 Spacer()
 
                                 Image(systemName: "play.circle")
-                                    .font(.system(size: 18))
-                                    .foregroundStyle(.white.opacity(0.4))
+                                    .textStyle(Typography.cardTitle)
+                                    .foregroundStyle(Color.textMuted)
                             }
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 12)
+                            .padding(.horizontal, BuzzSpacing.xl)
+                            .padding(.vertical, BuzzSpacing.md)
                             .background(
-                                selectedSound == sound ? Color(hex: "4DAAFF").opacity(0.12) : .white.opacity(0.04),
-                                in: RoundedRectangle(cornerRadius: 12)
+                                selectedSound == sound ? Color.skyBlue.opacity(0.12) : .white.opacity(0.04),
+                                in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
                             )
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12)
+                                RoundedRectangle(cornerRadius: BuzzRadius.sm)
                                     .strokeBorder(
-                                        selectedSound == sound ? Color(hex: "4DAAFF").opacity(0.4) : .clear,
+                                        selectedSound == sound ? Color.skyBlue.opacity(0.4) : .clear,
                                         lineWidth: 1
                                     )
                             )
                         }
                         .buttonStyle(.plain)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, BuzzSpacing.lg)
                     }
                 }
-                .padding(.bottom, 16)
+                .padding(.bottom, BuzzSpacing.lg)
             }
 
             // CTA
@@ -438,31 +438,31 @@ struct SoundPickerSheet: View {
                     isShopPresented = false
                 }
             } label: {
-                HStack(spacing: 8) {
+                HStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "waveform")
                     Text(selectedSound == nil ? "Choisir un son d'abord" : "Confirmer — 20 🎵")
                         .font(.nohemi(.body, weight: .bold))
                 }
-                .foregroundStyle(selectedSound == nil ? .white.opacity(0.4) : .white)
+                .foregroundStyle(selectedSound == nil ? Color.textMuted : .white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(
                     selectedSound == nil
                         ? AnyShapeStyle(Color.white.opacity(0.08))
-                        : AnyShapeStyle(LinearGradient(colors: [Color(hex: "2B7FFF"), Color(hex: "00B8DB")], startPoint: .leading, endPoint: .trailing)),
-                    in: RoundedRectangle(cornerRadius: 14)
+                        : AnyShapeStyle(LinearGradient(colors: [Color.blueLeading, Color.blueTrailing], startPoint: .leading, endPoint: .trailing)),
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.md)
                 )
             }
             .buttonStyle(.plain)
             .disabled(selectedSound == nil)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 32)
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.bottom, BuzzSpacing.xxxl)
         }
         .background(
             LinearGradient(
                 stops: [
-                    .init(color: Color(hex: "1A0535"), location: 0),
-                    .init(color: Color(hex: "2A0944"), location: 1),
+                    .init(color: Color.sheetBg, location: 0),
+                    .init(color: Color.darkestPurple, location: 1),
                 ],
                 startPoint: .top, endPoint: .bottom
             )

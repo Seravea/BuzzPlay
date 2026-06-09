@@ -40,11 +40,11 @@ struct CountdownOverlay: View {
                 case .go:
                     Image(systemName: "bolt.fill")
                         .font(.system(size: 60, weight: .bold))
-                        .foregroundStyle(Color(hex: "#7DFFA0"))
+                        .foregroundStyle(Color.greenGlow)
                     Text("À VOS BUZZERS !")
                         .font(.custom("Nohemi-Black", size: 28))
                         .tracking(2)
-                        .foregroundStyle(Color(hex: "#7DFFA0"))
+                        .foregroundStyle(Color.greenGlow)
 
                 case .hidden:
                     EmptyView()
@@ -55,7 +55,7 @@ struct CountdownOverlay: View {
 }
 
 #Preview {
-    VStack(spacing: 20) {
+    VStack(spacing: BuzzSpacing.xl) {
         CountdownOverlay(phase: .counting(3))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 

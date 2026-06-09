@@ -42,7 +42,7 @@ struct AIQuizReviewView: View {
     var body: some View {
         ZStack {
             // Fond géré par .presentationBackground dans la sheet parente (#A2)
-            Color(hex: "#1A0535").ignoresSafeArea()
+            Color.sheetBg.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Header
@@ -50,7 +50,7 @@ struct AIQuizReviewView: View {
                     Button(action: onBack) {
                         HStack(spacing: 6) {
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 14, weight: .semibold))
+                                .textStyle(Typography.footnoteEM)
                             Text("Retour")
                                 .font(.nohemi(.body, weight: .semiBold))
                         }
@@ -64,11 +64,11 @@ struct AIQuizReviewView: View {
                             .font(.nohemi(.body, weight: .semiBold))
                         Text("\(questions.count) questions")
                             .font(.nohemi(.caption, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.vertical, BuzzSpacing.md)
 
                 Divider().opacity(0.1)
 
@@ -77,7 +77,7 @@ struct AIQuizReviewView: View {
                     Button {
                         generator.error = nil
                     } label: {
-                        HStack(spacing: 8) {
+                        HStack(spacing: BuzzSpacing.sm) {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundStyle(.orange)
                             Text(error.localizedDescription)
@@ -86,44 +86,44 @@ struct AIQuizReviewView: View {
                                 .lineLimit(2)
                             Spacer(minLength: 8)
                             Image(systemName: "xmark")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(.white.opacity(0.4))
+                                .textStyle(Typography.caption2EM)
+                                .foregroundStyle(Color.textMuted)
                         }
-                        .padding(.horizontal, 12)
+                        .padding(.horizontal, BuzzSpacing.md)
                         .padding(.vertical, 10)
-                        .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
-                        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.orange.opacity(0.3), lineWidth: 1))
+                        .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
+                        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm2).strokeBorder(Color.orange.opacity(0.3), lineWidth: 1))
                     }
                     .buttonStyle(.plain)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, BuzzSpacing.lg)
                     .padding(.top, 10)
                 }
 
                 // Bandeau complétion en cours (passes 2-3 après ouverture de la Review)
                 if generator.isCompleting {
-                    HStack(spacing: 8) {
+                    HStack(spacing: BuzzSpacing.sm) {
                         ProgressView()
                             .controlSize(.mini)
-                            .tint(Color(hex: "#AD46FF"))
+                            .tint(Color.purpleLeading)
                         Text("Ajout de questions en cours…")
                             .font(.nohemi(.caption, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(Color.textSoft)
                         Spacer()
                         Text("\(questions.count)/\(targetCount)")
                             .font(.nohemi(.caption, weight: .semiBold))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(Color.textSecondary)
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, BuzzSpacing.lg)
                     .padding(.vertical, 10)
-                    .background(Color(hex: "#AD46FF").opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
-                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color(hex: "#AD46FF").opacity(0.2), lineWidth: 1))
-                    .padding(.horizontal, 16)
+                    .background(Color.purpleLeading.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
+                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm2).strokeBorder(Color.purpleLeading.opacity(0.2), lineWidth: 1))
+                    .padding(.horizontal, BuzzSpacing.lg)
                     .padding(.top, 6)
                 }
 
                 // Questions list
                 ScrollView {
-                    VStack(spacing: 12) {
+                    VStack(spacing: BuzzSpacing.md) {
                         ForEach(questions) { question in
                             QuestionCardAI(
                                 question: question,
@@ -136,8 +136,8 @@ struct AIQuizReviewView: View {
                             )
                         }
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
+                    .padding(.horizontal, BuzzSpacing.lg)
+                    .padding(.vertical, BuzzSpacing.md)
                 }
 
                 // Transparence : la complétion par l'IA est automatique ; s'il manque
@@ -145,27 +145,27 @@ struct AIQuizReviewView: View {
                 if missingCount > 0 {
                     HStack(spacing: 6) {
                         Image(systemName: "info.circle")
-                            .font(.system(size: 12))
+                            .textStyle(Typography.caption)
                         Text("\(missingCount) question\(missingCount > 1 ? "s" : "") classique\(missingCount > 1 ? "s" : "") ajoutée\(missingCount > 1 ? "s" : "") au lancement")
                             .font(.nohemi(.caption2, weight: .regular))
                     }
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(Color.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 8)
+                    .padding(.horizontal, BuzzSpacing.lg)
+                    .padding(.top, BuzzSpacing.sm)
                 }
 
                 Divider().opacity(0.1)
 
                 // Footer — CTAs
-                HStack(spacing: 12) {
+                HStack(spacing: BuzzSpacing.md) {
                     Button(action: onBack) {
                         Text("Retour")
                             .font(.nohemi(.body, weight: .semiBold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 48)
-                            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+                            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
                     }
 
                     Button(action: {
@@ -185,15 +185,15 @@ struct AIQuizReviewView: View {
                             .frame(height: 48)
                             .background(
                                 canLaunch
-                                    ? LinearGradient(colors: [Color(hex: "#AD46FF"), Color(hex: "#F6339A")], startPoint: .topLeading, endPoint: .bottomTrailing)
+                                    ? LinearGradient(colors: [Color.purpleLeading, Color.purpleTrailing], startPoint: .topLeading, endPoint: .bottomTrailing)
                                     : LinearGradient(colors: [Color.white.opacity(0.08), Color.white.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing),
-                                in: RoundedRectangle(cornerRadius: 12)
+                                in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
                             )
                     }
                     .disabled(!canLaunch)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
+                .padding(.horizontal, BuzzSpacing.lg)
+                .padding(.vertical, BuzzSpacing.md)
             }
         }
         .task {
@@ -217,11 +217,11 @@ private struct QuestionCardAI: View {
     var onRegenerate: () -> Void = {}
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
             // Question
-            HStack(spacing: 8) {
+            HStack(spacing: BuzzSpacing.sm) {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 14))
+                    .textStyle(Typography.footnote)
                     .foregroundStyle(.green)
                 Text(question.title)
                     .font(.nohemi(.body, weight: .semiBold))
@@ -238,7 +238,7 @@ private struct QuestionCardAI: View {
                                     .tint(.white)
                             } else {
                                 Image(systemName: "arrow.clockwise")
-                                    .font(.system(size: 14, weight: .semibold))
+                                    .textStyle(Typography.footnoteEM)
                                     .foregroundStyle(.white.opacity(isBusy ? 0.25 : 0.65))
                             }
                         }
@@ -252,22 +252,22 @@ private struct QuestionCardAI: View {
 
             // Réponse
             if !question.correctAnswers.isEmpty {
-                HStack(spacing: 8) {
+                HStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "arrow.right")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .textStyle(Typography.caption)
+                        .foregroundStyle(Color.textMuted)
                     Text(question.correctAnswers.joined(separator: " • "))
                         .font(.nohemi(.caption, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(Color.textSoft)
                 }
                 .padding(.leading, 28)
             }
 
             // Anecdote
             if let funFact = question.funFact, !funFact.isEmpty {
-                HStack(spacing: 8) {
+                HStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "lightbulb.fill")
-                        .font(.system(size: 12))
+                        .textStyle(Typography.caption)
                         .foregroundStyle(.yellow.opacity(0.6))
                     Text(funFact)
                         .font(.nohemi(.caption2, weight: .regular))
@@ -277,8 +277,8 @@ private struct QuestionCardAI: View {
                 .padding(.leading, 28)
             }
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, BuzzSpacing.md)
         .padding(.vertical, 10)
-        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 12))
+        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
     }
 }

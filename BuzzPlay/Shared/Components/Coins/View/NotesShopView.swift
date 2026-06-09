@@ -15,20 +15,20 @@ struct NotesShopView: View {
             dragHandle
 
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: BuzzSpacing.xl) {
                     header
                     packsList
                     disclaimer
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.bottom, 40)
             }
         }
         .background(
             LinearGradient(
                 stops: [
-                    .init(color: Color(hex: "1A0535"), location: 0),
-                    .init(color: Color(hex: "2A0944"), location: 1),
+                    .init(color: Color.sheetBg, location: 0),
+                    .init(color: Color.darkestPurple, location: 1),
                 ],
                 startPoint: .top, endPoint: .bottom
             )
@@ -39,19 +39,19 @@ struct NotesShopView: View {
 
     private var dragHandle: some View {
         RoundedRectangle(cornerRadius: 3)
-            .fill(.white.opacity(0.25))
+            .fill(Color.textFaint)
             .frame(width: 36, height: 4)
-            .padding(.top, 12)
-            .padding(.bottom, 24)
+            .padding(.top, BuzzSpacing.md)
+            .padding(.bottom, BuzzSpacing.xxl)
     }
 
     // MARK: - Header
 
     private var header: some View {
         VStack(spacing: 6) {
-            HStack(spacing: 8) {
+            HStack(spacing: BuzzSpacing.sm) {
                 Image(systemName: "music.note")
-                    .font(.system(size: 22, weight: .semibold))
+                    .textStyle(Typography.sectionTitle)
                     .foregroundStyle(Color.mustardYellow)
                 Text("\(currentBalance)")
                     .font(.nohemi(.largeTitle, weight: .black))
@@ -62,7 +62,7 @@ struct NotesShopView: View {
             }
             Text("Notes disponibles")
                 .font(.nohemi(.caption, weight: .regular))
-                .foregroundStyle(.white.opacity(0.45))
+                .foregroundStyle(Color.textTertiary)
 
             if case .success(let amount) = store.purchaseState {
                 SuccessConfirmation(amount: amount)
@@ -95,7 +95,7 @@ struct NotesShopView: View {
             .foregroundStyle(.white.opacity(0.28))
             .multilineTextAlignment(.center)
             .lineSpacing(3)
-            .padding(.horizontal, 8)
+            .padding(.horizontal, BuzzSpacing.sm)
     }
 }
 
@@ -121,21 +121,21 @@ private struct PackCard: View {
             // Icône + badge meilleure valeur
             ZStack(alignment: .topTrailing) {
                 Image(systemName: "music.note.list")
-                    .font(.system(size: 22, weight: .medium))
+                    .textStyle(Typography.sectionTitleSoft)
                     .foregroundStyle(Color.mustardYellow)
                     .frame(width: 52, height: 52)
-                    .background(Color.mustardYellow.opacity(0.14), in: RoundedRectangle(cornerRadius: 14))
+                    .background(Color.mustardYellow.opacity(0.14), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
 
                 if pack.isBestValue {
                     Text("⭐")
-                        .font(.system(size: 12))
+                        .textStyle(Typography.caption)
                         .offset(x: 6, y: -6)
                 }
             }
 
             // Texte
             VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 8) {
+                HStack(spacing: BuzzSpacing.sm) {
                     Text("\(pack.notes) Notes")
                         .font(.nohemi(.body, weight: .bold))
                         .foregroundStyle(.white)
@@ -143,15 +143,15 @@ private struct PackCard: View {
                         Text("MEILLEURE VALEUR")
                             .font(.nohemi(.caption2, weight: .bold))
                             .tracking(0.4)
-                            .foregroundStyle(Color(hex: "00C950"))
+                            .foregroundStyle(Color.greenButtonLeading)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(Color(hex: "00C950").opacity(0.12), in: Capsule())
+                            .background(Color.greenButtonLeading.opacity(0.12), in: Capsule())
                     }
                 }
                 Text("\(pack.notesPerEuro) Notes / €")
                     .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.40))
+                    .foregroundStyle(Color.textMuted)
             }
 
             Spacer()
@@ -169,29 +169,29 @@ private struct PackCard: View {
                             .font(.nohemi(.callout, weight: .bold))
                             .foregroundStyle(.white)
                             .frame(minWidth: 64)
-                            .padding(.horizontal, 12)
+                            .padding(.horizontal, BuzzSpacing.md)
                             .frame(height: 34)
                     }
                 }
                 .background(
                     LinearGradient(
-                        colors: [Color(hex: "F0B100"), Color(hex: "FF6900")],
+                        colors: [Color.yellowLeading, Color.yellowTrailing],
                         startPoint: .leading, endPoint: .trailing
                     ),
-                    in: RoundedRectangle(cornerRadius: 10)
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.sm2)
                 )
             }
             .buttonStyle(.plain)
             .disabled(anyPurchasing)
             .opacity(anyPurchasing && !isThisPurchasing ? 0.4 : 1)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, BuzzSpacing.lg)
         .padding(.vertical, 14)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 18))
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
         .overlay(
-            RoundedRectangle(cornerRadius: 18)
+            RoundedRectangle(cornerRadius: BuzzRadius.lg2)
                 .strokeBorder(
-                    pack.isBestValue ? Color(hex: "00C950").opacity(0.30) : .white.opacity(0.09),
+                    pack.isBestValue ? Color.greenButtonLeading.opacity(0.30) : .white.opacity(0.09),
                     lineWidth: pack.isBestValue ? 1.5 : 1
                 )
         )
@@ -206,23 +206,23 @@ private struct SuccessConfirmation: View {
     @State private var scale = 0.8
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: BuzzSpacing.sm) {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(Color(hex: "00C950"))
+                .foregroundStyle(Color.greenButtonLeading)
             Text("+\(amount) Notes ajoutées !")
                 .font(.nohemi(.callout, weight: .bold))
                 .foregroundStyle(.white)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, BuzzSpacing.lg)
         .padding(.vertical, 10)
-        .background(Color(hex: "00C950").opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+        .background(Color.greenButtonLeading.opacity(0.12), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color(hex: "00C950").opacity(0.30), lineWidth: 1)
+            RoundedRectangle(cornerRadius: BuzzRadius.sm)
+                .strokeBorder(Color.greenButtonLeading.opacity(0.30), lineWidth: 1)
         )
         .scaleEffect(scale)
         .onAppear {
-            withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { scale = 1 }
+            withAnimation(.buzzBouncy) { scale = 1 }
         }
     }
 }

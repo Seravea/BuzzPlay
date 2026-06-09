@@ -29,33 +29,33 @@ struct ScorePlayerView: View {
 
     private var iphoneLayout: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: BuzzSpacing.xl) {
                 scoreHero
                 playersCard
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.top, BuzzSpacing.xl)
         }
     }
 
     // MARK: - iPad
 
     private var ipadLayout: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: BuzzSpacing.xl) {
             scoreHero
             playersCard
         }
-        .padding(.horizontal, 32)
-        .padding(.top, 32)
+        .padding(.horizontal, BuzzSpacing.xxxl)
+        .padding(.top, BuzzSpacing.xxxl)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     // MARK: - Score Hero
 
     private var scoreHero: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: BuzzSpacing.xl) {
             // Color accent bar
-            RoundedRectangle(cornerRadius: 4)
+            RoundedRectangle(cornerRadius: BuzzRadius.xxs)
                 .fill(
                     LinearGradient(
                         colors: [teamColor, teamColor.opacity(0)],
@@ -68,7 +68,7 @@ struct ScorePlayerView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("TON SCORE")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(Color.textMuted)
                         .tracking(0.8)
                     Text(currentPlayer.name)
                         .font(.nohemi(.title, weight: .extraBold))
@@ -82,7 +82,7 @@ struct ScorePlayerView: View {
                         .foregroundStyle(teamColor)
                     Text("points")
                         .font(.nohemi(.subheadline, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(Color.textMuted)
                 }
             }
 
@@ -105,10 +105,10 @@ struct ScorePlayerView: View {
             }
             .frame(height: 8)
         }
-        .padding(20)
-        .background(teamColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
+        .padding(BuzzSpacing.xl)
+        .background(teamColor.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: BuzzRadius.xl)
                 .strokeBorder(teamColor.opacity(0.3), lineWidth: 1.5)
         )
     }
@@ -116,18 +116,18 @@ struct ScorePlayerView: View {
     // MARK: - Players Card
 
     private var playersCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             Text("JOUEURS")
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.white.opacity(0.4))
+                .foregroundStyle(Color.textMuted)
                 .tracking(0.8)
 
 //            if validPlayers.isEmpty {
 //                Text("Aucun joueur")
 //                    .font(.nohemi(.subheadline, weight: .regular))
-//                    .foregroundStyle(.white.opacity(0.25))
+//                    .foregroundStyle(Color.textFaint)
 //            } else {
-                FlowLayout(spacing: 8) {
+                FlowLayout(spacing: BuzzSpacing.sm) {
 //                    ForEach(validPlayers) { player in
                         HStack(spacing: 6) {
                             Text(String(currentPlayer.name.prefix(1).uppercased()))
@@ -139,17 +139,17 @@ struct ScorePlayerView: View {
                                 .font(.nohemi(.subheadline, weight: .semiBold))
                                 .foregroundStyle(.white)
                         }
-                        .padding(.horizontal, 12)
+                        .padding(.horizontal, BuzzSpacing.md)
                         .padding(.vertical, 7)
                         .background(.white.opacity(0.06), in: Capsule())
                         .overlay(Capsule().strokeBorder(.white.opacity(0.08), lineWidth: 1))
                     }
 //                }
 //            }
-        .padding(16)
+        .padding(BuzzSpacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 18))
-        .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg2).strokeBorder(.white.opacity(0.08), lineWidth: 1))
         }
         
     }

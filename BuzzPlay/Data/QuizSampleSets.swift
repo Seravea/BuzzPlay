@@ -17,25 +17,25 @@ enum QuizThemes {
     static let annees80 = QuizTheme(
         title: "Années 80",
         iconName: "radio",
-        color: Color(hex: "#F0B100"),
+        color: Color.yellowLeading,
         category: .era
     )
     static let annees90 = QuizTheme(
         title: "Années 90",
         iconName: "music.note.list",
-        color: Color(hex: "#00C950"),
+        color: Color.greenButtonLeading,
         category: .era
     )
     static let annees2000 = QuizTheme(
         title: "Années 2000",
         iconName: "opticaldisc",
-        color: Color(hex: "#2B7FFF"),
+        color: Color.blueLeading,
         category: .era
     )
     static let annees2010 = QuizTheme(
         title: "Années 2010-2020",
         iconName: "iphone",
-        color: Color(hex: "#AD46FF"),
+        color: Color.purpleLeading,
         category: .era
     )
 
@@ -44,49 +44,49 @@ enum QuizThemes {
     static let popFR = QuizTheme(
         title: "Pop FR",
         iconName: "flag.fill",
-        color: Color(hex: "#F6339A"),
+        color: Color.purpleTrailing,
         category: .genre
     )
     static let popIntl = QuizTheme(
         title: "Pop Internationale",
         iconName: "globe",
-        color: Color(hex: "#FF6900"),
+        color: Color.yellowTrailing,
         category: .genre
     )
     static let rock = QuizTheme(
         title: "Rock",
         iconName: "guitars",
-        color: Color(hex: "#FB2C36"),
+        color: Color.redLeading,
         category: .genre
     )
     static let rapFR = QuizTheme(
         title: "Rap / Hip-Hop FR",
         iconName: "music.microphone",
-        color: Color(hex: "#F0B100"),
+        color: Color.yellowLeading,
         category: .genre
     )
     static let rapUS = QuizTheme(
         title: "Rap / Hip-Hop US",
         iconName: "music.microphone.fill",
-        color: Color(hex: "#00B8DB"),
+        color: Color.blueTrailing,
         category: .genre
     )
     static let electro = QuizTheme(
         title: "Électro / Dance",
         iconName: "headphones",
-        color: Color(hex: "#00C950"),
+        color: Color.greenButtonLeading,
         category: .genre
     )
     static let rnbSoul = QuizTheme(
         title: "R&B / Soul",
         iconName: "waveform.badge.star",
-        color: Color(hex: "#FF8C42"),
+        color: Color.peach,
         category: .genre
     )
     static let kpop = QuizTheme(
         title: "K-Pop",
         iconName: "sparkles",
-        color: Color(hex: "#F6339A"),
+        color: Color.purpleTrailing,
         category: .genre
     )
 

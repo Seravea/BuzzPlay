@@ -43,13 +43,13 @@ struct PublicBlindTestView: View {
                 )
 
                 SongCard(song: song)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
+                    .padding(.horizontal, BuzzSpacing.lg)
+                    .padding(.vertical, BuzzSpacing.lg)
                     .transition(.scale(scale: 0.8).combined(with: .opacity))
             } else {
                 VStack(spacing: 10) {
                     Image(systemName: "waveform")
-                        .font(.system(size: 22, weight: .medium))
+                        .textStyle(Typography.sectionTitleSoft)
                         .foregroundStyle(Color.mustardYellow.opacity(0.8))
                         .symbolEffect(.variableColor.iterative)
 
@@ -60,10 +60,10 @@ struct PublicBlindTestView: View {
                         .lineLimit(2)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.vertical, 18)
-                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 16))
-                .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+                .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg).strokeBorder(.white.opacity(0.08), lineWidth: 1))
                 .padding(.horizontal, 4)
                 .transition(.opacity)
             }
@@ -72,7 +72,7 @@ struct PublicBlindTestView: View {
 
             // Buzz result
             if let player = state.buzzingPlayer {
-                VStack(spacing: 12) {
+                VStack(spacing: BuzzSpacing.md) {
                     Text("A BUZZÉ")
                         .font(.nohemi(.caption2, weight: .bold))
                         .opacity(0.5)
@@ -80,12 +80,12 @@ struct PublicBlindTestView: View {
 
                     TeamCardView(player: player, buzzTime: state.formattedTime, showPoints: false)
                 }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 20)
+                .padding(.horizontal, BuzzSpacing.xxl)
+                .padding(.vertical, BuzzSpacing.xl)
                 .frame(maxWidth: .infinity)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             } else {
-                HStack(spacing: 8) {
+                HStack(spacing: BuzzSpacing.sm) {
                     Circle()
                         .fill(Color.mustardYellow.opacity(0.3))
                         .frame(width: 12, height: 12)
@@ -96,8 +96,8 @@ struct PublicBlindTestView: View {
 
                     Spacer()
                 }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 16)
+                .padding(.horizontal, BuzzSpacing.xxl)
+                .padding(.vertical, BuzzSpacing.lg)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 

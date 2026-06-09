@@ -22,7 +22,7 @@ struct BlindTestActiveScreen: View {
                 scoresSection
                 Spacer(minLength: 0)
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, BuzzSpacing.xl)
 
             if buzzedPlayer != nil {
                 Color.black.opacity(0.5)
@@ -48,7 +48,7 @@ struct BlindTestActiveScreen: View {
             }
         }
         .animation(.spring(duration: 0.4, bounce: 0.05), value: buzzedPlayer != nil)
-        .animation(.easeInOut(duration: 0.25), value: blindTestVM.roundCountdownPhase)
+        .animation(.buzzFade, value: blindTestVM.roundCountdownPhase)
         // #D11/#C3 — empêcher la veille iPhone pendant la partie
         .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
         .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
@@ -58,7 +58,7 @@ struct BlindTestActiveScreen: View {
         HStack {
             Text(blindTestVM.formattedTime)
                 .font(.nohemi(.largeTitle, weight: .extraBold))
-                .foregroundStyle(buzzedPlayer != nil ? Color(hex: "#F6339A") : .mustardYellow)
+                .foregroundStyle(buzzedPlayer != nil ? Color.purpleTrailing : .mustardYellow)
                 .tracking(3)
                 .contentTransition(.numericText())
                 .animation(.default, value: blindTestVM.formattedTime)
@@ -72,7 +72,7 @@ struct BlindTestActiveScreen: View {
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 14)
-        .background(Color.darkestPurple, in: RoundedRectangle(cornerRadius: 18))
+        .background(Color.darkestPurple, in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
     }
 
     private var songCard: some View {
@@ -85,23 +85,23 @@ struct BlindTestActiveScreen: View {
                     .overlay(
                         Image(systemName: "music.note")
                             .font(.title2)
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(Color.textSecondary)
                     )
             }
             .frame(width: 56, height: 56)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.xs))
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                 Text("EN COURS")
                     .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(Color.textMuted)
                     .tracking(0.8)
                 Text(blindTestVM.selectedMusic?.title ?? "—")
                     .font(.nohemi(.body, weight: .bold))
                     .foregroundStyle(.white)
                 Text(blindTestVM.selectedMusic?.artist ?? "—")
                     .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
@@ -113,19 +113,19 @@ struct BlindTestActiveScreen: View {
                     .foregroundStyle(Color.mustardYellow)
             }
         }
-        .padding(12)
-        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
-        .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.1), lineWidth: 1))
+        .padding(BuzzSpacing.md)
+        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(.white.opacity(0.1), lineWidth: 1))
     }
 
     private var scoresSection: some View {
         let players = blindTestVM.gameVM.players.sorted { $0.score > $1.score }
         let maxScore = max(players.map(\.score).max() ?? 1, 1)
 
-        return VStack(alignment: .leading, spacing: 8) {
+        return VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
             Text("CLASSEMENT EN DIRECT")
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.white.opacity(0.35))
+                .foregroundStyle(Color.textDim)
                 .tracking(0.8)
                 .padding(.leading, 2)
 
@@ -139,7 +139,7 @@ struct BlindTestActiveScreen: View {
                         RadarPulseView()
                         Text("En attente d'un buzz…")
                             .font(.nohemi(.caption, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.4))
+                            .foregroundStyle(Color.textMuted)
                     }
                     Spacer()
                     Button(action: onSkip) {
@@ -147,10 +147,10 @@ struct BlindTestActiveScreen: View {
                             Text("Passer")
                                 .font(.nohemi(.caption, weight: .bold))
                             Image(systemName: "forward.end.fill")
-                                .font(.system(size: 11))
+                                .textStyle(Typography.caption2)
                         }
-                        .foregroundStyle(.white.opacity(0.7))
-                        .padding(.horizontal, 12)
+                        .foregroundStyle(Color.textSoft)
+                        .padding(.horizontal, BuzzSpacing.md)
                         .padding(.vertical, 6)
                         .background(.white.opacity(0.08), in: Capsule())
                         .overlay(Capsule().strokeBorder(.white.opacity(0.12), lineWidth: 1))
