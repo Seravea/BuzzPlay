@@ -93,15 +93,27 @@ struct NotesShopView: View {
     // MARK: - Packs
 
     private var packsList: some View {
-        VStack(spacing: 10) {
+        // Bonus de valeur vs le pack le moins avantageux (l'intro), en %.
+        // Plus parlant que "X Notes / €" et évite le côté comptable (#D2).
+        let baseRate = store.packs.map(\.notesPerEuro).min() ?? 1
+        return VStack(spacing: 10) {
             ForEach(store.packs) { pack in
                 PackCard(
                     pack: pack,
+                    bonusPercent: bonusPercent(for: pack, baseRate: baseRate),
                     purchaseState: store.purchaseState,
                     onBuy: { store.purchase(pack) }
                 )
             }
         }
+    }
+
+    /// % de Notes en plus (à prix égal) qu'avec le pack de base, arrondi au
+    /// multiple de 10 pour rester un argument marketing rond, pas un calcul.
+    private func bonusPercent(for pack: NotesPack, baseRate: Int) -> Int {
+        guard baseRate > 0 else { return 0 }
+        let raw = pack.notesPerEuro * 100 / baseRate - 100
+        return Int((Double(raw) / 10).rounded()) * 10
     }
 
     // MARK: - Disclaimer
@@ -120,6 +132,7 @@ struct NotesShopView: View {
 
 private struct PackCard: View {
     let pack: NotesPack
+    let bonusPercent: Int
     let purchaseState: PurchaseState
     let onBuy: () -> Void
 
@@ -166,9 +179,15 @@ private struct PackCard: View {
                             .background(Color.greenButtonLeading.opacity(0.12), in: Capsule())
                     }
                 }
-                Text("\(pack.notesPerEuro) Notes / €")
-                    .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(Color.textMuted)
+                if bonusPercent > 0 {
+                    Text("+\(bonusPercent)% de bonus")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .foregroundStyle(Color.greenButtonLeading)
+                } else {
+                    Text("Pack Découverte")
+                        .font(.nohemi(.caption2, weight: .regular))
+                        .foregroundStyle(Color.textMuted)
+                }
             }
 
             Spacer()
