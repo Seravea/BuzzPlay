@@ -373,6 +373,11 @@ final class MasterFlowViewModel {
             allRegisteredPlayers.append(player)
         }
 
+        // #10 — diffuser le roster complet à TOUS dès qu'un joueur (re)joint : sinon le
+        // classement de chacun n'affichait que les joueurs ayant déjà scoré (knownPlayers ne
+        // se remplissait que sur .updatedPlayer, envoyé au moment d'un score).
+        broadcastFullRoster()
+
         // #rejoin — re-notifier que la partie a démarré pour TOUT joueur qui (re)joint
         // après le broadcast initial (fire-and-forget depuis le Lobby). Sinon son app
         // (surtout après un kill) reste coincée sur PlayerChooseGameView, n'atteint jamais
@@ -384,6 +389,14 @@ final class MasterFlowViewModel {
 
     func sendUpdatedPlayer(player: Player) {
         mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(player), player: player)
+    }
+
+    /// #10 — diffuse l'état de chaque joueur enregistré à tous les peers, pour que le
+    /// classement (knownPlayers) de chacun soit complet dès le lobby, pas seulement après score.
+    private func broadcastFullRoster() {
+        for p in players where p.name != "Écran Publique" {
+            mpcService.sendMessage(.updatedPlayer(p))
+        }
     }
     
     //MARK: Master's functions for gameSelection

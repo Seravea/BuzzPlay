@@ -182,7 +182,10 @@ extension PlayerGameViewModel {
                     currentBuzzerVM?.setGiftBlock(false)
                 }
             }
-            if let idx = knownPlayers.firstIndex(where: { $0.id == updatedPlayer.id }) {
+            // #10 — dédoublonnage par id OU nom : à la reconnexion l'UUID peut changer
+            // (le nom est la clé stable côté Master) → évite qu'un joueur revenu apparaisse
+            // deux fois dans le classement quand le roster complet est rediffusé.
+            if let idx = knownPlayers.firstIndex(where: { $0.id == updatedPlayer.id || $0.name == updatedPlayer.name }) {
                 knownPlayers[idx] = updatedPlayer
             } else {
                 knownPlayers.append(updatedPlayer)
