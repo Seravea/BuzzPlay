@@ -311,10 +311,10 @@ final class MasterFlowViewModel {
         resetGameVMs()
         isGamePaused = false
         disconnectedPlayerName = nil
-        // Envoie le score remis à 0 à chaque player encore connecté
-        for player in players {
-            mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(player), player: player)
-        }
+        // #C9 — diffuse la liste remise à 0 à TOUS en un message : chaque Player reset
+        // ainsi son propre score ET le classement complet (knownPlayers), pas seulement
+        // sa propre ligne (avant : 1 updatedPlayer perso → les autres restaient périmés).
+        broadcastFullRoster()
         mpcService.sendMessage(.masterResetGame)
     }
     

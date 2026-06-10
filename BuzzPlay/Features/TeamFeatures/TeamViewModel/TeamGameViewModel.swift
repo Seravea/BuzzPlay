@@ -220,6 +220,11 @@ extension PlayerGameViewModel {
             pendingGameInvite = nil
             publicState = .waiting
             currentBuzzerVM = nil
+            // #C9 — remet les scores à 0 localement (le Master a reset sa source de vérité).
+            // Filet de sécurité idempotent avec le rosterUpdate envoyé juste avant : garantit
+            // un classement propre même si ce message s'est croisé/perdu, ou à la reco.
+            player.score = 0
+            for i in knownPlayers.indices { knownPlayers[i].score = 0 }
             showPostRoundLeaderboard = false
             leaderboardTask?.cancel()
             // Affiche notification brève avant redirection (#B6)
