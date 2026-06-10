@@ -43,6 +43,7 @@ struct LobbyMasterView: View {
             }
         }
         .navigationBarBackButtonHidden()
+        .masterDarkNavBar()  // #8
     }
 
     // MARK: - Config section

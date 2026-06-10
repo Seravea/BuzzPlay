@@ -78,6 +78,7 @@ struct QuizMasterListView: View {
                 )
             }
         }
+        .masterDarkNavBar()  // #8
     }
 
     private func handleValidate(points: Int) {

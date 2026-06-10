@@ -47,6 +47,7 @@ struct QuizThemeSelectionView: View {
                     .foregroundStyle(.white)
             }
         }
+        .masterDarkNavBar()  // #8
         .sheet(isPresented: $showAIGeneratorSheet) {
             if #available(iOS 26.0, *) {
                 #if os(iOS) && swift(>=5.9)
