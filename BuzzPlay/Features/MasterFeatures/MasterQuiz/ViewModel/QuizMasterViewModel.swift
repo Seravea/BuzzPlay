@@ -277,6 +277,7 @@ extension QuizMasterViewModel {
             guard let question = currentQuestion else {
                 // Aucune question active — stocker pour la prochaine manche
                 pendingHintPlayers[player.id] = player
+                gameVM.mpcService.sendMessagetoOnePlayer(message: .hintPending, player: player)   // #22
                 return
             }
             sendHint(to: player, for: question)

@@ -31,6 +31,7 @@ enum MPCMessage: Codable {
     case buyGiftResult(CoinsViewModel.Gift)
     case updatedPlayer(Player)
     case hintRevealedToPlayer(String)   // indice envoyé uniquement à l'acheteur
+    case hintPending                    // #22 — indice acheté entre 2 manches (mis en file) : feedback "en attente" à l'acheteur
 
     case buzzLock(BuzzLockPayload)   // master dit "X a gagné, buzzer lock"
     case buzzUnlock                  // master dit "nouvelle manche, vous pouvez rebuzzer"

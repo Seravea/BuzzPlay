@@ -252,6 +252,11 @@ extension PlayerGameViewModel {
         case .hintRevealedToPlayer(let hint):
             currentBuzzerVM?.showHint(hint)
 
+        case .hintPending:
+            // #22 — indice acheté entre 2 manches : feedback "en attente". Le vrai indice
+            // arrivera au début de la prochaine manche (hintRevealedToPlayer), remplaçant ce texte.
+            currentBuzzerVM?.showHint("Indice en route — il arrive à la prochaine manche 🔍")
+
         case .masterLeftParty:
             // #quit-teardown — le Master a quitté : on coupe le watchdog de reco et on
             // renvoie le Player à l'accueil (PlayerGameView observe `masterDidLeave`).

@@ -272,6 +272,7 @@ extension BlindTestMasterViewModel {
             guard let song = selectedMusic, case .playing = state else {
                 // Aucun morceau actif — stocker pour la prochaine manche
                 pendingHintPlayers[player.id] = player
+                gameVM.mpcService.sendMessagetoOnePlayer(message: .hintPending, player: player)   // #22
                 return
             }
             let hint = buildBlindTestHint(song: song)
