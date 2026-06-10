@@ -62,7 +62,7 @@ struct PlayerGameView: View {
         .onChange(of: playerGameVM.isGameComplete) { _, complete in
             guard complete else { return }
             showInterGameScore = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + GameRhythm.sheetTransition) {
                 showPodium = true
             }
         }
@@ -118,7 +118,7 @@ struct PlayerGameView: View {
             playerGameVM.sendPlayerReady()
             if showInterGameScore {
                 showInterGameScore = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + GameRhythm.sheetTransition) {
                     showGameAnnounce = true
                 }
             } else {

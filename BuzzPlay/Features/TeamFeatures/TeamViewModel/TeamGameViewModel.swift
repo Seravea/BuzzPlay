@@ -111,7 +111,7 @@ extension PlayerGameViewModel {
                 // #T-reco1/#C7 — à toute reconnexion (hub OU partie en cours), renvoyer
                 // playerReady pour réintégrer readyPlayers côté Master (sinon "1/2" bloqué).
                 if isReconnect {
-                    try? await Task.sleep(for: .milliseconds(500))
+                    try? await Task.sleep(for: GameRhythm.playerReadyReco)
                     guard !Task.isCancelled else { return }
                     self.mpc.sendMessage(.playerReady)
                 }
@@ -231,7 +231,7 @@ extension PlayerGameViewModel {
             // Affiche notification brève avant redirection (#B6)
             showNewGameNotification = true
             Task { @MainActor [weak self] in
-                try? await Task.sleep(for: .seconds(2))
+                try? await Task.sleep(for: GameRhythm.newGameNotif)
                 self?.showNewGameNotification = false
                 self?.shouldReturnToLobby = true
             }
@@ -360,10 +360,10 @@ extension PlayerGameViewModel {
             showPostRoundLeaderboard = false
             return
         }
-        // Délai calé sur la fin de l'overlay de feedback (2.6s) pour que la sheet de classement
+        // Délai calé sur la fin de l'overlay de feedback pour que la sheet de classement
         // monte une fois l'overlay "Bravo" disparu.
         leaderboardTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(2.7))
+            try? await Task.sleep(for: GameRhythm.leaderboardDelay)
             guard !Task.isCancelled, let self else { return }
             await MainActor.run { self.showPostRoundLeaderboard = true }
         }

@@ -473,7 +473,7 @@ extension MasterFlowViewModel {
                 let name = peer.displayName
                 // #C3 — debounce court : filtre les micro-glitch réseau sans latence perceptible.
                 let task = Task { @MainActor [weak self] in
-                    try? await Task.sleep(for: .milliseconds(300))
+                    try? await Task.sleep(for: GameRhythm.disconnectDebounce)
                     guard let self, !Task.isCancelled else { return }
                     self.handlePlayerDisconnect(name: name)
                 }
@@ -566,7 +566,7 @@ extension MasterFlowViewModel {
         stopHeartbeat()
         // Laisse le message partir avant de couper la session (sinon disconnect l'annule).
         Task { @MainActor [weak self] in
-            try? await Task.sleep(for: .milliseconds(400))
+            try? await Task.sleep(for: GameRhythm.quitTeardown)
             guard let self else { return }
             self.mpcService.stopHosting()
             self.resetSessionState()
@@ -617,7 +617,7 @@ extension MasterFlowViewModel {
         mpcService.sendMessage(.masterLaunchedGame(game))
         // #E1 — retry pour les Players qui n'ont pas reçu l'invitation MPC
         Task { @MainActor [weak self] in
-            try? await Task.sleep(for: .seconds(2))
+            try? await Task.sleep(for: GameRhythm.inviteRetry)
             guard let self else { return }
             let missing = self.players.filter {
                 $0.name != "Écran Publique" && !self.readyPlayers.contains($0.name)
