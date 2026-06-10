@@ -286,8 +286,7 @@ struct MasterChooseGameView: View {
             }
             .sheet(isPresented: $showNotesShop) {
                 NotesShopView(
-                    store: masterChooseGameVM.notesStore,
-                    currentBalance: masterChooseGameVM.masterNotesBalance
+                    store: masterChooseGameVM.notesStore
                 )
                 .presentationDetents([.large])
                 .presentationDragIndicator(.hidden)

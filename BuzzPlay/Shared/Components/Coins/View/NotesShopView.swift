@@ -7,12 +7,11 @@ import SwiftUI
 
 struct NotesShopView: View {
     @Bindable var store: NotesStore
-    let currentBalance: Int
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 0) {
-            dragHandle
+            topBar
 
             ScrollView {
                 VStack(spacing: BuzzSpacing.xl) {
@@ -35,14 +34,32 @@ struct NotesShopView: View {
         )
     }
 
-    // MARK: - Drag handle
+    // MARK: - Top bar (drag handle + bouton fermer)
 
-    private var dragHandle: some View {
-        RoundedRectangle(cornerRadius: 3)
-            .fill(Color.textFaint)
-            .frame(width: 36, height: 4)
-            .padding(.top, BuzzSpacing.md)
-            .padding(.bottom, BuzzSpacing.xxl)
+    private var topBar: some View {
+        ZStack {
+            // Drag handle centré
+            RoundedRectangle(cornerRadius: 3)
+                .fill(Color.textFaint)
+                .frame(width: 36, height: 4)
+
+            // #D4 — bouton fermer explicite (la sheet est non-draggable sur Mac/iPad)
+            HStack {
+                Spacer()
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark")
+                        .font(.nohemi(.footnote, weight: .bold))
+                        .foregroundStyle(Color.textSecondary)
+                        .frame(width: 30, height: 30)
+                        .background(.white.opacity(0.08), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Fermer la boutique")
+            }
+            .padding(.trailing, BuzzSpacing.lg)
+        }
+        .padding(.top, BuzzSpacing.md)
+        .padding(.bottom, BuzzSpacing.xxl)
     }
 
     // MARK: - Header
@@ -53,12 +70,12 @@ struct NotesShopView: View {
                 Image(systemName: "music.note")
                     .textStyle(Typography.sectionTitle)
                     .foregroundStyle(Color.mustardYellow)
-                Text("\(currentBalance)")
+                Text("\(store.balance)")
                     .font(.nohemi(.largeTitle, weight: .black))
                     .foregroundStyle(Color.mustardYellow)
                     .monospacedDigit()
                     .contentTransition(.numericText(countsDown: false))
-                    .animation(.spring(response: 0.4), value: currentBalance)
+                    .animation(.spring(response: 0.4), value: store.balance)
             }
             Text("Notes disponibles")
                 .font(.nohemi(.caption, weight: .regular))
@@ -92,7 +109,7 @@ struct NotesShopView: View {
     private var disclaimer: some View {
         Text("Les Notes sont consommables et ne périment jamais.\nAchats gérés par Apple — aucune souscription.")
             .font(.nohemi(.caption2, weight: .regular))
-            .foregroundStyle(.white.opacity(0.28))
+            .foregroundStyle(Color.textTertiary)
             .multilineTextAlignment(.center)
             .lineSpacing(3)
             .padding(.horizontal, BuzzSpacing.sm)
@@ -229,8 +246,7 @@ private struct SuccessConfirmation: View {
 
 #Preview {
     NotesShopView(
-        store: NotesStore(masterFlowVM: MasterFlowViewModel()),
-        currentBalance: 250
+        store: NotesStore(masterFlowVM: MasterFlowViewModel())
     )
     .presentationDetents([.large])
 }
