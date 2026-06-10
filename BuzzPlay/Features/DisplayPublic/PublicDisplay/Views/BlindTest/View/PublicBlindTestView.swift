@@ -69,29 +69,12 @@ struct PublicBlindTestView: View {
             }
 
             Spacer()
-
-            // Buzz result — #D6 : plus de placeholder "En attente d'un buzz…"
-            // (le buzzer en dessous indique déjà l'état d'attente). Rien ne s'affiche
-            // tant que personne n'a buzzé ; la carte de buzz reste centrée entre les Spacer.
-            if let player = state.buzzingPlayer {
-                VStack(spacing: BuzzSpacing.md) {
-                    Text("A BUZZÉ")
-                        .font(.nohemi(.caption2, weight: .bold))
-                        .opacity(0.5)
-                        .tracking(0.8)
-
-                    TeamCardView(player: player, buzzTime: state.formattedTime, showPoints: false)
-                }
-                .padding(.horizontal, BuzzSpacing.xxl)
-                .padding(.vertical, BuzzSpacing.xl)
-                .frame(maxWidth: .infinity)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-
-            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .animation(.spring(duration: 0.4), value: state)
+        // #header-bt — card "A BUZZÉ" retirée (redondante avec le label "X a buzzé" sous le
+        // buzzer). Animation ciblée sur la révélation : la zone ne saute plus à chaque buzz,
+        // seul le passage son → SongCard est animé.
+        .animation(.spring(duration: 0.4), value: state.isAnswerRevealed)
     }
 }
 
