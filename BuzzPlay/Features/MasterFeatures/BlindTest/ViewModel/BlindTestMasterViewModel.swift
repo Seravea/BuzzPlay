@@ -209,6 +209,7 @@ extension BlindTestMasterViewModel {
             musicHasEnded = false
             state = .playing
             isGameActive = true
+            gameVM.clearGiftBlocks()   // #20 — nouveau morceau : reset des blocages-cadeaux
 
             // Countdown (5.8 s) ET chargement musique en parallèle
             async let countdown: Void = runCountdown(
