@@ -392,9 +392,9 @@ extension BlindTestMasterViewModel {
                        isPlaying: false,
                        hintIndex: currentHintIndex,
                        countdownPhase: roundCountdownPhase,
-                       // #11/#C8 — dernière manche de la partie : le Player saute le classement
-                       // inter-manche, le podium final enchaîne directement.
-                       isLastRound: gameVM.isGameComplete
+                       // #11/#C8/#B2 — dernière manche DU JEU (pas de la partie) : l'inter-manche
+                       // se tait, l'inter-jeu (.score) ou le podium final prend le relais.
+                       isLastRound: !gameVM.isBlindTestAvailable
                    )
                )
            }
