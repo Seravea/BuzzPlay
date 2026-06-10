@@ -200,9 +200,19 @@ extension PlayerGameViewModel {
             pendingGameInvite = game
             hasPartyStarted = true  // reconnexion après kill app : la partie est déjà lancée
             hasReceivedFirstTimer = false  // reset pour chaque nouveau jeu (#A4)
-            if game == .score {
-                leaderboardTask?.cancel()
-                showPostRoundLeaderboard = false
+            // Tout nouveau jeu (ou le score) annule un classement inter-manche encore en file.
+            leaderboardTask?.cancel()
+            showPostRoundLeaderboard = false
+            if game != .score {
+                // #waiting-invite-jeu2 — au lancement du jeu suivant, l'ancien état du jeu
+                // précédent (réponse révélée, MusicCard, overlay « Bravo ») persistait jusqu'au
+                // premier publicUpdate, car le currentBuzzerVM est RÉUTILISÉ entre 2 jeux (#C7).
+                // On repart d'un état propre, comme le fait `.masterResetGame`.
+                lastAnswerWasCorrect = false
+                publicState = .waiting
+                formattedTime = "00:00"
+                lastMasterFormattedTime = "00:00"
+                currentBuzzerVM?.clearBuzzState()
             }
 
         case .masterStartedParty:
