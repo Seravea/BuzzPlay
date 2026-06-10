@@ -38,3 +38,21 @@ extension GameColor {
 }
 
 let buzzSoundNames = ["BeginQuestion", "Blblbl", "GoodAnswer", "HeavenlyChoir", "Mosquito", "PositiveAnswer", "Tired", "WrongAnswer"]
+
+/// Libellés FR des sons de buzzer, indexés par nom de fichier.
+/// Source unique partagée par le SoundPickerSheet (boutique) et le salon d'attente.
+let buzzSoundLabels: [String: String] = [
+    "BeginQuestion": "Début de question",
+    "Blblbl": "Blblbl",
+    "GoodAnswer": "Bonne réponse",
+    "HeavenlyChoir": "Chœur céleste",
+    "Mosquito": "Moustique",
+    "PositiveAnswer": "Réponse positive",
+    "Tired": "Fatigué",
+    "WrongAnswer": "Mauvaise réponse",
+]
+
+/// Libellé FR lisible d'un son de buzzer (fallback = le nom brut).
+func buzzSoundLabel(for soundName: String) -> String {
+    buzzSoundLabels[soundName] ?? soundName
+}

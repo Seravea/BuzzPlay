@@ -374,10 +374,8 @@ struct SoundPickerSheet: View {
     @State private var selectedSound: String? = nil
     @State private var previewPlayer: AVAudioPlayer? = nil
 
-    private let sounds = ["BeginQuestion", "Blblbl", "GoodAnswer", "HeavenlyChoir",
-                          "Mosquito", "PositiveAnswer", "Tired", "WrongAnswer"]
-    private let soundLabels = ["Début de question", "Blblbl", "Bonne réponse", "Chœur céleste",
-                               "Moustique", "Réponse positive", "Fatigué", "Mauvaise réponse"]
+    private let sounds = buzzSoundNames
+    private var soundLabels: [String] { buzzSoundNames.map(buzzSoundLabel(for:)) }
 
     var body: some View {
         VStack(spacing: 0) {
