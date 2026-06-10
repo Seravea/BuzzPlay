@@ -55,7 +55,10 @@ struct BlindTestMasterView: View {
                 )
             }
         }
-        .navigationBarBackButtonHidden(blindTestViewModel.isGameActive)
+        // #D10 — cacher le back SYSTÈME dès qu'on quitte l'écran Recherche : sur SongList,
+        // l'écran a déjà son propre chevron retour (→ Recherche) → fini le double bouton.
+        // Sur Recherche (1er écran), le back système reste = sortie du Blind Test.
+        .navigationBarBackButtonHidden(blindTestViewModel.isGameActive || !blindTestViewModel.allSongs.isEmpty)
     }
 }
 

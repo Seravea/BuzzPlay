@@ -19,18 +19,20 @@ struct CreateTeamView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            ScrollView {
-                VStack(spacing: 28) {
-                    avatarSection
-                    pseudoSection
-                    colorSection
-                    Spacer(minLength: 100)
-                }
-                .padding(.horizontal, 22)
-                .padding(.top, BuzzSpacing.lg)
+        // #1 — CTA en safeAreaInset (au lieu d'un ZStack .bottom) : il se cale AU-DESSUS du
+        // clavier et le ScrollView insère son contenu → le TextField pseudo reste visible
+        // (avant : le bouton remontait par-dessus le champ et le masquait).
+        ScrollView {
+            VStack(spacing: 28) {
+                avatarSection
+                pseudoSection
+                colorSection
+                Spacer(minLength: 20)
             }
-
+            .padding(.horizontal, 22)
+            .padding(.top, BuzzSpacing.lg)
+        }
+        .safeAreaInset(edge: .bottom) {
             ctaSection
         }
         .background(BackgroundAppView())
