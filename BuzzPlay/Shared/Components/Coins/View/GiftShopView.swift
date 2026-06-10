@@ -15,7 +15,7 @@ struct GiftBottomBar: View {
 
     @State private var glowPulse = false
 
-    private var balance: Int { coinsVM.playerGameViewModel?.player.accountAmount ?? 0 }
+    private var balance: Int { PlayerNotesWallet.shared.balance }  // #v1-economy — solde local
 
     var body: some View {
         VStack(spacing: BuzzSpacing.sm) {
@@ -110,7 +110,7 @@ struct GiftShopSheet: View {
     @State private var showSoundPicker = false
 
     private let columns = [GridItem(.flexible(), spacing: BuzzSpacing.md), GridItem(.flexible(), spacing: BuzzSpacing.md)]
-    private var balance: Int { coinsVM.playerGameViewModel?.player.accountAmount ?? 0 }
+    private var balance: Int { PlayerNotesWallet.shared.balance }  // #v1-economy — solde local
 
     var body: some View {
         VStack(spacing: 0) {

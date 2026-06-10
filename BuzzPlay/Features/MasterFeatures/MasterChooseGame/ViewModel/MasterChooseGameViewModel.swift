@@ -14,12 +14,9 @@ class MasterChooseGameViewModel {
     private let gameVM: MasterFlowViewModel
     let coinsVM: CoinsViewModel
 
-    let notesStore: NotesStore
-
     init(gameVM: MasterFlowViewModel) {
         self.gameVM = gameVM
         self.coinsVM = CoinsViewModel(masterFlowVM: gameVM)
-        self.notesStore = NotesStore(masterFlowVM: gameVM)
     }
 
     var availableGames: [GameType] = []
@@ -36,11 +33,7 @@ class MasterChooseGameViewModel {
     var totalRounds: Int { gameVM.totalRounds }
     var isQuizCardAvailable: Bool { gameVM.isQuizAvailable }
     var isBlindTestCardAvailable: Bool { gameVM.isBlindTestAvailable }
-    var masterNotesBalance: Int { gameVM.masterNotesBalance }
-    var canClaimDailyPack: Bool { gameVM.canClaimDailyPack }
-    var pendingDailyPackDays: Int { gameVM.pendingDailyPackDays }
-    var pendingDailyAmount: Int { gameVM.pendingDailyAmount }
-    func claimDailyPack() { gameVM.claimDailyPack() }
+    // #v1-economy — plus de Notes côté Master (solde local sur chaque téléphone Player).
     
     
     //MARK: Datas en functions for views

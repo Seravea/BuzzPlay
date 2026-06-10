@@ -9,9 +9,6 @@ import Foundation
 @Observable
 class CoinsViewModel {
 
-    let moneyCanSend: [Int] = [10, 20, 50, 100]
-    var selectedMoney: Int?
-    var isSendingOpen: Bool = false
     var masterFlowViewModel: MasterFlowViewModel?
     weak var playerGameViewModel: PlayerGameViewModel?
     let mpcService: MPCService?
@@ -114,24 +111,28 @@ extension CoinsViewModel {
     
     func buyGift(_ gift: Gift, targeting targetPlayer: Player? = nil, selectedSound: String? = nil) {
         guard !isPendingPurchase else { return }
-        guard let player = playerGameViewModel?.player else {
+        guard playerGameViewModel?.player != nil else {
             setError("Pas de joueur trouvé")
             return
         }
-        guard player.accountAmount >= gift.price else {
-            setError("Pas assez de Notes 🎵 — demande au Maître")
+        // #v1-economy — le solde vit en LOCAL sur ce téléphone (PlayerNotesWallet) :
+        // vérification + débit ici, le Master ne fait qu'appliquer l'effet du cadeau.
+        guard PlayerNotesWallet.shared.balance >= gift.price else {
+            setError("Pas assez de Notes 🎵 — joue pour en gagner !")
             return
         }
 
+        var target: Player? = nil
         if gift.requiresTargetPlayer {
-            guard let target = targetPlayer else {
+            guard let chosen = targetPlayer else {
                 setError("Choisir un adversaire d'abord")
                 return
             }
-            sendGiftRequest(gift, targeting: target, selectedSound: selectedSound)
-        } else {
-            sendGiftRequest(gift, targeting: nil, selectedSound: selectedSound)
+            target = chosen
         }
+
+        PlayerNotesWallet.shared.spend(gift.price)
+        sendGiftRequest(gift, targeting: target, selectedSound: selectedSound)
         isPendingPurchase = true
         errorMessage = nil
         // Failsafe : reset si le Master ne répond pas dans les 5s
@@ -141,44 +142,8 @@ extension CoinsViewModel {
         }
     }
 
-    /// Appelé par PlayerGameViewModel quand updatedPlayer est reçu — débloque le shop
-    func onPlayerUpdated(_ updatedPlayer: Player) {
+    /// Appelé quand buyGiftResult arrive du Master — débloque le shop
+    func onGiftConfirmed() {
         isPendingPurchase = false
     }
-
-    func sendCoinsToPlayer(_ player: Player, amount: Int) {
-        guard let masterVM = masterFlowViewModel else {
-            errorMessage = "Pas de Maître"
-            return
-        }
-        // #3 — l'envoi individuel est payant : il décompte le solde du Master
-        // (la déduction est ici et PAS dans addCoinsToPlayer, sinon distributeToAll
-        // double-déduirait — il décompte déjà amount × nb joueurs de son côté).
-        guard masterVM.masterNotesBalance >= amount else {
-            errorMessage = "Solde insuffisant"
-            return
-        }
-        masterVM.addCoinsToPlayer(player, amount: amount)
-        masterVM.masterNotesBalance -= amount
-        errorMessage = nil
-    }
-
-    func distributeToAll(_ amount: Int) {
-        guard let masterVM = masterFlowViewModel else {
-            errorMessage = "Pas de Maître"
-            return
-        }
-        
-        guard masterVM.masterNotesBalance >= amount * masterVM.players.count else {
-            errorMessage = "Pas assez de notes pour tous"
-            return
-        }
-
-        for player in masterVM.players {
-            masterVM.addCoinsToPlayer(player, amount: amount)
-        }
-        masterVM.masterNotesBalance -= amount * masterVM.players.count
-        errorMessage = nil
-    }
-
 }

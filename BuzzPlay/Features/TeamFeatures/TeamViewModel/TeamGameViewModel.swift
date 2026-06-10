@@ -46,8 +46,11 @@ final class PlayerGameViewModel {
     // Notification brève avant redirection (#B6)
     var showNewGameNotification: Bool = false
 
-    // Toast Notes reçues (🎵) — auto-dismiss géré dans la vue
-    var pendingNotesToast: Int? = nil
+    // #v1-economy — porte-monnaie Notes LOCAL du joueur (gains quotidiens + fin de partie,
+    // dépenses cadeaux). Le toast "Notes reçues" est porté par wallet.pendingCreditToast.
+    let notesWallet = PlayerNotesWallet.shared
+    // Compteur incrémenté à chaque buyGiftResult — observé par la vue pour débloquer le shop.
+    var giftConfirmationCount: Int = 0
 
     // MARK: - Classement post-manche (après bonne réponse validée)
     var showPostRoundLeaderboard: Bool = false
@@ -73,6 +76,8 @@ final class PlayerGameViewModel {
         self.player = player
         self.mpc = mpc
         setupMPC()
+        // #v1-economy — +50 Notes/jour de connexion (cumul plafonné), crédit automatique.
+        notesWallet.claimDailyIfNeeded()
     }
 
     deinit {
@@ -222,6 +227,9 @@ extension PlayerGameViewModel {
             // #C6 — cancel le leaderboard avant le podium pour éviter le flash
             leaderboardTask?.cancel()
             showPostRoundLeaderboard = false
+            // #v1-economy — +100 Notes en fin de partie (une seule fois : garde sur la
+            // transition, le message peut être redélivré à la reconnexion).
+            if !isGameComplete { notesWallet.creditEndOfGame() }
             isGameComplete = true
 
         case .masterResetGame:
@@ -268,6 +276,9 @@ extension PlayerGameViewModel {
             }
 
         case .buyGiftResult(let gift):
+            // #v1-economy — confirmation du Master : débloque le shop (le débit a déjà
+            // eu lieu localement dans CoinsViewModel.buyGift).
+            giftConfirmationCount += 1
             print("PLAYER: received gift purchase confirmation for \(gift.title)")
 
         case .hintRevealedToPlayer(let hint):
@@ -404,8 +415,6 @@ extension PlayerGameViewModel {
     /// .updatedPlayer (unitaire) et .rosterUpdate (liste des joueurs complète).
     private func applyPlayerUpdate(_ updatedPlayer: Player) {
         if updatedPlayer.id == self.player.id {
-            let delta = updatedPlayer.accountAmount - self.player.accountAmount
-            if delta > 0 { pendingNotesToast = delta }
             let wasBlocked = self.player.blockedFromBuzzing
             self.player = updatedPlayer
             currentBuzzerVM?.player = updatedPlayer

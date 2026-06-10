@@ -91,19 +91,20 @@ struct BuzzerPlayerView: View {
         .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
         .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
         .overlay(alignment: .top) {
-            if let notes = playerGameVM.pendingNotesToast {
+            // #v1-economy — toast piloté par le wallet local (gains quotidiens / fin de partie)
+            if let notes = playerGameVM.notesWallet.pendingCreditToast {
                 NotesToastView(amount: notes)
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + GameRhythm.notesToast) {
                             withAnimation(.buzzSlide) {
-                                playerGameVM.pendingNotesToast = nil
+                                playerGameVM.notesWallet.pendingCreditToast = nil
                             }
                         }
                     }
             }
         }
-        .animation(.buzzSmooth, value: playerGameVM.pendingNotesToast != nil)
+        .animation(.buzzSmooth, value: playerGameVM.notesWallet.pendingCreditToast != nil)
         .task {
             // Délai pour laisser la transition de navigation se terminer
             // avant d'envoyer playerReady (#A5)
@@ -111,8 +112,10 @@ struct BuzzerPlayerView: View {
             playerGameVM.syncBuzzerWithCurrentPublicState()
             playerGameVM.sendPlayerReady()
         }
-        .onChange(of: playerGameVM.player.accountAmount) { _, _ in
-            coinsVM.onPlayerUpdated(playerGameVM.player)
+        // #v1-economy — le shop se débloque à la confirmation du Master (buyGiftResult),
+        // plus de sync de solde via MPC (le solde vit en local).
+        .onChange(of: playerGameVM.giftConfirmationCount) { _, _ in
+            coinsVM.onGiftConfirmed()
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {

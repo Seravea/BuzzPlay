@@ -109,31 +109,8 @@ final class MasterFlowViewModel {
 
     //MARK: Datas for games
     var currentBuzzPlayer: Player?
-    private static let notesBalanceKey        = "buzzplay.master.notesBalance"
-    private static let firstInstallBonusKey   = "buzzplay.master.firstInstallBonusClaimed"
-    private static let lastDailyClaimKey      = "buzzplay.master.lastDailyClaimDate"
-    private static let firstInstallBonus      = 50
-    private static let dailyPackAmount        = 50
-    private static let dailyPackMaxDays       = 7
-
-    var masterNotesBalance: Int = {
-        let saved = UserDefaults.standard.integer(forKey: notesBalanceKey)
-        return saved > 0 ? saved : 0
-    }() {
-        didSet { UserDefaults.standard.set(masterNotesBalance, forKey: Self.notesBalanceKey) }
-    }
-
-    /// Nombre de jours accumulés non réclamés (max 7). 0 = déjà réclamé aujourd'hui.
-    var pendingDailyPackDays: Int {
-        let ud = UserDefaults.standard
-        guard let last = ud.object(forKey: Self.lastDailyClaimKey) as? Date else { return 1 }
-        let cal = Calendar.current
-        let days = cal.dateComponents([.day], from: cal.startOfDay(for: last), to: cal.startOfDay(for: Date())).day ?? 0
-        return min(max(days, 0), Self.dailyPackMaxDays)
-    }
-
-    var canClaimDailyPack: Bool { pendingDailyPackDays > 0 }
-    var pendingDailyAmount: Int { pendingDailyPackDays * Self.dailyPackAmount }
+    // #v1-economy — le Master ne gère plus AUCUNE Note : le solde vit en local sur
+    // chaque téléphone Player (PlayerNotesWallet). Plus de boutique/distribution Master.
     var isBuzzLocked: Bool = false
     var gameState: GameState = .lobby
 
@@ -199,39 +176,6 @@ final class MasterFlowViewModel {
     func startParty() {
         hasPartyStarted = true
         mpcService.sendMessage(.masterStartedParty)
-    }
-
-    // MARK: - Notes bonuses
-
-    /// Notes récupérées lors de la dernière fin de partie (pour affichage dans ScoreMasterView)
-    private(set) var notesRecoveredThisSession: Int = 0
-
-    /// Récupère les Notes non-dépensées de tous les Players et les recrédite au Master.
-    /// À appeler une seule fois à l'apparition de ScoreMasterView.
-    func collectUnspentNotes() {
-        let total = players.reduce(0) { $0 + $1.accountAmount }
-        guard total > 0 else { notesRecoveredThisSession = 0; return }
-        masterNotesBalance += total
-        notesRecoveredThisSession = total
-        for i in players.indices { players[i].accountAmount = 0 }
-        for i in allRegisteredPlayers.indices { allRegisteredPlayers[i].accountAmount = 0 }
-        for player in players {
-            mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(player), player: player)
-        }
-    }
-
-    func applyFirstInstallBonusIfNeeded() {
-        let ud = UserDefaults.standard
-        guard !ud.bool(forKey: Self.firstInstallBonusKey) else { return }
-        masterNotesBalance += Self.firstInstallBonus
-        ud.set(true, forKey: Self.firstInstallBonusKey)
-    }
-
-    func claimDailyPack() {
-        let days = pendingDailyPackDays
-        guard days > 0 else { return }
-        masterNotesBalance += days * Self.dailyPackAmount
-        UserDefaults.standard.set(Date(), forKey: Self.lastDailyClaimKey)
     }
 
     /// Jeu courant qui réagit aux buzz (BlindTest, Quiz, etc.)
@@ -449,7 +393,6 @@ extension MasterFlowViewModel {
     
     func setupMPC() {
         guard !hasStartedHosting else { return }
-        applyFirstInstallBonusIfNeeded()
         // #18a/#D11 — empêcher la veille sur TOUTE la session Master (pas juste le hub).
         // La veille coupait la MCSession pendant les jeux (QuizMaster, BlindTest, Score).
         UIApplication.shared.isIdleTimerDisabled = true
@@ -726,25 +669,10 @@ extension MasterFlowViewModel {
     }
 }
 
-//MARK: Player coin/money management
-extension MasterFlowViewModel {
-    func addCoinsToPlayer(_ player: Player, amount: Int) {
-        guard let index = players.firstIndex(of: player) else { return }
-        players[index].accountAmount += amount
-
-        // Sync allRegisteredPlayers for persistence on reconnection
-        if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == players[index].name }) {
-            allRegisteredPlayers[savedIndex].accountAmount = players[index].accountAmount
-        }
-
-        // Send updated player to all peers
-        mpcService.sendMessage(.updatedPlayer(players[index]))
-        print("MASTER: gave \(amount) coins to \(player.name) (total: \(players[index].accountAmount))")
-    }
-}
-
 //MARK: Gift purchase handling
 extension MasterFlowViewModel {
+    // #v1-economy — le Player a déjà vérifié ET débité son solde LOCAL (PlayerNotesWallet)
+    // avant d'envoyer la requête. Le Master ne touche plus aux Notes : il applique l'effet.
     func handleGiftPurchase(_ payload: GiftRequestPayload, from peer: MCPeerID) {
         guard let player = players.first(where: { $0.name == peer.displayName }) else {
             print("MASTER: gift request from unknown player \(peer.displayName)")
@@ -752,13 +680,7 @@ extension MasterFlowViewModel {
         }
 
         let gift = payload.gift
-        guard player.accountAmount >= gift.price else {
-            print("MASTER: player \(player.name) tried to buy \(gift.title) but has insufficient coins (\(player.accountAmount) < \(gift.price))")
-            return
-        }
-
         guard let playerIndex = players.firstIndex(of: player) else { return }
-        players[playerIndex].accountAmount -= gift.price
 
         activateGiftEffect(payload, for: players[playerIndex])
 
