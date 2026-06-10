@@ -42,6 +42,10 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var roundCountdownPhase: RoundCountdownPhase = .hidden
     // Task du countdown en cours — annulable via cancelRound()
     private var countdownTask: Task<Void, Never>?
+    // #leak — task du stream d'abonnement MusicKit. Avant : Task non stockée avec for-await
+    // infini et capture forte de self → le VM ne se désallouait JAMAIS, et setupMusicOnAppear
+    // (appelé à chaque onAppear) en empilait une de plus à chaque passage sur l'écran.
+    private var subscriptionObserverTask: Task<Void, Never>?
 
     // true quand le preview/titre s'est terminé naturellement (timer expiré)
     // → rejectAnswer doit relancer la musique depuis le début au lieu de resume()
@@ -92,7 +96,20 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
         self.gameVM = gameVM
         feedbackGenerator.prepare()
     }
-    
+
+    deinit {
+        // Hygiène soirée longue : sans ça, le stream d'abonnement, le timer (RunLoop.main)
+        // et l'observer de fin de preview survivent au VM. assumeIsolated : le VM est
+        // possédé par SwiftUI → désalloué sur le main thread.
+        MainActor.assumeIsolated {
+            subscriptionObserverTask?.cancel()
+            countdownTask?.cancel()
+            timer?.invalidate()
+            if let obs = previewEndObserver { NotificationCenter.default.removeObserver(obs) }
+            player?.pause()
+        }
+    }
+
     var player: AVPlayer?
     // Lecteur MusicKit pour le catalogue
     let musicPlayer = ApplicationMusicPlayer.shared
@@ -458,10 +475,13 @@ extension BlindTestMasterViewModel {
         }
     }
 
-    // Écoute les changements d'abonnement en temps réel
+    // Écoute les changements d'abonnement en temps réel.
+    // #leak — task stockée + [weak self] + annulation de la précédente (idempotent à l'onAppear).
     private func observeSubscriptionUpdates() {
-        Task {
+        subscriptionObserverTask?.cancel()
+        subscriptionObserverTask = Task { [weak self] in
             for await subscription in MusicSubscription.subscriptionUpdates {
+                guard let self else { return }
                 self.canPlayCatalogContent = subscription.canPlayCatalogContent
             }
         }

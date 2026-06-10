@@ -65,6 +65,15 @@ class BuzzerViewModel {
         preloadDefaultSound()
     }
 
+    deinit {
+        // Hygiène : le countdown 3-2-1 survivait au VM (Timer sur RunLoop) si l'écran
+        // était quitté en plein décompte. assumeIsolated : le VM est possédé par SwiftUI
+        // → désalloué sur le main thread.
+        MainActor.assumeIsolated {
+            countdownTimer?.invalidate()
+        }
+    }
+
     private func setupAudioSession() {
         do {
             // .playback + .mixWithOthers : joue même en mode silencieux sans couper Apple Music

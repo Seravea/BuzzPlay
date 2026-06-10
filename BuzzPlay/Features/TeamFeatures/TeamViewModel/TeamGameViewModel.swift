@@ -7,6 +7,7 @@
 
 import Foundation
 import Observation
+import AVFoundation
 
 
 @MainActor
@@ -69,6 +70,17 @@ final class PlayerGameViewModel {
         self.mpc = mpc
         setupMPC()
     }
+
+    deinit {
+        // Hygiène : les Timer sur RunLoop.main survivent au VM s'ils ne sont pas invalidés
+        // (le miroir du timer + le watchdog de reco 3s continuaient de tirer à vide).
+        // assumeIsolated : le VM est possédé par SwiftUI → désalloué sur le main thread.
+        MainActor.assumeIsolated {
+            timer?.invalidate()
+            reconnectTimer?.invalidate()
+            leaderboardTask?.cancel()
+        }
+    }
 }
 
 
@@ -124,7 +136,7 @@ extension PlayerGameViewModel {
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 do {
-                    let message = try JSONDecoder().decode(MPCMessage.self, from: data)
+                    let message = try MPCService.jsonDecoder.decode(MPCMessage.self, from: data)
                     self.handleMessage(message)
                 } catch {
                     print("Message received but unknown in MPCMessage: \(error)")
@@ -449,6 +461,11 @@ extension PlayerGameViewModel {
         stopReconnectTimer()
         mpc.leaveAsPlayer()
         isConnectedToMaster = false
+        // Libère la session audio (jamais désactivée sinon → retient le hardware audio
+        // après la partie). En détaché : setActive peut bloquer sur le routing Bluetooth.
+        Task.detached {
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
     }
 
     // MARK: - Reconnect auto
