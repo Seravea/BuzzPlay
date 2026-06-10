@@ -56,11 +56,8 @@ struct MasterChooseGameView: View {
         }
         .navigationBarBackButtonHidden()
         .appDefaultTextStyle(Typography.body)
-        // #8 — forcer la nav bar en dark même au scroll (iOS < 26 la repassait en light :
-        // fond clair + titre/boutons noirs). Fond opaque sombre + colorScheme dark.
-        .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarBackground(Color.darkestPurple, for: .navigationBar)
-        .toolbarColorScheme(.dark, for: .navigationBar)
+        // #8 — nav bar dark même au scroll (iOS < 26 la repassait en light). Modifier partagé.
+        .masterDarkNavBar()
         // #18a — la veille est désormais désactivée pour TOUTE la session Master
         // dans MasterFlowViewModel.setupMPC() (couvre aussi les écrans de jeu).
     }

@@ -95,3 +95,22 @@ extension View {
         modifier(OverlayLabelModifier())
     }
 }
+
+// MARK: - Nav bar Master (dark, opaque)
+// #8 — sur iOS < 26, la nav bar repassait en light au scroll (fond clair + titre/boutons
+// noirs illisibles sur le dégradé sombre). On force un fond opaque sombre + colorScheme dark.
+// Inoffensif sur iOS 26+. À appliquer sur tous les écrans Master à nav bar système.
+struct MasterDarkNavBarModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(Color.darkestPurple, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+    }
+}
+
+extension View {
+    func masterDarkNavBar() -> some View {
+        modifier(MasterDarkNavBarModifier())
+    }
+}

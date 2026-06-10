@@ -59,6 +59,7 @@ struct BlindTestMasterView: View {
         // l'écran a déjà son propre chevron retour (→ Recherche) → fini le double bouton.
         // Sur Recherche (1er écran), le back système reste = sortie du Blind Test.
         .navigationBarBackButtonHidden(blindTestViewModel.isGameActive || !blindTestViewModel.allSongs.isEmpty)
+        .masterDarkNavBar()  // #8
     }
 }
 
