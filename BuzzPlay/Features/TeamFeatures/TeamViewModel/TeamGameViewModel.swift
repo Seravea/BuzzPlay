@@ -368,14 +368,17 @@ extension PlayerGameViewModel {
 
         // Temps déjà écoulé depuis que le Master a lancé son timer
         let initialElapsedMs = max(0, Int((Date().timeIntervalSince1970 - masterTimestamp) * 1000))
-        // On utilise la même unité que le Master : reactionTimeMs en ms, incrémenté de 100 toutes les 0.1s
+        // Même unité que le Master : reactionTimeMs en ms.
+        // #perf — tick à 1s (l'affichage ne montre que les secondes) + mutation directe :
+        // à 0.1s, formattedTime (@Observable) était réassigné 10×/s → 10 re-renders/s
+        // du buzzer entier pour un texte qui ne change qu'1×/s.
         var reactionTimeMs = initialElapsedMs
 
-        let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            reactionTimeMs += 100
+        let newTimer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+            reactionTimeMs += 1000
             let snapshot = reactionTimeMs
-            Task { @MainActor in
+            MainActor.assumeIsolated {
+                guard let self else { return }
                 self.formattedTime = Self.formatReactionTime(snapshot)
             }
         }
@@ -394,11 +397,12 @@ extension PlayerGameViewModel {
         guard let seconds = Int(formattedTime) else { return }
         var reactionTimeMs = seconds * 1000
 
-        let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            reactionTimeMs += 100
+        // #perf — 1s/tick + mutation directe (voir startLocalReactionTimer).
+        let newTimer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+            reactionTimeMs += 1000
             let snapshot = reactionTimeMs
-            Task { @MainActor in
+            MainActor.assumeIsolated {
+                guard let self else { return }
                 self.formattedTime = Self.formatReactionTime(snapshot)
             }
         }

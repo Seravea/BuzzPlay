@@ -85,17 +85,20 @@ extension BuzzDrivenGame {
     
     // Resume-or-start timer without resetting reactionTimeMs.
     // Use this in "rejectAnswer" to continue from the paused time.
+    // #perf — tick à 1s : l'affichage (formattedTime) ne montre que les secondes et aucun
+    // consommateur n'utilise la résolution 100ms. À 0.1s, chaque tick mutait une propriété
+    // @Observable → ~10 re-renders/s de toute la hiérarchie pour un texte qui change 1×/s.
     func startReactionTimer() {
         // Do NOT reset reactionTimeMs here; we want resume semantics.
         // Just ensure any previous timer is invalidated.
         timer?.invalidate()
         timer = nil
-        
-        // Create the timer on the main run loop.
-        let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            Task { @MainActor in
-                self.reactionTimeMs += 100
+
+        // Create the timer on the main run loop (fires on main → assumeIsolated est sûr).
+        let newTimer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.reactionTimeMs += 1000
             }
         }
         RunLoop.main.add(newTimer, forMode: .common)

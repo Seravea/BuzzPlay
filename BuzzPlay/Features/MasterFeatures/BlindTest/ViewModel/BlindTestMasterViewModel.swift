@@ -318,10 +318,11 @@ extension BlindTestMasterViewModel {
         timer?.invalidate()
         timer = nil
 
-        let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            Task { @MainActor in
-                self.reactionTimeMs += 100
+        // #perf — 1s/tick + mutation directe (voir BuzzDrivenGame.startReactionTimer).
+        let newTimer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.reactionTimeMs += 1000
             }
         }
         RunLoop.main.add(newTimer, forMode: .common)
