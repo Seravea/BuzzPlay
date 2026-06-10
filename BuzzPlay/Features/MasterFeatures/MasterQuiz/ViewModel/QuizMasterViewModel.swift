@@ -51,6 +51,16 @@ class QuizMasterViewModel: BuzzDrivenGame {
         self.questions = limit > 0 ? Array(quizSet.questions.prefix(limit)) : quizSet.questions
         feedbackGenerator.prepare()
     }
+
+    deinit {
+        // Cohérence avec les autres VMs (#135) : pas de retain cycle ici (countdownTask est
+        // [weak self]), mais sans ça le reaction-timer (Timer sur RunLoop.main) reste
+        // programmé et tire à vide après la libération du VM. assumeIsolated : VM @MainActor.
+        MainActor.assumeIsolated {
+            timer?.invalidate()
+            countdownTask?.cancel()
+        }
+    }
 }
 
 //MARK: Quiz Functions
