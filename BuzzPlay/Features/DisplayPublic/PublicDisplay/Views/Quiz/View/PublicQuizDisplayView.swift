@@ -72,20 +72,8 @@ struct PublicQuizDisplayView: View {
                 .transition(.scale.combined(with: .opacity))
             }
 
-            // Buzzing team
-            if let player = state.buzzingPlayer {
-                VStack(spacing: BuzzSpacing.sm) {
-                    Text("A BUZZÉ")
-                        .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(Color.textSecondary)
-                        .tracking(0.8)
-
-                    TeamCardView(player: player, buzzTime: state.formattedTime, showPoints: false)
-                }
-                .frame(maxWidth: .infinity)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-
+            // #header-bt — card "A BUZZÉ" retirée (harmonisé avec le BlindTest) : le label
+            // "X a buzzé" sous le buzzer suffit, la zone ne saute plus au buzz.
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
