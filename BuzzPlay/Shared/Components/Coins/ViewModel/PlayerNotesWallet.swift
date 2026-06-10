@@ -18,6 +18,8 @@ final class PlayerNotesWallet {
 
     private static let balanceKey        = "buzzplay.player.notesBalance"
     private static let lastDailyClaimKey = "buzzplay.player.lastDailyClaimDate"
+    private static let welcomeClaimedKey = "buzzplay.player.welcomeBonusClaimed"
+    private static let welcomeAmount     = 100    // bonus de bienvenue, première ouverture
     private static let dailyAmount       = 50
     private static let dailyMaxDays      = 7      // cumul plafonné si on n'ouvre pas l'app tous les jours
     private static let endOfGameAmount   = 100
@@ -35,8 +37,13 @@ final class PlayerNotesWallet {
 
     /// +50 Notes par jour de connexion (cumul plafonné à 7 jours), crédités automatiquement
     /// à l'entrée du flux Player — pas de bouton à presser.
+    /// Première ouverture : +100 de bienvenue en plus (toast cumulé « +150 »).
     func claimDailyIfNeeded() {
         let ud = UserDefaults.standard
+        if !ud.bool(forKey: Self.welcomeClaimedKey) {
+            credit(Self.welcomeAmount)
+            ud.set(true, forKey: Self.welcomeClaimedKey)
+        }
         let days: Int
         if let last = ud.object(forKey: Self.lastDailyClaimKey) as? Date {
             let cal = Calendar.current
