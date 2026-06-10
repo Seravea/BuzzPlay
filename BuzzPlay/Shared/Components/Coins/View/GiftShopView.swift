@@ -179,7 +179,13 @@ struct GiftShopSheet: View {
                         player: coinsVM.playerGameViewModel?.player,
                         onBuy: { target in
                             if gift == .changeBuzzSound {
-                                showSoundPicker = true
+                                // Vérifie le solde avant d'ouvrir le picker ; sinon buyGift
+                                // affiche l'alerte "pas assez de Notes" (#alerte-solde-bas).
+                                if balance >= gift.price {
+                                    showSoundPicker = true
+                                } else {
+                                    coinsVM.buyGift(gift, targeting: target)
+                                }
                             } else {
                                 coinsVM.buyGift(gift, targeting: target)
                                 if coinsVM.errorMessage == nil { isPresented = false }
@@ -222,23 +228,31 @@ private struct GiftCardView: View {
 
     private var canAfford: Bool { balance >= gift.price }
     private var notEnoughPlayers: Bool { otherPlayers.count < gift.minimumOtherPlayers }
-    private var isActive: Bool { canAfford && !notEnoughPlayers && !isPending }
     private var isOwned: Bool { gift.isActiveOnPlayer(player) }
+    /// Blocages structurels rendant la card non-interactive. Le solde insuffisant
+    /// n'en fait PAS partie : la card reste tappable pour afficher l'alerte
+    /// "pas assez de Notes" (#alerte-solde-bas).
+    private var isBlocked: Bool { notEnoughPlayers || isPending || isOwned }
+    /// Abordable ET jouable — pilote le rendu (card grisée si false).
+    private var isActive: Bool { canAfford && !isBlocked }
 
     var body: some View {
         Group {
-            if gift.requiresTargetPlayer && !notEnoughPlayers {
+            // Cadeau abordable nécessitant une cible → menu de sélection.
+            if gift.requiresTargetPlayer && !notEnoughPlayers && canAfford {
                 Menu {
                     ForEach(otherPlayers) { enemy in
                         Button(enemy.name) { onBuy(enemy) }
                     }
                 } label: { cardBody }
-                .disabled(!canAfford)
+                .disabled(isPending || isOwned)
                 .buttonStyle(.plain)
             } else {
+                // Bouton simple : tappable même si solde insuffisant (buyGift affiche
+                // alors l'alerte), désactivé seulement pour un blocage structurel.
                 Button { onBuy(nil) } label: { cardBody }
                 .buttonStyle(.plain)
-                .disabled(!isActive)
+                .disabled(isBlocked)
             }
         }
     }
