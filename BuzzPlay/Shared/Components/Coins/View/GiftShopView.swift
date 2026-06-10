@@ -169,8 +169,10 @@ struct GiftShopSheet: View {
             }
 
             // Grille de cadeaux
+            // #v1-shop — la couleur ALÉATOIRE payante est retirée de la V1 (résultat
+            // aléatoire contre paiement = loot-box, guideline 3.1.1). V2 = picker direct.
             LazyVGrid(columns: columns, spacing: BuzzSpacing.md) {
-                ForEach(CoinsViewModel.Gift.allCases, id: \.self) { gift in
+                ForEach(CoinsViewModel.Gift.allCases.filter { $0 != .changeBuzzColor }, id: \.self) { gift in
                     GiftCardView(
                         gift: gift,
                         balance: balance,
