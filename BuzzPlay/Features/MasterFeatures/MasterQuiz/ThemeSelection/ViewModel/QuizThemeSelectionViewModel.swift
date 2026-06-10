@@ -21,14 +21,30 @@ final class QuizThemeSelectionViewModel {
     }
 
     var groupedThemes: [(label: String, themes: [QuizTheme])] {
-        [
+        var groups: [(label: String, themes: [QuizTheme])] = [
             ("Par décennie", QuizThemes.eras),
             ("Par genre", QuizThemes.genres)
         ]
+        // #v1-packs — packs distants (gratuits ou premium) dans leur propre section.
+        let remotePacks = RemoteQuizPackCatalog.shared.packs
+        if !remotePacks.isEmpty {
+            groups.append(("Packs bonus", remotePacks.map(\.theme)))
+        }
+        return groups
     }
 
     func sets(for theme: QuizTheme) -> [QuizSet] {
-        QuizSamples.sets(for: theme)
+        QuizSamples.sets(for: theme) + RemoteQuizPackCatalog.shared.sets(for: theme)
+    }
+
+    // #v1-packs — infos premium pour l'UI (cadenas + sheet d'achat)
+    func remotePack(for theme: QuizTheme) -> RemoteQuizPack? {
+        RemoteQuizPackCatalog.shared.pack(for: theme)
+    }
+
+    func isLocked(_ theme: QuizTheme) -> Bool {
+        guard let pack = remotePack(for: theme) else { return false }
+        return !QuizPackStore.shared.isUnlocked(pack)
     }
 
     func selectSet(_ set: QuizSet) {

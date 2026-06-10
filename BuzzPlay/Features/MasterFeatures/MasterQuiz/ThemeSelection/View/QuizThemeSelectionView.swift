@@ -18,6 +18,9 @@ struct QuizThemeSelectionView: View {
     @State private var aiGeneratedSet: QuizSet?
     @State private var aiGenerator = AIQuizGenerator()
 
+    // #v1-packs — pack premium sélectionné pour achat (sheet mock → StoreKit 2 plus tard)
+    @State private var packToBuy: RemoteQuizPack?
+
     // Alertes affichées quand l'appareil est éligible mais Apple Intelligence indisponible.
     @State private var showEnableAIAlert = false
     @State private var showModelNotReadyAlert = false
@@ -48,6 +51,13 @@ struct QuizThemeSelectionView: View {
             }
         }
         .masterDarkNavBar()  // #8
+        // #v1-packs — achat d'un pack premium (mock V1, StoreKit 2 branché ensuite)
+        .sheet(item: $packToBuy) { pack in
+            PackPurchaseSheet(pack: pack)
+                .presentationDetents([.fraction(0.5)])
+                .presentationDragIndicator(.visible)
+                .presentationBackground(Color.sheetBg)
+        }
         .sheet(isPresented: $showAIGeneratorSheet) {
             if #available(iOS 26.0, *) {
                 #if os(iOS) && swift(>=5.9)
@@ -187,14 +197,20 @@ struct QuizThemeSelectionView: View {
 
             VStack(spacing: 28) {
                 ForEach(themes) { theme in
-                    let sets = viewModel.sets(for: theme)
-                    if sets.isEmpty {
-                        ThemeAIOnlyCard(theme: theme, onTap: { showAIGeneratorSheet = true })
+                    // #v1-packs — pack premium verrouillé : card cadenas → sheet d'achat
+                    if viewModel.isLocked(theme), let pack = viewModel.remotePack(for: theme) {
+                        ThemeLockedPackCard(theme: theme, pack: pack, onTap: { packToBuy = pack })
                             .padding(.horizontal, BuzzSpacing.lg)
                     } else {
-                        ThemeSection(theme: theme, sets: sets) { set in
-                            viewModel.selectSet(set)
-                            router.push(.quizMaster)
+                        let sets = viewModel.sets(for: theme)
+                        if sets.isEmpty {
+                            ThemeAIOnlyCard(theme: theme, onTap: { showAIGeneratorSheet = true })
+                                .padding(.horizontal, BuzzSpacing.lg)
+                        } else {
+                            ThemeSection(theme: theme, sets: sets) { set in
+                                viewModel.selectSet(set)
+                                router.push(.quizMaster)
+                            }
                         }
                     }
                 }
@@ -353,6 +369,123 @@ private struct QuizSetCard: View {
 }
 
 // MARK: - Preview
+
+// MARK: - #v1-packs — pack premium verrouillé + sheet d'achat
+
+private struct ThemeLockedPackCard: View {
+    let theme: QuizTheme
+    let pack: RemoteQuizPack
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: BuzzSpacing.md) {
+                Image(systemName: theme.iconName)
+                    .textStyle(Typography.label)
+                    .foregroundStyle(theme.color)
+                    .frame(width: 36, height: 36)
+                    .background(theme.color.opacity(0.14), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
+                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm2).strokeBorder(theme.color.opacity(0.25), lineWidth: 1))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(theme.title)
+                        .font(.nohemi(.subheadline, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text("Pack premium — \(pack.sets.count) quiz")
+                        .font(.nohemi(.caption, weight: .medium))
+                        .foregroundStyle(Color.textSecondary)
+                }
+
+                Spacer()
+
+                HStack(spacing: 5) {
+                    Image(systemName: "lock.fill")
+                        .textStyle(Typography.caption2)
+                    Text(pack.priceDisplay ?? "Premium")
+                        .font(.nohemi(.caption, weight: .bold))
+                }
+                .foregroundStyle(Color.mustardYellow)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(Color.mustardYellow.opacity(0.12), in: Capsule())
+                .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.30), lineWidth: 1))
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, BuzzSpacing.md)
+            .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+            .overlay(
+                RoundedRectangle(cornerRadius: BuzzRadius.lg)
+                    .strokeBorder(.white.opacity(0.10), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct PackPurchaseSheet: View {
+    let pack: RemoteQuizPack
+    @Environment(\.dismiss) private var dismiss
+
+    private var store: QuizPackStore { QuizPackStore.shared }
+
+    private var isPurchasing: Bool {
+        if case .purchasing = store.purchaseState { return true }
+        return false
+    }
+
+    var body: some View {
+        VStack(spacing: BuzzSpacing.lg) {
+            Image(systemName: pack.theme.iconName)
+                .font(.system(size: 44))   // taille SF Symbol — intentionnel
+                .foregroundStyle(pack.theme.color)
+                .padding(.top, BuzzSpacing.xl)
+
+            VStack(spacing: BuzzSpacing.xs) {
+                Text(pack.theme.title)
+                    .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
+                    .foregroundStyle(.white)
+                Text("\(pack.sets.count) quiz · disponible pour toute la soirée")
+                    .font(.nohemi(.caption, weight: .medium))
+                    .foregroundStyle(Color.textSecondary)
+            }
+
+            Spacer(minLength: 0)
+
+            Button {
+                store.purchase(pack)
+            } label: {
+                Group {
+                    if isPurchasing {
+                        ProgressView().tint(.white)
+                    } else {
+                        Text("Débloquer — \(pack.priceDisplay ?? "achat unique")")
+                            .font(.nohemi(.body, weight: .bold))
+                    }
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, BuzzSpacing.md)
+                .background(
+                    LinearGradient(colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
+                                   startPoint: .leading, endPoint: .trailing),
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.md)
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(isPurchasing)
+
+            Button("Restaurer mes achats") { store.restorePurchases() }
+                .font(.nohemi(.caption, weight: .medium))
+                .foregroundStyle(Color.textSecondary)
+                .padding(.bottom, BuzzSpacing.lg)
+        }
+        .padding(.horizontal, BuzzSpacing.xl)
+        // Achat confirmé → la card se déverrouille derrière, on ferme la sheet.
+        .onChange(of: store.purchaseState) { _, state in
+            if case .success = state { dismiss() }
+        }
+    }
+}
 
 #Preview {
     NavigationStack {

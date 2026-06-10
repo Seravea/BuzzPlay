@@ -19,6 +19,9 @@ struct BuzzPlayApp: App {
           HomeView()
                 .environmentObject(router)
                 .appDefaultTextStyle(Typography.body)
+                // #v1-packs — fetch silencieux du catalogue de packs quiz (raw GitHub).
+                // Offline/erreur = no-op, l'app vit sur le cache local.
+                .task { RemoteQuizPackCatalog.shared.syncSilently() }
         }
     }
 }

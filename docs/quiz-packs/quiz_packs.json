@@ -1,0 +1,65 @@
+{
+  "packs": [
+    {
+      "id": "pack-cinema-2026",
+      "title": "Spécial Cinéma",
+      "iconName": "film.fill",
+      "category": "special",
+      "productID": "buzzplay.quiz.cinema",
+      "priceDisplay": "0,99 €",
+      "sets": [
+        {
+          "id": "cinema-cultes",
+          "title": "Répliques cultes",
+          "questions": [
+            {
+              "question": "Dans quel film entend-on « Je suis ton père » ?",
+              "answers": ["Star Wars : L'Empire contre-attaque"],
+              "difficulty": "facile",
+              "funFact": "La réplique exacte est « Non, JE suis ton père » — pas « Luke, je suis ton père »."
+            },
+            {
+              "question": "Quel acteur incarne Jack Dawson dans Titanic ?",
+              "answers": ["Leonardo DiCaprio"],
+              "difficulty": "facile",
+              "funFact": null
+            },
+            {
+              "question": "Quel film de 2019 a remporté l'Oscar du meilleur film avec un casting 100% sud-coréen ?",
+              "answers": ["Parasite"],
+              "difficulty": "moyen",
+              "funFact": "Premier film non anglophone à gagner l'Oscar du meilleur film."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pack-decouverte",
+      "title": "Pack Découverte",
+      "iconName": "gift.fill",
+      "category": "special",
+      "priceDisplay": null,
+      "sets": [
+        {
+          "id": "decouverte-mix",
+          "title": "Mix surprise",
+          "questions": [
+            {
+              "question": "Quel groupe chante « Bohemian Rhapsody » ?",
+              "answers": ["Queen"],
+              "difficulty": "facile",
+              "funFact": null
+            },
+            {
+              "question": "En quelle année est sorti le premier iPhone ?",
+              "answers": ["2007"],
+              "difficulty": "moyen",
+              "funFact": "Présenté par Steve Jobs le 9 janvier 2007."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
