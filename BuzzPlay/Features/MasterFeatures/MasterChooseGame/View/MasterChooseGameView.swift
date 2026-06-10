@@ -316,18 +316,22 @@ struct MasterChooseGameView: View {
                                 name: "Tout le\nmonde",
                                 icon: "person.2.fill",
                                 backgroundColor: Color.mustardYellow,
+                                // #3 — cap : on ne peut donner à chacun que ce que le solde
+                                // permet de couvrir pour TOUS (solde ÷ nb joueurs).
+                                maxAffordable: masterChooseGameVM.masterNotesBalance / max(masterChooseGameVM.players.count, 1),
                                 onSelectAmount: { amount in
                                     masterChooseGameVM.coinsVM.distributeToAll(amount)
                                 }
                             )
                         }
-                        
+
                         // Cards des joueurs individuels
                         ForEach(masterChooseGameVM.players) { player in
                             notesCard(
                                 name: player.name,
                                 icon: nil,
                                 playerColor: player.teamColor,
+                                maxAffordable: masterChooseGameVM.masterNotesBalance,
                                 onSelectAmount: { amount in
                                     masterChooseGameVM.coinsVM.sendCoinsToPlayer(player, amount: amount)
                                 }
@@ -351,6 +355,7 @@ struct MasterChooseGameView: View {
         icon: String? = nil,
         backgroundColor: Color? = nil,
         playerColor: GameColor? = nil,
+        maxAffordable: Int,
         onSelectAmount: @escaping (Int) -> Void
     ) -> some View {
         Menu {
@@ -360,6 +365,7 @@ struct MasterChooseGameView: View {
                 } label: {
                     Label("\(amount) notes", systemImage: "music.note")
                 }
+                .disabled(amount > maxAffordable)   // #3 — cap selon le solde du Master
             }
         } label: {
             VStack(spacing: BuzzSpacing.xs) {

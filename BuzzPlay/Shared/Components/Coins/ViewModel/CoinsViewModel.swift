@@ -151,8 +151,15 @@ extension CoinsViewModel {
             errorMessage = "Pas de Maître"
             return
         }
-
+        // #3 — l'envoi individuel est payant : il décompte le solde du Master
+        // (la déduction est ici et PAS dans addCoinsToPlayer, sinon distributeToAll
+        // double-déduirait — il décompte déjà amount × nb joueurs de son côté).
+        guard masterVM.masterNotesBalance >= amount else {
+            errorMessage = "Solde insuffisant"
+            return
+        }
         masterVM.addCoinsToPlayer(player, amount: amount)
+        masterVM.masterNotesBalance -= amount
         errorMessage = nil
     }
 
