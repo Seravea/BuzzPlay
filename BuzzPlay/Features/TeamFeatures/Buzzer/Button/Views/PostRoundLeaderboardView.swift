@@ -13,34 +13,33 @@ struct PostRoundLeaderboardView: View {
     @State private var showDeltas = false
 
     var body: some View {
-        ZStack {
-            BackgroundAppView().ignoresSafeArea()
+        // #15 — présenté en demi-sheet : le fond est fourni par `.presentationBackground`,
+        // la révélation de la réponse reste visible au-dessus de la sheet.
+        VStack(spacing: 0) {
+            header
+                .padding(.top, BuzzSpacing.lg)
+                .padding(.bottom, BuzzSpacing.md)
 
-            VStack(spacing: 0) {
-                header
-                    .padding(.top, BuzzSpacing.xl)
-                    .padding(.bottom, BuzzSpacing.lg)
-
-                ScrollView() {
-                    VStack(spacing: 10) {
-                        ForEach(Array(displayedPlayers.enumerated()), id: \.element.id) { index, player in
-                            let oldScore = previousRanking.first(where: { $0.id == player.id })?.score ?? player.score
-                            let oldRank  = oldRankOf(player)
-                            let newRank  = newRankOf(player)
-                            PostRoundRow(
-                                rank: index + 1,
-                                player: player,
-                                scoreDelta: showDeltas ? (player.score - oldScore) : 0,
-                                rankDelta: showDeltas ? (oldRank - newRank) : 0,
-                                showDelta: showDeltas
-                            )
-                        }
+            ScrollView() {
+                VStack(spacing: 10) {
+                    ForEach(Array(displayedPlayers.enumerated()), id: \.element.id) { index, player in
+                        let oldScore = previousRanking.first(where: { $0.id == player.id })?.score ?? player.score
+                        let oldRank  = oldRankOf(player)
+                        let newRank  = newRankOf(player)
+                        PostRoundRow(
+                            rank: index + 1,
+                            player: player,
+                            scoreDelta: showDeltas ? (player.score - oldScore) : 0,
+                            rankDelta: showDeltas ? (oldRank - newRank) : 0,
+                            showDelta: showDeltas
+                        )
                     }
-                    .padding(.horizontal, BuzzSpacing.xl)
-                    .padding(.bottom, BuzzSpacing.xxxl)
                 }
+                .padding(.horizontal, BuzzSpacing.lg)
+                .padding(.bottom, BuzzSpacing.xl)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         // #D7/#D8 — une seule source d'animation pour éviter le conflit shape/contenu
         .animation(.buzzFade, value: showDeltas)
         .onAppear {

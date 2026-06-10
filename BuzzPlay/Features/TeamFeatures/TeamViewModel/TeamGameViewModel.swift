@@ -280,6 +280,9 @@ extension PlayerGameViewModel {
     private func handlePublicStateChange(_ state: PublicState) {
         switch state {
         case .waiting:
+            // #15 — le classement inter-manche n'est PLUS déclenché par `.waiting` : il l'est
+            // désormais par l'état "réponse révélée" (`.quiz`/`.blindTest` avec isAnswerRevealed),
+            // commun aux deux jeux. `.waiting` ne sert que de remise à zéro.
             stopUITimer()
             formattedTime = "00:00"
             lastMasterFormattedTime = "00:00"
@@ -289,27 +292,20 @@ extension PlayerGameViewModel {
             } else {
                 currentBuzzerVM?.clearBuzzState()
             }
-            if lastAnswerWasCorrect && !previousRanking.isEmpty {
-                lastAnswerWasCorrect = false
-                // Délai calé sur la fin de l'overlay (2.6s) pour que l'animation du classement
-                // démarre uniquement quand l'overlay a disparu
-                leaderboardTask?.cancel()
-                leaderboardTask = Task { [weak self] in
-                    try? await Task.sleep(for: .seconds(2.7))
-                    guard !Task.isCancelled, let self else { return }
-                    await MainActor.run { self.showPostRoundLeaderboard = true }
-                }
-            }
         case .quiz(let quizState):
-            leaderboardTask?.cancel()
-            showPostRoundLeaderboard = false
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
             currentBuzzerVM?.countdownPhase = quizState.countdownPhase
             if quizState.isAnswerRevealed {
+                // #15 — manche terminée : la réponse reste affichée en haut (card RÉPONSE),
+                // on déclenche le classement inter-manche commun.
                 stopUITimer()
                 currentBuzzerVM?.clearBuzzState()
+                schedulePostRoundLeaderboard(isLastRound: quizState.isLastRound)
             } else {
+                // Manche active : pas de classement.
+                leaderboardTask?.cancel()
+                showPostRoundLeaderboard = false
                 // Quiz : le timer est géré exclusivement par .timerStarted / .buzzUnlock
                 // syncBuzzerState ne doit PAS appeler resumeUITimerIfNeeded ici
                 syncBuzzerState(buzzingPlayer: quizState.buzzingPlayer,
@@ -317,8 +313,6 @@ extension PlayerGameViewModel {
                                 autoResumeTimer: false)
             }
         case .blindTest(let blindTestState):
-            leaderboardTask?.cancel()
-            showPostRoundLeaderboard = false
             lastMasterFormattedTime = blindTestState.formattedTime
             // Timer piloté par .timerStarted — on ne force la valeur master que si le timer local est inactif
             // (resync à la reconnexion ou à l'onAppear), évitant les sauts visuels pendant le jeu
@@ -326,7 +320,35 @@ extension PlayerGameViewModel {
                 formattedTime = blindTestState.formattedTime
             }
             currentBuzzerVM?.countdownPhase = blindTestState.countdownPhase
+            if blindTestState.isAnswerRevealed {
+                // #15 — manche terminée : la MusicCard révélée reste affichée en haut, on
+                // déclenche le même classement inter-manche que le Quiz.
+                schedulePostRoundLeaderboard(isLastRound: blindTestState.isLastRound)
+            } else {
+                leaderboardTask?.cancel()
+                showPostRoundLeaderboard = false
+            }
             syncBuzzerState(buzzingPlayer: blindTestState.buzzingPlayer, isRoundActive: blindTestState.isPlaying)
+        }
+    }
+
+    // #15/#11 — déclencheur unique du classement inter-manche, partagé Quiz + BlindTest.
+    // Appelé quand un état "réponse révélée" arrive après une bonne réponse validée.
+    private func schedulePostRoundLeaderboard(isLastRound: Bool) {
+        guard lastAnswerWasCorrect, !previousRanking.isEmpty else { return }
+        lastAnswerWasCorrect = false
+        leaderboardTask?.cancel()
+        // #11/#C8 — dernière manche : pas de classement inter-manche, le podium final enchaîne.
+        guard !isLastRound else {
+            showPostRoundLeaderboard = false
+            return
+        }
+        // Délai calé sur la fin de l'overlay de feedback (2.6s) pour que la sheet de classement
+        // monte une fois l'overlay "Bravo" disparu.
+        leaderboardTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(2.7))
+            guard !Task.isCancelled, let self else { return }
+            await MainActor.run { self.showPostRoundLeaderboard = true }
         }
     }
 

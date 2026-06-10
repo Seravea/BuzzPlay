@@ -19,6 +19,12 @@ class QuizMasterViewModel: BuzzDrivenGame {
     var currentQuestion: QuizQuestion?
     var playerHasBuzz: Player?
 
+    // #15 — phase "réponse révélée" : après une bonne réponse validée, la question terminée
+    // reste diffusée aux Players (card RÉPONSE visible en haut) jusqu'au lancement de la manche
+    // suivante, comme l'état `.finished` du BlindTest. Découple l'état DIFFUSÉ de `currentQuestion`
+    // (que le Master remet à nil pour retourner choisir sa prochaine question).
+    var revealedQuestion: QuizQuestion?
+
     var questionsPassed: [QuizQuestion] = []
 
     var shouldAutoFinish: Bool = false
@@ -51,6 +57,7 @@ class QuizMasterViewModel: BuzzDrivenGame {
 extension QuizMasterViewModel {
     func selectQuestion(_ question: QuizQuestion) {
         currentQuestion = question
+        revealedQuestion = nil  // #15 — nouvelle manche : on quitte la phase "réponse révélée"
         playerHasBuzz = nil
         isQuestionRevealed = false
         // Reset état buzz sans broadcaster (la question serait visible avant le countdown)
@@ -97,6 +104,10 @@ extension QuizMasterViewModel {
             gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
             gameVM.addPointToPlayer(player, points: finalPoints, consumeScoreDouble: wasDoubled)
+
+            // #15 — entre en phase "réponse révélée" : la question terminée reste diffusée
+            // (card RÉPONSE + classement inter-manche) jusqu'au lancement de la manche suivante.
+            revealedQuestion = currentQuestion
 
             // #BugQ1 — l'incrément de manche + auto-finish est géré dans goToSelectNewQuestion
             goToSelectNewQuestion()
@@ -304,21 +315,42 @@ extension QuizMasterViewModel {
 //MARK: making/sending Payload to peers
 extension QuizMasterViewModel {
     func makePublicState() -> PublicState {
-        guard let question = currentQuestion else {
-            return .waiting
+        // Manche en cours : question pilotée par le Master.
+        if let question = currentQuestion {
+            return PublicState.quiz(
+                PublicQuizState(
+                    question: question,
+                    setTitle: quizSet.title,
+                    formattedTime: formattedTime,
+                    buzzingPlayer: playerHasBuzz,
+                    isAnswerRevealed: false,
+                    isHintVisible: false,
+                    countdownPhase: roundCountdownPhase,
+                    isQuestionRevealed: isQuestionRevealed,
+                    isLastRound: false
+                )
+            )
         }
 
-        return PublicState.quiz(
-            PublicQuizState(
-                question: question,
-                setTitle: quizSet.title,
-                formattedTime: formattedTime,
-                buzzingPlayer: playerHasBuzz,
-                isAnswerRevealed: false,
-                isHintVisible: false,
-                countdownPhase: roundCountdownPhase,
-                isQuestionRevealed: isQuestionRevealed
+        // #15 — phase "réponse révélée" : la question terminée reste affichée (card RÉPONSE)
+        // et déclenche le classement inter-manche côté Player, sauf sur la dernière manche
+        // de la partie (#11 — le podium final suit).
+        if let revealed = revealedQuestion {
+            return PublicState.quiz(
+                PublicQuizState(
+                    question: revealed,
+                    setTitle: quizSet.title,
+                    formattedTime: formattedTime,
+                    buzzingPlayer: nil,
+                    isAnswerRevealed: true,
+                    isHintVisible: false,
+                    countdownPhase: .hidden,
+                    isQuestionRevealed: true,
+                    isLastRound: gameVM.isGameComplete
+                )
             )
-        )
+        }
+
+        return .waiting
     }
 }

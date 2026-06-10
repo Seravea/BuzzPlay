@@ -52,15 +52,6 @@ struct BuzzerPlayerView: View {
                     .zIndex(50)
             }
 
-            if playerGameVM.showPostRoundLeaderboard {
-                PostRoundLeaderboardView(
-                    previousRanking: playerGameVM.previousRanking,
-                    currentRanking: playerGameVM.knownPlayers
-                )
-                .transition(.opacity)
-                .zIndex(80)
-            }
-
             if !playerGameVM.isConnectedToMaster {
                 if playerGameVM.hasEverConnectedToMaster {
                     ConnectionLostOverlay()
@@ -83,7 +74,18 @@ struct BuzzerPlayerView: View {
         .animation(.spring(response: 0.45, dampingFraction: 0.65), value: playerGameVM.currentBuzzerVM?.answerResult != nil)
         .animation(.spring(response: 0.5, dampingFraction: 0.75), value: playerGameVM.currentBuzzerVM?.activeHint)
         .animation(.buzzEase, value: playerGameVM.isConnectedToMaster)
-        .animation(.easeInOut(duration: 0.35), value: playerGameVM.showPostRoundLeaderboard)
+        // #15 — classement inter-manche en demi-sheet : la révélation de la réponse reste
+        // visible en haut (PublicDisplayView), le classement animé monte par-dessous.
+        .sheet(isPresented: $playerGameVM.showPostRoundLeaderboard) {
+            PostRoundLeaderboardView(
+                previousRanking: playerGameVM.previousRanking,
+                currentRanking: playerGameVM.knownPlayers
+            )
+            .presentationDetents([.fraction(0.55)])
+            .presentationDragIndicator(.hidden)
+            .presentationBackground(Color.sheetBg)
+            .interactiveDismissDisabled()
+        }
         .navigationBarBackButtonHidden()
         // #D11/#C3 — empêcher la mise en veille pendant la partie (cause de déconnexion MPC)
         .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
