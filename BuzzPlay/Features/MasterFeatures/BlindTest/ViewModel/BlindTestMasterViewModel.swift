@@ -118,6 +118,18 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
 //MARK: func and data use in the View
 extension BlindTestMasterViewModel {
 
+    // #invite-auto — l'invite des joueurs (envoi sur leur buzzer) part automatiquement à
+    // l'entrée du Blind Test ; le bouton reste actionnable pour ré-inviter un joueur en retard.
+    func invitePlayers() {
+        hasInvitedPlayers = true
+        gameVM.broadcastGameLaunch(.blindTest)
+    }
+
+    func autoInvitePlayersIfNeeded() {
+        guard !hasInvitedPlayers else { return }
+        invitePlayers()
+    }
+
     var totalNumberOfSongs: Int {
         allSongs.count
     }

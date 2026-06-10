@@ -56,6 +56,8 @@ struct QuizMasterListView: View {
             }
         }
         .animation(.spring(duration: 0.45, bounce: 0.05), value: quizMasterVM.isPlaying)
+        // #invite-auto — invite les joueurs dès l'entrée du Quiz (le bouton reste pour ré-inviter)
+        .onAppear { quizMasterVM.autoInvitePlayersIfNeeded() }
         .onChange(of: quizMasterVM.shouldAutoFinish) { _, done in
             guard done else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -116,8 +118,7 @@ private struct QuizQuestionListScreen: View {
     private var inviteButton: some View {
         let invited = quizMasterVM.hasInvitedPlayers
         return Button {
-            quizMasterVM.hasInvitedPlayers = true
-            quizMasterVM.gameVM.broadcastGameLaunch(.quiz)
+            quizMasterVM.invitePlayers()  // #invite-auto — ré-invite manuelle (joueur en retard)
         } label: {
             HStack(spacing: BuzzSpacing.sm) {
                 Image(systemName: invited ? "checkmark.circle.fill" : "person.wave.2.fill")
@@ -125,7 +126,7 @@ private struct QuizQuestionListScreen: View {
                 Text(invited ? "Joueurs invités" : "Inviter les joueurs")
                     .font(.nohemi(.subheadline, weight: .bold))
                 Spacer()
-                Text(invited ? "Prêts à buzzer" : "Obligatoire avant de jouer")
+                Text(invited ? "Appuyer pour ré-inviter" : "Auto — ou appuyer ici")
                     .font(.nohemi(.caption2, weight: .regular))
                     .foregroundStyle(.white.opacity(invited ? 0.5 : 0.65))
             }
