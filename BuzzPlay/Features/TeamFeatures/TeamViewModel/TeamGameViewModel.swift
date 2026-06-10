@@ -64,6 +64,10 @@ final class PlayerGameViewModel {
     // MARK: - Reconnect auto
     private var reconnectTimer: Timer?
 
+    // MARK: - Décompte 3-2-1-GO local (#countdown-sync)
+    private var localCountdownTask: Task<Void, Never>?
+    private var isLocalCountdownActive = false
+
     init(player: Player, mpc: MPCService) {
         self.player = player
         self.mpc = mpc
@@ -169,27 +173,17 @@ extension PlayerGameViewModel {
             currentBuzzerVM?.unLockBuzz()
 
         case .updatedPlayer(let updatedPlayer):
-            if updatedPlayer.id == self.player.id {
-                let delta = updatedPlayer.accountAmount - self.player.accountAmount
-                if delta > 0 { pendingNotesToast = delta }
-                let wasBlocked = self.player.blockedFromBuzzing
-                self.player = updatedPlayer
-                currentBuzzerVM?.player = updatedPlayer
-                // #C5 — gift block séparé du buzz lock global pour permettre le unlock correct
-                if updatedPlayer.blockedFromBuzzing {
-                    currentBuzzerVM?.setGiftBlock(true)
-                } else if wasBlocked {
-                    currentBuzzerVM?.setGiftBlock(false)
-                }
-            }
-            // #10 — dédoublonnage par id OU nom : à la reconnexion l'UUID peut changer
-            // (le nom est la clé stable côté Master) → évite qu'un joueur revenu apparaisse
-            // deux fois dans le classement quand le roster complet est rediffusé.
-            if let idx = knownPlayers.firstIndex(where: { $0.id == updatedPlayer.id || $0.name == updatedPlayer.name }) {
-                knownPlayers[idx] = updatedPlayer
-            } else {
-                knownPlayers.append(updatedPlayer)
-            }
+            applyPlayerUpdate(updatedPlayer)
+
+        case .rosterUpdate(let roster):
+            // Liste des joueurs complète en UN message (avant : N × updatedPlayer) —
+            // même logique de merge que updatedPlayer pour chaque entrée.
+            roster.forEach { applyPlayerUpdate($0) }
+
+        case .countdownStarted(let payload):
+            startLocalCountdown(masterTimestamp: payload.masterTimestamp,
+                                startCount: payload.startCount)
+
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
             hasPartyStarted = true  // reconnexion après kill app : la partie est déjà lancée
@@ -300,7 +294,12 @@ extension PlayerGameViewModel {
         case .quiz(let quizState):
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
-            currentBuzzerVM?.countdownPhase = quizState.countdownPhase
+            // #countdown-sync — pendant un décompte local (countdownStarted reçu), ne pas
+            // laisser un publicUpdate écraser la phase calculée sur l'horloge locale.
+            // Le payload reste le fallback pour une reconnexion mid-countdown.
+            if !isLocalCountdownActive {
+                currentBuzzerVM?.countdownPhase = quizState.countdownPhase
+            }
             if quizState.isAnswerRevealed {
                 // #15 — manche terminée : la réponse reste affichée en haut (card RÉPONSE),
                 // on déclenche le classement inter-manche commun.
@@ -324,7 +323,10 @@ extension PlayerGameViewModel {
             if timer == nil {
                 formattedTime = blindTestState.formattedTime
             }
-            currentBuzzerVM?.countdownPhase = blindTestState.countdownPhase
+            // #countdown-sync — même garde-fou que le Quiz (voir plus haut).
+            if !isLocalCountdownActive {
+                currentBuzzerVM?.countdownPhase = blindTestState.countdownPhase
+            }
             if blindTestState.isAnswerRevealed {
                 // #15 — manche terminée : la MusicCard révélée reste affichée en haut, on
                 // déclenche le même classement inter-manche que le Quiz.
@@ -359,6 +361,69 @@ extension PlayerGameViewModel {
 
     func syncBuzzerWithCurrentPublicState() {
         handlePublicStateChange(publicState)
+    }
+
+    /// Applique une mise à jour de joueur (soi-même ou un autre) — partagé entre
+    /// .updatedPlayer (unitaire) et .rosterUpdate (liste des joueurs complète).
+    private func applyPlayerUpdate(_ updatedPlayer: Player) {
+        if updatedPlayer.id == self.player.id {
+            let delta = updatedPlayer.accountAmount - self.player.accountAmount
+            if delta > 0 { pendingNotesToast = delta }
+            let wasBlocked = self.player.blockedFromBuzzing
+            self.player = updatedPlayer
+            currentBuzzerVM?.player = updatedPlayer
+            // #C5 — gift block séparé du buzz lock global pour permettre le unlock correct
+            if updatedPlayer.blockedFromBuzzing {
+                currentBuzzerVM?.setGiftBlock(true)
+            } else if wasBlocked {
+                currentBuzzerVM?.setGiftBlock(false)
+            }
+        }
+        // #10 — dédoublonnage par id OU nom : à la reconnexion l'UUID peut changer
+        // (le nom est la clé stable côté Master) → évite qu'un joueur revenu apparaisse
+        // deux fois dans le classement quand le roster complet est rediffusé.
+        if let idx = knownPlayers.firstIndex(where: { $0.id == updatedPlayer.id || $0.name == updatedPlayer.name }) {
+            knownPlayers[idx] = updatedPlayer
+        } else {
+            knownPlayers.append(updatedPlayer)
+        }
+    }
+
+    // #countdown-sync — décompte 3-2-1-GO calculé sur l'horloge locale depuis le timestamp
+    // du Master (même principe que timerStarted #T2) : l'affichage est synchrone sur tous
+    // les téléphones, plus de jitter de broadcast par phase. Purement visuel — le
+    // déverrouillage du buzzer reste piloté par .buzzUnlock (autorité Master).
+    private func startLocalCountdown(masterTimestamp: TimeInterval, startCount: Int) {
+        localCountdownTask?.cancel()
+        isLocalCountdownActive = true
+        localCountdownTask = Task { @MainActor [weak self] in
+            // Durées identiques à runCountdown côté Master : 1s par chiffre + 0.8s de GO.
+            let tick: TimeInterval = 1.0
+            let goFlash: TimeInterval = 0.8
+            let countingTotal = TimeInterval(startCount) * tick
+            while !Task.isCancelled {
+                guard let self else { return }
+                let elapsed = Date().timeIntervalSince1970 - masterTimestamp
+                if elapsed < 0 {
+                    // Horloge locale en avance sur celle du Master — attendre le vrai départ.
+                    try? await Task.sleep(for: .seconds(-elapsed))
+                } else if elapsed < countingTotal {
+                    let phaseIndex = Int(elapsed / tick)
+                    self.currentBuzzerVM?.countdownPhase = .counting(startCount - phaseIndex)
+                    // Dort jusqu'à la frontière de la phase suivante.
+                    try? await Task.sleep(for: .seconds(max(0.02, TimeInterval(phaseIndex + 1) * tick - elapsed)))
+                } else if elapsed < countingTotal + goFlash {
+                    self.currentBuzzerVM?.countdownPhase = .go
+                    try? await Task.sleep(for: .seconds(max(0.02, countingTotal + goFlash - elapsed)))
+                } else {
+                    self.currentBuzzerVM?.countdownPhase = .hidden
+                    self.isLocalCountdownActive = false
+                    return
+                }
+            }
+            // Sorti par annulation (nouveau décompte lancé) : ne pas écraser le flag
+            // que le nouveau décompte vient de poser.
+        }
     }
 
     // Démarre le timer local en miroir du Master.
