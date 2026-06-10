@@ -104,7 +104,7 @@ struct CreateTeamView: View {
                     text: $createTeamVM.pseudo,
                     prompt: Text("Ton pseudo").foregroundStyle(.white.opacity(0.30))
                 )
-                .font(.nohemi(.title3, weight: .bold))
+                .font(.nohemi(.title3, weight: .bold)).titleTracking()
                 .foregroundStyle(.white)
                 .focused($pseudoFocused)
                 .submitLabel(.done)

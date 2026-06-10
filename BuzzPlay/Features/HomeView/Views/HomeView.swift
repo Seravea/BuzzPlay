@@ -182,7 +182,7 @@ private struct MasterConfirmOverlay: View {
                         ))
 
                     Text("Prêt à mener la danse ?")
-                        .font(.nohemi(.title2, weight: .extraBold))
+                        .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.center)
 

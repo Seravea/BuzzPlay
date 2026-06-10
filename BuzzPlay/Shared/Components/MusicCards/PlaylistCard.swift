@@ -27,7 +27,7 @@ struct PlaylistCard: View {
             VStack(alignment: .leading) {
                 Text(playlist.name)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.nohemi(.title3, weight: .bold))
+                    .font(.nohemi(.title3, weight: .bold)).titleTracking()
                 if let trackCount = playlist.trackCount, let curator = playlist.curator {
                     Text("\(trackCount) morceaux")
                     Text("par \(curator)")

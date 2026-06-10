@@ -30,7 +30,7 @@ struct GamePausedOverlay: View {
 
                 VStack(spacing: BuzzSpacing.sm) {
                     Text("Partie en pause")
-                        .font(.nohemi(.title2, weight: .bold))
+                        .font(.nohemi(.title2, weight: .bold)).titleTracking()
                         .foregroundStyle(.white)
 
                     if let name = playerName {

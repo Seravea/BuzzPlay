@@ -17,7 +17,7 @@ struct ConnectionLostOverlay: View {
                     .foregroundStyle(.white)
 
                 Text("Connexion perdue")
-                    .font(.nohemi(.title2, weight: .bold))
+                    .font(.nohemi(.title2, weight: .bold)).titleTracking()
                     .foregroundStyle(.white)
 
                 Text("Reconnexion en cours…")

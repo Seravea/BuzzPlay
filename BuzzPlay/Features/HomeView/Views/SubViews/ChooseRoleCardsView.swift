@@ -19,7 +19,7 @@ struct ChooseRoleCardsView: View {
                         .foregroundStyle(roleButtonUI.linearGradient)
                 )
             Text(roleButtonUI.displayNameText)
-                .font(.nohemi(.title, weight: .bold))
+                .font(.nohemi(.title, weight: .bold)).titleTracking()
             Text(roleButtonUI.displayDescText)
                 .multilineTextAlignment(.center)
                 .font(.nohemi(.body))

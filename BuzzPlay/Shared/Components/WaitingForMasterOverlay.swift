@@ -41,7 +41,7 @@ struct WaitingForMasterOverlay: View {
 
                 VStack(spacing: BuzzSpacing.sm) {
                     Text("En attente du Maître")
-                        .font(.nohemi(.title2, weight: .bold))
+                        .font(.nohemi(.title2, weight: .bold)).titleTracking()
                         .foregroundStyle(.white)
 
                     Text("Le Maître doit lancer la partie\ndepuis son appareil")

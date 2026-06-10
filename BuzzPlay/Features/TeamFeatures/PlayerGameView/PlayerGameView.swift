@@ -185,7 +185,7 @@ private struct GameAnnounceSheet: View {
                             .font(.nohemi(.subheadline, weight: .regular))
                             .foregroundStyle(Color.textSecondary)
                         Text(game.gameTitle)
-                            .font(.nohemi(.title2, weight: .extraBold))
+                            .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                             .foregroundStyle(.white)
                     }
 
@@ -269,7 +269,7 @@ private struct PlayerPodiumSheet: View {
                         .tracking(0.8)
                         .foregroundStyle(Color.textMuted)
                     Text("Classement final")
-                        .font(.nohemi(.title, weight: .extraBold))
+                        .font(.nohemi(.title, weight: .extraBold)).titleTracking()
                         .foregroundStyle(.white)
                 }
                 .padding(.top, BuzzSpacing.xxxl)
@@ -335,7 +335,7 @@ private struct PlayerPodiumSheet: View {
                     .font(.nohemi(.caption, weight: .medium))
                     .foregroundStyle(Color.textSecondary)
                 Text("\(rank)\(rankSuffix(rank)) place")
-                    .font(.nohemi(.title3, weight: .extraBold))
+                    .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
                     .foregroundStyle(.white)
             }
 
@@ -343,7 +343,7 @@ private struct PlayerPodiumSheet: View {
 
             VStack(alignment: .trailing, spacing: 2) {
                 Text("\(player.score)")
-                    .font(.nohemi(.title2, weight: .black))
+                    .font(.nohemi(.title2, weight: .black)).titleTracking()
                     .foregroundStyle(player.teamColor.color)
                 Text("points")
                     .font(.nohemi(.caption2, weight: .medium))

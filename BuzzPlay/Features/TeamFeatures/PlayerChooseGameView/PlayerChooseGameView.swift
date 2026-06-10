@@ -93,7 +93,7 @@ struct PlayerChooseGameView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text("La partie démarre dès\nque l'hôte lance.")
-                .font(.nohemi(.title2, weight: .black))
+                .font(.nohemi(.title2, weight: .black)).titleTracking()
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .lineSpacing(2)
@@ -109,7 +109,7 @@ struct PlayerChooseGameView: View {
                 .frame(width: 52, height: 52)
                 .overlay(
                     Text(String(playerGameVM.player.name.prefix(1)).uppercased())
-                        .font(.nohemi(.title3, weight: .black))
+                        .font(.nohemi(.title3, weight: .black)).titleTracking()
                         .foregroundStyle(.white)
                 )
 

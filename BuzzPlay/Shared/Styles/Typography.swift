@@ -12,14 +12,15 @@ import SwiftUI
 extension Typography {
 
     // MARK: Screen titles — grands titres de vue
-    static let screenTitle      = Token(.title,        weight: .bold,     tracking: 0.2)   // ~28pt bold
-    static let screenTitleSoft  = Token(.title,        weight: .medium)                    // ~28pt medium
+    // #2 — titres gras routés vers la constante centrale Typography.titleTracking (réglage device).
+    static let screenTitle      = Token(.title,        weight: .bold,     tracking: titleTracking)   // ~28pt bold
+    static let screenTitleSoft  = Token(.title,        weight: .medium)                              // ~28pt medium
 
     // MARK: Section & card headers
-    static let sectionTitle     = Token(.title2,       weight: .semiBold, tracking: 0.1)   // ~22pt semiBold
-    static let sectionTitleSoft = Token(.title2,       weight: .medium)                    // ~22pt medium
-    static let cardTitle        = Token(.title3,       weight: .semiBold)                  // ~20pt semiBold
-    static let cardTitleBold    = Token(.title3,       weight: .bold)                      // ~20pt bold
+    static let sectionTitle     = Token(.title2,       weight: .semiBold, tracking: titleTracking)   // ~22pt semiBold
+    static let sectionTitleSoft = Token(.title2,       weight: .medium)                              // ~22pt medium
+    static let cardTitle        = Token(.title3,       weight: .semiBold, tracking: titleTracking)   // ~20pt semiBold
+    static let cardTitleBold    = Token(.title3,       weight: .bold,     tracking: titleTracking)   // ~20pt bold
 
     // MARK: Labels
     static let labelXL          = Token(.headline,     weight: .semiBold)                  // ~17pt semiBold

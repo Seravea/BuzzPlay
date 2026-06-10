@@ -73,7 +73,7 @@ struct EmptyStateView: View {
                 .foregroundStyle(.white.opacity(0.3))
 
             Text(title)
-                .font(.nohemi(.title2, weight: .bold))
+                .font(.nohemi(.title2, weight: .bold)).titleTracking()
                 .foregroundStyle(.white)
 
             Text(message)

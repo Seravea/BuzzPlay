@@ -40,7 +40,7 @@ struct SectionCompleteOverlay: View {
 
                 VStack(spacing: BuzzSpacing.sm) {
                     Text("\(gameTitle) terminé !")
-                        .font(.nohemi(.title2, weight: .extraBold))
+                        .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                         .foregroundStyle(.white)
 
                     Text("\(roundsDone) manche\(roundsDone > 1 ? "s" : "") jouée\(roundsDone > 1 ? "s" : "")")

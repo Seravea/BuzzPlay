@@ -156,7 +156,7 @@ private struct QuizQuestionListScreen: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(quizMasterVM.quizSet.title)
-                        .font(.nohemi(.title2, weight: .extraBold))
+                        .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                         .foregroundStyle(.white)
                     Text("\(quizMasterVM.questions.count) questions · \(quizMasterVM.gameVM.players.count) équipes")
                         .font(.nohemi(.subheadline, weight: .regular))
@@ -302,7 +302,7 @@ struct QuizValidationOverlay: View {
                         Text("✅")
                             .font(.system(size: 56))
                         Text("+\(points)")
-                            .font(.nohemi(.largeTitle, weight: .black))
+                            .font(.nohemi(.largeTitle, weight: .black)).titleTracking()
                             .foregroundStyle(Color.greenGlow)
                             .tracking(1)
                     }

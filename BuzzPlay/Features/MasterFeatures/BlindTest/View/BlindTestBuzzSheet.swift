@@ -29,7 +29,7 @@ struct BlindTestBuzzSheet: View {
                     .frame(width: 46, height: 46)
                     .overlay(
                         Text(String(player.name.prefix(1)))
-                            .font(.nohemi(.title3, weight: .bold))
+                            .font(.nohemi(.title3, weight: .bold)).titleTracking()
                             .foregroundStyle(.white)
                     )
 
@@ -106,7 +106,7 @@ struct BlindTestBuzzSheet: View {
         } label: {
             VStack(spacing: 2) {
                 Text("+\(points)")
-                    .font(.nohemi(.title3, weight: .extraBold))
+                    .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
                 Text("\(responses) réponse\(responses > 1 ? "s" : "")")
                     .font(.nohemi(.caption2, weight: .semiBold))
                     .opacity(0.7)

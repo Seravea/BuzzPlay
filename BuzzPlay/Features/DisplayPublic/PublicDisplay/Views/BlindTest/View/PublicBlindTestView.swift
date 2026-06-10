@@ -54,7 +54,7 @@ struct PublicBlindTestView: View {
                         .symbolEffect(.variableColor.iterative)
 
                     Text(BlindTestHints.phrases[state.hintIndex % BlindTestHints.phrases.count])
-                        .font(.nohemi(.title3, weight: .semiBold))
+                        .font(.nohemi(.title3, weight: .semiBold)).titleTracking()
                         .foregroundStyle(.white.opacity(0.85))
                         .multilineTextAlignment(.center)
                         .lineLimit(2)

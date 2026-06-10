@@ -47,7 +47,7 @@ struct WaitingLobbyView: View {
                 .frame(width: 56, height: 56)
                 .overlay(
                     Text(String(me.name.prefix(1)).uppercased())
-                        .font(.nohemi(.title3, weight: .black))
+                        .font(.nohemi(.title3, weight: .black)).titleTracking()
                         .foregroundStyle(.white)
                 )
                 .shadow(color: buzzColor.color.opacity(0.5), radius: 10)
