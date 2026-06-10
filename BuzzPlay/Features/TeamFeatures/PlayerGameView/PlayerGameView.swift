@@ -30,7 +30,17 @@ struct PlayerGameView: View {
             GameAnnounceSheet(game: currentGameType)
         }
         .sheet(isPresented: $showInterGameScore) {
-            InterGameScoreSheet(players: playerGameVM.knownPlayers)
+            // #B2 — inter-jeu : même classement animé que l'inter-manche, avec un
+            // sous-titre contextuel ("Quiz terminé" / "Blind Test terminé").
+            PostRoundLeaderboardView(
+                previousRanking: playerGameVM.knownPlayers,
+                currentRanking: playerGameVM.knownPlayers,
+                headline: "\(currentGameType.gameTitle) terminé"
+            )
+            .presentationDetents([.fraction(0.55)])
+            .presentationDragIndicator(.hidden)
+            .presentationBackground(Color.sheetBg)
+            .interactiveDismissDisabled()
         }
         .sheet(isPresented: $showPodium) {
             PlayerPodiumSheet(
@@ -228,108 +238,6 @@ private struct GameAnnounceSheet: View {
                 progress = CGFloat(countdown - 1) / 3.0
             }
         }
-    }
-}
-
-// MARK: - Sheet 2 : Score inter-jeux
-
-private struct InterGameScoreSheet: View {
-    let players: [Player]
-
-    private var sortedPlayers: [Player] {
-        players.sorted { $0.score > $1.score }
-    }
-    private var maxScore: Int {
-        sortedPlayers.first?.score ?? 1
-    }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            RoundedRectangle(cornerRadius: BuzzRadius.pill)
-                .fill(.white.opacity(0.2))
-                .frame(width: 36, height: 4)
-                .padding(.top, BuzzSpacing.lg)
-                .padding(.bottom, BuzzSpacing.xl)
-
-            VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
-                Text("SCORES")
-                    .font(.nohemi(.caption2, weight: .bold))
-                    .tracking(0.8)
-                    .foregroundStyle(Color.textMuted)
-                Text("Classement actuel")
-                    .font(.nohemi(.title2, weight: .extraBold))
-                    .foregroundStyle(.white)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, BuzzSpacing.xl)
-            .padding(.bottom, BuzzSpacing.lg)
-
-            Divider().overlay(Color.white.opacity(0.08))
-
-            ScrollView {
-                VStack(spacing: BuzzSpacing.sm) {
-                    ForEach(Array(sortedPlayers.enumerated()), id: \.element.id) { index, player in
-                        scoreRow(rank: index + 1, player: player)
-                    }
-                }
-                .padding(BuzzSpacing.lg)
-            }
-
-            PlayerPulsingPill(text: "En attente du prochain jeu…")
-                .padding(.vertical, BuzzSpacing.lg)
-        }
-        .foregroundStyle(.white)
-        .background(Color.sheetBg)
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.hidden)
-        .presentationBackground(Color.sheetBg)
-        .interactiveDismissDisabled()
-    }
-
-    private func scoreRow(rank: Int, player: Player) -> some View {
-        HStack(spacing: BuzzSpacing.md) {
-            Text("#\(rank)")
-                .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(Color.textMuted)
-                .frame(width: 28, alignment: .leading)
-
-            Circle()
-                .fill(player.teamColor.gradient)
-                .frame(width: 38, height: 38)
-                .overlay(
-                    Text(String(player.name.prefix(1)).uppercased())
-                        .font(.nohemi(.callout, weight: .black))
-                        .foregroundStyle(.white)
-                )
-
-            VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
-                Text(player.name)
-                    .font(.nohemi(.subheadline, weight: .bold))
-                    .foregroundStyle(.white)
-
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Capsule().fill(.white.opacity(0.08)).frame(height: 4)
-                        let ratio = maxScore > 0 ? CGFloat(player.score) / CGFloat(maxScore) : 0
-                        Capsule()
-                            .fill(player.teamColor.color.opacity(0.85))
-                            .frame(width: geo.size.width * ratio, height: 4)
-                    }
-                }
-                .frame(height: 4)
-            }
-
-            Spacer()
-
-            Text("\(player.score) pts")
-                .font(.nohemi(.callout, weight: .extraBold))
-                .foregroundStyle(.white)
-                .monospacedDigit()
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, BuzzSpacing.md)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
-        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.md).strokeBorder(.white.opacity(0.08), lineWidth: 1))
     }
 }
 

@@ -346,7 +346,9 @@ extension QuizMasterViewModel {
                     isHintVisible: false,
                     countdownPhase: .hidden,
                     isQuestionRevealed: true,
-                    isLastRound: gameVM.isGameComplete
+                    // #B2 — dernière manche DU JEU (pas de la partie) : l'inter-manche se tait,
+                    // l'inter-jeu (.score) ou le podium final prend le relais (plus de double-sheet).
+                    isLastRound: !gameVM.isQuizAvailable
                 )
             )
         }
