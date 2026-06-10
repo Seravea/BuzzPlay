@@ -9,6 +9,7 @@ import Foundation
 import Observation
 import MultipeerConnectivity
 import UIKit
+import AVFoundation
 
 
 // MARK: - Game Config Enums
@@ -86,6 +87,11 @@ final class MasterFlowViewModel {
         players.removeAll { $0.name == name }
         readyPlayers.remove(name)
         if disconnectedPlayerName == name { disconnectedPlayerName = nil }
+        // Hygiène : purger aussi l'état heartbeat/reco du joueur retiré définitivement.
+        lastSeen.removeValue(forKey: name)
+        lastRejoinRequest.removeValue(forKey: name)
+        disconnectDebounce[name]?.cancel()
+        disconnectDebounce.removeValue(forKey: name)
     }
     
     var mpcService: MPCService = MPCService(peerName: MPCService.masterPeerName, role: .master)
@@ -481,7 +487,7 @@ extension MasterFlowViewModel {
                 // Heartbeat : tout message reçu (dont pong) prouve que le peer est vivant.
                 self.lastSeen[peer.displayName] = Date()
                 do {
-                    let message = try JSONDecoder().decode(MPCMessage.self, from: data)
+                    let message = try MPCService.jsonDecoder.decode(MPCMessage.self, from: data)
                     self.handle(message: message, from: peer)
                 } catch {
                     print("MASTER: message reçus inconnu de : \(peer.displayName)")
@@ -564,6 +570,11 @@ extension MasterFlowViewModel {
             guard let self else { return }
             self.mpcService.stopHosting()
             self.resetSessionState()
+            // Libère la session audio (jamais désactivée sinon → retient le hardware audio
+            // après la partie). En détaché : setActive peut bloquer sur le routing Bluetooth.
+            Task.detached {
+                try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            }
         }
     }
 

@@ -17,6 +17,10 @@ enum MPCRole {
 final class MPCService: NSObject {
     //MARK: MPC Session datas
     static let serviceTypeID = "buzzplay-game"
+    /// Encodeur/décodeur JSON partagés — évite une allocation par message MPC
+    /// (10-20 messages/s en pic : heartbeat, broadcasts d'état, buzz).
+    static let jsonEncoder = JSONEncoder()
+    static let jsonDecoder = JSONDecoder()
     /// Nom du peer Master (source unique). Permet aux Players de distinguer le Master
     /// des autres Players dans le maillage MCSession (#7b).
     static let masterPeerName = "Master"
@@ -332,7 +336,7 @@ extension MPCService {
         }
 
         do {
-            let data = try JSONEncoder().encode(message)
+            let data = try Self.jsonEncoder.encode(message)
             try session.send(data, toPeers: session.connectedPeers, with: .reliable)
         } catch {
             let mpcError = MPCError.sendFailed(underlying: error)
@@ -348,7 +352,7 @@ extension MPCService {
             return
         }
         do {
-            let data = try JSONEncoder().encode(message)
+            let data = try Self.jsonEncoder.encode(message)
             try session.send(data, toPeers: [peer], with: .reliable)
         } catch {
             let mpcError = MPCError.sendFailed(underlying: error)
@@ -366,7 +370,7 @@ extension MPCService {
         // avec le peer vivant sous le même nom. On envoie à TOUS les matches : le zombie
         // ignore (il est mort), le vivant reçoit. Évite que le message parte dans le vide.
         do {
-            let data = try JSONEncoder().encode(message)
+            let data = try Self.jsonEncoder.encode(message)
             try session.send(data, toPeers: matches, with: .reliable)
         } catch {
             let mpcError = MPCError.sendFailed(underlying: error)

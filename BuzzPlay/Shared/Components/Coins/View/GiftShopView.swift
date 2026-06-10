@@ -479,6 +479,12 @@ struct SoundPickerSheet: View {
                 startPoint: .top, endPoint: .bottom
             )
         )
+        // Hygiène : stoppe le préview audio si la sheet est fermée en pleine lecture
+        // (sinon l'AVAudioPlayer continue de jouer en arrière-plan).
+        .onDisappear {
+            previewPlayer?.stop()
+            previewPlayer = nil
+        }
     }
 
     private func playPreview(_ soundName: String) {
