@@ -147,7 +147,7 @@ extension BuzzerViewModel {
     func showAnswerResult(_ result: AnswerResult) {
         answerResult = result
         Task { @MainActor [weak self] in
-            try? await Task.sleep(for: .seconds(1.5))
+            try? await Task.sleep(for: GameRhythm.answerOverlay)
             self?.answerResult = nil
             self?.lockBuzz(teamNameHasBuzz: "")
         }
@@ -169,7 +169,7 @@ extension BuzzerViewModel {
                     timer.invalidate()
                     self.countdownTimer = nil
                     self.countdownPhase = .go
-                    try? await Task.sleep(for: .milliseconds(800))
+                    try? await Task.sleep(for: GameRhythm.goFlash)
                     self.countdownPhase = .hidden
                     self.unLockBuzz()
                 }

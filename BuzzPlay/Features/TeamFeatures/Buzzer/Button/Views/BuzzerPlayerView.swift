@@ -95,7 +95,7 @@ struct BuzzerPlayerView: View {
                 NotesToastView(amount: notes)
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + GameRhythm.notesToast) {
                             withAnimation(.buzzSlide) {
                                 playerGameVM.pendingNotesToast = nil
                             }
@@ -107,7 +107,7 @@ struct BuzzerPlayerView: View {
         .task {
             // Délai pour laisser la transition de navigation se terminer
             // avant d'envoyer playerReady (#A5)
-            try? await Task.sleep(for: .milliseconds(600))
+            try? await Task.sleep(for: GameRhythm.playerReadyFirst)
             playerGameVM.syncBuzzerWithCurrentPublicState()
             playerGameVM.sendPlayerReady()
         }

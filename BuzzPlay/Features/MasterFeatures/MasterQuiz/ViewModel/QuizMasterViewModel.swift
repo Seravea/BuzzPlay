@@ -128,11 +128,11 @@ extension QuizMasterViewModel {
         // Diffusé via countdownPhase → le stateLabel du buzzer affiche "Prochain buzz dans… N".
         // Le CountdownOverlay plein écran est supprimé côté Player quand la question est révélée,
         // donc seul le décompte sous le buzzer apparaît. On attend la fin de l'overlay
-        // "Mauvaise réponse" (1.5s) avant de lancer le décompte.
+        // "Mauvaise réponse" (GameRhythm.answerOverlay) avant de lancer le décompte.
         countdownTask?.cancel()
         countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
-            try? await Task.sleep(for: .milliseconds(1500))
+            try? await Task.sleep(for: GameRhythm.rejectResumeDelay)
             guard !Task.isCancelled else { return }
             await runCountdown(
                 startCount: 2,
