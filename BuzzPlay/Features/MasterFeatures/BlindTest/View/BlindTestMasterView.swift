@@ -35,6 +35,8 @@ struct BlindTestMasterView: View {
                 .zIndex(200)
             }
         }
+        // #invite-auto — invite les joueurs dès l'entrée du Blind Test (le bouton reste pour ré-inviter)
+        .onAppear { blindTestViewModel.autoInvitePlayersIfNeeded() }
         .onChange(of: blindTestViewModel.shouldAutoFinish) { _, done in
             guard done else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {

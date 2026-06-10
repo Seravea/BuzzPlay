@@ -85,8 +85,7 @@ struct BlindTestSearchScreen: View {
     private var launchButton: some View {
         let invited = blindTestVM.hasInvitedPlayers
         return Button {
-            blindTestVM.hasInvitedPlayers = true
-            blindTestVM.gameVM.broadcastGameLaunch(.blindTest)
+            blindTestVM.invitePlayers()  // #invite-auto — ré-invite manuelle (joueur en retard)
         } label: {
             HStack(spacing: BuzzSpacing.sm) {
                 Image(systemName: invited ? "checkmark.circle.fill" : "person.wave.2.fill")
@@ -94,7 +93,7 @@ struct BlindTestSearchScreen: View {
                 Text(invited ? "Joueurs invités" : "Inviter les joueurs")
                     .font(.nohemi(.subheadline, weight: .bold))
                 Spacer()
-                Text(invited ? "Prêts à buzzer" : "Obligatoire avant de jouer")
+                Text(invited ? "Appuyer pour ré-inviter" : "Auto — ou appuyer ici")
                     .font(.nohemi(.caption2, weight: .regular))
                     .foregroundStyle(.white.opacity(invited ? 0.5 : 0.65))
             }

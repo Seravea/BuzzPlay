@@ -257,6 +257,18 @@ extension QuizMasterViewModel {
     }
     
     
+    // #invite-auto — l'invite des joueurs (envoi sur leur buzzer) part automatiquement à
+    // l'entrée du Quiz ; le bouton reste actionnable pour ré-inviter un joueur en retard.
+    func invitePlayers() {
+        hasInvitedPlayers = true
+        gameVM.broadcastGameLaunch(.quiz)
+    }
+
+    func autoInvitePlayersIfNeeded() {
+        guard !hasInvitedPlayers else { return }
+        invitePlayers()
+    }
+
     func quizButtonDisabled(question: QuizQuestion) -> Bool {
         if !hasInvitedPlayers { return true }
         if isPlaying { return true }
