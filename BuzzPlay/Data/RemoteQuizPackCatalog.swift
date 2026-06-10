@@ -35,7 +35,7 @@ private struct RemoteSetJSON: Decodable {
     let questions: [RemoteQuestionJSON]
 }
 
-// Même format de question que quiz_sets.json (QuizJSONLoader)
+// Format de question (historiquement celui de l'ex-quiz_sets.json local)
 private struct RemoteQuestionJSON: Decodable {
     let question: String
     let answers: [String]

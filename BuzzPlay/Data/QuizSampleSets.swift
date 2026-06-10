@@ -466,9 +466,10 @@ enum QuizSamples {
         setPopFR, setRock, setRapFR, setElectro
     ]
 
+    // #v1-packs — le JSON local (quiz_sets.json + QuizJSONLoader) est SUPPRIMÉ :
+    // ce contenu vit désormais dans le catalogue distant (Seravea/buzzplay-packs,
+    // packs gratuits + premium). Base gratuite in-app = ces sets curatés + l'IA.
     static func sets(for theme: QuizTheme) -> [QuizSet] {
-        let hardcoded = allSets.filter { $0.theme == theme }
-        let fromJSON = QuizJSONLoader.sets(for: theme)
-        return hardcoded + fromJSON
+        allSets.filter { $0.theme == theme }
     }
 }
