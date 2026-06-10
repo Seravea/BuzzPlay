@@ -14,6 +14,12 @@ struct BlindTestActiveScreen: View {
 
     var buzzedPlayer: Player? { blindTestVM.playerHasBuzz }
 
+    // #audio-bt-nudge — rappel « branche une enceinte » au lancement (la musique ne joue que
+    // sur l'appareil Master). Pur UI : la sortie audio AirPlay/Bluetooth est gérée au système.
+    @State private var showSpeakerNudge = false
+    @State private var hasShownSpeakerNudge = false
+    @State private var nudgeTask: Task<Void, Never>?
+
     var body: some View {
         ZStack(alignment: .bottom) {
             VStack(spacing: 14) {
@@ -49,9 +55,65 @@ struct BlindTestActiveScreen: View {
         }
         .animation(.spring(duration: 0.4, bounce: 0.05), value: buzzedPlayer != nil)
         .animation(.buzzFade, value: blindTestVM.roundCountdownPhase)
+        .overlay(alignment: .top) {
+            if showSpeakerNudge {
+                speakerNudge
+                    .padding(.top, BuzzSpacing.sm)
+                    .padding(.horizontal, BuzzSpacing.xl)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .zIndex(150)
+            }
+        }
         // #D11/#C3 — empêcher la veille iPhone pendant la partie
-        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
-        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
+        .onAppear {
+            UIApplication.shared.isIdleTimerDisabled = true
+            showSpeakerNudgeOnce()
+        }
+        .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
+            nudgeTask?.cancel()
+        }
+    }
+
+    // MARK: - Nudge enceinte (#audio-bt-nudge)
+
+    private var speakerNudge: some View {
+        HStack(spacing: BuzzSpacing.sm) {
+            Image(systemName: "airplayaudio")
+                .font(.footnote)
+                .foregroundStyle(Color.mustardYellow)
+            Text("Branche une enceinte ou AirPlay pour l'ambiance 🔊")
+                .font(.nohemi(.caption, weight: .semiBold))
+                .foregroundStyle(.white)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: BuzzSpacing.sm)
+            Image(systemName: "xmark")
+                .font(.caption2)
+                .foregroundStyle(.white.opacity(0.55))
+        }
+        .padding(.horizontal, BuzzSpacing.md)
+        .padding(.vertical, BuzzSpacing.sm)
+        .glassCardMedium(radius: BuzzRadius.lg)
+        .contentShape(Rectangle())
+        .onTapGesture { dismissSpeakerNudge() }
+    }
+
+    // Affiche le nudge une seule fois par lancement de partie, auto-dismiss après 6s.
+    private func showSpeakerNudgeOnce() {
+        guard !hasShownSpeakerNudge else { return }
+        hasShownSpeakerNudge = true
+        withAnimation(.buzzFade) { showSpeakerNudge = true }
+        nudgeTask?.cancel()
+        nudgeTask = Task { @MainActor in
+            try? await Task.sleep(for: .seconds(6))
+            guard !Task.isCancelled else { return }
+            withAnimation(.buzzFade) { showSpeakerNudge = false }
+        }
+    }
+
+    private func dismissSpeakerNudge() {
+        nudgeTask?.cancel()
+        withAnimation(.buzzFade) { showSpeakerNudge = false }
     }
 
     private var timerHero: some View {
