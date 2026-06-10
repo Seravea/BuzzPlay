@@ -63,10 +63,7 @@ extension QuizMasterViewModel {
         // Reset état buzz sans broadcaster (la question serait visible avant le countdown)
         gameVM.currentBuzzPlayer = nil
         gameVM.isBuzzLocked = false
-        for i in gameVM.players.indices where gameVM.players[i].blockedFromBuzzing {
-            gameVM.players[i].blockedFromBuzzing = false
-            gameVM.mpcService.sendMessage(.updatedPlayer(gameVM.players[i]))
-        }
+        gameVM.clearGiftBlocks()   // #20 — nouvelle question : reset des blocages-cadeaux
         startRound()
     }
     

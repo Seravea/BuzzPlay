@@ -340,7 +340,8 @@ final class MasterFlowViewModel {
             restored.hasShieldAll       = saved.hasShieldAll
             restored.customBuzzColor    = saved.customBuzzColor
             restored.customBuzzSound    = saved.customBuzzSound
-            restored.blockedFromBuzzing = saved.blockedFromBuzzing
+            restored.blockedFromBuzzing  = saved.blockedFromBuzzing
+            restored.blockedByPlayerName = saved.blockedByPlayerName   // #19 — garder "qui m'a bloqué"
             allRegisteredPlayers[savedIndex] = restored
             players.append(restored)
             // #T-reco1 — un joueur qui se reconnecte (savedIndex existe) était déjà sur sa
@@ -618,19 +619,34 @@ extension MasterFlowViewModel {
         }
     }
     
+    /// #20 — le buzz lock SEUL : réouverture du buzzer après un buzz (ou une invalidation
+    /// de réponse). Ne touche PAS aux blocages-cadeaux (enemyCanNotBuzz) → un blocage payé
+    /// reste valable tant que la question n'est pas terminée. Reset des blocages = clearGiftBlocks().
     func unlockBuzz() {
         isBuzzLocked = false
         currentBuzzPlayer = nil
+        mpcService.sendBuzzUnlock()
+        broadcastPublicStateFromCurrentGame()
+    }
 
-        // Reset du blocage buzzer (single-use, se remet à 0 à chaque nouvelle manche)
+    /// #20 — réinitialise les blocages-cadeaux (enemyCanNotBuzz / allEnemiesCanNotBuzz).
+    /// Appelé seulement au passage à une NOUVELLE question/morceau, pas sur une invalidation,
+    /// pour que le blocage vaille pour toute la question (distinct du buzz lock).
+    func clearGiftBlocks() {
         for i in players.indices where players[i].blockedFromBuzzing {
             players[i].blockedFromBuzzing = false
             players[i].blockedByPlayerName = nil
             mpcService.sendMessage(.updatedPlayer(players[i]))
+            syncRegistered(players[i])   // #19 — le déblocage persiste pour la reco
         }
+    }
 
-        mpcService.sendBuzzUnlock()
-        broadcastPublicStateFromCurrentGame()
+    /// Reflète l'état courant d'un joueur dans allRegisteredPlayers (clé = nom) pour
+    /// qu'il survive à une reconnexion. #19 — sans ça, un blocage (ou la consommation
+    /// d'un bouclier) posé sur une cible n'était jamais persisté et se perdait à la reco.
+    private func syncRegistered(_ player: Player) {
+        guard let i = allRegisteredPlayers.firstIndex(where: { $0.name == player.name }) else { return }
+        allRegisteredPlayers[i] = player
     }
     
     func sendPublicState(_ state: PublicState) {
@@ -775,6 +791,7 @@ extension MasterFlowViewModel {
                 players[targetIndex].blockedByPlayerName = buyer.name
             }
             mpcService.sendMessage(.updatedPlayer(players[targetIndex]))
+            syncRegistered(players[targetIndex])   // #19 — blocage/bouclier persistés pour la reco
 
         case .allEnemiesCanNotBuzz:
             for i in players.indices where players[i].id != buyer.id {
@@ -788,6 +805,7 @@ extension MasterFlowViewModel {
                     players[i].blockedByPlayerName = buyer.name
                 }
                 mpcService.sendMessage(.updatedPlayer(players[i]))
+                syncRegistered(players[i])   // #19 — blocage/bouclier persistés pour la reco
             }
 
         case .shieldSingle:
