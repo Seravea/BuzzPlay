@@ -27,7 +27,7 @@ struct PublicQuizDisplayView: View {
                         .tracking(0.8)
 
                     Text(state.question.title)
-                        .font(.nohemi(.title3, weight: .bold))
+                        .font(.nohemi(.title3, weight: .bold)).titleTracking()
                         .foregroundStyle(.white)
                         .lineLimit(nil)
                         .fixedSize(horizontal: false, vertical: true)
@@ -43,7 +43,7 @@ struct PublicQuizDisplayView: View {
                         .textStyle(Typography.sectionTitleSoft)
                         .foregroundStyle(Color.textDim)
                     Text("Préparez-vous…")
-                        .font(.nohemi(.title3, weight: .bold))
+                        .font(.nohemi(.title3, weight: .bold)).titleTracking()
                         .foregroundStyle(Color.textSecondary)
                 }
                 .frame(maxWidth: .infinity)
@@ -62,7 +62,7 @@ struct PublicQuizDisplayView: View {
                         .tracking(0.8)
 
                     Text(state.question.answers.first ?? "N/A")
-                        .font(.nohemi(.title3, weight: .bold))
+                        .font(.nohemi(.title3, weight: .bold)).titleTracking()
                         .foregroundStyle(Color.mustardYellow)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

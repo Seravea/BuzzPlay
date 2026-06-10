@@ -19,7 +19,7 @@ struct CountdownOverlay: View {
                 switch phase {
                 case .counting(let n):
                     Text(label)
-                        .font(.nohemi(.title2, weight: .semiBold))
+                        .font(.nohemi(.title2, weight: .semiBold)).titleTracking()
                         .tracking(0.5)
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.center)

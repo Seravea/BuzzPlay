@@ -117,7 +117,7 @@ struct QuizThemeSelectionView: View {
         HStack(alignment: .top, spacing: BuzzSpacing.md) {
             VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                 Text("Choisir un quiz")
-                    .font(.nohemi(.title, weight: .extraBold))
+                    .font(.nohemi(.title, weight: .extraBold)).titleTracking()
                     .foregroundStyle(.white)
                 Text("Sélectionne le thème et la playlist")
                     .font(.nohemi(.subheadline, weight: .regular))
@@ -221,7 +221,7 @@ private struct ThemeSection: View {
                     .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm2).strokeBorder(theme.color.opacity(0.35), lineWidth: 1))
 
                 Text(theme.title)
-                    .font(.nohemi(.title3, weight: .bold))
+                    .font(.nohemi(.title3, weight: .bold)).titleTracking()
                     .foregroundStyle(.white)
 
                 Spacer()

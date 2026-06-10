@@ -45,7 +45,7 @@ struct TimerBadge: View {
             Image(systemName: "timer")
                 .font(.nohemi(.subheadline, weight: .bold))
             Text(time)
-                .font(.nohemi(.title3, weight: .extraBold))
+                .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
                 .monospacedDigit()
                 .contentTransition(.numericText())
                 .animation(.default, value: time)

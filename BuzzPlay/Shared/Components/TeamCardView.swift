@@ -27,7 +27,7 @@ struct TeamCardView: View {
 
                 }
             }
-            .font(.nohemi(.title2, weight: .bold))
+            .font(.nohemi(.title2, weight: .bold)).titleTracking()
             
         
             .padding()

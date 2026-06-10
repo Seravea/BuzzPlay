@@ -119,7 +119,7 @@ struct BlindTestActiveScreen: View {
     private var timerHero: some View {
         HStack {
             Text(blindTestVM.formattedTime)
-                .font(.nohemi(.largeTitle, weight: .extraBold))
+                .font(.nohemi(.largeTitle, weight: .extraBold)).titleTracking()
                 .foregroundStyle(buzzedPlayer != nil ? Color.purpleTrailing : .mustardYellow)
                 .tracking(3)
                 .contentTransition(.numericText())

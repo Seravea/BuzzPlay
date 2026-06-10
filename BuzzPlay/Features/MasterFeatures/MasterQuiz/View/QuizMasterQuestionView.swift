@@ -61,7 +61,7 @@ struct QuizActiveQuestionScreen: View {
     private var timerHero: some View {
         HStack {
             Text(quizMasterVM.formattedTime)
-                .font(.nohemi(.largeTitle, weight: .extraBold))
+                .font(.nohemi(.largeTitle, weight: .extraBold)).titleTracking()
                 .foregroundStyle(buzzedPlayer != nil ? Color.purpleTrailing : Color.mustardYellow)
                 .tracking(3)
                 .contentTransition(.numericText())
@@ -102,7 +102,7 @@ struct QuizActiveQuestionScreen: View {
             }
             if let q = question {
                 Text(q.title)
-                    .font(.nohemi(.title3, weight: .bold))
+                    .font(.nohemi(.title3, weight: .bold)).titleTracking()
                     .foregroundStyle(.white)
 
                 if isRebus && !q.indices.isEmpty {
@@ -284,7 +284,7 @@ struct QuizBuzzSheet: View {
                     .frame(width: 46, height: 46)
                     .overlay(
                         Text(String(player.name.prefix(1)))
-                            .font(.nohemi(.title3, weight: .bold))
+                            .font(.nohemi(.title3, weight: .bold)).titleTracking()
                             .foregroundStyle(.white)
                     )
 
@@ -362,7 +362,7 @@ struct QuizBuzzSheet: View {
         } label: {
             VStack(spacing: 2) {
                 Text("+\(points)")
-                    .font(.nohemi(.title3, weight: .extraBold))
+                    .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
                 Text("\(responses) réponse\(responses > 1 ? "s" : "")")
                     .font(.nohemi(.caption2, weight: .semiBold))
                     .opacity(0.7)

@@ -17,7 +17,7 @@ struct ButtonGameCardView: View {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         } label: {
             Text(gameTitle)
-                .font(.nohemi(.title2, weight: .bold))
+                .font(.nohemi(.title2, weight: .bold)).titleTracking()
                 .foregroundStyle(.black)
                 .padding()
                 .frame(width: 300, height: 500)

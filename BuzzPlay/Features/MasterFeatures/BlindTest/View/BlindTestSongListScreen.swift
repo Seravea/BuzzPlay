@@ -26,7 +26,7 @@ struct BlindTestSongListScreen: View {
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Choisir un titre")
-                            .font(.nohemi(.title2, weight: .extraBold))
+                            .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                             .foregroundStyle(.white)
                         Text("\(blindTestVM.allSongs.count) titres · \(blindTestVM.playedSongs.count) joués")
                             .font(.nohemi(.subheadline, weight: .regular))

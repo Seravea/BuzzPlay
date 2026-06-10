@@ -20,7 +20,7 @@ struct PublicDisplayView: View {
                         .textStyle(Typography.screenTitleSoft)
                         .foregroundStyle(Color.textMuted)
                     Text("En attente du lancement…")
-                        .font(.nohemi(.title3, weight: .bold))
+                        .font(.nohemi(.title3, weight: .bold)).titleTracking()
                         .foregroundStyle(.white)
                     Text("Le Maître va démarrer la partie")
                         .font(.nohemi(.subheadline, weight: .regular))

@@ -71,7 +71,7 @@ struct ScorePlayerView: View {
                         .foregroundStyle(Color.textMuted)
                         .tracking(0.8)
                     Text(currentPlayer.name)
-                        .font(.nohemi(.title, weight: .extraBold))
+                        .font(.nohemi(.title, weight: .extraBold)).titleTracking()
                         .foregroundStyle(.white)
                         .lineLimit(2)
                 }

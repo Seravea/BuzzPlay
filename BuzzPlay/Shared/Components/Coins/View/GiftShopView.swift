@@ -125,7 +125,7 @@ struct GiftShopSheet: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Boutique")
-                        .font(.nohemi(.title2, weight: .extraBold))
+                        .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                         .foregroundStyle(.white)
                     Text("Active un cadeau pour changer le jeu")
                         .font(.nohemi(.caption, weight: .regular))
@@ -137,7 +137,7 @@ struct GiftShopSheet: View {
                 VStack(alignment: .trailing, spacing: 2) {
                     HStack(spacing: 5) {
                         Text("\(balance)")
-                            .font(.nohemi(.title3, weight: .extraBold))
+                            .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
                             .monospacedDigit()
                             .foregroundStyle(Color.mustardYellow)
                             .lineLimit(1)

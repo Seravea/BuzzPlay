@@ -41,7 +41,7 @@ struct AIQuizSetupView: View {
                 // Header
                 HStack {
                     Text("✨ Générer un Quiz")
-                        .font(.nohemi(.title2, weight: .bold))
+                        .font(.nohemi(.title2, weight: .bold)).titleTracking()
                         .foregroundStyle(.white)
                     Spacer()
                     Button(action: onDismiss) {

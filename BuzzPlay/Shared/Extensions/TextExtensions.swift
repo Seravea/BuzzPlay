@@ -161,8 +161,13 @@ struct Typography {
         }
     }
 
+    // #2 — tracking (letter-spacing) des titres GRAS Nohemi. La police a un crénage serré ;
+    // CE réglage UNIQUE desserre tous les titres : tokens-titres (via textStyle) ET les titres
+    // posés en .font(.nohemi(...)) direct (via le modifier .titleTracking()). À régler à l'œil device.
+    static let titleTracking: CGFloat = 0.5
+
     // Main set (adapte si besoin)
-    static let largeTitle = Token(.largeTitle, weight: .bold, tracking: 0.2)
+    static let largeTitle = Token(.largeTitle, weight: .bold, tracking: titleTracking)
     static let title = Token(.title, weight: .regular)
     static let title2 = Token(.title2, weight: .regular)
     static let title3 = Token(.title3, weight: .regular)
@@ -201,6 +206,12 @@ struct TextStyleModifier: ViewModifier {
 extension View {
     func textStyle(_ token: Typography.Token, minimumScale: CGFloat = 0.85) -> some View {
         modifier(TextStyleModifier(token, minimumScale: minimumScale))
+    }
+
+    /// #2 — desserre le crénage des titres GRAS Nohemi posés en `.font(.nohemi(...))` direct
+    /// (qui n'héritent pas du tracking des tokens `textStyle`). Piloté par `Typography.titleTracking`.
+    func titleTracking() -> some View {
+        tracking(Typography.titleTracking)
     }
 }
 

@@ -48,7 +48,7 @@ struct ScoreMasterView: View {
                 .foregroundStyle(Color.mustardYellow)
 
             Text("Classement final")
-                .font(.nohemi(.title, weight: .black))
+                .font(.nohemi(.title, weight: .black)).titleTracking()
                 .foregroundStyle(.white)
 
             if masterFlowVM.notesRecoveredThisSession > 0 {

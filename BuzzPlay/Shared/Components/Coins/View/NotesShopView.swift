@@ -71,7 +71,7 @@ struct NotesShopView: View {
                     .textStyle(Typography.sectionTitle)
                     .foregroundStyle(Color.mustardYellow)
                 Text("\(store.balance)")
-                    .font(.nohemi(.largeTitle, weight: .black))
+                    .font(.nohemi(.largeTitle, weight: .black)).titleTracking()
                     .foregroundStyle(Color.mustardYellow)
                     .monospacedDigit()
                     .contentTransition(.numericText(countsDown: false))
