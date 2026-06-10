@@ -68,23 +68,15 @@ final class RemoteQuizPackCatalog {
     private static let catalogURL = URL(string:
         "https://raw.githubusercontent.com/Seravea/buzzplay-packs/main/quiz_packs.json")!
 
-    private static let lastSyncKey = "buzzplay.packs.lastSyncDate"
-
     private(set) var packs: [RemoteQuizPack] = []
 
     private init() {
         loadFromCache()
     }
 
-    /// Fetch silencieux, UNE fois par jour maximum (1er lancement réussi de la journée) —
-    /// le reste du temps l'app vit sur le cache local chargé à l'init. Toute erreur
-    /// (offline, 404, JSON cassé) est ignorée et sera retentée au prochain lancement.
+    /// Fetch silencieux au lancement : toute erreur (offline, 404, JSON cassé) est
+    /// ignorée — l'app vit sur le cache local, le jeu reste 100 % hors-ligne.
     func syncSilently() {
-        let ud = UserDefaults.standard
-        if let last = ud.object(forKey: Self.lastSyncKey) as? Date,
-           Calendar.current.isDateInToday(last) {
-            return   // déjà synchronisé aujourd'hui → 100 % local
-        }
         Task { [weak self] in
             guard let self else { return }
             do {
@@ -94,9 +86,6 @@ final class RemoteQuizPackCatalog {
                 _ = try JSONDecoder().decode(RemotePackCatalogJSON.self, from: data)
                 try data.write(to: Self.cacheFileURL(), options: .atomic)
                 self.loadFromCache()
-                // Daté uniquement en cas de SUCCÈS : un échec (offline) sera retenté
-                // au prochain lancement, même jour.
-                ud.set(Date(), forKey: Self.lastSyncKey)
             } catch {
                 print("RemoteQuizPackCatalog: sync silencieux ignoré (\(error.localizedDescription))")
             }
