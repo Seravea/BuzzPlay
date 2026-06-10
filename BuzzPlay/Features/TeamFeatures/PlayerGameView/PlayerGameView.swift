@@ -316,7 +316,12 @@ private struct PlayerPodiumSheet: View {
             }
         }
         .foregroundStyle(.white)
-        .presentationDragIndicator(.hidden)
+        // #podium-iphone — sheet partielle (85%) pour laisser apparaître la dernière card
+        // musique au-dessus sur iPhone ; agrandissable en plein écran (.large) pour voir tout
+        // le classement. interactiveDismissDisabled : impossible de fermer en glissant
+        // (s'arrête à 85%), seul "Quitter" ferme. Sur iPad la sheet reste une card centrée.
+        .presentationDetents([.fraction(0.85), .large])
+        .presentationDragIndicator(.visible)
         .interactiveDismissDisabled()
     }
 
