@@ -327,6 +327,16 @@ extension PlayerGameViewModel {
                 // Manche active : pas de classement.
                 leaderboardTask?.cancel()
                 showPostRoundLeaderboard = false
+                // #timer-reco-quiz — reco / kill+relaunch sur une question EN COURS : le Master
+                // resync via publicUpdate mais ne renvoie PAS .timerStarted, donc
+                // hasReceivedFirstTimer restait false → le badge timer affichait "—".
+                // On le débloque depuis l'état reçu (question révélée, pas de countdown) et on
+                // relance le timer local depuis la valeur du Master. Garde-fou : une seule fois.
+                if quizState.isQuestionRevealed && quizState.countdownPhase == .hidden
+                    && quizState.buzzingPlayer == nil && !hasReceivedFirstTimer {
+                    hasReceivedFirstTimer = true
+                    resumeUITimerIfNeeded()
+                }
                 // Quiz : le timer est géré exclusivement par .timerStarted / .buzzUnlock
                 // syncBuzzerState ne doit PAS appeler resumeUITimerIfNeeded ici
                 syncBuzzerState(buzzingPlayer: quizState.buzzingPlayer,

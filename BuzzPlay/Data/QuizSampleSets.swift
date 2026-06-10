@@ -61,13 +61,13 @@ enum QuizThemes {
     )
     static let rapFR = QuizTheme(
         title: "Rap / Hip-Hop FR",
-        iconName: "music.microphone",
+        iconName: "music.mic",
         color: Color.yellowLeading,
         category: .genre
     )
     static let rapUS = QuizTheme(
         title: "Rap / Hip-Hop US",
-        iconName: "music.microphone.fill",
+        iconName: "mic.fill",
         color: Color.blueTrailing,
         category: .genre
     )
@@ -79,7 +79,7 @@ enum QuizThemes {
     )
     static let rnbSoul = QuizTheme(
         title: "R&B / Soul",
-        iconName: "waveform.badge.star",
+        iconName: "music.quarternote.3",
         color: Color.peach,
         category: .genre
     )
