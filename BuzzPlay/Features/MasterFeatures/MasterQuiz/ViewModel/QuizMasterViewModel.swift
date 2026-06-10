@@ -134,11 +134,14 @@ extension QuizMasterViewModel {
             guard let self else { return }
             try? await Task.sleep(for: GameRhythm.rejectResumeDelay)
             guard !Task.isCancelled else { return }
+            // #countdown-sync — décompte de reprise calculé localement par chaque Player.
+            self.gameVM.mpcService.sendMessage(.countdownStarted(
+                CountdownStartPayload(masterTimestamp: Date().timeIntervalSince1970, startCount: 2)
+            ))
             await runCountdown(
                 startCount: 2,
                 onPhaseChange: { [weak self] phase in
                     self?.roundCountdownPhase = phase
-                    self?.gameVM.broadcastPublicStateFromCurrentGame()
                 },
                 onComplete: { [weak self] in
                     guard let self else { return }
@@ -156,12 +159,14 @@ extension QuizMasterViewModel {
         countdownTask?.cancel()
         countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
+            // #countdown-sync — UN message timestampé ; chaque Player calcule 3-2-1-GO sur
+            // son horloge locale (plus de N broadcasts par phase → décompte synchrone).
+            self.gameVM.mpcService.sendMessage(.countdownStarted(
+                CountdownStartPayload(masterTimestamp: Date().timeIntervalSince1970, startCount: 3)
+            ))
             await runCountdown(
                 onPhaseChange: { [weak self] phase in
                     self?.roundCountdownPhase = phase
-                    if phase != .hidden {
-                        self?.gameVM.broadcastPublicStateFromCurrentGame()
-                    }
                 },
                 onComplete: onComplete
             )

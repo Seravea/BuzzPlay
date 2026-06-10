@@ -180,10 +180,13 @@ extension BlindTestMasterViewModel {
 
         countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
+            // #countdown-sync — décompte de reprise calculé localement par chaque Player.
+            self.gameVM.mpcService.sendMessage(.countdownStarted(
+                CountdownStartPayload(masterTimestamp: Date().timeIntervalSince1970, startCount: 3)
+            ))
             await runCountdown(
                 onPhaseChange: { [weak self] phase in
                     self?.roundCountdownPhase = phase
-                    self?.gameVM.broadcastPublicStateFromCurrentGame()
                 },
                 onComplete: { [weak self] in
                     guard let self else { return }
@@ -228,11 +231,15 @@ extension BlindTestMasterViewModel {
             isGameActive = true
             gameVM.clearGiftBlocks()   // #20 — nouveau morceau : reset des blocages-cadeaux
 
-            // Countdown (5.8 s) ET chargement musique en parallèle
+            // #countdown-sync — UN message timestampé ; chaque Player calcule 3-2-1-GO
+            // sur son horloge locale (plus de N broadcasts par phase).
+            gameVM.mpcService.sendMessage(.countdownStarted(
+                CountdownStartPayload(masterTimestamp: Date().timeIntervalSince1970, startCount: 3)
+            ))
+            // Countdown (3.8s : 3×1s + 0.8s GO) ET chargement musique en parallèle
             async let countdown: Void = runCountdown(
                 onPhaseChange: { [weak self] phase in
                     self?.roundCountdownPhase = phase
-                    self?.gameVM.broadcastPublicStateFromCurrentGame()
                 },
                 onComplete: {}
             )
@@ -556,22 +563,27 @@ extension BlindTestMasterViewModel {
 
     // Joue immédiatement la musique préparée, envoie timerStarted, démarre le timer.
     // Appelé juste après que countdown + prep soient tous les deux terminés.
+    // #audio-go — le timestamp est pris APRÈS le démarrage réel de la lecture : avant, en
+    // mode catalogue, musicPlayer.play() partait dans une Task non attendue → le chrono
+    // courait ~100-200ms avant que la musique soit audible.
     private func playPreparedMusicNow() {
-        let timestamp = Date().timeIntervalSince1970
-        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-        startReactionTimer()
-        isPlaying = true
         isFetching = false
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            if let player = self.player {
+                // Mode preview : play synchrone → latence nulle
+                player.play()
+            } else {
+                // Mode catalogue : déjà préparé, on attend le vrai démarrage
+                try? await self.musicPlayer.play()
+            }
 
-        if let player = player {
-            // Mode preview : play synchrone → latence nulle
-            player.play()
-        } else {
-            // Mode catalogue : déjà préparé, play quasi-instantané
-            Task { try? await musicPlayer.play() }
+            let timestamp = Date().timeIntervalSince1970
+            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+            self.startReactionTimer()
+            self.isPlaying = true
+            self.gameVM.broadcastPublicStateFromCurrentGame()
         }
-
-        gameVM.broadcastPublicStateFromCurrentGame()
     }
     
     /// Relance la musique depuis le début (preview AVPlayer → seek to .zero / MusicKit → playbackTime = 5s)

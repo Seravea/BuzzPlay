@@ -356,11 +356,9 @@ final class MasterFlowViewModel {
             if restored.name != "Écran Publique" {
                 readyPlayers.insert(restored.name)
             }
-            mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(restored), player: restored)
-            // B2 : envoyer tous les joueurs connus pour remplir knownPlayers côté Player reconnecté
-            for existingPlayer in players where existingPlayer.id != restored.id {
-                mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(existingPlayer), player: restored)
-            }
+            // B2 : liste des joueurs complète (soi inclus) en UN message pour remplir
+            // knownPlayers côté Player reconnecté (avant : 1 + N updatedPlayer séparés).
+            mpcService.sendMessagetoOnePlayer(message: .rosterUpdate(players), player: restored)
             // #21 — reconnexion alors que la partie est terminée : router vers le classement
             // final (podium), surtout pas vers le buzzer.
             if isGameComplete {
@@ -398,12 +396,13 @@ final class MasterFlowViewModel {
         mpcService.sendMessagetoOnePlayer(message: .updatedPlayer(player), player: player)
     }
 
-    /// #10 — diffuse l'état de chaque joueur enregistré à tous les peers, pour que le
-    /// classement (knownPlayers) de chacun soit complet dès le lobby, pas seulement après score.
+    /// #10 — diffuse la liste des joueurs à tous les peers, pour que le classement
+    /// (knownPlayers) de chacun soit complet dès le lobby, pas seulement après score.
+    /// En UN message .rosterUpdate (avant : N × updatedPlayer = N encodages + N envois).
     private func broadcastFullRoster() {
-        for p in players where p.name != "Écran Publique" {
-            mpcService.sendMessage(.updatedPlayer(p))
-        }
+        let roster = players.filter { $0.name != "Écran Publique" }
+        guard !roster.isEmpty else { return }
+        mpcService.sendMessage(.rosterUpdate(roster))
     }
     
     //MARK: Master's functions for gameSelection
