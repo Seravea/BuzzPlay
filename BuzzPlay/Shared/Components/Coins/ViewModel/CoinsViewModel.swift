@@ -119,7 +119,7 @@ extension CoinsViewModel {
             return
         }
         guard player.accountAmount >= gift.price else {
-            setError("Tu n'as pas assez de Notes 🎵")
+            setError("Pas assez de Notes 🎵 — demande au Maître")
             return
         }
 
