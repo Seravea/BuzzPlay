@@ -72,7 +72,7 @@ struct WaitingLobbyView: View {
                     .padding(.vertical, 4)
                     .background(buzzColor.color.opacity(0.16), in: Capsule())
                 } else {
-                    Text("C'est ton buzzer")
+                    Text("C'est toi")
                         .font(.nohemi(.caption, weight: .medium))
                         .foregroundStyle(Color.textSecondary)
                 }
