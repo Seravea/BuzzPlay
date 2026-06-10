@@ -7,12 +7,11 @@ import SwiftUI
 
 struct NotesShopView: View {
     @Bindable var store: NotesStore
-    let currentBalance: Int
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 0) {
-            dragHandle
+            topBar
 
             ScrollView {
                 VStack(spacing: BuzzSpacing.xl) {
@@ -35,14 +34,32 @@ struct NotesShopView: View {
         )
     }
 
-    // MARK: - Drag handle
+    // MARK: - Top bar (drag handle + bouton fermer)
 
-    private var dragHandle: some View {
-        RoundedRectangle(cornerRadius: 3)
-            .fill(Color.textFaint)
-            .frame(width: 36, height: 4)
-            .padding(.top, BuzzSpacing.md)
-            .padding(.bottom, BuzzSpacing.xxl)
+    private var topBar: some View {
+        ZStack {
+            // Drag handle centré
+            RoundedRectangle(cornerRadius: 3)
+                .fill(Color.textFaint)
+                .frame(width: 36, height: 4)
+
+            // #D4 — bouton fermer explicite (la sheet est non-draggable sur Mac/iPad)
+            HStack {
+                Spacer()
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark")
+                        .font(.nohemi(.footnote, weight: .bold))
+                        .foregroundStyle(Color.textSecondary)
+                        .frame(width: 30, height: 30)
+                        .background(.white.opacity(0.08), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Fermer la boutique")
+            }
+            .padding(.trailing, BuzzSpacing.lg)
+        }
+        .padding(.top, BuzzSpacing.md)
+        .padding(.bottom, BuzzSpacing.xxl)
     }
 
     // MARK: - Header
@@ -53,12 +70,12 @@ struct NotesShopView: View {
                 Image(systemName: "music.note")
                     .textStyle(Typography.sectionTitle)
                     .foregroundStyle(Color.mustardYellow)
-                Text("\(currentBalance)")
+                Text("\(store.balance)")
                     .font(.nohemi(.largeTitle, weight: .black))
                     .foregroundStyle(Color.mustardYellow)
                     .monospacedDigit()
                     .contentTransition(.numericText(countsDown: false))
-                    .animation(.spring(response: 0.4), value: currentBalance)
+                    .animation(.spring(response: 0.4), value: store.balance)
             }
             Text("Notes disponibles")
                 .font(.nohemi(.caption, weight: .regular))
@@ -76,10 +93,14 @@ struct NotesShopView: View {
     // MARK: - Packs
 
     private var packsList: some View {
-        VStack(spacing: 10) {
+        // Bonus de valeur vs le pack le moins avantageux (l'intro), en %.
+        // Plus parlant que "X Notes / €" et évite le côté comptable (#D2).
+        let baseRate = store.packs.map(\.notesPerEuro).min() ?? 1
+        return VStack(spacing: 10) {
             ForEach(store.packs) { pack in
                 PackCard(
                     pack: pack,
+                    bonusPercent: bonusPercent(for: pack, baseRate: baseRate),
                     purchaseState: store.purchaseState,
                     onBuy: { store.purchase(pack) }
                 )
@@ -87,12 +108,20 @@ struct NotesShopView: View {
         }
     }
 
+    /// % de Notes en plus (à prix égal) qu'avec le pack de base, arrondi au
+    /// multiple de 10 pour rester un argument marketing rond, pas un calcul.
+    private func bonusPercent(for pack: NotesPack, baseRate: Int) -> Int {
+        guard baseRate > 0 else { return 0 }
+        let raw = pack.notesPerEuro * 100 / baseRate - 100
+        return Int((Double(raw) / 10).rounded()) * 10
+    }
+
     // MARK: - Disclaimer
 
     private var disclaimer: some View {
         Text("Les Notes sont consommables et ne périment jamais.\nAchats gérés par Apple — aucune souscription.")
             .font(.nohemi(.caption2, weight: .regular))
-            .foregroundStyle(.white.opacity(0.28))
+            .foregroundStyle(Color.textTertiary)
             .multilineTextAlignment(.center)
             .lineSpacing(3)
             .padding(.horizontal, BuzzSpacing.sm)
@@ -103,6 +132,7 @@ struct NotesShopView: View {
 
 private struct PackCard: View {
     let pack: NotesPack
+    let bonusPercent: Int
     let purchaseState: PurchaseState
     let onBuy: () -> Void
 
@@ -149,9 +179,15 @@ private struct PackCard: View {
                             .background(Color.greenButtonLeading.opacity(0.12), in: Capsule())
                     }
                 }
-                Text("\(pack.notesPerEuro) Notes / €")
-                    .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(Color.textMuted)
+                if bonusPercent > 0 {
+                    Text("+\(bonusPercent)% de bonus")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .foregroundStyle(Color.greenButtonLeading)
+                } else {
+                    Text("Pack Découverte")
+                        .font(.nohemi(.caption2, weight: .regular))
+                        .foregroundStyle(Color.textMuted)
+                }
             }
 
             Spacer()
@@ -229,8 +265,7 @@ private struct SuccessConfirmation: View {
 
 #Preview {
     NotesShopView(
-        store: NotesStore(masterFlowVM: MasterFlowViewModel()),
-        currentBalance: 250
+        store: NotesStore(masterFlowVM: MasterFlowViewModel())
     )
     .presentationDetents([.large])
 }

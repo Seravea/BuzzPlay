@@ -45,13 +45,17 @@ final class NotesStore {
     private weak var masterFlowVM: MasterFlowViewModel?
 
     let packs: [NotesPack] = [
-        NotesPack(id: "buzzplay.notes.intro",   notes: 150,  priceDisplay: "0,99 €", isBestValue: false),
+        NotesPack(id: "buzzplay.notes.intro",   notes: 100,  priceDisplay: "0,99 €", isBestValue: false),
         NotesPack(id: "buzzplay.notes.soiree",  notes: 450,  priceDisplay: "2,99 €", isBestValue: true),
         NotesPack(id: "buzzplay.notes.weekend", notes: 1200, priceDisplay: "5,99 €", isBestValue: false),
         NotesPack(id: "buzzplay.notes.saison",  notes: 3000, priceDisplay: "9,99 €", isBestValue: false),
     ]
 
     var purchaseState: PurchaseState = .idle
+
+    /// Solde live du Master (source de vérité = MasterFlowViewModel, persisté UserDefaults).
+    /// Lu réactivement par NotesShopView pour que l'achat mette à jour le solde affiché (#D1).
+    var balance: Int { masterFlowVM?.masterNotesBalance ?? 0 }
 
     init(masterFlowVM: MasterFlowViewModel) {
         self.masterFlowVM = masterFlowVM
