@@ -20,6 +20,9 @@ class CreateTeamViewModel {
     /// Draft sauvegardé (pseudo + couleur de la session précédente)
     var savedPlayerDraft: Player? = nil
 
+    /// Noms déjà pris dans la session (injecté depuis le Master ou ignoré côté Player)
+    var takenNames: [String] = []
+
     /// Callback déclenché après validate()
     var onPlayerCreated: ((Player) -> Void)?
 
@@ -37,7 +40,18 @@ class CreateTeamViewModel {
 
     var isPseudoValid: Bool {
         let trimmed = pseudo.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.count >= 2 && trimmed.count <= 20
+        guard trimmed.count >= 2 && trimmed.count <= 20 else { return false }
+        return !takenNames.contains(where: { $0.lowercased() == trimmed.lowercased() })
+    }
+
+    var pseudoErrorMessage: String? {
+        let trimmed = pseudo.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.count > 0 && trimmed.count < 2 { return "Au moins 2 caractères" }
+        if trimmed.count > 20 { return "Maximum 20 caractères" }
+        if takenNames.contains(where: { $0.lowercased() == trimmed.lowercased() }) {
+            return "Ce pseudo est déjà pris"
+        }
+        return nil
     }
 
     func validate() {

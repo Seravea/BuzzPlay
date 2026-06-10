@@ -17,12 +17,12 @@ struct ButtonGameCardView: View {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         } label: {
             Text(gameTitle)
-                .font(.nohemi(.title2, weight: .bold))
+                .font(.nohemi(.title2, weight: .bold)).titleTracking()
                 .foregroundStyle(.black)
                 .padding()
                 .frame(width: 300, height: 500)
                 .background {
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: BuzzRadius.sm)
                         .foregroundStyle(Color.mustardYellow)
                 }
                 .shadow(color: Color.mustardYellow.opacity(0.4), radius: 16, y: 8)

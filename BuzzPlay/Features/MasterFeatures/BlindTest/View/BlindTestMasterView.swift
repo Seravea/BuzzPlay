@@ -35,6 +35,8 @@ struct BlindTestMasterView: View {
                 .zIndex(200)
             }
         }
+        // #invite-auto — invite les joueurs dès l'entrée du Blind Test (le bouton reste pour ré-inviter)
+        .onAppear { blindTestViewModel.autoInvitePlayersIfNeeded() }
         .onChange(of: blindTestViewModel.shouldAutoFinish) { _, done in
             guard done else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -55,12 +57,11 @@ struct BlindTestMasterView: View {
                 )
             }
         }
-        .navigationBarBackButtonHidden(blindTestViewModel.isGameActive)
-        .onDisappear {
-            if !blindTestViewModel.shouldAutoFinish {
-                blindTestViewModel.gameVM.finishGameSection(.blindTest)
-            }
-        }
+        // #D10 — cacher le back SYSTÈME dès qu'on quitte l'écran Recherche : sur SongList,
+        // l'écran a déjà son propre chevron retour (→ Recherche) → fini le double bouton.
+        // Sur Recherche (1er écran), le back système reste = sortie du Blind Test.
+        .navigationBarBackButtonHidden(blindTestViewModel.isGameActive || !blindTestViewModel.allSongs.isEmpty)
+        .masterDarkNavBar()  // #8
     }
 }
 

@@ -56,6 +56,8 @@ struct QuizMasterListView: View {
             }
         }
         .animation(.spring(duration: 0.45, bounce: 0.05), value: quizMasterVM.isPlaying)
+        // #invite-auto — invite les joueurs dès l'entrée du Quiz (le bouton reste pour ré-inviter)
+        .onAppear { quizMasterVM.autoInvitePlayersIfNeeded() }
         .onChange(of: quizMasterVM.shouldAutoFinish) { _, done in
             guard done else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -63,16 +65,13 @@ struct QuizMasterListView: View {
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
                 quizMasterVM.gameVM.finishGameSection(.quiz)
+                // Pop quizMaster + quizThemeSelection → retour au hub
+                router.path.removeLast()
                 router.path.removeLast()
                 if quizMasterVM.gameVM.isGameComplete { router.push(.scoreMaster) }
             }
         }
         .navigationBarBackButtonHidden(quizMasterVM.isPlaying)
-        .onDisappear {
-            if !quizMasterVM.shouldAutoFinish {
-                quizMasterVM.gameVM.finishGameSection(.quiz)
-            }
-        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 ConnectionStatusBadge(
@@ -81,6 +80,7 @@ struct QuizMasterListView: View {
                 )
             }
         }
+        .masterDarkNavBar()  // #8
     }
 
     private func handleValidate(points: Int) {
@@ -96,7 +96,7 @@ struct QuizMasterListView: View {
         }
         // Fade out de l'overlay
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
-            withAnimation(.easeOut(duration: 0.3)) {
+            withAnimation(.buzzSlide) {
                 showValidationOverlay = false
             }
         }
@@ -118,24 +118,23 @@ private struct QuizQuestionListScreen: View {
     private var inviteButton: some View {
         let invited = quizMasterVM.hasInvitedPlayers
         return Button {
-            quizMasterVM.hasInvitedPlayers = true
-            quizMasterVM.gameVM.broadcastGameLaunch(.quiz)
+            quizMasterVM.invitePlayers()  // #invite-auto — ré-invite manuelle (joueur en retard)
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: BuzzSpacing.sm) {
                 Image(systemName: invited ? "checkmark.circle.fill" : "person.wave.2.fill")
-                    .font(.system(size: 13, weight: .bold))
+                    .textStyle(Typography.footnoteBold)
                 Text(invited ? "Joueurs invités" : "Inviter les joueurs")
                     .font(.nohemi(.subheadline, weight: .bold))
                 Spacer()
-                Text(invited ? "Prêts à buzzer" : "Obligatoire avant de jouer")
+                Text(invited ? "Appuyer pour ré-inviter" : "Auto — ou appuyer ici")
                     .font(.nohemi(.caption2, weight: .regular))
                     .foregroundStyle(.white.opacity(invited ? 0.5 : 0.65))
             }
             .foregroundStyle(.white)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.horizontal, BuzzSpacing.lg)
+            .padding(.vertical, BuzzSpacing.md)
             .background(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: BuzzRadius.md)
                     .fill(invited
                           ? AnyShapeStyle(Color.white.opacity(0.10))
                           : AnyShapeStyle(LinearGradient(
@@ -145,11 +144,11 @@ private struct QuizQuestionListScreen: View {
             .shadow(color: invited ? .clear : Color.greenButtonLeading.opacity(0.35), radius: 8, y: 3)
         }
         .buttonStyle(.plain)
-        .animation(.easeInOut(duration: 0.25), value: invited)
+        .animation(.buzzFade, value: invited)
     }
 
     private var listHeader: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
             // Bouton "Inviter les joueurs" — obligatoire avant de pouvoir sélectionner une question
             inviteButton
                 .padding(.bottom, 4)
@@ -157,11 +156,11 @@ private struct QuizQuestionListScreen: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(quizMasterVM.quizSet.title)
-                        .font(.nohemi(.title2, weight: .extraBold))
+                        .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                         .foregroundStyle(.white)
                     Text("\(quizMasterVM.questions.count) questions · \(quizMasterVM.gameVM.players.count) équipes")
                         .font(.nohemi(.subheadline, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.5))
+                        .foregroundStyle(Color.textSecondary)
                 }
                 Spacer()
                 Text("\(quizMasterVM.questionsPassed.count)/\(quizMasterVM.questions.count) ✓")
@@ -186,13 +185,13 @@ private struct QuizQuestionListScreen: View {
             }
             .frame(height: 3)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, BuzzSpacing.xl)
         .padding(.bottom, 14)
     }
 
     private var questionList: some View {
         ScrollView {
-            LazyVStack(spacing: 8) {
+            LazyVStack(spacing: BuzzSpacing.sm) {
                 ForEach(Array(quizMasterVM.questions.enumerated()), id: \.element.id) { index, question in
                     QuizQuestionRow(
                         number: index + 1,
@@ -204,8 +203,8 @@ private struct QuizQuestionListScreen: View {
                     }
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 20)
+            .padding(.horizontal, BuzzSpacing.lg)
+            .padding(.bottom, BuzzSpacing.xl)
         }
     }
 }
@@ -221,41 +220,47 @@ private struct QuizQuestionRow: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
+            HStack(spacing: BuzzSpacing.md) {
                 // Number badge with difficulty color
                 Text("\(number)")
                     .font(.nohemi(.caption, weight: .bold))
                     .foregroundStyle(.white)
                     .frame(width: 32, height: 32)
-                    .background(badgeColor, in: RoundedRectangle(cornerRadius: 10))
+                    .background(badgeColor, in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(question.title)
                         .font(.nohemi(.subheadline, weight: .semiBold))
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.leading)
-                    if let theme = question.theme {
-                        Text(theme)
-                            .font(.nohemi(.caption2, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.4))
+                    HStack(spacing: 6) {
+                        if question.questionType == .rebus {
+                            Text("🎭 Rébus")
+                                .font(.nohemi(.caption2, weight: .semiBold))
+                                .foregroundStyle(Color.purpleLeading.opacity(0.9))
+                        } else if let theme = question.theme {
+                            Text(theme)
+                                .font(.nohemi(.caption2, weight: .medium))
+                                .foregroundStyle(Color.textMuted)
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 if isDone {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 14, weight: .semibold))
+                        .textStyle(Typography.footnoteEM)
                         .foregroundStyle(Color.greenButtonLeading)
                 } else if !isDisabled {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.25))
+                        .textStyle(Typography.footnoteEM)
+                        .foregroundStyle(Color.textFaint)
                 }
             }
             .padding(14)
-            .background(.white.opacity(isDone ? 0.06 : 0.06), in: RoundedRectangle(cornerRadius: 16))
+            .background(.white.opacity(isDone ? 0.06 : 0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: BuzzRadius.lg)
                     .strokeBorder(isDone ? Color.greenButtonLeading.opacity(0.25) : .white.opacity(0.08), lineWidth: 1.5)
             )
             .opacity(isDone ? 0.6 : 1)
@@ -267,12 +272,8 @@ private struct QuizQuestionRow: View {
 
     private var badgeColor: Color {
         if isDone { return .white.opacity(0.1) }
-        switch question.difficulty {
-        case 1: return Color(hex: "#00C950").opacity(0.35)
-        case 2: return Color(hex: "#F0B100").opacity(0.45)
-        case 3: return Color(hex: "#FB2C36").opacity(0.4)
-        default: return .white.opacity(0.1)
-        }
+        guard let difficulty = question.difficulty else { return .white.opacity(0.1) }
+        return difficulty.color.opacity(0.35)
     }
 }
 
@@ -289,20 +290,20 @@ struct QuizValidationOverlay: View {
                 .ignoresSafeArea()
                 .background(.ultraThinMaterial)
 
-            VStack(spacing: 16) {
+            VStack(spacing: BuzzSpacing.lg) {
                 ZStack {
                     // Glow circles
                     Circle()
-                        .fill(Color(hex: "#7DFFA0").opacity(0.15))
+                        .fill(Color.greenGlow.opacity(0.15))
                         .frame(width: 120, height: 120)
                         .blur(radius: 16)
 
-                    VStack(spacing: 12) {
+                    VStack(spacing: BuzzSpacing.md) {
                         Text("✅")
                             .font(.system(size: 56))
                         Text("+\(points)")
-                            .font(.nohemi(.largeTitle, weight: .black))
-                            .foregroundStyle(Color(hex: "#7DFFA0"))
+                            .font(.nohemi(.largeTitle, weight: .black)).titleTracking()
+                            .foregroundStyle(Color.greenGlow)
                             .tracking(1)
                     }
                 }
@@ -316,9 +317,9 @@ struct QuizValidationOverlay: View {
 
                 Text(teamName)
                     .font(.nohemi(.body, weight: .semiBold))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(Color.textSoft)
             }
-            .padding(32)
+            .padding(BuzzSpacing.xxxl)
         }
     }
 }

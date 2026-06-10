@@ -17,7 +17,7 @@ struct StartingButtonView: View {
             
             action()
         } label: {
-            HStack(spacing: 16) {
+            HStack(spacing: BuzzSpacing.lg) {
                 Image(systemName: iconName)
                     .font(.nohemi(size))
                 Text(buttonLabel)
@@ -25,7 +25,7 @@ struct StartingButtonView: View {
             .fontWeight(.semibold)
             .foregroundStyle(.white)
             .font(.nohemi(size))
-            .padding(.vertical, 16)
+            .padding(.vertical, BuzzSpacing.lg)
             .padding(.horizontal, 48)
             .background(
                 Capsule()

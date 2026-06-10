@@ -9,6 +9,7 @@ struct PlayerChooseGameView: View {
     @Bindable var playerGameVM: PlayerGameViewModel
     @EnvironmentObject var router: Router
     @Bindable var playerFlowVM: PlayerFlowViewModel
+    @Environment(\.scenePhase) private var scenePhase
 
     private var otherPlayers: [Player] {
         playerGameVM.knownPlayers.filter { $0.id != playerGameVM.player.id }
@@ -19,15 +20,15 @@ struct PlayerChooseGameView: View {
             BackgroundAppView().ignoresSafeArea()
 
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: BuzzSpacing.xl) {
                     headerSection
                     selfCard
                     buzzerHintCard
                     if !otherPlayers.isEmpty { othersSection }
                     Spacer(minLength: 80)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.top, BuzzSpacing.lg)
             }
 
             VStack {
@@ -36,7 +37,11 @@ struct PlayerChooseGameView: View {
             }
 
             if !playerGameVM.isConnectedToMaster {
-                ConnectionLostOverlay()
+                if playerGameVM.hasEverConnectedToMaster {
+                    ConnectionLostOverlay()
+                } else {
+                    WaitingForMasterOverlay()
+                }
             }
         }
         .toolbar {
@@ -46,8 +51,17 @@ struct PlayerChooseGameView: View {
         }
         .navigationBarBackButtonHidden()
         .appDefaultTextStyle(Typography.body)
+        .onAppear {
+            // #rejoin — si la partie a déjà démarré au moment où la vue apparaît
+            // (reconnexion/kill : masterStartedParty arrivé avant le montage de la vue),
+            // .onChange ne se déclenchera pas → on route ici.
+            if playerGameVM.hasPartyStarted { router.push(.playerGameView) }
+        }
         .onChange(of: playerGameVM.hasPartyStarted) { _, started in
             if started { router.push(.playerGameView) }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { playerGameVM.handleSceneWillForeground() }
         }
     }
 
@@ -63,7 +77,7 @@ struct PlayerChooseGameView: View {
                 .font(.nohemi(.caption, weight: .bold))
                 .foregroundStyle(.white)
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, BuzzSpacing.md)
         .padding(.vertical, 6)
         .background(.ultraThinMaterial, in: Capsule())
     }
@@ -71,15 +85,15 @@ struct PlayerChooseGameView: View {
     // MARK: - Header
 
     private var headerSection: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: BuzzSpacing.xs) {
             Text("EN ATTENTE DU MAÎTRE")
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
-                .foregroundStyle(.white.opacity(0.40))
+                .foregroundStyle(Color.textMuted)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text("La partie démarre dès\nque l'hôte lance.")
-                .font(.nohemi(.title2, weight: .black))
+                .font(.nohemi(.title2, weight: .black)).titleTracking()
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .lineSpacing(2)
@@ -95,7 +109,7 @@ struct PlayerChooseGameView: View {
                 .frame(width: 52, height: 52)
                 .overlay(
                     Text(String(playerGameVM.player.name.prefix(1)).uppercased())
-                        .font(.nohemi(.title3, weight: .black))
+                        .font(.nohemi(.title3, weight: .black)).titleTracking()
                         .foregroundStyle(.white)
                 )
 
@@ -105,22 +119,22 @@ struct PlayerChooseGameView: View {
                     .foregroundStyle(.white)
                 Text("C'est toi")
                     .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
 
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 22))
+                .textStyle(Typography.sectionTitle)
                 .foregroundStyle(Color.greenGlow)
         }
         .padding(14)
         .background(
             playerGameVM.player.teamColor.color.opacity(0.18),
-            in: RoundedRectangle(cornerRadius: 18)
+            in: RoundedRectangle(cornerRadius: BuzzRadius.lg2)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 18)
+            RoundedRectangle(cornerRadius: BuzzRadius.lg2)
                 .strokeBorder(playerGameVM.player.teamColor.color.opacity(0.45), lineWidth: 1.5)
         )
     }
@@ -128,31 +142,31 @@ struct PlayerChooseGameView: View {
     // MARK: - Buzzer Hint Card
 
     private var buzzerHintCard: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: BuzzSpacing.lg) {
             ZStack {
                 Circle()
-                    .fill(Color(hex: "#FF2D78").opacity(0.15))
+                    .fill(Color.buzzHotPink.opacity(0.15))
                     .frame(width: 52, height: 52)
                 Image(systemName: "hand.point.up.left.fill")
-                    .font(.system(size: 24))
-                    .foregroundStyle(Color(hex: "#FF2D78"))
+                    .textStyle(Typography.sectionTitle)
+                    .foregroundStyle(Color.buzzHotPink)
             }
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                 Text("C'est un jeu de buzzer !")
                     .font(.nohemi(.subheadline, weight: .extraBold))
                     .foregroundStyle(.white)
                 Text("Appuie le plus vite possible\ndès que tu as la réponse.")
                     .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(Color.textSecondary)
                     .lineSpacing(2)
             }
 
             Spacer()
         }
-        .padding(16)
-        .background(Color(hex: "#FF2D78").opacity(0.07), in: RoundedRectangle(cornerRadius: 18))
-        .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(Color(hex: "#FF2D78").opacity(0.2), lineWidth: 1))
+        .padding(BuzzSpacing.lg)
+        .background(Color.buzzHotPink.opacity(0.07), in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg2).strokeBorder(Color.buzzHotPink.opacity(0.2), lineWidth: 1))
     }
 
     // MARK: - Others Grid
@@ -163,10 +177,10 @@ struct PlayerChooseGameView: View {
                 Text("AUTRES JOUEURS")
                     .font(.nohemi(.caption2, weight: .bold))
                     .tracking(0.8)
-                    .foregroundStyle(.white.opacity(0.40))
+                    .foregroundStyle(Color.textMuted)
                 Text("· \(otherPlayers.count)")
                     .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.40))
+                    .foregroundStyle(Color.textMuted)
                 Rectangle()
                     .fill(.white.opacity(0.08))
                     .frame(height: 1)
@@ -174,7 +188,7 @@ struct PlayerChooseGameView: View {
 
             LazyVGrid(
                 columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 4),
-                spacing: 16
+                spacing: BuzzSpacing.lg
             ) {
                 ForEach(otherPlayers) { player in
                     VStack(spacing: 6) {
@@ -202,7 +216,7 @@ struct PlayerChooseGameView: View {
 
     private var waitingPill: some View {
         PulsingPill()
-            .padding(.bottom, 32)
+            .padding(.bottom, BuzzSpacing.xxxl)
     }
 }
 
@@ -212,7 +226,7 @@ private struct PulsingPill: View {
     @State private var isPulsing = false
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: BuzzSpacing.sm) {
             Circle()
                 .fill(Color.mustardYellow)
                 .frame(width: 8, height: 8)
@@ -221,9 +235,9 @@ private struct PulsingPill: View {
                 .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: isPulsing)
             Text("Le Maître prépare la partie…")
                 .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(Color.textSoft)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, BuzzSpacing.lg)
         .padding(.vertical, 10)
         .background(.white.opacity(0.06), in: Capsule())
         .overlay(Capsule().strokeBorder(.white.opacity(0.10), lineWidth: 1))

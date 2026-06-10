@@ -13,24 +13,24 @@ struct BlindTestSongListScreen: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Header
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
+                HStack(spacing: BuzzSpacing.md) {
                     Button(action: onBack) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold))
+                            .textStyle(Typography.label)
                             .foregroundStyle(.white)
                             .frame(width: 36, height: 36)
-                            .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+                            .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
                     }
                     .buttonStyle(.plain)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Choisir un titre")
-                            .font(.nohemi(.title2, weight: .extraBold))
+                            .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                             .foregroundStyle(.white)
                         Text("\(blindTestVM.allSongs.count) titres · \(blindTestVM.playedSongs.count) joués")
                             .font(.nohemi(.subheadline, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(Color.textSecondary)
                     }
 
                     Spacer()
@@ -58,12 +58,12 @@ struct BlindTestSongListScreen: View {
                 }
                 .frame(height: 3)
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, BuzzSpacing.xl)
             .padding(.bottom, 14)
 
             // Liste des titres
             ScrollView {
-                LazyVStack(spacing: 8) {
+                LazyVStack(spacing: BuzzSpacing.sm) {
                     ForEach(Array(blindTestVM.allSongs.enumerated()), id: \.element.id) { index, song in
                         BlindTestSongRow(
                             number: index + 1,
@@ -75,8 +75,8 @@ struct BlindTestSongListScreen: View {
                         }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 20)
+                .padding(.horizontal, BuzzSpacing.lg)
+                .padding(.bottom, BuzzSpacing.xl)
             }
 
             // Bouton Lancer — visible dès qu'un titre est sélectionné
@@ -85,12 +85,12 @@ struct BlindTestSongListScreen: View {
                 Button {
                     blindTestVM.startRound()
                 } label: {
-                    HStack(spacing: 8) {
+                    HStack(spacing: BuzzSpacing.sm) {
                         if blindTestVM.isFetching {
                             ProgressView().tint(.white).scaleEffect(0.9)
                         } else {
                             Image(systemName: notInvited ? "lock.fill" : "play.fill")
-                                .font(.system(size: 15, weight: .semibold))
+                                .textStyle(Typography.labelSM)
                         }
                         Text(blindTestVM.isFetching ? "Chargement…"
                              : notInvited ? "Invitez les joueurs d'abord"
@@ -99,20 +99,20 @@ struct BlindTestSongListScreen: View {
                     }
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, BuzzSpacing.lg)
                     .background(
                         LinearGradient(colors: notInvited ? [.white.opacity(0.08), .white.opacity(0.06)]
                                                           : [.purpleLeading, .purpleTrailing],
                                        startPoint: .leading, endPoint: .trailing),
-                        in: RoundedRectangle(cornerRadius: 16)
+                        in: RoundedRectangle(cornerRadius: BuzzRadius.lg)
                     )
                     .shadow(color: notInvited ? .clear : Color.purpleLeading.opacity(0.35), radius: 8)
                     .opacity(blindTestVM.isFetching ? 0.7 : 1)
                 }
                 .buttonStyle(.plain)
                 .disabled(blindTestVM.isFetching || notInvited)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.bottom, BuzzSpacing.xl)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
@@ -130,7 +130,7 @@ struct BlindTestSongRow: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
+            HStack(spacing: BuzzSpacing.md) {
                 // Artwork avec badge played en overlay
                 ZStack {
                     AsyncImage(url: song.postertURL) { image in
@@ -139,14 +139,14 @@ struct BlindTestSongRow: View {
                         badgeColor
                     }
                     .frame(width: 56, height: 56)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.xs))
 
                     if isPlayed {
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: BuzzRadius.xs)
                             .fill(.black.opacity(0.55))
                             .frame(width: 56, height: 56)
                         Image(systemName: "checkmark")
-                            .font(.system(size: 14, weight: .bold))
+                            .textStyle(Typography.footnoteBold)
                             .foregroundStyle(.white)
                     }
                 }
@@ -158,7 +158,7 @@ struct BlindTestSongRow: View {
                         .multilineTextAlignment(.leading)
                     Text(song.artist)
                         .font(.nohemi(.caption2, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(Color.textMuted)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -168,18 +168,18 @@ struct BlindTestSongRow: View {
 
                 if isSelected && !isPlayed {
                     Image(systemName: "music.note")
-                        .font(.system(size: 13, weight: .semibold))
+                        .textStyle(Typography.footnoteEM)
                         .foregroundStyle(Color.mustardYellow)
                 } else if !isPlayed {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.25))
+                        .textStyle(Typography.footnoteEM)
+                        .foregroundStyle(Color.textFaint)
                 }
             }
-            .padding(8)
-            .background(.white.opacity(isSelected ? 0.1 : 0.06), in: RoundedRectangle(cornerRadius: 16))
+            .padding(BuzzSpacing.sm)
+            .background(.white.opacity(isSelected ? 0.1 : 0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: BuzzRadius.lg)
                     .strokeBorder(borderColor, lineWidth: 1.5)
             )
             .opacity(isPlayed ? 0.5 : 1)

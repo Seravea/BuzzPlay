@@ -27,13 +27,13 @@ struct ConnectionStatusBadge: View {
                 .font(.nohemi(.subheadline, weight: .medium))
                 .foregroundStyle(.white)
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, BuzzSpacing.md)
         .padding(.vertical, 6)
     }
 }
 
 #Preview {
-    VStack(spacing: 16) {
+    VStack(spacing: BuzzSpacing.lg) {
         ConnectionStatusBadge(connected: 2, total: 2)
         ConnectionStatusBadge(connected: 1, total: 2)
         ConnectionStatusBadge(connected: 0, total: 2)

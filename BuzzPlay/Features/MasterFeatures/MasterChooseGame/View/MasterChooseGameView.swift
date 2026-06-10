@@ -8,6 +8,7 @@ import SwiftUI
 struct MasterChooseGameView: View {
     @Bindable var masterChooseGameVM: MasterChooseGameViewModel
     @EnvironmentObject private var router: Router
+    @State private var showNotesShop = false
 
     private var hasScores: Bool {
         masterChooseGameVM.players.map(\.score).max() ?? 0 > 0
@@ -32,14 +33,14 @@ struct MasterChooseGameView: View {
             BackgroundAppView().ignoresSafeArea()
 
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: BuzzSpacing.xl) {
                     launchSection
                     if hasScores { rankingSection }
                     notesSection
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
-                .padding(.bottom, 32)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.top, BuzzSpacing.lg)
+                .padding(.bottom, BuzzSpacing.xxxl)
             }
         }
         .toolbar {
@@ -55,6 +56,10 @@ struct MasterChooseGameView: View {
         }
         .navigationBarBackButtonHidden()
         .appDefaultTextStyle(Typography.body)
+        // #8 — nav bar dark même au scroll (iOS < 26 la repassait en light). Modifier partagé.
+        .masterDarkNavBar()
+        // #18a — la veille est désormais désactivée pour TOUTE la session Master
+        // dans MasterFlowViewModel.setupMPC() (couvre aussi les écrans de jeu).
     }
 
     // MARK: - Eyebrow
@@ -63,23 +68,23 @@ struct MasterChooseGameView: View {
         Text(text.uppercased())
             .font(.nohemi(.caption2, weight: .bold))
             .tracking(0.8)
-            .foregroundStyle(.white.opacity(0.40))
+            .foregroundStyle(Color.textMuted)
     }
 
     // MARK: - Launch Section
 
     private var launchSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             HStack {
                 eyebrow("Lancer une manche")
                 Spacer()
                 if masterChooseGameVM.currentRound >= 1 {
                     Text("Manche \(masterChooseGameVM.currentRound)/\(masterChooseGameVM.totalRounds)")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.40))
+                        .foregroundStyle(Color.textMuted)
                 }
             }
-            HStack(spacing: 12) {
+            HStack(spacing: BuzzSpacing.md) {
                 gameCard(.quiz, gradient: quizGradient)
                 gameCard(.blindTest, gradient: blindTestGradient)
             }
@@ -91,18 +96,22 @@ struct MasterChooseGameView: View {
         let isAvailable: Bool = game == .quiz
             ? masterChooseGameVM.isQuizCardAvailable
             : masterChooseGameVM.isBlindTestCardAvailable
+        let allReady = masterChooseGameVM.allPlayersReady
+        let readyCount = masterChooseGameVM.readyPlayersCount
+        // #E1 — dénominateur = total enregistrés (inclut un joueur déconnecté en reconnexion)
+        let totalCount = masterChooseGameVM.totalPlayersCount
 
         VStack(spacing: 0) {
             VStack(spacing: 10) {
                 Image(systemName: game.iconName)
-                    .font(.system(size: 26, weight: .semibold))
+                    .textStyle(Typography.sectionTitle)
                     .foregroundStyle(.white)
                     .frame(width: 56, height: 56)
-                    .background(gradient.opacity(isAvailable ? 0.25 : 0.10), in: RoundedRectangle(cornerRadius: 16))
+                    .background(gradient.opacity(isAvailable ? 0.25 : 0.10), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
 
                 Text(game.gameTitle)
                     .font(.nohemi(.headline, weight: .bold))
-                    .foregroundStyle(isAvailable ? .white : .white.opacity(0.35))
+                    .foregroundStyle(isAvailable ? .white : Color.textDim)
                     .lineLimit(1)
             }
             .padding(.top, 18)
@@ -118,27 +127,42 @@ struct MasterChooseGameView: View {
                 router.push(game.destinationMaster)
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: isAvailable ? game.iconName : "checkmark")
-                        .font(.system(size: 12, weight: .semibold))
-                    Text(isAvailable ? "Lancer" : "Terminé")
-                        .font(.nohemi(.subheadline, weight: .bold))
+                    if !isAvailable {
+                        Image(systemName: "checkmark")
+                            .textStyle(Typography.captionEM)
+                        Text("Terminé")
+                            .font(.nohemi(.subheadline, weight: .bold))
+                    } else if !allReady {
+                        ProgressView()
+                            .controlSize(.mini)
+                            .tint(.white.opacity(0.6))
+                        Text("\(readyCount)/\(totalCount) prêts…")
+                            .font(.nohemi(.subheadline, weight: .bold))
+                    } else {
+                        Image(systemName: game.iconName)
+                            .textStyle(Typography.captionEM)
+                        Text("Lancer")
+                            .font(.nohemi(.subheadline, weight: .bold))
+                    }
                 }
-                .foregroundStyle(isAvailable ? .white : .white.opacity(0.40))
+                .foregroundStyle((isAvailable && allReady) ? .white : Color.textMuted)
                 .frame(maxWidth: .infinity)
                 .frame(height: 40)
                 .background(
-                    isAvailable ? AnyShapeStyle(gradient) : AnyShapeStyle(Color.white.opacity(0.06)),
-                    in: RoundedRectangle(cornerRadius: 12)
+                    (isAvailable && allReady)
+                        ? AnyShapeStyle(gradient)
+                        : AnyShapeStyle(Color.white.opacity(0.06)),
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
                 )
             }
             .buttonStyle(.plain)
-            .disabled(!isAvailable)
-            .padding(.horizontal, 12)
+            .disabled(!isAvailable || !allReady)
+            .padding(.horizontal, BuzzSpacing.md)
             .padding(.vertical, 10)
         }
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 20))
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: BuzzRadius.xl)
                 .strokeBorder(.white.opacity(isAvailable ? 0.10 : 0.04), lineWidth: 1)
         )
         .opacity(isAvailable ? 1 : 0.55)
@@ -156,7 +180,7 @@ struct MasterChooseGameView: View {
                 Spacer()
                 Text("mi-partie")
                     .font(.nohemi(.caption2, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(Color.textMuted)
             }
 
             VStack(spacing: 6) {
@@ -166,9 +190,9 @@ struct MasterChooseGameView: View {
             }
         }
         .padding(14)
-        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 20))
+        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: BuzzRadius.xl)
                 .strokeBorder(.white.opacity(0.07), lineWidth: 1)
         )
     }
@@ -181,7 +205,7 @@ struct MasterChooseGameView: View {
                     .frame(width: 24, height: 24)
                 Text("\(rank)")
                     .font(.nohemi(.caption2, weight: .black))
-                    .foregroundStyle(rank == 1 ? Color(hex: "1A0535") : .white.opacity(0.6))
+                    .foregroundStyle(rank == 1 ? Color.sheetBg : .white.opacity(0.6))
             }
 
             Circle()
@@ -193,7 +217,7 @@ struct MasterChooseGameView: View {
                         .foregroundStyle(.white)
                 )
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                 HStack {
                     Text(player.name)
                         .font(.nohemi(.subheadline, weight: .bold))
@@ -207,10 +231,10 @@ struct MasterChooseGameView: View {
                 }
 
                 GeometryReader { geo in
-                    RoundedRectangle(cornerRadius: 999)
+                    RoundedRectangle(cornerRadius: BuzzRadius.pill)
                         .fill(.white.opacity(0.10))
                         .overlay(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: 999)
+                            RoundedRectangle(cornerRadius: BuzzRadius.pill)
                                 .fill(player.teamColor.gradient)
                                 .frame(width: geo.size.width * CGFloat(player.score) / CGFloat(maxScore))
                         }
@@ -219,23 +243,23 @@ struct MasterChooseGameView: View {
             }
         }
         .padding(.horizontal, 10)
-        .padding(.vertical, 8)
+        .padding(.vertical, BuzzSpacing.sm)
         .background(
             rank == 1 ? Color.mustardYellow.opacity(0.08) : Color.clear,
-            in: RoundedRectangle(cornerRadius: 12)
+            in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
         )
     }
 
     // MARK: - Notes Section
 
     private var notesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             HStack(spacing: 10) {
                 Image(systemName: "music.note")
-                    .font(.system(size: 18, weight: .semibold))
+                    .textStyle(Typography.cardTitle)
                     .foregroundStyle(Color.mustardYellow)
                     .frame(width: 42, height: 42)
-                    .background(Color.mustardYellow.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
+                    .background(Color.mustardYellow.opacity(0.15), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
 
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Notes ♪")
@@ -246,6 +270,37 @@ struct MasterChooseGameView: View {
                         .foregroundStyle(.white.opacity(0.6))
                 }
                 Spacer()
+
+                Button { showNotesShop = true } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "plus.circle.fill")
+                            .textStyle(Typography.footnote)
+                        Text("Recharger")
+                            .font(.nohemi(.caption, weight: .bold))
+                    }
+                    .foregroundStyle(Color.mustardYellow)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.mustardYellow.opacity(0.12), in: Capsule())
+                    .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.30), lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+            }
+            .sheet(isPresented: $showNotesShop) {
+                NotesShopView(
+                    store: masterChooseGameVM.notesStore
+                )
+                .presentationDetents([.large])
+                .presentationDragIndicator(.hidden)
+            }
+
+            if masterChooseGameVM.canClaimDailyPack {
+                DailyPackBanner(
+                    days: masterChooseGameVM.pendingDailyPackDays,
+                    amount: masterChooseGameVM.pendingDailyAmount,
+                    onClaim: { masterChooseGameVM.claimDailyPack() }
+                )
+                .transition(.move(edge: .top).combined(with: .opacity))
             }
 
             if masterChooseGameVM.players.isEmpty {
@@ -253,9 +308,9 @@ struct MasterChooseGameView: View {
                     .font(.nohemi(.caption, weight: .regular))
                     .foregroundStyle(.white.opacity(0.3))
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, BuzzSpacing.sm)
             } else {
-                ScrollView(.horizontal, showsIndicators: false) {
+                ScrollView(.horizontal) {
                     HStack(spacing: 10) {
                         // Card "Tout le monde" si > 1 joueur
                         if masterChooseGameVM.players.count > 1 {
@@ -263,18 +318,22 @@ struct MasterChooseGameView: View {
                                 name: "Tout le\nmonde",
                                 icon: "person.2.fill",
                                 backgroundColor: Color.mustardYellow,
+                                // #3 — cap : on ne peut donner à chacun que ce que le solde
+                                // permet de couvrir pour TOUS (solde ÷ nb joueurs).
+                                maxAffordable: masterChooseGameVM.masterNotesBalance / max(masterChooseGameVM.players.count, 1),
                                 onSelectAmount: { amount in
                                     masterChooseGameVM.coinsVM.distributeToAll(amount)
                                 }
                             )
                         }
-                        
+
                         // Cards des joueurs individuels
                         ForEach(masterChooseGameVM.players) { player in
                             notesCard(
                                 name: player.name,
                                 icon: nil,
                                 playerColor: player.teamColor,
+                                maxAffordable: masterChooseGameVM.masterNotesBalance,
                                 onSelectAmount: { amount in
                                     masterChooseGameVM.coinsVM.sendCoinsToPlayer(player, amount: amount)
                                 }
@@ -284,12 +343,13 @@ struct MasterChooseGameView: View {
                 }
             }
         }
-        .padding(16)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 20))
+        .padding(BuzzSpacing.lg)
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: BuzzRadius.xl)
                 .strokeBorder(.white.opacity(0.10), lineWidth: 1.5)
         )
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: masterChooseGameVM.canClaimDailyPack)
     }
 
     private func notesCard(
@@ -297,6 +357,7 @@ struct MasterChooseGameView: View {
         icon: String? = nil,
         backgroundColor: Color? = nil,
         playerColor: GameColor? = nil,
+        maxAffordable: Int,
         onSelectAmount: @escaping (Int) -> Void
     ) -> some View {
         Menu {
@@ -306,15 +367,16 @@ struct MasterChooseGameView: View {
                 } label: {
                     Label("\(amount) notes", systemImage: "music.note")
                 }
+                .disabled(amount > maxAffordable)   // #3 — cap selon le solde du Master
             }
         } label: {
-            VStack(spacing: 4) {
+            VStack(spacing: BuzzSpacing.xs) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.system(size: 22, weight: .semibold))
+                        .textStyle(Typography.sectionTitle)
                         .foregroundStyle(.white)
                         .frame(width: 42, height: 42)
-                        .background(backgroundColor?.opacity(0.2) ?? Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 10))
+                        .background(backgroundColor?.opacity(0.2) ?? Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
                 } else if let playerColor = playerColor {
                     Circle()
                         .fill(playerColor.gradient)
@@ -335,19 +397,88 @@ struct MasterChooseGameView: View {
                     .frame(maxWidth: 60)
                 
                 Image(systemName: "music.note")
-                    .font(.system(size: 11, weight: .medium))
+                    .textStyle(Typography.caption2)
                     .foregroundStyle(Color.mustardYellow.opacity(0.7))
             }
             .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
+            .padding(.vertical, BuzzSpacing.sm)
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: BuzzRadius.sm)
                     .strokeBorder(.white.opacity(0.12), lineWidth: 1)
             )
         }
     }
     }
+
+// MARK: - Daily Pack Banner
+
+private struct DailyPackBanner: View {
+    let days: Int
+    let amount: Int
+    let onClaim: () -> Void
+
+    @State private var glowPulse = false
+
+    private var subtitle: String {
+        days == 1
+            ? "+\(amount) Notes offertes aujourd'hui"
+            : "+\(amount) Notes — \(days) jours accumulés"
+    }
+
+    var body: some View {
+        HStack(spacing: BuzzSpacing.md) {
+            ZStack {
+                Circle()
+                    .fill(Color.mustardYellow.opacity(0.18))
+                    .frame(width: 40, height: 40)
+                Image(systemName: days >= 7 ? "flame.fill" : "gift.fill")
+                    .textStyle(Typography.labelXL)
+                    .foregroundStyle(Color.mustardYellow)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(days >= 7 ? "Pack soirée — max accumulé !" : "Pack soirée disponible")
+                    .font(.nohemi(.caption, weight: .bold))
+                    .foregroundStyle(.white)
+                Text(subtitle)
+                    .font(.nohemi(.caption2, weight: .regular))
+                    .foregroundStyle(Color.textSecondary)
+            }
+
+            Spacer()
+
+            Button(action: onClaim) {
+                Text("Récupérer")
+                    .font(.nohemi(.caption, weight: .bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, BuzzSpacing.md)
+                    .padding(.vertical, 7)
+                    .background(
+                        LinearGradient(
+                            colors: [Color.yellowLeading, Color.yellowTrailing],
+                            startPoint: .leading, endPoint: .trailing
+                        ),
+                        in: Capsule()
+                    )
+                    .shadow(color: Color.yellowLeading.opacity(glowPulse ? 0.5 : 0.2), radius: glowPulse ? 8 : 3)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, BuzzSpacing.md)
+        .padding(.vertical, 10)
+        .background(Color.mustardYellow.opacity(days >= 7 ? 0.12 : 0.07), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+        .overlay(
+            RoundedRectangle(cornerRadius: BuzzRadius.md)
+                .strokeBorder(Color.mustardYellow.opacity(days >= 7 ? 0.40 : 0.25), lineWidth: 1)
+        )
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: true)) {
+                glowPulse = true
+            }
+        }
+    }
+}
 
 #Preview {
     NavigationStack {

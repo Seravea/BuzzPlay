@@ -16,16 +16,29 @@ enum BuzzerGameMode {
 enum AnswerResult {
     case correct(points: Int, answer: String?)
     case incorrect
+    case otherCorrect(playerName: String, points: Int, answer: String?)
 }
 
+@MainActor
 @Observable
 class BuzzerViewModel {
 
-    var player: Player
+    var player: Player {
+        didSet {
+            guard player.customBuzzSound != oldValue.customBuzzSound else { return }
+            if let soundName = player.customBuzzSound {
+                preloadCustomSound(soundName)
+            } else {
+                customSoundPlayer = nil
+            }
+        }
+    }
     let mode: BuzzerGameMode
 
     var isEnabled: Bool = false
     var playerNameHasBuzz: String?
+    // Séparé du buzz lock global : bloqué par un cadeau adverse (enemyCanNotBuzz)
+    private(set) var isGiftBlocked: Bool = false
 
     // MARK: - Retour visuel de réponse
     var answerResult: AnswerResult? = nil
@@ -36,8 +49,12 @@ class BuzzerViewModel {
     var activeHint: String? = nil
 
     // MARK: - Son buzzer
-    private var defaultBuzzPlayer: AVAudioPlayer?   // pré-chargé au init, pas de latence au 1er buzz
-    private var customSoundPlayer: AVAudioPlayer?   // son custom (gift changeBuzzSound)
+    private var defaultBuzzPlayer: AVAudioPlayer?
+    private var customSoundPlayer: AVAudioPlayer?
+
+    var isBuzzMuted: Bool = UserDefaults.standard.bool(forKey: "buzzplay.player.buzzMuted") {
+        didSet { UserDefaults.standard.set(isBuzzMuted, forKey: "buzzplay.player.buzzMuted") }
+    }
 
     var onBuzz: ((Player, BuzzerGameMode) -> Void)?
 
@@ -46,6 +63,15 @@ class BuzzerViewModel {
         self.mode = mode
         setupAudioSession()
         preloadDefaultSound()
+    }
+
+    deinit {
+        // Hygiène : le countdown 3-2-1 survivait au VM (Timer sur RunLoop) si l'écran
+        // était quitté en plein décompte. assumeIsolated : le VM est possédé par SwiftUI
+        // → désalloué sur le main thread.
+        MainActor.assumeIsolated {
+            countdownTimer?.invalidate()
+        }
     }
 
     private func setupAudioSession() {
@@ -64,6 +90,12 @@ class BuzzerViewModel {
         defaultBuzzPlayer?.prepareToPlay()
     }
 
+    private func preloadCustomSound(_ soundName: String) {
+        guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return }
+        customSoundPlayer = try? AVAudioPlayer(contentsOf: url)
+        customSoundPlayer?.prepareToPlay()
+    }
+
     
     
 }
@@ -77,14 +109,11 @@ extension BuzzerViewModel {
     }
 
     private func playBuzzSound() {
-        if let soundName = player.customBuzzSound {
-            // Son custom choisi par le Player (cadeau changeBuzzSound)
-            guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return }
-            customSoundPlayer?.stop()
-            customSoundPlayer = try? AVAudioPlayer(contentsOf: url)
-            customSoundPlayer?.play()
+        guard !isBuzzMuted else { return }
+        if let custom = customSoundPlayer {
+            custom.currentTime = 0
+            custom.play()
         } else {
-            // Son par défaut pré-chargé → zéro latence
             defaultBuzzPlayer?.currentTime = 0
             defaultBuzzPlayer?.play()
         }
@@ -92,14 +121,24 @@ extension BuzzerViewModel {
 
 
     func unLockBuzz() {
-        isEnabled = true
         playerNameHasBuzz = nil
-        activeHint = nil  // reset l'indice à chaque nouvelle manche
+        activeHint = nil
+        guard !player.blockedFromBuzzing && !isGiftBlocked else { return }
+        isEnabled = true
     }
 
     func lockBuzz(teamNameHasBuzz: String) {
         self.playerNameHasBuzz = teamNameHasBuzz
         isEnabled = false
+    }
+
+    func setGiftBlock(_ blocked: Bool) {
+        isGiftBlocked = blocked
+        if blocked {
+            isEnabled = false
+        } else if playerNameHasBuzz == nil {
+            isEnabled = true
+        }
     }
 
     func clearBuzzState() {
@@ -116,16 +155,10 @@ extension BuzzerViewModel {
 
     func showAnswerResult(_ result: AnswerResult) {
         answerResult = result
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: GameRhythm.answerOverlay)
             self?.answerResult = nil
-            switch result {
-            case .incorrect:
-                // Reprise de la manche — countdown puis buzzer actif
-                self?.startCountdownBeforeBuzzer()
-            case .correct:
-                // Bonne réponse — buzzer reste désactivé, attend la prochaine question du Master
-                self?.lockBuzz(teamNameHasBuzz: "")
-            }
+            self?.lockBuzz(teamNameHasBuzz: "")
         }
     }
 
@@ -136,15 +169,18 @@ extension BuzzerViewModel {
         countdownPhase = .counting(count)
         countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
             count -= 1
-            if count > 0 {
-                self?.countdownPhase = .counting(count)
-            } else {
-                timer.invalidate()
-                self?.countdownTimer = nil
-                self?.countdownPhase = .go
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                    self?.countdownPhase = .hidden
-                    self?.unLockBuzz()
+            // Garantir l'isolation @MainActor pour les mutations depuis la closure Timer
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                if count > 0 {
+                    self.countdownPhase = .counting(count)
+                } else {
+                    timer.invalidate()
+                    self.countdownTimer = nil
+                    self.countdownPhase = .go
+                    try? await Task.sleep(for: GameRhythm.goFlash)
+                    self.countdownPhase = .hidden
+                    self.unLockBuzz()
                 }
             }
         }

@@ -1,0 +1,687 @@
+{
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/AI/AIQuizGenerator.swift": {
+    "mtime": 1780903469.8822355,
+    "ast_hash": "245677ecd79f570413e5615127d1ec7c",
+    "semantic_hash": "245677ecd79f570413e5615127d1ec7c"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/AI/AIQuizModels.swift": {
+    "mtime": 1780568114.3720536,
+    "ast_hash": "9b48042e25d1fffc9f16534a16a0d8bc",
+    "semantic_hash": "9b48042e25d1fffc9f16534a16a0d8bc"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/AI/QuizPromptBuilder.swift": {
+    "mtime": 1780568114.3728437,
+    "ast_hash": "cdb8b5889e8b6e7e43d2394ecd14e01a",
+    "semantic_hash": "cdb8b5889e8b6e7e43d2394ecd14e01a"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/BuzzPlayApp.swift": {
+    "mtime": 1779789061.4421718,
+    "ast_hash": "e3efe6f9830b7fa5133c2aae22e185d3",
+    "semantic_hash": "e3efe6f9830b7fa5133c2aae22e185d3"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/GameEngine/GameState.swift": {
+    "mtime": 1779107677.8431742,
+    "ast_hash": "1fb03c1424c2476ae57d75ddab848eb4",
+    "semantic_hash": "1fb03c1424c2476ae57d75ddab848eb4"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Models/GameColor.swift": {
+    "mtime": 1780569428.8903856,
+    "ast_hash": "8127e9f63722be5a743550d09a749f79",
+    "semantic_hash": "8127e9f63722be5a743550d09a749f79"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Models/Player.swift": {
+    "mtime": 1779789061.442824,
+    "ast_hash": "5194a0082a8f8feff51c9339b3494f66",
+    "semantic_hash": "5194a0082a8f8feff51c9339b3494f66"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Models/QuizQuestion.swift": {
+    "mtime": 1780903469.8824697,
+    "ast_hash": "4b1a9e25b64dc8c10b86dcc457d3ec23",
+    "semantic_hash": "4b1a9e25b64dc8c10b86dcc457d3ec23"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Models/QuizSet.swift": {
+    "mtime": 1779107677.843793,
+    "ast_hash": "520d43e6a61ac79c44618eef15becc80",
+    "semantic_hash": "520d43e6a61ac79c44618eef15becc80"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Models/QuizTheme.swift": {
+    "mtime": 1780296746.0810266,
+    "ast_hash": "5dfb16f46c2d88bb71be330615ff7587",
+    "semantic_hash": "5dfb16f46c2d88bb71be330615ff7587"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/AppleMusic/AppleMusicService.swift": {
+    "mtime": 1779107677.8442118,
+    "ast_hash": "8708ff1f74542d78c09e65ff6b5addf0",
+    "semantic_hash": "8708ff1f74542d78c09e65ff6b5addf0"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCModel/GamesDatas/GameType.swift": {
+    "mtime": 1779107677.8447058,
+    "ast_hash": "8cd717fc39e9fd6029fc48e6f209695b",
+    "semantic_hash": "8cd717fc39e9fd6029fc48e6f209695b"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCModel/GamesDatas/QuestionPayload.swift": {
+    "mtime": 1779107677.8448477,
+    "ast_hash": "686de875404de54e2b09e255b5fa16c0",
+    "semantic_hash": "686de875404de54e2b09e255b5fa16c0"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCModel/GamesFunctions/BuzzLockPayload.swift": {
+    "mtime": 1779107677.845084,
+    "ast_hash": "b994079f44c8d0d79fc978e39f93d0a1",
+    "semantic_hash": "b994079f44c8d0d79fc978e39f93d0a1"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCModel/GamesFunctions/BuzzPayLoad.swift": {
+    "mtime": 1779107677.8452408,
+    "ast_hash": "406d69c24158a04e4243643cd0fd0479",
+    "semantic_hash": "406d69c24158a04e4243643cd0fd0479"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCModel/GamesFunctions/BuzzUnlockPayload.swift": {
+    "mtime": 1780471701.167799,
+    "ast_hash": "17a0a05532ebc04df03ae8ec106a25af",
+    "semantic_hash": "17a0a05532ebc04df03ae8ec106a25af"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCModel/GamesFunctions/GiftRequestPayload.swift": {
+    "mtime": 1779789061.4432845,
+    "ast_hash": "738277f5595a79269405c682bd3b72d4",
+    "semantic_hash": "738277f5595a79269405c682bd3b72d4"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCModel/MPCMessage/MPCMessage.swift": {
+    "mtime": 1780390504.1231701,
+    "ast_hash": "2ff3b8ef270d3dd944e3ba5be3cb2351",
+    "semantic_hash": "2ff3b8ef270d3dd944e3ba5be3cb2351"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCModel/PublicDisplay/BlindTestPublicPayload.swift": {
+    "mtime": 1779789061.4440694,
+    "ast_hash": "698221fa53968b78cf636e35104c648e",
+    "semantic_hash": "698221fa53968b78cf636e35104c648e"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCModel/PublicDisplay/QuizPublicPayload.swift": {
+    "mtime": 1779789061.4445784,
+    "ast_hash": "a2b3d6edef3a15530a331a59994ec1c0",
+    "semantic_hash": "a2b3d6edef3a15530a331a59994ec1c0"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCModel/PublicDisplay/QuizRoundState.swift": {
+    "mtime": 1779107677.8461664,
+    "ast_hash": "026ac7fb2d7e7c71f5f1e9d19f0555c9",
+    "semantic_hash": "026ac7fb2d7e7c71f5f1e9d19f0555c9"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCService/MPCError.swift": {
+    "mtime": 1779107677.8463812,
+    "ast_hash": "a236f8faacd338f6a90f801f09f24e36",
+    "semantic_hash": "a236f8faacd338f6a90f801f09f24e36"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Services/Transport/MPCService/MPCService.swift": {
+    "mtime": 1780296746.0819821,
+    "ast_hash": "211d46fdb37831d53b0a91397ac6d3f7",
+    "semantic_hash": "211d46fdb37831d53b0a91397ac6d3f7"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/SharedViewModel/AmbiantSoundViewModel.swift": {
+    "mtime": 1779107677.8469622,
+    "ast_hash": "cffca34eaebeb0323e6301ab82041223",
+    "semantic_hash": "cffca34eaebeb0323e6301ab82041223"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Utils/Clock.swift": {
+    "mtime": 1779107677.847162,
+    "ast_hash": "ce74473b8354a30be4b62be253263343",
+    "semantic_hash": "ce74473b8354a30be4b62be253263343"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Core/Utils/CountdownLogic.swift": {
+    "mtime": 1780296746.0823205,
+    "ast_hash": "5a127d5696c555f77ae05008b16b9f78",
+    "semantic_hash": "5a127d5696c555f77ae05008b16b9f78"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Data/QuizJSONLoader.swift": {
+    "mtime": 1780911366.088976,
+    "ast_hash": "860960a02724baaa3300f9e1af2a677d",
+    "semantic_hash": "860960a02724baaa3300f9e1af2a677d"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Data/QuizSampleSets.swift": {
+    "mtime": 1780296746.082966,
+    "ast_hash": "b6cc9501218187bf89438323d8c7494f",
+    "semantic_hash": "b6cc9501218187bf89438323d8c7494f"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/DisplayPublic/PublicDisplay/Models/PublicState.swift": {
+    "mtime": 1779107677.8478136,
+    "ast_hash": "80feefd5061b803b11841a03010589bf",
+    "semantic_hash": "80feefd5061b803b11841a03010589bf"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/DisplayPublic/PublicDisplay/Views/BlindTest/BlindTestHints.swift": {
+    "mtime": 1779108887.408002,
+    "ast_hash": "4b85183f6df28bda5fc23df8904616b4",
+    "semantic_hash": "4b85183f6df28bda5fc23df8904616b4"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/DisplayPublic/PublicDisplay/Views/BlindTest/View/PublicBlindTestView.swift": {
+    "mtime": 1780390504.1235063,
+    "ast_hash": "8327ca1c3aaa9b1f00009c09468c4065",
+    "semantic_hash": "8327ca1c3aaa9b1f00009c09468c4065"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/DisplayPublic/PublicDisplay/Views/PublicDisplayView.swift": {
+    "mtime": 1780568727.2253344,
+    "ast_hash": "8451ad87cb92c2898b2a9b01e5af26d0",
+    "semantic_hash": "8451ad87cb92c2898b2a9b01e5af26d0"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/DisplayPublic/PublicDisplay/Views/Quiz/View/PublicQuizDisplayView.swift": {
+    "mtime": 1780568727.2257593,
+    "ast_hash": "d7cc82b4214e35b47b0718442eaf1ea5",
+    "semantic_hash": "d7cc82b4214e35b47b0718442eaf1ea5"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/GameProtocols/BuzzDrivenGame.swift": {
+    "mtime": 1780296746.0834527,
+    "ast_hash": "71832566b35aa09a0627696624037298",
+    "semantic_hash": "71832566b35aa09a0627696624037298"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/HomeView/Views/HomeView.swift": {
+    "mtime": 1780568727.226097,
+    "ast_hash": "37401419b39e4d5da80b06f49e3073aa",
+    "semantic_hash": "37401419b39e4d5da80b06f49e3073aa"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/HomeView/Views/SubViews/ChooseRoleCardsView.swift": {
+    "mtime": 1779107677.8497386,
+    "ast_hash": "6f9495922f80679221d40bee3695f60f",
+    "semantic_hash": "6f9495922f80679221d40bee3695f60f"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/Model/BlindTestPlaylist.swift": {
+    "mtime": 1779107677.8500977,
+    "ast_hash": "0b62cccb72f48b47ad49a5faf394c6f2",
+    "semantic_hash": "0b62cccb72f48b47ad49a5faf394c6f2"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/Model/BlindTestSong.swift": {
+    "mtime": 1779107677.8502607,
+    "ast_hash": "9546295787fa4dd53e1d14d3fa85b8b7",
+    "semantic_hash": "9546295787fa4dd53e1d14d3fa85b8b7"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/View/BlindTestActiveScreen.swift": {
+    "mtime": 1780296746.084208,
+    "ast_hash": "3ab2cc2c237824ee1d1c676b8a834988",
+    "semantic_hash": "3ab2cc2c237824ee1d1c676b8a834988"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/View/BlindTestBuzzSheet.swift": {
+    "mtime": 1779107677.850863,
+    "ast_hash": "ed1d6edd778fdca796fc7a28489856b1",
+    "semantic_hash": "ed1d6edd778fdca796fc7a28489856b1"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/View/BlindTestMasterView.swift": {
+    "mtime": 1780296746.084542,
+    "ast_hash": "5d4770ba83e473da955e74b080740a3c",
+    "semantic_hash": "5d4770ba83e473da955e74b080740a3c"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/View/BlindTestSearchScreen.swift": {
+    "mtime": 1780296746.085026,
+    "ast_hash": "cc91d96122b47f9536dc4e7d54a1a26a",
+    "semantic_hash": "cc91d96122b47f9536dc4e7d54a1a26a"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/View/BlindTestSongListScreen.swift": {
+    "mtime": 1779789061.4508505,
+    "ast_hash": "071852a7e5e2a4d4e8f0de42d7842eb2",
+    "semantic_hash": "071852a7e5e2a4d4e8f0de42d7842eb2"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/View/PrivateMasterBlindTestView.swift": {
+    "mtime": 1779789061.4511359,
+    "ast_hash": "4617de491577a9ffa5a128f1bf84fc54",
+    "semantic_hash": "4617de491577a9ffa5a128f1bf84fc54"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/View/PublicMasterBlindTestView.swift": {
+    "mtime": 1779108634.3402302,
+    "ast_hash": "cee84430e30af776269b5d63ac2f67a9",
+    "semantic_hash": "cee84430e30af776269b5d63ac2f67a9"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/View/SubViews/AmbiantSoundsPadView.swift": {
+    "mtime": 1779107677.8521063,
+    "ast_hash": "31fcf38bc109bc00a7de32b597c56f85",
+    "semantic_hash": "31fcf38bc109bc00a7de32b597c56f85"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/View/SubViews/ButtonAmbiantSong.swift": {
+    "mtime": 1779107677.8522806,
+    "ast_hash": "16728373a1a1fd64d3a5fb6b7a9e6274",
+    "semantic_hash": "16728373a1a1fd64d3a5fb6b7a9e6274"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/BlindTest/ViewModel/BlindTestMasterViewModel.swift": {
+    "mtime": 1780904341.820242,
+    "ast_hash": "31b5b8252661aeecfa0e74444163e3a5",
+    "semantic_hash": "31b5b8252661aeecfa0e74444163e3a5"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterChooseGame/View/MasterChooseGameView.swift": {
+    "mtime": 1780913313.9783745,
+    "ast_hash": "fa5a4742371acc80a4ac135f8088c9ef",
+    "semantic_hash": "fa5a4742371acc80a4ac135f8088c9ef"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterChooseGame/View/SubViews/ButtonChooseGameView.swift": {
+    "mtime": 1779107677.853184,
+    "ast_hash": "acd4692bfbe5a8edacce1887c8e6c757",
+    "semantic_hash": "acd4692bfbe5a8edacce1887c8e6c757"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterChooseGame/ViewModel/MasterChooseGameViewModel.swift": {
+    "mtime": 1780913295.1080594,
+    "ast_hash": "72390e20730ad0b2ea20e4f91bf542b2",
+    "semantic_hash": "72390e20730ad0b2ea20e4f91bf542b2"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterFlowViewModel/MasterFlowViewModel.swift": {
+    "mtime": 1780912955.6439414,
+    "ast_hash": "6325f01b9a5fb7c13b9b6c50172f534d",
+    "semantic_hash": "6325f01b9a5fb7c13b9b6c50172f534d"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterLobby/ViewModel/MasterLobbyViewModel.swift": {
+    "mtime": 1779348694.812108,
+    "ast_hash": "16ad99333985026fc22b1d3e21d4f77d",
+    "semantic_hash": "16ad99333985026fc22b1d3e21d4f77d"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterLobby/Views/LobbyMasterView.swift": {
+    "mtime": 1779348694.8124807,
+    "ast_hash": "532484639d03ba36e67ca90c798f8da0",
+    "semantic_hash": "532484639d03ba36e67ca90c798f8da0"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterQuiz/AIQuizSetup/AIQuizReviewView.swift": {
+    "mtime": 1780903469.8844228,
+    "ast_hash": "3309c0faebbc18e3fcaa5b41b99b3aaa",
+    "semantic_hash": "3309c0faebbc18e3fcaa5b41b99b3aaa"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterQuiz/AIQuizSetup/AIQuizSetupView.swift": {
+    "mtime": 1780571236.9905038,
+    "ast_hash": "4639aad7f7d7b05ef32c98a6fe622a9e",
+    "semantic_hash": "4639aad7f7d7b05ef32c98a6fe622a9e"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterQuiz/ThemeSelection/View/QuizThemeSelectionView.swift": {
+    "mtime": 1780568727.227475,
+    "ast_hash": "0261a52b1b2aaeeae1899e24a06ceed3",
+    "semantic_hash": "0261a52b1b2aaeeae1899e24a06ceed3"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterQuiz/ThemeSelection/ViewModel/QuizThemeSelectionViewModel.swift": {
+    "mtime": 1780390504.126223,
+    "ast_hash": "7c5fb1f2d2aced312b00650992008c76",
+    "semantic_hash": "7c5fb1f2d2aced312b00650992008c76"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterQuiz/View/QuizMasterListView.swift": {
+    "mtime": 1780296746.0879085,
+    "ast_hash": "5e77b02a5326df7d6705b12aff24fccf",
+    "semantic_hash": "5e77b02a5326df7d6705b12aff24fccf"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterQuiz/View/QuizMasterQuestionView.swift": {
+    "mtime": 1780296746.0882955,
+    "ast_hash": "f5369db468311cd94cce0f4c295c880e",
+    "semantic_hash": "f5369db468311cd94cce0f4c295c880e"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/MasterQuiz/ViewModel/QuizMasterViewModel.swift": {
+    "mtime": 1780904341.8215451,
+    "ast_hash": "eaa88a14d65f5001e7c27fb5516d4131",
+    "semantic_hash": "eaa88a14d65f5001e7c27fb5516d4131"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/MasterFeatures/ScoreMaster/ScoreMasterView.swift": {
+    "mtime": 1780912975.6874168,
+    "ast_hash": "4eb9934147d44f863966972b70107632",
+    "semantic_hash": "4eb9934147d44f863966972b70107632"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/Shared/Views/CountdownOverlay.swift": {
+    "mtime": 1780296746.089527,
+    "ast_hash": "81679a61a93dbe54cdf3fa83ee1e03b9",
+    "semantic_hash": "81679a61a93dbe54cdf3fa83ee1e03b9"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/Buzzer/Button/ViewModel/BuzzerViewModel.swift": {
+    "mtime": 1780571448.5516596,
+    "ast_hash": "59ebaab4f382affc1d059ebd1c19b79b",
+    "semantic_hash": "59ebaab4f382affc1d059ebd1c19b79b"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/Buzzer/Button/Views/BuzzerButtonView.swift": {
+    "mtime": 1779111386.595509,
+    "ast_hash": "20e67819c6c30a1cbd279a1ba29053c6",
+    "semantic_hash": "20e67819c6c30a1cbd279a1ba29053c6"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/Buzzer/Button/Views/BuzzerPlayerView.swift": {
+    "mtime": 1780570081.6521819,
+    "ast_hash": "7ce72a135f14d141894adc3ee264826e",
+    "semantic_hash": "7ce72a135f14d141894adc3ee264826e"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/Buzzer/Button/Views/PostRoundLeaderboardView.swift": {
+    "mtime": 1780296746.090352,
+    "ast_hash": "b846906aea09fe35c30d89e0d8a812dc",
+    "semantic_hash": "b846906aea09fe35c30d89e0d8a812dc"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/CreateTeamView/ViewModel/CreateTeamViewModel.swift": {
+    "mtime": 1780296746.0906959,
+    "ast_hash": "f599fe7971f0a1c2fd53d8d397f72bf8",
+    "semantic_hash": "f599fe7971f0a1c2fd53d8d397f72bf8"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/CreateTeamView/Views/CreateTeamView.swift": {
+    "mtime": 1779112339.592326,
+    "ast_hash": "d8d647c88bb590f92346bedfb7cecbca",
+    "semantic_hash": "d8d647c88bb590f92346bedfb7cecbca"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/CreateTeamView/Views/Subviews/TextFieldCustom.swift": {
+    "mtime": 1779107677.857783,
+    "ast_hash": "f1055579d55137ccf71b89371acbd487",
+    "semantic_hash": "f1055579d55137ccf71b89371acbd487"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/PlayerChooseGameView/PlayerChooseGameView.swift": {
+    "mtime": 1780296746.0911558,
+    "ast_hash": "f4d0b4763455d460b9f94e22ce4d7866",
+    "semantic_hash": "f4d0b4763455d460b9f94e22ce4d7866"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/PlayerGameView/PlayerGameView.swift": {
+    "mtime": 1780568727.2286153,
+    "ast_hash": "d0f696e381267c2c1331d8ef9b277547",
+    "semantic_hash": "d0f696e381267c2c1331d8ef9b277547"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/ScorePlayer/ScorePlayerView.swift": {
+    "mtime": 1779348694.8141115,
+    "ast_hash": "7be848b9bc01ab9bb357419eb789ea24",
+    "semantic_hash": "7be848b9bc01ab9bb357419eb789ea24"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/TeamViewModel/TeamFlowViewModel.swift": {
+    "mtime": 1780296746.091783,
+    "ast_hash": "9594817bbc7fe855aad2d138514602cd",
+    "semantic_hash": "9594817bbc7fe855aad2d138514602cd"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Features/TeamFeatures/TeamViewModel/TeamGameViewModel.swift": {
+    "mtime": 1780569428.891513,
+    "ast_hash": "4d7e17cf584c85a1d8fe3caf9d911568",
+    "semantic_hash": "4d7e17cf584c85a1d8fe3caf9d911568"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/AccentColor.colorset/Contents.json": {
+    "mtime": 1779107677.8592916,
+    "ast_hash": "55019f7265dde0a78318b0807f98e847",
+    "semantic_hash": "55019f7265dde0a78318b0807f98e847"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+    "mtime": 1779107677.8594983,
+    "ast_hash": "e8bad5cf06c73a2c470f4e82a42584f8",
+    "semantic_hash": "e8bad5cf06c73a2c470f4e82a42584f8"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/ButtonTap.imageset/Contents.json": {
+    "mtime": 1779107677.8616316,
+    "ast_hash": "030ae63e83c0268c21dbca2759f214f3",
+    "semantic_hash": "030ae63e83c0268c21dbca2759f214f3"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/Contents.json": {
+    "mtime": 1779107677.8617892,
+    "ast_hash": "9deb2ada1cc834bbebf8bbad9c8978a1",
+    "semantic_hash": "9deb2ada1cc834bbebf8bbad9c8978a1"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/GameColor/Contents.json": {
+    "mtime": 1779107677.8622909,
+    "ast_hash": "9deb2ada1cc834bbebf8bbad9c8978a1",
+    "semantic_hash": "9deb2ada1cc834bbebf8bbad9c8978a1"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/GameColor/blueGame.colorset/Contents.json": {
+    "mtime": 1779107677.862151,
+    "ast_hash": "e20a00fe1aaa0377a1ca15e92729f479",
+    "semantic_hash": "e20a00fe1aaa0377a1ca15e92729f479"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/GameColor/greenGame.colorset/Contents.json": {
+    "mtime": 1779107677.862539,
+    "ast_hash": "ac9a6179fc1d8f2f0a3d8a54d7d14275",
+    "semantic_hash": "ac9a6179fc1d8f2f0a3d8a54d7d14275"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/GameColor/purpleGame.colorset/Contents.json": {
+    "mtime": 1779107677.8629136,
+    "ast_hash": "36a6ededad552683c3cd52cc344fc9f1",
+    "semantic_hash": "36a6ededad552683c3cd52cc344fc9f1"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/GameColor/redGame.colorset/Contents.json": {
+    "mtime": 1779107677.8633018,
+    "ast_hash": "a6948b342eb9e9ac029e71fea9e61343",
+    "semantic_hash": "a6948b342eb9e9ac029e71fea9e61343"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/GameColor/yellowGame.colorset/Contents.json": {
+    "mtime": 1779107677.863689,
+    "ast_hash": "38924d46d0c8d658790d349e7de4aff5",
+    "semantic_hash": "38924d46d0c8d658790d349e7de4aff5"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/buttonFloor.imageset/Contents.json": {
+    "mtime": 1779107677.861176,
+    "ast_hash": "fcc2af4d63b0f8c8e186a29fdf3d3f36",
+    "semantic_hash": "fcc2af4d63b0f8c8e186a29fdf3d3f36"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/quiz_sets.json": {
+    "mtime": 1780911428.833017,
+    "ast_hash": "576e53597e2a55e7ca2ef9ccc2e72446",
+    "semantic_hash": "576e53597e2a55e7ca2ef9ccc2e72446"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/BPWordmarkView.swift": {
+    "mtime": 1779107677.94504,
+    "ast_hash": "8e2b61a098b1f2e80d130b4e78e00d1d",
+    "semantic_hash": "8e2b61a098b1f2e80d130b4e78e00d1d"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/BackgroundAppView.swift": {
+    "mtime": 1779107677.9448962,
+    "ast_hash": "ed49caf3ef67ca2b677b409086f081ef",
+    "semantic_hash": "ed49caf3ef67ca2b677b409086f081ef"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/ButtonGameCardView.swift": {
+    "mtime": 1779107677.9451754,
+    "ast_hash": "96aedf5a3ccae13a9ccbc39d51e36520",
+    "semantic_hash": "96aedf5a3ccae13a9ccbc39d51e36520"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/Coins/View/CoinsView.swift": {
+    "mtime": 1779108826.7133772,
+    "ast_hash": "e36c44c17e2ff41bf10a51a43274be3d",
+    "semantic_hash": "e36c44c17e2ff41bf10a51a43274be3d"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/Coins/View/GiftShopView.swift": {
+    "mtime": 1780904341.8222606,
+    "ast_hash": "13702c761bace8b5a94b432ed97164d6",
+    "semantic_hash": "13702c761bace8b5a94b432ed97164d6"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/Coins/View/Subviews/CoinsMasterView.swift": {
+    "mtime": 1779108737.8112934,
+    "ast_hash": "3eff440b33510535e2ef093fb8102102",
+    "semantic_hash": "3eff440b33510535e2ef093fb8102102"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/Coins/View/Subviews/CoinsTeamView.swift": {
+    "mtime": 1779111547.4102304,
+    "ast_hash": "04f5e3a1aeb046a354c488b5c3c57fb9",
+    "semantic_hash": "04f5e3a1aeb046a354c488b5c3c57fb9"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/Coins/ViewModel/CoinsViewModel.swift": {
+    "mtime": 1780296746.093935,
+    "ast_hash": "9913a2342e1654b2e2ed592fb357f653",
+    "semantic_hash": "9913a2342e1654b2e2ed592fb357f653"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/ConnectionLostOverlay.swift": {
+    "mtime": 1779107677.9464939,
+    "ast_hash": "ddc9a37cfd1325672dc555cec81ff87c",
+    "semantic_hash": "ddc9a37cfd1325672dc555cec81ff87c"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/ConnectionStatusBadge.swift": {
+    "mtime": 1779789061.4602354,
+    "ast_hash": "a91a692bf539070c551c92c685b30f57",
+    "semantic_hash": "a91a692bf539070c551c92c685b30f57"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/GamePausedOverlay.swift": {
+    "mtime": 1780296746.094354,
+    "ast_hash": "33d442aff26ada314f17b6d2a94eabbd",
+    "semantic_hash": "33d442aff26ada314f17b6d2a94eabbd"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/LoadingCardView.swift": {
+    "mtime": 1779107677.9470143,
+    "ast_hash": "16c9c02905d58ff31cd681d20ab44900",
+    "semantic_hash": "16c9c02905d58ff31cd681d20ab44900"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/MusicCards/PlaylistCard.swift": {
+    "mtime": 1779107677.947416,
+    "ast_hash": "dfcb66e2e4c91b9d59ad4c0927ed176b",
+    "semantic_hash": "dfcb66e2e4c91b9d59ad4c0927ed176b"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/MusicCards/SongCard.swift": {
+    "mtime": 1779107677.9476688,
+    "ast_hash": "772ad588b8caa9590bec96f682fdefee",
+    "semantic_hash": "772ad588b8caa9590bec96f682fdefee"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/PrimaryButtonView.swift": {
+    "mtime": 1779107677.9479523,
+    "ast_hash": "1fea6abdc5bd5356a881c2d306c8706d",
+    "semantic_hash": "1fea6abdc5bd5356a881c2d306c8706d"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/SectionCompleteOverlay.swift": {
+    "mtime": 1779789061.46054,
+    "ast_hash": "1f1325e804383046d467cfc04348c7e4",
+    "semantic_hash": "1f1325e804383046d467cfc04348c7e4"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/StartingButtonView.swift": {
+    "mtime": 1779107677.9482942,
+    "ast_hash": "6a011218fa8b7008560043b8a90b9369",
+    "semantic_hash": "6a011218fa8b7008560043b8a90b9369"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/TeamCardView.swift": {
+    "mtime": 1779109024.1959777,
+    "ast_hash": "438d02112dd88c011b306aff62cc3667",
+    "semantic_hash": "438d02112dd88c011b306aff62cc3667"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/TimerCardView.swift": {
+    "mtime": 1780569428.892583,
+    "ast_hash": "5403853fafc0c0b40686182886155368",
+    "semantic_hash": "5403853fafc0c0b40686182886155368"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/WaitingForMasterOverlay.swift": {
+    "mtime": 1780296746.094761,
+    "ast_hash": "d961788fb25db32467458b3920cc44d9",
+    "semantic_hash": "d961788fb25db32467458b3920cc44d9"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Extensions/ColorHex.swift": {
+    "mtime": 1779107677.949252,
+    "ast_hash": "886c830cc6a0de2bbcaedc4777ea27f0",
+    "semantic_hash": "886c830cc6a0de2bbcaedc4777ea27f0"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Extensions/DateFormat.swift": {
+    "mtime": 1779107677.9494514,
+    "ast_hash": "0f7966ee84927893afa4236f586a4c3e",
+    "semantic_hash": "0f7966ee84927893afa4236f586a4c3e"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Extensions/ShapeExtensions.swift": {
+    "mtime": 1779107677.9496212,
+    "ast_hash": "cef0cf9e9fc65cc532fdf3999e1f1dde",
+    "semantic_hash": "cef0cf9e9fc65cc532fdf3999e1f1dde"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Extensions/TextExtensions.swift": {
+    "mtime": 1779107677.9499881,
+    "ast_hash": "8fc33bf3efaaa7050c938dbfa381385c",
+    "semantic_hash": "8fc33bf3efaaa7050c938dbfa381385c"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Navigation/Route.swift": {
+    "mtime": 1779348694.815023,
+    "ast_hash": "5388a04d69dd6f0317441fc07798ab36",
+    "semantic_hash": "5388a04d69dd6f0317441fc07798ab36"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Navigation/Router.swift": {
+    "mtime": 1779107677.9506533,
+    "ast_hash": "16f1075b6eea0974da2314352a0f4941",
+    "semantic_hash": "16f1075b6eea0974da2314352a0f4941"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Styles/ButtonStyleE.swift": {
+    "mtime": 1779107677.951253,
+    "ast_hash": "6a0f1c66900c094ace20117433417721",
+    "semantic_hash": "6a0f1c66900c094ace20117433417721"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Styles/Colors.swift": {
+    "mtime": 1779107677.9514997,
+    "ast_hash": "4adaac4c52d110750395deb5876d1087",
+    "semantic_hash": "4adaac4c52d110750395deb5876d1087"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Styles/RoleButtonUI.swift": {
+    "mtime": 1779107677.9517407,
+    "ast_hash": "371629b4577581efe62af7a3b30e6573",
+    "semantic_hash": "371629b4577581efe62af7a3b30e6573"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Styles/Theme.swift": {
+    "mtime": 1779107677.9519606,
+    "ast_hash": "997fc9c9073909fb803fb10a69b2ee54",
+    "semantic_hash": "997fc9c9073909fb803fb10a69b2ee54"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Styles/Typography.swift": {
+    "mtime": 1779107677.9521966,
+    "ast_hash": "e008f122ffb9fecb071854eed0bdcd1a",
+    "semantic_hash": "e008f122ffb9fecb071854eed0bdcd1a"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/SPRINT_1_2_3_SUMMARY.md": {
+    "mtime": 1779107677.9524739,
+    "ast_hash": "2e84d44f7ac492810c392610298748b5",
+    "semantic_hash": "2e84d44f7ac492810c392610298748b5"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/WCAG_AUDIT.md": {
+    "mtime": 1779107677.9526815,
+    "ast_hash": "9e094eee01f30d4be0dd59e460bf7e54",
+    "semantic_hash": "9e094eee01f30d4be0dd59e460bf7e54"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/CLAUDE.md": {
+    "mtime": 1779789061.4614537,
+    "ast_hash": "1c1a4047956b297119689eb1d28f8cce",
+    "semantic_hash": ""
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/docs/session-2026-04-20-quiz-master-redesign.md": {
+    "mtime": 1779107677.9530394,
+    "ast_hash": "6c0d0211e2664013f761d7dfc743865b",
+    "semantic_hash": ""
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/memory/sessions/2026-04-20-ux-blindtest-redesign.md": {
+    "mtime": 1779107677.9534688,
+    "ast_hash": "2e3e6842307965d09f14682ce723a2a3",
+    "semantic_hash": ""
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/AppIcon.appiconset/pexels-hameen-31663138.jpg": {
+    "mtime": 1779107677.8607147,
+    "ast_hash": "32c1c69979a3bdff119d6a66d3ebffe6",
+    "semantic_hash": "32c1c69979a3bdff119d6a66d3ebffe6"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/ButtonTap.imageset/ButtonTap.png": {
+    "mtime": 1779107677.8614721,
+    "ast_hash": "5f70f8ed1ff40f55ebb9c607853f80a4",
+    "semantic_hash": "5f70f8ed1ff40f55ebb9c607853f80a4"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Assets.xcassets/buttonFloor.imageset/buttonFloor.png": {
+    "mtime": 1779107677.861044,
+    "ast_hash": "7359bf40eedbd908d17c1a6dddfd3b4f",
+    "semantic_hash": "7359bf40eedbd908d17c1a6dddfd3b4f"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Sounds/Ambiant/BeginQuestion.mp3": {
+    "mtime": 1779107677.869039,
+    "ast_hash": "5544845a63a50d3b1fcfba0a7a4aa5de",
+    "semantic_hash": "5544845a63a50d3b1fcfba0a7a4aa5de"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Sounds/Ambiant/Blblbl.mp3": {
+    "mtime": 1779107677.8694534,
+    "ast_hash": "aee2a7b04947336b702d8b07334155a8",
+    "semantic_hash": "aee2a7b04947336b702d8b07334155a8"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Sounds/Ambiant/Buzzer.mp3": {
+    "mtime": 1780296746.093029,
+    "ast_hash": "ff39936156a3466a8b2b65b1d4f8b510",
+    "semantic_hash": "ff39936156a3466a8b2b65b1d4f8b510"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Sounds/Ambiant/GoodAnswer.mp3": {
+    "mtime": 1779107677.870055,
+    "ast_hash": "77d58c591ce5ca2d405b4c2f23f166f0",
+    "semantic_hash": "77d58c591ce5ca2d405b4c2f23f166f0"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Sounds/Ambiant/HeavenlyChoir.mp3": {
+    "mtime": 1779107677.871732,
+    "ast_hash": "3094170ed0394de6d024496f83bde037",
+    "semantic_hash": "3094170ed0394de6d024496f83bde037"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Sounds/Ambiant/Mosquito.mp3": {
+    "mtime": 1779107677.8729527,
+    "ast_hash": "a7d1ba44edce60c0c4448c32a8685ff2",
+    "semantic_hash": "a7d1ba44edce60c0c4448c32a8685ff2"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Sounds/Ambiant/PositiveAnswer.mp3": {
+    "mtime": 1779107677.8732917,
+    "ast_hash": "393979f57a2dacb9c97b0182026af6c8",
+    "semantic_hash": "393979f57a2dacb9c97b0182026af6c8"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Sounds/Ambiant/Tired.mp3": {
+    "mtime": 1779107677.873954,
+    "ast_hash": "f8fad43a59042e930c4e7fecd75cc06e",
+    "semantic_hash": "f8fad43a59042e930c4e7fecd75cc06e"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Ressources/Sounds/Ambiant/WrongAnswer.mp3": {
+    "mtime": 1779107677.8743246,
+    "ast_hash": "7b76bff7b5b00ace9a1f55fbc4a6a95a",
+    "semantic_hash": "7b76bff7b5b00ace9a1f55fbc4a6a95a"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/Coins/View/NotesShopView.swift": {
+    "mtime": 1780913289.9288502,
+    "ast_hash": "d48831ce66c2284dc0fd0412b8d88a91",
+    "semantic_hash": "d48831ce66c2284dc0fd0412b8d88a91"
+  },
+  "/Users/apprenant102/Desktop/BuzzPlay NEWdesign Claude/BuzzPlay/BuzzPlay/Shared/Components/Coins/ViewModel/NotesStore.swift": {
+    "mtime": 1780913259.7156696,
+    "ast_hash": "23f805bd395eb9f1bfb08de88409f13f",
+    "semantic_hash": "23f805bd395eb9f1bfb08de88409f13f"
+  }
+}

@@ -15,7 +15,7 @@ struct TextFieldCustom: View {
     var body: some View {
         TextField("", text: $text, prompt: Text(prompt))
             .font(.nohemi(textSize))
-            .padding(8)
+            .padding(BuzzSpacing.sm)
             .background {
                 RoundedRectangle(cornerRadius: 6)
                     .stroke(lineWidth: 1)

@@ -30,14 +30,30 @@ struct PlayerGameView: View {
             GameAnnounceSheet(game: currentGameType)
         }
         .sheet(isPresented: $showInterGameScore) {
-            InterGameScoreSheet(players: playerGameVM.knownPlayers)
+            // #B2 — inter-jeu : même classement animé que l'inter-manche, avec un
+            // sous-titre contextuel ("Quiz terminé" / "Blind Test terminé").
+            PostRoundLeaderboardView(
+                previousRanking: playerGameVM.knownPlayers,
+                currentRanking: playerGameVM.knownPlayers,
+                headline: "\(currentGameType.gameTitle) terminé"
+            )
+            .presentationDetents([.fraction(0.55)])
+            .presentationDragIndicator(.hidden)
+            .presentationBackground(Color.sheetBg)
+            .interactiveDismissDisabled()
         }
         .sheet(isPresented: $showPodium) {
             PlayerPodiumSheet(
                 players: playerGameVM.knownPlayers,
                 currentPlayer: playerGameVM.player,
-                onQuit: { router.popToRoot() }
+                onQuit: { playerGameVM.leaveSession(); router.popToRoot() }
             )
+        }
+        .onAppear {
+            // Cas kill app + relaunch : pendingGameInvite déjà set avant l'apparition de la vue
+            if let invite = playerGameVM.pendingGameInvite {
+                handleGameInvite(invite)
+            }
         }
         .onChange(of: playerGameVM.pendingGameInvite) { _, invite in
             guard let invite else { return }
@@ -46,20 +62,36 @@ struct PlayerGameView: View {
         .onChange(of: playerGameVM.isGameComplete) { _, complete in
             guard complete else { return }
             showInterGameScore = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + GameRhythm.sheetTransition) {
                 showPodium = true
             }
+        }
+        .onChange(of: playerGameVM.shouldReturnToLobby) { _, should in
+            guard should else { return }
+            playerGameVM.shouldReturnToLobby = false
+            showPodium = false
+            showInterGameScore = false
+            router.path.removeLast()
+        }
+        // #quit-teardown — le Master a quitté la partie → retour à l'accueil + déconnexion.
+        .onChange(of: playerGameVM.masterDidLeave) { _, left in
+            guard left else { return }
+            playerGameVM.masterDidLeave = false
+            showPodium = false
+            showInterGameScore = false
+            playerGameVM.leaveSession()
+            router.popToRoot()
         }
     }
 
     // MARK: - Waiting overlay
 
     private var waitingOverlay: some View {
-        VStack {
-            Spacer()
-            PlayerPulsingPill(text: "En attente du prochain jeu…")
-                .padding(.bottom, 48)
-        }
+        WaitingLobbyView(playerGameVM: playerGameVM, hint: "En attente du prochain jeu…")
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.top, BuzzSpacing.xxxl)
+            .padding(.bottom, 48)
+            .transition(.opacity)
     }
 
     // MARK: - Game invite handling
@@ -69,15 +101,24 @@ struct PlayerGameView: View {
         if game == .score {
             if !playerGameVM.isGameComplete {
                 showInterGameScore = true
+                // #C4/#B7 — signale au Master que le Player a reçu le score inter-manche
+                // et est prêt à recevoir la prochaine invitation
+                playerGameVM.sendPlayerReady()
             }
         } else {
             currentGameType = game
-            playerGameVM.currentBuzzerVM = playerFlowVM.makeBuzzerViewModel(
-                for: game == .quiz ? .quiz : .blindTest
-            )
+            // #C7 — si un BuzzerVM existe déjà (reconnexion mid-game), sync l'état
+            // au lieu de recréer pour ne pas perdre le lock/unlock courant
+            if playerGameVM.currentBuzzerVM == nil {
+                playerGameVM.currentBuzzerVM = playerFlowVM.makeBuzzerViewModel(
+                    for: game == .quiz ? .quiz : .blindTest
+                )
+            }
+            // Re-confirme la présence au Master (#B7 : BuzzerPlayerView déjà à l'écran → onAppear ne refire pas)
+            playerGameVM.sendPlayerReady()
             if showInterGameScore {
                 showInterGameScore = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + GameRhythm.sheetTransition) {
                     showGameAnnounce = true
                 }
             } else {
@@ -94,7 +135,7 @@ struct PlayerPulsingPill: View {
     @State private var isPulsing = false
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: BuzzSpacing.sm) {
             Circle()
                 .fill(Color.mustardYellow)
                 .frame(width: 8, height: 8)
@@ -103,9 +144,9 @@ struct PlayerPulsingPill: View {
                 .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: isPulsing)
             Text(text)
                 .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(Color.textSoft)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, BuzzSpacing.lg)
         .padding(.vertical, 10)
         .background(.white.opacity(0.06), in: Capsule())
         .overlay(Capsule().strokeBorder(.white.opacity(0.10), lineWidth: 1))
@@ -125,26 +166,26 @@ private struct GameAnnounceSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            RoundedRectangle(cornerRadius: 99)
+            RoundedRectangle(cornerRadius: BuzzRadius.pill)
                 .fill(.white.opacity(0.2))
                 .frame(width: 36, height: 4)
-                .padding(.top, 16)
-                .padding(.bottom, 24)
+                .padding(.top, BuzzSpacing.lg)
+                .padding(.bottom, BuzzSpacing.xxl)
 
-            VStack(spacing: 20) {
+            VStack(spacing: BuzzSpacing.xl) {
                 HStack(spacing: 14) {
                     Image(systemName: game.iconName)
-                        .font(.system(size: 24, weight: .semibold))
+                        .textStyle(Typography.sectionTitle)
                         .foregroundStyle(.white)
                         .frame(width: 56, height: 56)
-                        .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 16))
+                        .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
 
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                         Text("Le Maître lance")
                             .font(.nohemi(.subheadline, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.55))
+                            .foregroundStyle(Color.textSecondary)
                         Text(game.gameTitle)
-                            .font(.nohemi(.title2, weight: .extraBold))
+                            .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                             .foregroundStyle(.white)
                     }
 
@@ -167,19 +208,19 @@ private struct GameAnnounceSheet: View {
 
                 Text("Prépare-toi à buzzer !")
                     .font(.nohemi(.callout, weight: .semiBold))
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(Color.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, BuzzSpacing.xl)
 
             Spacer()
         }
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(hex: "#1A0535"))
+        .background(Color.sheetBg)
         .presentationDetents([.height(220)])
         .presentationDragIndicator(.hidden)
-        .presentationBackground(Color(hex: "#1A0535"))
+        .presentationBackground(Color.sheetBg)
         .onAppear { startCountdown() }
         .onDisappear { timer?.invalidate() }
     }
@@ -197,108 +238,6 @@ private struct GameAnnounceSheet: View {
                 progress = CGFloat(countdown - 1) / 3.0
             }
         }
-    }
-}
-
-// MARK: - Sheet 2 : Score inter-jeux
-
-private struct InterGameScoreSheet: View {
-    let players: [Player]
-
-    private var sortedPlayers: [Player] {
-        players.sorted { $0.score > $1.score }
-    }
-    private var maxScore: Int {
-        sortedPlayers.first?.score ?? 1
-    }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            RoundedRectangle(cornerRadius: 99)
-                .fill(.white.opacity(0.2))
-                .frame(width: 36, height: 4)
-                .padding(.top, 16)
-                .padding(.bottom, 20)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("SCORES")
-                    .font(.nohemi(.caption2, weight: .bold))
-                    .tracking(0.8)
-                    .foregroundStyle(.white.opacity(0.4))
-                Text("Classement actuel")
-                    .font(.nohemi(.title2, weight: .extraBold))
-                    .foregroundStyle(.white)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 16)
-
-            Divider().overlay(Color.white.opacity(0.08))
-
-            ScrollView {
-                VStack(spacing: 8) {
-                    ForEach(Array(sortedPlayers.enumerated()), id: \.element.id) { index, player in
-                        scoreRow(rank: index + 1, player: player)
-                    }
-                }
-                .padding(16)
-            }
-
-            PlayerPulsingPill(text: "En attente du prochain jeu…")
-                .padding(.vertical, 16)
-        }
-        .foregroundStyle(.white)
-        .background(Color(hex: "1A0535"))
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.hidden)
-        .presentationBackground(Color(hex: "1A0535"))
-        .interactiveDismissDisabled()
-    }
-
-    private func scoreRow(rank: Int, player: Player) -> some View {
-        HStack(spacing: 12) {
-            Text("#\(rank)")
-                .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(.white.opacity(0.4))
-                .frame(width: 28, alignment: .leading)
-
-            Circle()
-                .fill(player.teamColor.gradient)
-                .frame(width: 38, height: 38)
-                .overlay(
-                    Text(String(player.name.prefix(1)).uppercased())
-                        .font(.nohemi(.callout, weight: .black))
-                        .foregroundStyle(.white)
-                )
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(player.name)
-                    .font(.nohemi(.subheadline, weight: .bold))
-                    .foregroundStyle(.white)
-
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Capsule().fill(.white.opacity(0.08)).frame(height: 4)
-                        let ratio = maxScore > 0 ? CGFloat(player.score) / CGFloat(maxScore) : 0
-                        Capsule()
-                            .fill(player.teamColor.color.opacity(0.85))
-                            .frame(width: geo.size.width * ratio, height: 4)
-                    }
-                }
-                .frame(height: 4)
-            }
-
-            Spacer()
-
-            Text("\(player.score) pts")
-                .font(.nohemi(.callout, weight: .extraBold))
-                .foregroundStyle(.white)
-                .monospacedDigit()
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.white.opacity(0.08), lineWidth: 1))
     }
 }
 
@@ -324,67 +263,79 @@ private struct PlayerPodiumSheet: View {
 
             VStack(spacing: 0) {
                 // Header
-                VStack(spacing: 4) {
+                VStack(spacing: BuzzSpacing.xs) {
                     Text("PARTIE TERMINÉE")
                         .font(.nohemi(.caption2, weight: .bold))
                         .tracking(0.8)
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(Color.textMuted)
                     Text("Classement final")
-                        .font(.nohemi(.title, weight: .extraBold))
+                        .font(.nohemi(.title, weight: .extraBold)).titleTracking()
                         .foregroundStyle(.white)
                 }
-                .padding(.top, 32)
+                .padding(.top, BuzzSpacing.xxxl)
                 .padding(.bottom, 28)
 
                 // My rank highlight
                 if let myRank = rank(of: currentPlayer) {
                     myRankCard(rank: myRank, player: currentPlayer)
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 20)
+                        .padding(.horizontal, BuzzSpacing.xl)
+                        .padding(.bottom, BuzzSpacing.xl)
                 }
 
-                Divider().overlay(Color.white.opacity(0.08)).padding(.horizontal, 20)
+                Divider().overlay(Color.white.opacity(0.08)).padding(.horizontal, BuzzSpacing.xl)
 
                 // Full ranking
                 ScrollView {
-                    VStack(spacing: 8) {
+                    VStack(spacing: BuzzSpacing.sm) {
                         ForEach(Array(sorted.enumerated()), id: \.element.id) { index, player in
                             podiumRow(rank: index + 1, player: player, isSelf: player.id == currentPlayer.id)
                         }
                     }
-                    .padding(20)
+                    .padding(BuzzSpacing.xl)
                 }
 
-                // Quit button
-                Button(action: { dismiss(); onQuit() }) {
-                    Text("Quitter")
-                        .font(.nohemi(.body, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+                // Actions — le replay est piloté par le Maître ("Nouvelle partie" →
+                // masterResetGame → le Player est auto-routé). Ici il attend ou quitte.
+                VStack(spacing: BuzzSpacing.sm) {
+                    Text("Le Maître peut relancer une partie")
+                        .font(.nohemi(.caption, weight: .regular))
+                        .foregroundStyle(Color.textMuted)
+
+                    Button(action: { dismiss(); onQuit() }) {
+                        Text("Quitter")
+                            .font(.nohemi(.body, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.bottom, 40)
             }
         }
         .foregroundStyle(.white)
-        .presentationDragIndicator(.hidden)
+        // #podium-iphone — sheet partielle (85%) pour laisser apparaître la dernière card
+        // musique au-dessus sur iPhone ; agrandissable en plein écran (.large) pour voir tout
+        // le classement. interactiveDismissDisabled : impossible de fermer en glissant
+        // (s'arrête à 85%), seul "Quitter" ferme. Sur iPad la sheet reste une card centrée.
+        .presentationDetents([.fraction(0.85), .large])
+        .presentationDragIndicator(.visible)
         .interactiveDismissDisabled()
     }
 
     private func myRankCard(rank: Int, player: Player) -> some View {
         HStack(spacing: 14) {
             Text(rankEmoji(rank))
-                .font(.system(size: 32))
+                .textStyle(Typography.screenTitle)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Ta position")
                     .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(Color.textSecondary)
                 Text("\(rank)\(rankSuffix(rank)) place")
-                    .font(.nohemi(.title3, weight: .extraBold))
+                    .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
                     .foregroundStyle(.white)
             }
 
@@ -392,25 +343,25 @@ private struct PlayerPodiumSheet: View {
 
             VStack(alignment: .trailing, spacing: 2) {
                 Text("\(player.score)")
-                    .font(.nohemi(.title2, weight: .black))
+                    .font(.nohemi(.title2, weight: .black)).titleTracking()
                     .foregroundStyle(player.teamColor.color)
                 Text("points")
                     .font(.nohemi(.caption2, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(Color.textSecondary)
             }
         }
-        .padding(16)
-        .background(player.teamColor.color.opacity(0.12), in: RoundedRectangle(cornerRadius: 18))
+        .padding(BuzzSpacing.lg)
+        .background(player.teamColor.color.opacity(0.12), in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
         .overlay(
-            RoundedRectangle(cornerRadius: 18)
+            RoundedRectangle(cornerRadius: BuzzRadius.lg2)
                 .strokeBorder(player.teamColor.color.opacity(0.35), lineWidth: 1.5)
         )
     }
 
     private func podiumRow(rank: Int, player: Player, isSelf: Bool) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: BuzzSpacing.md) {
             Text(rankEmoji(rank))
-                .font(.system(size: 20))
+                .textStyle(Typography.title3)
                 .frame(width: 32)
 
             Circle()
@@ -429,21 +380,21 @@ private struct PlayerPodiumSheet: View {
             if isSelf {
                 Text("(toi)")
                     .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(Color.textMuted)
             }
 
             Spacer()
 
             Text("\(player.score) pts")
                 .font(.nohemi(.callout, weight: .extraBold))
-                .foregroundStyle(isSelf ? player.teamColor.color : .white.opacity(0.7))
+                .foregroundStyle(isSelf ? player.teamColor.color : Color.textSoft)
                 .monospacedDigit()
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(isSelf ? player.teamColor.color.opacity(0.08) : .white.opacity(0.04), in: RoundedRectangle(cornerRadius: 14))
+        .background(isSelf ? player.teamColor.color.opacity(0.08) : .white.opacity(0.04), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: BuzzRadius.md)
                 .strokeBorder(isSelf ? player.teamColor.color.opacity(0.25) : .white.opacity(0.06), lineWidth: 1)
         )
     }

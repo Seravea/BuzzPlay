@@ -8,18 +8,23 @@ import SwiftUI
 struct CountdownOverlay: View {
     let phase: RoundCountdownPhase
     var label: String = "Préparez-vous…"
+    var backgroundOpacity: Double = 0.65
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.65)
+            Color.black.opacity(backgroundOpacity)
                 .ignoresSafeArea()
 
             VStack(spacing: 28) {
                 switch phase {
                 case .counting(let n):
                     Text(label)
-                        .font(.nohemi(.title3, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.65))
+                        .font(.nohemi(.title2, weight: .semiBold)).titleTracking()
+                        .tracking(0.5)
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, BuzzSpacing.xl)
+                        .shadow(color: .black.opacity(0.4), radius: 6, y: 2)
 
                     ZStack {
                         Circle()
@@ -39,11 +44,11 @@ struct CountdownOverlay: View {
                 case .go:
                     Image(systemName: "bolt.fill")
                         .font(.system(size: 60, weight: .bold))
-                        .foregroundStyle(Color(hex: "#7DFFA0"))
+                        .foregroundStyle(Color.greenGlow)
                     Text("À VOS BUZZERS !")
                         .font(.custom("Nohemi-Black", size: 28))
                         .tracking(2)
-                        .foregroundStyle(Color(hex: "#7DFFA0"))
+                        .foregroundStyle(Color.greenGlow)
 
                 case .hidden:
                     EmptyView()
@@ -54,7 +59,7 @@ struct CountdownOverlay: View {
 }
 
 #Preview {
-    VStack(spacing: 20) {
+    VStack(spacing: BuzzSpacing.xl) {
         CountdownOverlay(phase: .counting(3))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 

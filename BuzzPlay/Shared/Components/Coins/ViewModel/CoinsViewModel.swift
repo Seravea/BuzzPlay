@@ -17,8 +17,8 @@ class CoinsViewModel {
     let mpcService: MPCService?
 
     var errorMessage: String?
-
-    var onBuyGift: ((Player, Gift) -> Void)?
+    /// Empêche le double-tap sur un gift pendant l'aller-retour MPC
+    var isPendingPurchase: Bool = false
 
     init(masterFlowVM: MasterFlowViewModel) {
         self.masterFlowViewModel = masterFlowVM
@@ -30,7 +30,6 @@ class CoinsViewModel {
         self.masterFlowViewModel = nil
         self.playerGameViewModel = playerGameVM
         self.mpcService = playerGameVM.mpc
-        setupPlayerCallbacks()
     }
 
     var isMaster: Bool { masterFlowViewModel != nil }
@@ -40,11 +39,11 @@ class CoinsViewModel {
         return pgVM.knownPlayers.filter { $0.id != pgVM.player.id }
     }
 
-    private func setupPlayerCallbacks() {
-        onBuyGift = { [weak self] player, gift in
-            guard let self else { return }
-            let payload = GiftRequestPayload(gift: gift, targetPlayerID: nil, buyerID: player.id, selectedSound: nil)
-            self.mpcService?.sendMessage(.buyGiftRequest(payload))
+    private func setError(_ message: String) {
+        errorMessage = message
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(3))
+            self?.errorMessage = nil
         }
     }
 
@@ -114,25 +113,37 @@ extension CoinsViewModel {
     }
     
     func buyGift(_ gift: Gift, targeting targetPlayer: Player? = nil, selectedSound: String? = nil) {
+        guard !isPendingPurchase else { return }
         guard let player = playerGameViewModel?.player else {
-            errorMessage = "Pas de joueur trouvé"
+            setError("Pas de joueur trouvé")
             return
         }
         guard player.accountAmount >= gift.price else {
-            errorMessage = "Tu n'as pas assez d'argent"
+            setError("Pas assez de Notes 🎵 — demande au Maître")
             return
         }
 
         if gift.requiresTargetPlayer {
             guard let target = targetPlayer else {
-                errorMessage = "Choisir un adversaire d'abord"
+                setError("Choisir un adversaire d'abord")
                 return
             }
             sendGiftRequest(gift, targeting: target, selectedSound: selectedSound)
         } else {
             sendGiftRequest(gift, targeting: nil, selectedSound: selectedSound)
         }
+        isPendingPurchase = true
         errorMessage = nil
+        // Failsafe : reset si le Master ne répond pas dans les 5s
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(5))
+            self?.isPendingPurchase = false
+        }
+    }
+
+    /// Appelé par PlayerGameViewModel quand updatedPlayer est reçu — débloque le shop
+    func onPlayerUpdated(_ updatedPlayer: Player) {
+        isPendingPurchase = false
     }
 
     func sendCoinsToPlayer(_ player: Player, amount: Int) {
@@ -140,8 +151,15 @@ extension CoinsViewModel {
             errorMessage = "Pas de Maître"
             return
         }
-
+        // #3 — l'envoi individuel est payant : il décompte le solde du Master
+        // (la déduction est ici et PAS dans addCoinsToPlayer, sinon distributeToAll
+        // double-déduirait — il décompte déjà amount × nb joueurs de son côté).
+        guard masterVM.masterNotesBalance >= amount else {
+            errorMessage = "Solde insuffisant"
+            return
+        }
         masterVM.addCoinsToPlayer(player, amount: amount)
+        masterVM.masterNotesBalance -= amount
         errorMessage = nil
     }
 

@@ -1,0 +1,1049 @@
+{
+  "sets": [
+    {
+      "id": "c92d8e41-60fb-4382-b7e1-8f4326f95c4d",
+      "title": "Années 80 — Les Classiques",
+      "themeKey": "annees80",
+      "questions": [
+        {
+          "question": "Quel artiste américain interprète la chanson phare du film « SOS Fantômes » (Ghostbusters), classée numéro un en France au début de l'année 1985 ?",
+          "answers": [
+            "Ray Parker, Jr."
+          ],
+          "difficulty": "moyen",
+          "funFact": "Ce titre a été la toute première bande originale de film à atteindre la première place du Top 50 français."
+        },
+        {
+          "question": "De quel pays est originaire le groupe Europe, qui a dominé les classements mondiaux en 1986 avec le tube « The Final Countdown » ?",
+          "answers": [
+            "Suède"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel artiste américain est l'interprète du titre « Billie Jean », single sorti en 1983 et écoulé à plus de 7 millions d'exemplaires physiques ?",
+          "answers": [
+            "Michael Jackson"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel chanteur français est l'interprète de la chanson « L'Aziza », qui a dominé le Top 50 pendant 8 semaines au début de l'année 1986 ?",
+          "answers": [
+            "Daniel Balavoine"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Il a été le tout premier artiste de l'histoire du classement à atteindre la première place à titre posthume."
+        },
+        {
+          "question": "Quelle chanteuse américaine a publié en 1983 son premier album solo intitulé « She's So Unusual », contenant le hit « Girls Just Want to Have Fun » ?",
+          "answers": [
+            "Cyndi Lauper"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel duo français a eu l'honneur de classer le tout premier titre numéro un de l'histoire du Top 50 le 4 novembre 1984 ?",
+          "answers": [
+            "Peter et Sloane"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Leur chanson, « Besoin de rien, envie de toi », est restée 9 semaines au sommet du classement."
+        },
+        {
+          "question": "Quelle chanteuse française a été la première artiste féminine à se produire à Bercy en 1989 ?",
+          "answers": [
+            "Jeanne Mas"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Elle y a donné quatre soirs consécutifs."
+        },
+        {
+          "question": "Quel groupe de rock a connu ses premiers grands succès mondiaux en 1980 avec le titre « I will follow » et l'album « Boy » ?",
+          "answers": [
+            "U2"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Le groupe a été formé à Dublin en Irlande quelques années avant ce premier succès international."
+        },
+        {
+          "question": "Dans quel film de 1987 peut-on entendre la chanson « (I've Had) The Time of My Life » ?",
+          "answers": [
+            "Dirty Dancing"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "En 1988, quel titre a été le premier duo de l'histoire du Top 50 dont les deux membres avaient déjà été numéro un en solo ?",
+          "answers": [
+            "Un roman d'amitié"
+          ],
+          "difficulty": "expert",
+          "funFact": "Il était interprété par l'américain Glenn Medeiros et la française Elsa."
+        }
+      ]
+    },
+    {
+      "id": "a9d3e8b4-1234-4c5b-9e1f-8c6d2a4b5931",
+      "title": "Années 90 — Génération Grunge & Pop",
+      "themeKey": "annees90",
+      "questions": [
+        {
+          "question": "De quel pays est originaire la chanteuse Céline Dion, qui a connu un immense succès mondial en 1997 avec le titre « My Heart Will Go On » ?",
+          "answers": [
+            "Canada"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Qui a sorti en 1997 une version hommage de sa chanson « Candle in the Wind » suite au décès de la princesse Diana ?",
+          "answers": [
+            "Elton John"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe féminin britannique a dominé les classements mondiaux en 1996 avec le tube « Wannabe » ?",
+          "answers": [
+            "Spice Girls"
+          ],
+          "difficulty": "facile",
+          "funFact": "Une étude scientifique a désigné ce titre comme la chanson pop la plus accrocheuse des 60 dernières années."
+        },
+        {
+          "question": "Dans quel film de 1992, dont elle partage l'affiche avec Kevin Costner, Whitney Houston interprète-t-elle « I Will Always Love You » ?",
+          "answers": [
+            "Bodyguard"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe américain originaire de Seattle a lancé la vague grunge en 1991 avec l'album « Nevermind » ?",
+          "answers": [
+            "Nirvana"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe britannique interprète « Bitter Sweet Symphony » en 1997 ?",
+          "answers": [
+            "The Verve"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Le titre sample une orchestration des Rolling Stones, ce qui a contraint le groupe à céder les droits d'auteur pendant des années."
+        },
+        {
+          "question": "Quel film de 1997 possède une bande originale composée par James Horner qui est restée 14 semaines en tête des ventes en France ?",
+          "answers": [
+            "Titanic"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Sur quel album de Vanessa Paradis, sorti en 1990 et contenant le titre « Tandem », Serge Gainsbourg a-t-il signé l'intégralité des paroles ?",
+          "answers": [
+            "Variations sur le même t'aime"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Ce fut la toute dernière œuvre livrée par Serge Gainsbourg de son vivant."
+        },
+        {
+          "question": "En juillet 1990, quel artiste britannique a rejoué le concert « The Wall » sur la Potsdamer Platz pour célébrer la chute du Mur de Berlin ?",
+          "answers": [
+            "Roger Waters"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Quel enfant star détient depuis octobre 1992 le record du plus jeune interprète de l'histoire à avoir été numéro un du Top 50 ?",
+          "answers": [
+            "Jordy"
+          ],
+          "difficulty": "expert",
+          "funFact": "Sa chanson « Dur dur d'être bébé ! » est restée classée à la première place pendant 15 semaines consécutives."
+        }
+      ]
+    },
+    {
+      "id": "f29a1b8c-5e4d-492a-bc7f-3a21690e4d52",
+      "title": "Années 2000 — Les Tubes",
+      "themeKey": "annees2000",
+      "questions": [
+        {
+          "question": "Quel groupe de rock français a classé l'album « Comme on a dit » à la première place des ventes en janvier 2000 ?",
+          "answers": [
+            "Louise Attaque"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Qui interprète le tube mondial « Oops !... I Did It Again », sorti au cours de l'année 2000 ?",
+          "answers": [
+            "Britney Spears"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel est le titre du premier album studio du groupe Linkin Park, sorti en 2000 et vendu à plus de 24 millions d'exemplaires ?",
+          "answers": [
+            "Hybrid Theory"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "De quel pays est originaire la chanteuse Rihanna, dont la carrière a explosé à partir de l'année 2005 ?",
+          "answers": [
+            "La Barbade"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel film sorti en 2004 possède une bande originale composée par Bruno Coulais qui est restée 11 semaines en tête des ventes en France ?",
+          "answers": [
+            "Les Choristes"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel artiste britannique est l'interprète de la chanson « You're Beautiful », restée 8 semaines en tête des téléchargements en 2005 ?",
+          "answers": [
+            "James Blunt"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "L'album « Life in Cartoon Motion », contenant le tube « Relax, Take It Easy », a été la meilleure vente de quelle année en France ?",
+          "answers": [
+            "2007"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Il s'agit du premier album studio de l'artiste Mika."
+        },
+        {
+          "question": "En quelle année s'est déroulée la toute première édition des NRJ Music Awards en France ?",
+          "answers": [
+            "2000"
+          ],
+          "difficulty": "difficile",
+          "funFact": "L'événement a eu lieu précisément le 22 janvier 2000."
+        },
+        {
+          "question": "Quel artiste virtuel détient le record de s'être auto-détrôné à la première place du Top Singles en 2005 avec les titres « Axel F » et « Popcorn » ?",
+          "answers": [
+            "Crazy Frog"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Les deux titres sont issus du même album intitulé « Crazy Frog Presents Crazy Hits »."
+        },
+        {
+          "question": "Quel est le vrai nom du rappeur américain connu sous le pseudonyme 'Eminem' ?",
+          "answers": [
+            "Marshall Bruce Mathers III"
+          ],
+          "difficulty": "expert",
+          "funFact": "Il a grandi à Detroit, élevé seul par sa mère dès l'âge de neuf mois."
+        }
+      ]
+    },
+    {
+      "id": "7d3a5e82-1b9c-4f6a-8d2e-0c1b4a9f5d32",
+      "title": "Années 2010-2020 — Streaming Era",
+      "themeKey": "annees2010",
+      "questions": [
+        {
+          "question": "Qui est l'interprète britannique des tubes mondiaux « Someone Like You » et « Hello », dont les albums portent des titres correspondant à son âge ?",
+          "answers": [
+            "Adele"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "De quel pays est originaire le chanteur Psy, qui a connu un immense succès planétaire en 2012 avec le titre « Gangnam Style » ?",
+          "answers": [
+            "La Corée du Sud"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Dans quel film sorti en 2018 peut-on entendre le duo « Shallow », interprété par Lady Gaga et Bradley Cooper ?",
+          "answers": [
+            "A Star Is Born"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel artiste belge a connu ses premiers grands succès en France au cours de l'année 2010 avec le titre « Alors on danse » ?",
+          "answers": [
+            "Stromae"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Il fait partie des révélations de l'année 2010 aux côtés de Zaz et de la Sexion d'Assaut."
+        },
+        {
+          "question": "Quel est le titre de l'album du groupe Daft Punk, sorti en 2013, qui contient le succès mondial « Get Lucky » ?",
+          "answers": [
+            "Random Access Memories"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Cet album a été certifié disque de diamant en France la même année."
+        },
+        {
+          "question": "Quel est le vrai nom de la chanteuse britannique connue sous le pseudonyme 'Adele' ?",
+          "answers": [
+            "Adele Laurie Blue Adkins"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel single d'Ed Sheeran, sorti en 2017, détient le record de longévité à la première place du classement mégafusion avec 15 semaines au sommet ?",
+          "answers": [
+            "Shape of You"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel est le titre du premier album de la chanteuse belge Angèle, sorti en 2018 et contenant le morceau « Balance ton quoi » ?",
+          "answers": [
+            "Brol"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Quel est le vrai nom de la chanteuse néo-zélandaise connue sous le pseudonyme 'Lorde' ?",
+          "answers": [
+            "Ella Yelich-O'Connor"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Elle avait seulement 16 ans lors de la sortie de son premier single 'Royals' en 2013."
+        },
+        {
+          "question": "Quel DJ et producteur allemand a réalisé en 2014 le remix à succès du titre « Prayer in C » du duo Lilly Wood and the Prick ?",
+          "answers": [
+            "Robin Schulz"
+          ],
+          "difficulty": "expert",
+          "funFact": null
+        }
+      ]
+    },
+    {
+      "id": "8b23f1e9-9d4a-4c5b-9e1f-8c6d2a4b5931",
+      "title": "Pop FR — Hits Français",
+      "themeKey": "popFR",
+      "questions": [
+        {
+          "question": "Qui chante le tube de 1991 « Désenchantée », resté numéro un du Top 50 pendant 9 semaines ?",
+          "answers": [
+            "Mylène Farmer"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel duo masculin français a interprété le titre « Je te donne » en 1985 ?",
+          "answers": [
+            "Jean-Jacques Goldman et Michael Jones"
+          ],
+          "difficulty": "facile",
+          "funFact": "C'était le tout premier duo masculin à atteindre la première place du classement des ventes en France."
+        },
+        {
+          "question": "Quel chanteur français a publié en 1999 l'album « Sang pour sang », intégralement composé par son fils David ?",
+          "answers": [
+            "Johnny Hallyday"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel album sorti en 1992 est l'unique disque studio enregistré intégralement en duo par Michel Berger et France Gall ?",
+          "answers": [
+            "Double Jeu"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel artiste français a sorti en 1986 l'album « Mistral gagnant », dont la chanson phare est devenue un monument de la variété française ?",
+          "answers": [
+            "Renaud"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe de rock français, emmené par Nicola Sirkis, a fait un retour fracassant en 2002 avec le single « J'ai demandé à la lune » ?",
+          "answers": [
+            "Indochine"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quelle chanteuse française, célèbre pour « Mademoiselle chante le blues », a classé son album « Scène de vie » numéro un pendant 5 mois en 1990 ?",
+          "answers": [
+            "Patricia Kaas"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe français a popularisé le genre rap celtique en 1998 avec le tube « La Tribu de Dana » ?",
+          "answers": [
+            "Manau"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Avec quelle artiste italienne le chanteur Marc Lavoine interprète-t-il le duo « J'ai tout oublié », numéro un en France en 2002 ?",
+          "answers": [
+            "Cristina Marocco"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Quel chanteur français a connu un immense succès mondial en 1971 avec le titre « Butterfly », vendu à 7 millions d'exemplaires ?",
+          "answers": [
+            "Danyel Gérard"
+          ],
+          "difficulty": "expert",
+          "funFact": null
+        }
+      ]
+    },
+    {
+      "id": "e2b17a14-3d9a-4e6b-8f2c-5a21c90e4d52",
+      "title": "Pop Internationale — Hits Mondiaux",
+      "themeKey": "popIntl",
+      "questions": [
+        {
+          "question": "De quelle nationalité est la chanteuse Shania Twain, dont l'album « Come On Over » est le plus vendu de la carrière d'une artiste solo ?",
+          "answers": [
+            "Canadienne"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "De quel pays est originaire le groupe ABBA, qui a connu un immense succès mondial entre 1972 et 1982 ?",
+          "answers": [
+            "Suède"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe britannique a publié en 1967 l'album « Sgt. Pepper's Lonely Hearts Club Band », considéré comme un chef-d'œuvre de la pop ?",
+          "answers": [
+            "The Beatles"
+          ],
+          "difficulty": "facile",
+          "funFact": "La maturité de la musique pop est souvent associée à l'avènement de ce groupe."
+        },
+        {
+          "question": "Quel groupe de rock est l'interprète de l'album « The Dark Side of the Moon », resté plus de 900 semaines dans le classement Billboard 200 ?",
+          "answers": [
+            "Pink Floyd"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Qui interprète le tube mondial « I Will Always Love You », présent sur la bande originale du film « Bodyguard » sorti en 1992 ?",
+          "answers": [
+            "Whitney Houston"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Cette chanson est à l'origine une reprise d'un titre de l'artiste country Dolly Parton."
+        },
+        {
+          "question": "Quel artiste britannique est l'interprète du titre « Careless Whisper », single sorti en 1984 et vendu à 6 millions d'exemplaires ?",
+          "answers": [
+            "George Michael"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe de rock américain a publié en 1986 l'album « Slippery When Wet », qui a popularisé le genre glam metal ?",
+          "answers": [
+            "Bon Jovi"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe de rock, premier interprète allemand à atteindre la première place en France, chante le titre « Wind of Change » ?",
+          "answers": [
+            "Scorpions"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Quel est le titre de l'album de Santana, sorti en 1999, qui détient le record du plus grand nombre de Grammy Awards reçus par un groupe ?",
+          "answers": [
+            "Supernatural"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe américain a connu un succès mondial en 1968 avec le titre « In-A-Gadda-Da-Vida », qui a donné son nom à leur album ?",
+          "answers": [
+            "Iron Butterfly"
+          ],
+          "difficulty": "expert",
+          "funFact": "Le succès de cet album repose en grande partie sur ce seul titre éponyme devenu un tube."
+        }
+      ]
+    },
+    {
+      "id": "3c6a4e5d-1b2c-4a3d-8e7f-920c3f8b1d05",
+      "title": "Rock — Les Légendes",
+      "themeKey": "rock",
+      "questions": [
+        {
+          "question": "Quel chanteur américain a popularisé le genre rockabilly en 1954 avec son premier grand succès intitulé « That's All Right (Mama) » ?",
+          "answers": [
+            "Elvis Presley"
+          ],
+          "difficulty": "facile",
+          "funFact": "Le Livre Guinness des records le désigne officiellement comme l'artiste masculin ayant vendu le plus de disques dans l'histoire."
+        },
+        {
+          "question": "Quel groupe de rock britannique, formé en 1962 par Mick Jagger et Keith Richards, a publié en 2023 l'album « Hackney Diamonds » ?",
+          "answers": [
+            "The Rolling Stones"
+          ],
+          "difficulty": "facile",
+          "funFact": "Le groupe a fêté ses 60 ans de carrière en restant une figure emblématique de la culture rock mondiale."
+        },
+        {
+          "question": "Quel artiste britannique est l'interprète du titre « Space Oddity », devenu numéro un en France en 2016, soit 47 ans après sa sortie originale ?",
+          "answers": [
+            "David Bowie"
+          ],
+          "difficulty": "facile",
+          "funFact": "Il détient le record de la plus longue période entre la sortie d'un titre et son accession à la première place du classement français."
+        },
+        {
+          "question": "Quel guitariste virtuose, célèbre pour son jeu gaucher, a révolutionné le rock à la fin des années 1960 en utilisant des effets de phasing et de feedback ?",
+          "answers": [
+            "Jimi Hendrix"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Il est considéré comme une exception rare parmi les rockers noirs de l'époque, en électrifiant le blues pour ouvrir de nouveaux univers musicaux."
+        },
+        {
+          "question": "Quel groupe de rock britannique est considéré, avec Led Zeppelin et Black Sabbath, comme l'un des trois piliers fondateurs du hard rock à la fin des années 1960 ?",
+          "answers": [
+            "Deep Purple"
+          ],
+          "difficulty": "moyen",
+          "funFact": "À cette époque, les termes hard rock et heavy metal étaient souvent utilisés comme synonymes."
+        },
+        {
+          "question": "Quel groupe de rock britannique a provoqué une onde de choc en 1977 avec son hymne contestataire intitulé « God Save the Queen » ?",
+          "answers": [
+            "Sex Pistols"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Le mouvement punk encourageait tout le monde à faire de la musique sans attendre de maîtriser parfaitement la technique instrumentale."
+        },
+        {
+          "question": "Quel artiste américain est l'interprète de l'album « Born in the U.S.A. », sorti en 1984 et vendu à 30 millions d'exemplaires ?",
+          "answers": [
+            "Bruce Springsteen"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Contrairement à ses contemporains modernistes, son rock s'inspirait davantage des racines des années 1950 et 60."
+        },
+        {
+          "question": "Quel groupe britannique a publié en 1971 un album sans titre officiel, souvent désigné par le chiffre romain IV ?",
+          "answers": [
+            "Led Zeppelin"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Cet opus est le plus gros succès de leur carrière avec 37 millions d'exemplaires vendus dans le monde."
+        },
+        {
+          "question": "Quel guitariste est considéré comme le précurseur du metal néo-classique avec la sortie de l'album « Rising Force » en 1984 ?",
+          "answers": [
+            "Yngwie Malmsteen"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Ce sous-genre du rock mélange des riffs de heavy metal avec des compositions inspirées de la musique classique."
+        },
+        {
+          "question": "Quel batteur de jazz français a publié en 1956 ce qui est officiellement reconnu comme le tout premier disque de rock français ?",
+          "answers": [
+            "Mac Kac"
+          ],
+          "difficulty": "expert",
+          "funFact": "Son vrai nom était Baptiste Reilles et son disque comprenait une adaptation du titre « See You Later, Alligator »."
+        }
+      ]
+    },
+    {
+      "id": "57f6e07c-9b84-46c5-a6e5-472149b5c3e1",
+      "title": "Rap FR — Les Incontournables",
+      "themeKey": "rapFR",
+      "questions": [
+        {
+          "question": "Quelle rappeuse française a connu un immense succès en 2006 avec le titre « La Boulette » ?",
+          "answers": [
+            "Diam's"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel est le vrai nom du rappeur marseillais connu sous le pseudonyme 'Jul' ?",
+          "answers": [
+            "Julien Mari"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe de rap français, originaire de la région parisienne, a été révélé par la compilation 'Rapattitude' au début des années 90 ?",
+          "answers": [
+            "NTM"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel est le vrai nom de la rappeuse Shay, qui s'est imposée sur la scène francophone à partir des années 2010 ?",
+          "answers": [
+            "Vanessa Lesnicki"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Elle est d'origine belge et a réussi à allier un style ego-trip à une imagerie très féminine."
+        },
+        {
+          "question": "Dans quelle ville française s'est formé en 1988 le groupe emblématique IAM ?",
+          "answers": [
+            "Marseille"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Le groupe s'appelait initialement B-Boy Stance avant de devenir IAM."
+        },
+        {
+          "question": "Quel rappeur est considéré comme celui ayant introduit le style musical « trap » en France avec l'album « Or Noir » en 2013 ?",
+          "answers": [
+            "Kaaris"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Cet album est aujourd'hui considéré comme l'un des plus importants du rap français des années 2010."
+        },
+        {
+          "question": "Quel groupe de rap français a publié en 2016 l'album « Dans la légende », certifié disque de diamant ?",
+          "answers": [
+            "PNL"
+          ],
+          "difficulty": "moyen",
+          "funFact": "À sa sortie, cet album a été le plus streamé en 24h dans le monde sur la plateforme Deezer."
+        },
+        {
+          "question": "Sous quel pseudonyme rappait Akhenaton en anglais à la fin des années 1980, avant le succès d'IAM ?",
+          "answers": [
+            "Chill Phil"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Il utilisait ce nom lors de ses premières apparitions discographiques et sur scène avec le Lively Crew."
+        },
+        {
+          "question": "Quel rappeur a inventé le terme « Rap Zumba » en 2013 pour critiquer les sonorités pop de l'album de Gims ?",
+          "answers": [
+            "Rohff"
+          ],
+          "difficulty": "difficile",
+          "funFact": "L'expression est née d'une altercation sur Twitter en novembre 2013."
+        },
+        {
+          "question": "Quel est le titre de la chanson sortie en 1988, considérée comme le tout premier featuring rap franco-américain ?",
+          "answers": [
+            "This is the B Side"
+          ],
+          "difficulty": "expert",
+          "funFact": "Il s'agit de la face B du vinyle « Let's Make Some Noise » du groupe américain Choice MC's, sur laquelle pose Akhenaton."
+        }
+      ]
+    },
+    {
+      "id": "d1e4b9c2-5f3a-4e8b-a1d7-6c2e4b5931a2",
+      "title": "Rap US — Golden Era & Modern",
+      "themeKey": "rapUS",
+      "questions": [
+        {
+          "question": "Qui interprète en 1995 le tube « Gangsta's Paradise », présent sur la bande originale du film « Esprits rebelles » ?",
+          "answers": [
+            "Coolio"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe américain a sorti en 1979 le titre « Rapper's Delight », considéré comme le tout premier tube rap de l'histoire ?",
+          "answers": [
+            "Sugarhill Gang"
+          ],
+          "difficulty": "facile",
+          "funFact": "La musique de ce morceau est très largement influencée par le genre funk."
+        },
+        {
+          "question": "Quel artiste américain interprète la chanson phare du film « Men in Black », classée numéro un en France en 1997 ?",
+          "answers": [
+            "Will Smith"
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "Quel est le vrai nom du célèbre DJ et pionnier du hip-hop connu sous le pseudonyme de Grandmaster Flash ?",
+          "answers": [
+            "Joseph Saddler"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Il est considéré comme l'un des inventeurs du DJ-ing en ayant élaboré des techniques pour répéter des boucles sonores."
+        },
+        {
+          "question": "Quel groupe de rap a collaboré avec Aerosmith en 1986 sur le remix du titre « Walk This Way », fusionnant pour la première fois rap et rock ?",
+          "answers": [
+            "Run–DMC"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Ce groupe a été l'un des moteurs de l'explosion du rap aux États-Unis dans les années 1980."
+        },
+        {
+          "question": "Dans quelle ville de Californie s'est formé en 1986 le groupe de rap emblématique N.W.A ?",
+          "answers": [
+            "Compton",
+            "Los Angeles"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Le groupe était notamment composé de Dr. Dre, Ice Cube et Eazy-E."
+        },
+        {
+          "question": "Quel est le titre du morceau de 1982 de Grandmaster Flash qui a popularisé pour la première fois le rap conscient sur les conditions de vie des ghettos ?",
+          "answers": [
+            "The Message"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Bien que ce soit le rappeur Melle Mel que l'on entende sur l'enregistrement, le titre est crédité au nom du DJ."
+        },
+        {
+          "question": "Quel producteur de New York, leader du Juice Crew, est officiellement crédité dans l'histoire du rap pour l'invention du sampling ?",
+          "answers": [
+            "Marley Marl"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Le sampling consiste à extraire des échantillons d'autres morceaux pour les inclure dans de nouvelles boucles."
+        },
+        {
+          "question": "Quel rappeur américain, assassiné en 1996, figure parmi les artistes ayant vendu le plus de disques avec 75 millions de ventes annoncées ?",
+          "answers": [
+            "Tupac Shakur"
+          ],
+          "difficulty": "difficile",
+          "funFact": null
+        },
+        {
+          "question": "En raison de son esprit 'do it yourself' et de ses rythmes brutaux, quel surnom a été donné au hip-hop lors de son émergence à New York ?",
+          "answers": [
+            "Le punk noir"
+          ],
+          "difficulty": "expert",
+          "funFact": "À cette époque, les rappeurs utilisaient souvent des boîtes à rythmes bon marché pour créer des sons synthétiques et agressifs."
+        }
+      ]
+    },
+    {
+      "id": "4b9e2d1f-8c3a-4a5b-9e1f-d7c2e4b5931a",
+      "title": "Électro / Dance — Les Pionniers",
+      "themeKey": "electro",
+      "questions": [
+        {
+          "question": "Quel groupe britannique a composé la majorité des titres de la bande originale du film « La Fièvre du samedi soir » en 1977 ?",
+          "answers": [
+            "Bee Gees"
+          ],
+          "difficulty": "facile",
+          "funFact": "Cet album a permis de populariser le disco à l'échelle mondiale et de lancer la carrière de John Travolta."
+        },
+        {
+          "question": "Quel est le titre du tube planétaire du groupe Village People, sorti en 1978 et vendu à 12 millions d'exemplaires ?",
+          "answers": [
+            "Y.M.C.A."
+          ],
+          "difficulty": "facile",
+          "funFact": null
+        },
+        {
+          "question": "De quelle nationalité est le célèbre producteur et pionnier du disco Giorgio Moroder ?",
+          "answers": [
+            "Italienne"
+          ],
+          "difficulty": "facile",
+          "funFact": "Installé à Munich dans les années 1970, il a grandement contribué au développement des sonorités synthétiques."
+        },
+        {
+          "question": "Quel instrument électronique, fonctionnant sans contact physique, a été inventé par Léon Thérémine en 1920 ?",
+          "answers": [
+            "Le thérémine"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Aussi appelé ætherophone, cet instrument est l'un des plus anciens de la musique électronique."
+        },
+        {
+          "question": "Quel artiste d'origine italienne a dominé les classements mondiaux en 1995 avec le titre instrumental trance « Children » ?",
+          "answers": [
+            "Robert Miles"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe allemand est l'auteur de l'album « Autobahn », marquant le début d'une musique électronique mélodique et structurée ?",
+          "answers": [
+            "Kraftwerk"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Le groupe se distinguait par l'utilisation de textes chantés au vocodeur et d'une imagerie robotique."
+        },
+        {
+          "question": "Dans quelle ville des États-Unis le genre musical « house » s'est-il développé au cours des années 1980 ?",
+          "answers": [
+            "Chicago"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Parmi les pionniers du genre, on retrouve des artistes comme Frankie Knuckles ou Marshall Jefferson."
+        },
+        {
+          "question": "Quel artiste de Détroit est considéré, avec Derrick May et Kevin Saunderson, comme l'un des trois pères fondateurs de la techno ?",
+          "answers": [
+            "Juan Atkins"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Ce trio est célèbre dans l'histoire de la musique sous le nom des « Belleville Three »."
+        },
+        {
+          "question": "Quel est le titre de l'album de 1968 sur lequel Wendy Carlos interprète des œuvres de Bach à l'aide d'un synthétiseur Moog ?",
+          "answers": [
+            "Switched-On Bach"
+          ],
+          "difficulty": "difficile",
+          "funFact": "À l'époque, l'instrument n'avait pas de mémoire et chaque sonorité devait être programmée manuellement par câblage."
+        },
+        {
+          "question": "Quel groupe britannique a produit en 1962 le premier titre de musique électronique populaire à succès mondial, intitulé « Telstar » ?",
+          "answers": [
+            "The Tornados"
+          ],
+          "difficulty": "expert",
+          "funFact": "Ce titre instrumental futuriste utilisait le son électronique du Clavioline, un instrument particulièrement mis en valeur."
+        }
+      ]
+    },
+    {
+      "id": "7b8e9a1c-5d2f-4c3a-8b1e-9f0a2d3b4c5d",
+      "title": "R&B / Soul — Les Voix",
+      "themeKey": "rnbSoul",
+      "questions": [
+        {
+          "question": "Quel chanteur américain est mondialement connu sous le surnom de « Godfather of Soul » (Le parrain de la soul) ?",
+          "answers": [
+            "James Brown"
+          ],
+          "difficulty": "facile",
+          "funFact": "Son groupe de musiciens s'appelait les JB's."
+        },
+        {
+          "question": "Quelle chanteuse américaine, ayant enregistré au célèbre studio Muscle Shoals, est surnommée la « Queen of Soul » ?",
+          "answers": [
+            "Aretha Franklin"
+          ],
+          "difficulty": "facile",
+          "funFact": "Muscle Shoals, situé en Alabama, était réputé pour ses compositeurs maison et son style soul classique."
+        },
+        {
+          "question": "Dans quel pays est né le célèbre label Motown, surnommé « la musique de la jeune Amérique » ?",
+          "answers": [
+            "États-Unis"
+          ],
+          "difficulty": "facile",
+          "funFact": "Fondé par Berry Gordy à Détroit, Motown a été le premier label majeur dirigé par un Noir américain."
+        },
+        {
+          "question": "Quel groupe américain a sorti en 1994 le titre « I'll Make Love To You », l'un des premiers grands succès RnB en France ?",
+          "answers": [
+            "Boyz II Men"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quelle chanteuse est considérée comme la reine du RnB depuis la sortie de son album studio intitulé « Janet. » en 1993 ?",
+          "answers": [
+            "Janet Jackson"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Le style RnB contemporain mélange des éléments de rhythm and blues, de hip-hop, de pop et de funk."
+        },
+        {
+          "question": "Quel album du chanteur Seal, composé de reprises de classiques de la musique noire, a été la deuxième meilleure vente de l'année 2009 en France ?",
+          "answers": [
+            "Soul"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Cet opus est resté classé numéro un du Top Albums français pendant 13 semaines au total."
+        },
+        {
+          "question": "Quel duo féminin a dominé les classements RnB en 1998 avec le titre « The Boy Is Mine » ?",
+          "answers": [
+            "Brandy et Monica"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Ce succès fait partie de la vague RnB qui a envahi les radios françaises sous le nom de « groove » à la fin des années 90."
+        },
+        {
+          "question": "Quel chanteur de soul a commencé sa carrière dans le groupe de gospel The Soul Stirrers avant de connaître le succès en solo avec « You Send Me » ?",
+          "answers": [
+            "Sam Cooke"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Sa chanson « Bring It On Home to Me », sortie en 1962, est considérée comme l'un des titres ayant défini l'expérience de la soul."
+        },
+        {
+          "question": "Quel label de Memphis, fondé par Jim Stewart, était le grand rival de la Motown en proposant un son soul plus rapide et incisif ?",
+          "answers": [
+            "Stax Records"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Contrairement à la Motown, beaucoup de musiciens de studio chez Stax étaient blancs."
+        },
+        {
+          "question": "Quel artiste est identifié comme une personnalité clé de l'émergence de la soul grâce à son titre « Just Out Of Reach » en 1961 ?",
+          "answers": [
+            "Solomon Burke"
+          ],
+          "difficulty": "expert",
+          "funFact": "Sa collaboration avec le label Atlantic Records est vue comme le véritable lancement du mouvement soul."
+        }
+      ]
+    },
+    {
+      "id": "f5e9d3b1-a7c4-4b5e-8d2a-1c6b4f9d3a02",
+      "title": "K-Pop — Les Références",
+      "themeKey": "kpop",
+      "questions": [
+        {
+          "question": "Quel groupe de K-pop possède le fan club officiel mondialement connu sous le nom de « ARMY » ?",
+          "answers": [
+            "BTS"
+          ],
+          "difficulty": "facile",
+          "funFact": "En juin 2017, le Time a nommé ce groupe comme l'une des vingt-cinq personnalités les plus influentes d'Internet."
+        },
+        {
+          "question": "Dans quel pays est né le courant musical K-pop au début des années 1990 ?",
+          "answers": [
+            "Corée du Sud"
+          ],
+          "difficulty": "facile",
+          "funFact": "La K-pop a été reconnue par le magazine Time comme l'exportation la plus rentable de ce pays."
+        },
+        {
+          "question": "Quel groupe féminin est célèbre pour son concept « girl crush » et a collaboré avec Lady Gaga sur le titre « Ice Cream » ?",
+          "answers": [
+            "BLACKPINK"
+          ],
+          "difficulty": "facile",
+          "funFact": "Elles sont le premier et seul groupe féminin de K-pop à être entré dans le classement du Billboard's Emerging Artists."
+        },
+        {
+          "question": "Quel groupe a été le premier de l'histoire de la K-pop à entrer dans le classement Billboard Hot 100 avec le single « Nobody » en 2009 ?",
+          "answers": [
+            "Wonder Girls"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel groupe de la seconde génération a été le tout premier à posséder son propre « light stick » officiel, reconnaissable à sa forme de couronne jaune ?",
+          "answers": [
+            "BigBang"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Leur fandom officiel porte le nom de VIPs."
+        },
+        {
+          "question": "Quelle est la couleur officielle utilisée par le fan club ELF du groupe Super Junior lors des concerts ?",
+          "answers": [
+            "Bleu saphir"
+          ],
+          "difficulty": "moyen",
+          "funFact": "Les ballons de cette couleur sont utilisés par les fans pour défendre leur groupe favori lors d'événements comme le Dream Concert."
+        },
+        {
+          "question": "En 2014, quel album du groupe 2NE1 a atteint la 61e place du Billboard 200, soit le record pour un album de K-pop à l'époque ?",
+          "answers": [
+            "Crush"
+          ],
+          "difficulty": "moyen",
+          "funFact": null
+        },
+        {
+          "question": "Quel chanteur américain d'origine coréenne est considéré comme le pionnier de la K-pop au début des années 90, bien que sa carrière n'ait duré que deux ans ?",
+          "answers": [
+            "Yang Joon-il"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Son style efféminé lui avait valu le rejet de la société sud-coréenne très conservatrice lors de ses débuts en 1991."
+        },
+        {
+          "question": "L'album « Oh! » des Girls' Generation a été le tout premier de l'histoire de la K-pop à intégrer quel objet de collection désormais emblématique du genre ?",
+          "answers": [
+            "Une photo card"
+          ],
+          "difficulty": "difficile",
+          "funFact": "Cette méthode de marketing visait à pousser les fans à acheter plusieurs albums pour collectionner toutes les cartes."
+        },
+        {
+          "question": "Quel groupe féminin a été victime d'un « black ocean » (dix minutes de silence du public) lors du Dream Concert de 2008 ?",
+          "answers": [
+            "Girls' Generation"
+          ],
+          "difficulty": "expert",
+          "funFact": "Malgré cet incident, elles ont remporté pour la première fois en 2010 le grand prix du meilleur album de l'année (Daesang) pour un groupe féminin."
+        }
+      ]
+    }
+  ]
+}

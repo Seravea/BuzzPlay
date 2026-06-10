@@ -15,6 +15,11 @@ struct PublicBlindTestView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // Timer badge
+            TimerBadge(time: timer)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.bottom, 6)
+
             // Song info
             if state.isAnswerRevealed {
                 let releaseDate: Date? = {
@@ -38,68 +43,38 @@ struct PublicBlindTestView: View {
                 )
 
                 SongCard(song: song)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
+                    .padding(.horizontal, BuzzSpacing.lg)
+                    .padding(.vertical, BuzzSpacing.lg)
                     .transition(.scale(scale: 0.8).combined(with: .opacity))
             } else {
                 VStack(spacing: 10) {
                     Image(systemName: "waveform")
-                        .font(.system(size: 22, weight: .medium))
+                        .textStyle(Typography.sectionTitleSoft)
                         .foregroundStyle(Color.mustardYellow.opacity(0.8))
                         .symbolEffect(.variableColor.iterative)
 
                     Text(BlindTestHints.phrases[state.hintIndex % BlindTestHints.phrases.count])
-                        .font(.nohemi(.title3, weight: .semiBold))
+                        .font(.nohemi(.title3, weight: .semiBold)).titleTracking()
                         .foregroundStyle(.white.opacity(0.85))
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.vertical, 18)
-                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 16))
-                .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+                .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg).strokeBorder(.white.opacity(0.08), lineWidth: 1))
                 .padding(.horizontal, 4)
                 .transition(.opacity)
             }
 
             Spacer()
-
-            // Buzz result
-            if let player = state.buzzingPlayer {
-                VStack(spacing: 12) {
-                    Text("A BUZZÉ")
-                        .font(.nohemi(.caption2, weight: .bold))
-                        .opacity(0.5)
-                        .tracking(0.8)
-
-                    TeamCardView(player: player, buzzTime: state.formattedTime, showPoints: false)
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 20)
-                .frame(maxWidth: .infinity)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            } else {
-                HStack(spacing: 8) {
-                    Circle()
-                        .fill(Color.mustardYellow.opacity(0.3))
-                        .frame(width: 12, height: 12)
-
-                    Text("En attente d’un buzz…")
-                        .font(.nohemi(.title3, weight: .medium))
-                        .opacity(0.6)
-
-                    Spacer()
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 16)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .animation(.spring(duration: 0.4), value: state)
+        // #header-bt — card "A BUZZÉ" retirée (redondante avec le label "X a buzzé" sous le
+        // buzzer). Animation ciblée sur la révélation : la zone ne saute plus à chaque buzz,
+        // seul le passage son → SongCard est animé.
+        .animation(.spring(duration: 0.4), value: state.isAnswerRevealed)
     }
 }
 

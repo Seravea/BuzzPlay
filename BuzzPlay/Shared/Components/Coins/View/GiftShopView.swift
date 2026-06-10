@@ -11,46 +11,93 @@ import AVFoundation
 struct GiftBottomBar: View {
     @Bindable var coinsVM: CoinsViewModel
     @Binding var isSheetOpen: Bool
+    var isWaiting: Bool = false
+
+    @State private var glowPulse = false
 
     private var balance: Int { coinsVM.playerGameViewModel?.player.accountAmount ?? 0 }
 
     var body: some View {
-        Button { isSheetOpen = true } label: {
-            HStack(spacing: 10) {
-                Image(systemName: "gift.fill")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Color.mustardYellow)
-
-                Text("Cadeaux")
-                    .font(.nohemi(.subheadline, weight: .bold))
-                    .foregroundStyle(.white)
-
-                Spacer()
-
+        VStack(spacing: BuzzSpacing.sm) {
+            if isWaiting && balance > 0 {
                 HStack(spacing: 5) {
-                    Text("\(balance)")
-                        .font(.nohemi(.callout, weight: .extraBold))
-                        .monospacedDigit()
-                        .foregroundStyle(Color.mustardYellow)
-                    Image(systemName: "dollarsign.bank.building.fill")
-                        .font(.system(size: 13))
-                        .foregroundStyle(Color.mustardYellow)
+                    Image(systemName: "sparkles")
+                        .textStyle(Typography.caption2Bold)
+                    Text("C'est le moment d'utiliser tes Notes !")
+                        .font(.nohemi(.caption2, weight: .bold))
                 }
-
-                Image(systemName: "chevron.up")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.4))
+                .foregroundStyle(Color.mustardYellow)
+                .padding(.horizontal, BuzzSpacing.md)
+                .padding(.vertical, 5)
+                .background(Color.mustardYellow.opacity(0.12), in: Capsule())
+                .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.35), lineWidth: 1))
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            .padding(.horizontal, 18)
-            .padding(.vertical, 13)
-            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 18))
-            .overlay(
-                RoundedRectangle(cornerRadius: 18)
-                    .strokeBorder(.white.opacity(0.12), lineWidth: 1)
-            )
+
+            Button { isSheetOpen = true } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "gift.fill")
+                        .textStyle(Typography.labelSM)
+                        .foregroundStyle(Color.mustardYellow)
+
+                    Text("Cadeaux")
+                        .font(.nohemi(.subheadline, weight: .bold))
+                        .foregroundStyle(.white)
+
+                    Spacer()
+
+                    HStack(spacing: 5) {
+                        Text("\(balance)")
+                            .font(.nohemi(.callout, weight: .extraBold))
+                            .monospacedDigit()
+                            .foregroundStyle(Color.mustardYellow)
+                        Image(systemName: "dollarsign.bank.building.fill")
+                            .textStyle(Typography.footnote)
+                            .foregroundStyle(Color.mustardYellow)
+                    }
+
+                    Image(systemName: "chevron.up")
+                        .textStyle(Typography.caption2Bold)
+                        .foregroundStyle(Color.textMuted)
+                }
+                .padding(.horizontal, 18)
+                .padding(.vertical, 13)
+                .background(
+                    isWaiting ? Color.mustardYellow.opacity(0.10) : .white.opacity(0.08),
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.lg2)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: BuzzRadius.lg2)
+                        .strokeBorder(
+                            isWaiting ? Color.mustardYellow.opacity(0.55) : .white.opacity(0.12),
+                            lineWidth: isWaiting ? 1.5 : 1
+                        )
+                )
+                .shadow(
+                    color: isWaiting ? Color.mustardYellow.opacity(glowPulse ? 0.40 : 0.12) : .clear,
+                    radius: glowPulse ? 16 : 6
+                )
+            }
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
-        .padding(.horizontal, 16)
+        .padding(.horizontal, BuzzSpacing.lg)
+        .animation(.buzzSmooth, value: isWaiting)
+        .onChange(of: isWaiting) { _, waiting in
+            if waiting {
+                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                    glowPulse = true
+                }
+            } else {
+                glowPulse = false
+            }
+        }
+        .onAppear {
+            if isWaiting {
+                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                    glowPulse = true
+                }
+            }
+        }
     }
 }
 
@@ -62,27 +109,27 @@ struct GiftShopSheet: View {
 
     @State private var showSoundPicker = false
 
-    private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+    private let columns = [GridItem(.flexible(), spacing: BuzzSpacing.md), GridItem(.flexible(), spacing: BuzzSpacing.md)]
     private var balance: Int { coinsVM.playerGameViewModel?.player.accountAmount ?? 0 }
 
     var body: some View {
         VStack(spacing: 0) {
             // Drag handle
             RoundedRectangle(cornerRadius: 3)
-                .fill(.white.opacity(0.25))
+                .fill(Color.textFaint)
                 .frame(width: 36, height: 4)
-                .padding(.top, 12)
-                .padding(.bottom, 24)
+                .padding(.top, BuzzSpacing.md)
+                .padding(.bottom, BuzzSpacing.xxl)
 
             // Header
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Boutique")
-                        .font(.nohemi(.title2, weight: .extraBold))
+                        .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                         .foregroundStyle(.white)
                     Text("Active un cadeau pour changer le jeu")
                         .font(.nohemi(.caption, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.45))
+                        .foregroundStyle(Color.textTertiary)
                 }
 
                 Spacer()
@@ -90,23 +137,26 @@ struct GiftShopSheet: View {
                 VStack(alignment: .trailing, spacing: 2) {
                     HStack(spacing: 5) {
                         Text("\(balance)")
-                            .font(.nohemi(.title3, weight: .extraBold))
+                            .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
                             .monospacedDigit()
                             .foregroundStyle(Color.mustardYellow)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
                         Image(systemName: "dollarsign.bank.building.fill")
                             .foregroundStyle(Color.mustardYellow)
+                            .layoutPriority(1)
                     }
-                    Text("coins disponibles")
+                    Text("Notes disponibles")
                         .font(.nohemi(.caption2, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(Color.textMuted)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 20)
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.bottom, BuzzSpacing.xl)
 
             // Erreur
             if let error = coinsVM.errorMessage {
-                HStack(spacing: 8) {
+                HStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "exclamationmark.circle.fill")
                         .foregroundStyle(.red)
                     Text(error)
@@ -114,20 +164,28 @@ struct GiftShopSheet: View {
                         .foregroundStyle(.red.opacity(0.9))
                     Spacer()
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.bottom, 14)
             }
 
             // Grille de cadeaux
-            LazyVGrid(columns: columns, spacing: 12) {
+            LazyVGrid(columns: columns, spacing: BuzzSpacing.md) {
                 ForEach(CoinsViewModel.Gift.allCases, id: \.self) { gift in
                     GiftCardView(
                         gift: gift,
                         balance: balance,
+                        isPending: coinsVM.isPendingPurchase,
                         otherPlayers: coinsVM.otherPlayers,
+                        player: coinsVM.playerGameViewModel?.player,
                         onBuy: { target in
                             if gift == .changeBuzzSound {
-                                showSoundPicker = true
+                                // Vérifie le solde avant d'ouvrir le picker ; sinon buyGift
+                                // affiche l'alerte "pas assez de Notes" (#alerte-solde-bas).
+                                if balance >= gift.price {
+                                    showSoundPicker = true
+                                } else {
+                                    coinsVM.buyGift(gift, targeting: target)
+                                }
                             } else {
                                 coinsVM.buyGift(gift, targeting: target)
                                 if coinsVM.errorMessage == nil { isPresented = false }
@@ -136,7 +194,7 @@ struct GiftShopSheet: View {
                     )
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, BuzzSpacing.lg)
             .padding(.bottom, 40)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -148,8 +206,8 @@ struct GiftShopSheet: View {
         .background(
             LinearGradient(
                 stops: [
-                    .init(color: Color(hex: "1A0535"), location: 0),
-                    .init(color: Color(hex: "2A0944"), location: 1),
+                    .init(color: Color.sheetBg, location: 0),
+                    .init(color: Color.darkestPurple, location: 1),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -163,27 +221,38 @@ struct GiftShopSheet: View {
 private struct GiftCardView: View {
     let gift: CoinsViewModel.Gift
     let balance: Int
+    let isPending: Bool
     let otherPlayers: [Player]
+    let player: Player?
     let onBuy: (Player?) -> Void
 
     private var canAfford: Bool { balance >= gift.price }
     private var notEnoughPlayers: Bool { otherPlayers.count < gift.minimumOtherPlayers }
-    private var isActive: Bool { canAfford && !notEnoughPlayers }
+    private var isOwned: Bool { gift.isActiveOnPlayer(player) }
+    /// Blocages structurels rendant la card non-interactive. Le solde insuffisant
+    /// n'en fait PAS partie : la card reste tappable pour afficher l'alerte
+    /// "pas assez de Notes" (#alerte-solde-bas).
+    private var isBlocked: Bool { notEnoughPlayers || isPending || isOwned }
+    /// Abordable ET jouable — pilote le rendu (card grisée si false).
+    private var isActive: Bool { canAfford && !isBlocked }
 
     var body: some View {
         Group {
-            if gift.requiresTargetPlayer && !notEnoughPlayers {
+            // Cadeau abordable nécessitant une cible → menu de sélection.
+            if gift.requiresTargetPlayer && !notEnoughPlayers && canAfford {
                 Menu {
                     ForEach(otherPlayers) { enemy in
                         Button(enemy.name) { onBuy(enemy) }
                     }
                 } label: { cardBody }
-                .disabled(!canAfford)
+                .disabled(isPending || isOwned)
                 .buttonStyle(.plain)
             } else {
+                // Bouton simple : tappable même si solde insuffisant (buyGift affiche
+                // alors l'alerte), désactivé seulement pour un blocage structurel.
                 Button { onBuy(nil) } label: { cardBody }
                 .buttonStyle(.plain)
-                .disabled(!isActive)
+                .disabled(isBlocked)
             }
         }
     }
@@ -191,13 +260,24 @@ private struct GiftCardView: View {
     private var cardBody: some View {
         VStack(spacing: 10) {
             Image(systemName: gift.iconName)
-                .font(.system(size: 26, weight: .medium))
+                .textStyle(Typography.screenTitleSoft)
                 .foregroundStyle(isActive ? gift.accentColor : .white.opacity(0.22))
                 .frame(width: 54, height: 54)
                 .background(
                     isActive ? gift.accentColor.opacity(0.18) : .white.opacity(0.05),
-                    in: RoundedRectangle(cornerRadius: 14)
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.md)
                 )
+                .overlay(alignment: .topTrailing) {
+                    if isOwned {
+                        Text("Actif")
+                            .font(.nohemi(.caption2, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(Color.greenButtonLeading, in: Capsule())
+                            .offset(x: 6, y: -6)
+                    }
+                }
 
             Text(gift.shortTitle)
                 .font(.nohemi(.caption, weight: .bold))
@@ -210,7 +290,7 @@ private struct GiftCardView: View {
                 Text("\(gift.price)")
                     .font(.nohemi(.caption2, weight: .extraBold))
                 Image(systemName: "dollarsign.bank.building.fill")
-                    .font(.system(size: 10))
+                    .textStyle(Typography.caption2)
             }
             .foregroundStyle(isActive ? Color.mustardYellow : .white.opacity(0.22))
             .padding(.horizontal, 9)
@@ -221,20 +301,37 @@ private struct GiftCardView: View {
             )
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
+        .padding(.vertical, BuzzSpacing.lg)
         .padding(.horizontal, 6)
         .background(
             isActive ? gift.accentColor.opacity(0.07) : .white.opacity(0.03),
-            in: RoundedRectangle(cornerRadius: 18)
+            in: RoundedRectangle(cornerRadius: BuzzRadius.lg2)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 18)
+            RoundedRectangle(cornerRadius: BuzzRadius.lg2)
                 .strokeBorder(
                     isActive ? gift.accentColor.opacity(0.28) : .white.opacity(0.05),
                     lineWidth: 1
                 )
         )
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isActive)
+        .animation(.buzzDefault, value: isActive)
+    }
+}
+
+// MARK: - État actif sur le Player
+
+extension CoinsViewModel.Gift {
+    func isActiveOnPlayer(_ player: Player?) -> Bool {
+        guard let player else { return false }
+        switch self {
+        case .scoreDoubled:         return player.hasScoreDoubled
+        case .shieldSingle:         return player.hasShieldSingle
+        case .shieldAll:            return player.hasShieldAll
+        case .changeBuzzColor:      return player.customBuzzColor != nil
+        case .changeBuzzSound:      return player.customBuzzSound != nil
+        case .enemyCanNotBuzz, .allEnemiesCanNotBuzz, .showIndicies:
+            return false  // effets ponctuels, pas de state persistant côté acheteur
+        }
     }
 }
 
@@ -269,14 +366,14 @@ extension CoinsViewModel.Gift {
 
     var accentColor: Color {
         switch self {
-        case .scoreDoubled:         return Color(hex: "00C875")
-        case .enemyCanNotBuzz:      return Color(hex: "FF4D4D")
-        case .allEnemiesCanNotBuzz: return Color(hex: "FF8C42")
-        case .showIndicies:         return Color(hex: "FFD600")
-        case .changeBuzzColor:      return Color(hex: "B06BFF")
-        case .changeBuzzSound:      return Color(hex: "4DAAFF")
-        case .shieldSingle:         return Color(hex: "2B7FFF")
-        case .shieldAll:            return Color(hex: "00B8DB")
+        case .scoreDoubled:         return Color.greenButtonLeading
+        case .enemyCanNotBuzz:      return Color.redSoft
+        case .allEnemiesCanNotBuzz: return Color.peach
+        case .showIndicies:         return Color.yellowLeading
+        case .changeBuzzColor:      return Color.purpleLeading
+        case .changeBuzzSound:      return Color.skyBlue
+        case .shieldSingle:         return Color.blueLeading
+        case .shieldAll:            return Color.blueTrailing
         }
     }
 }
@@ -291,21 +388,19 @@ struct SoundPickerSheet: View {
     @State private var selectedSound: String? = nil
     @State private var previewPlayer: AVAudioPlayer? = nil
 
-    private let sounds = ["BeginQuestion", "Blblbl", "GoodAnswer", "HeavenlyChoir",
-                          "Mosquito", "PositiveAnswer", "Tired", "WrongAnswer"]
-    private let soundLabels = ["Début de question", "Blblbl", "Bonne réponse", "Chœur céleste",
-                               "Moustique", "Réponse positive", "Fatigué", "Mauvaise réponse"]
+    private let sounds = buzzSoundNames
+    private var soundLabels: [String] { buzzSoundNames.map(buzzSoundLabel(for:)) }
 
     var body: some View {
         VStack(spacing: 0) {
             Text("Choisis ton son de buzzer")
                 .font(.nohemi(.headline, weight: .bold))
                 .foregroundStyle(.white)
-                .padding(.top, 24)
-                .padding(.bottom, 16)
+                .padding(.top, BuzzSpacing.xxl)
+                .padding(.bottom, BuzzSpacing.lg)
 
             ScrollView {
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     ForEach(Array(zip(sounds, soundLabels)), id: \.0) { sound, label in
                         Button {
                             selectedSound = sound
@@ -313,8 +408,8 @@ struct SoundPickerSheet: View {
                         } label: {
                             HStack(spacing: 14) {
                                 Image(systemName: selectedSound == sound ? "checkmark.circle.fill" : "circle")
-                                    .font(.system(size: 20))
-                                    .foregroundStyle(selectedSound == sound ? Color(hex: "4DAAFF") : .white.opacity(0.3))
+                                    .textStyle(Typography.title3)
+                                    .foregroundStyle(selectedSound == sound ? Color.skyBlue : .white.opacity(0.3))
 
                                 Text(label)
                                     .font(.nohemi(.body, weight: .medium))
@@ -323,28 +418,28 @@ struct SoundPickerSheet: View {
                                 Spacer()
 
                                 Image(systemName: "play.circle")
-                                    .font(.system(size: 18))
-                                    .foregroundStyle(.white.opacity(0.4))
+                                    .textStyle(Typography.cardTitle)
+                                    .foregroundStyle(Color.textMuted)
                             }
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 12)
+                            .padding(.horizontal, BuzzSpacing.xl)
+                            .padding(.vertical, BuzzSpacing.md)
                             .background(
-                                selectedSound == sound ? Color(hex: "4DAAFF").opacity(0.12) : .white.opacity(0.04),
-                                in: RoundedRectangle(cornerRadius: 12)
+                                selectedSound == sound ? Color.skyBlue.opacity(0.12) : .white.opacity(0.04),
+                                in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
                             )
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12)
+                                RoundedRectangle(cornerRadius: BuzzRadius.sm)
                                     .strokeBorder(
-                                        selectedSound == sound ? Color(hex: "4DAAFF").opacity(0.4) : .clear,
+                                        selectedSound == sound ? Color.skyBlue.opacity(0.4) : .clear,
                                         lineWidth: 1
                                     )
                             )
                         }
                         .buttonStyle(.plain)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, BuzzSpacing.lg)
                     }
                 }
-                .padding(.bottom, 16)
+                .padding(.bottom, BuzzSpacing.lg)
             }
 
             // CTA
@@ -355,35 +450,41 @@ struct SoundPickerSheet: View {
                     isShopPresented = false
                 }
             } label: {
-                HStack(spacing: 8) {
+                HStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "waveform")
                     Text(selectedSound == nil ? "Choisir un son d'abord" : "Confirmer — 20 🎵")
                         .font(.nohemi(.body, weight: .bold))
                 }
-                .foregroundStyle(selectedSound == nil ? .white.opacity(0.4) : .white)
+                .foregroundStyle(selectedSound == nil ? Color.textMuted : .white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(
                     selectedSound == nil
                         ? AnyShapeStyle(Color.white.opacity(0.08))
-                        : AnyShapeStyle(LinearGradient(colors: [Color(hex: "2B7FFF"), Color(hex: "00B8DB")], startPoint: .leading, endPoint: .trailing)),
-                    in: RoundedRectangle(cornerRadius: 14)
+                        : AnyShapeStyle(LinearGradient(colors: [Color.blueLeading, Color.blueTrailing], startPoint: .leading, endPoint: .trailing)),
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.md)
                 )
             }
             .buttonStyle(.plain)
             .disabled(selectedSound == nil)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 32)
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.bottom, BuzzSpacing.xxxl)
         }
         .background(
             LinearGradient(
                 stops: [
-                    .init(color: Color(hex: "1A0535"), location: 0),
-                    .init(color: Color(hex: "2A0944"), location: 1),
+                    .init(color: Color.sheetBg, location: 0),
+                    .init(color: Color.darkestPurple, location: 1),
                 ],
                 startPoint: .top, endPoint: .bottom
             )
         )
+        // Hygiène : stoppe le préview audio si la sheet est fermée en pleine lecture
+        // (sinon l'AVAudioPlayer continue de jouer en arrière-plan).
+        .onDisappear {
+            previewPlayer?.stop()
+            previewPlayer = nil
+        }
     }
 
     private func playPreview(_ soundName: String) {

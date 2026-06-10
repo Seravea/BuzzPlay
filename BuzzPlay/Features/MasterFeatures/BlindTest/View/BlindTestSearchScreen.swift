@@ -17,23 +17,23 @@ private struct CategoryItem: Identifiable {
 }
 
 private let generations: [CategoryItem] = [
-    .init(label: "70s", query: "années 70",   icon: "waveform.circle.fill",  colors: [Color(hex: "#FF6B35"), Color(hex: "#FF3E3E")]),
-    .init(label: "80s", query: "années 80",   icon: "radio.fill",            colors: [Color(hex: "#C026D3"), Color(hex: "#7C3AED")]),
-    .init(label: "90s", query: "années 90",   icon: "opticaldisc",           colors: [Color(hex: "#2563EB"), Color(hex: "#0EA5E9")]),
-    .init(label: "00s", query: "années 2000", icon: "music.note.list",       colors: [Color(hex: "#EA580C"), Color(hex: "#F59E0B")]),
-    .init(label: "10s", query: "années 2010", icon: "headphones",            colors: [Color(hex: "#0369A1"), Color(hex: "#0F172A")]),
-    .init(label: "20s", query: "années 2020", icon: "dot.radiowaves.left.and.right", colors: [Color(hex: "#059669"), Color(hex: "#10B981")]),
+    .init(label: "70s", query: "années 70",   icon: "waveform.circle.fill",  colors: [Color.coral, Color.crimson]),
+    .init(label: "80s", query: "années 80",   icon: "radio.fill",            colors: [Color.violet, Color.buzzIndigo]),
+    .init(label: "90s", query: "années 90",   icon: "opticaldisc",           colors: [Color.royalBlue, Color.skyBlue]),
+    .init(label: "00s", query: "années 2000", icon: "music.note.list",       colors: [Color.burnOrange, Color.amberWarm]),
+    .init(label: "10s", query: "années 2010", icon: "headphones",            colors: [Color.oceanBlue, Color.deepDark]),
+    .init(label: "20s", query: "années 2020", icon: "dot.radiowaves.left.and.right", colors: [Color.teal, Color.emerald]),
 ]
 
 private let genres: [CategoryItem] = [
-    .init(label: "Pop",        query: "pop hits",           icon: "star.fill",   colors: [Color(hex: "#EC4899"), Color(hex: "#F43F5E")]),
-    .init(label: "Rock",       query: "rock",               icon: "bolt.fill",   colors: [Color(hex: "#DC2626"), Color(hex: "#EA580C")]),
-    .init(label: "Hip-Hop",    query: "hip hop",            icon: "mic.fill",    colors: [Color(hex: "#7C3AED"), Color(hex: "#6366F1")]),
-    .init(label: "Électro",    query: "electro dance",      icon: "waveform",    colors: [Color(hex: "#0EA5E9"), Color(hex: "#6366F1")]),
-    .init(label: "R&B · Soul", query: "r&b soul",           icon: "heart.fill",  colors: [Color(hex: "#F59E0B"), Color(hex: "#EF4444")]),
-    .init(label: "Variété FR", query: "variété française",  icon: "music.note",  colors: [Color(hex: "#2563EB"), Color(hex: "#7C3AED")]),
-    .init(label: "K-Pop",      query: "k-pop",              icon: "crown.fill",  colors: [Color(hex: "#EC4899"), Color(hex: "#7C3AED")]),
-    .init(label: "Latino",     query: "latino hits",        icon: "flame.fill",  colors: [Color(hex: "#F97316"), Color(hex: "#EF4444")]),
+    .init(label: "Pop",        query: "pop hits",           icon: "star.fill",   colors: [Color.vibrantPink, Color.fuchsia]),
+    .init(label: "Rock",       query: "rock",               icon: "bolt.fill",   colors: [Color.scarlet, Color.burnOrange]),
+    .init(label: "Hip-Hop",    query: "hip hop",            icon: "mic.fill",    colors: [Color.buzzIndigo, Color.softIndigo]),
+    .init(label: "Électro",    query: "electro dance",      icon: "waveform",    colors: [Color.skyBlue, Color.softIndigo]),
+    .init(label: "R&B · Soul", query: "r&b soul",           icon: "heart.fill",  colors: [Color.amberWarm, Color.errorLight]),
+    .init(label: "Variété FR", query: "variété française",  icon: "music.note",  colors: [Color.royalBlue, Color.buzzIndigo]),
+    .init(label: "K-Pop",      query: "k-pop",              icon: "crown.fill",  colors: [Color.vibrantPink, Color.buzzIndigo]),
+    .init(label: "Latino",     query: "latino hits",        icon: "flame.fill",  colors: [Color.tangerine, Color.errorLight]),
 ]
 
 // MARK: - Main View
@@ -44,28 +44,27 @@ struct BlindTestSearchScreen: View {
 
     @FocusState private var searchFocused: Bool
     @State private var searchText = ""
-    @State private var showSearchBar = false
+    // #12 — feedback pendant la latence d'ouverture de la sheet d'abonnement Apple Music
+    @State private var isSubscribing = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
 
             // Apple Music banner
             appleMusicBanner
-                .padding(.horizontal, 20)
-                .padding(.bottom, 12)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.bottom, BuzzSpacing.md)
 
             // Lancer le Blind Test — invite les players sur leur buzzer
             launchButton
-                .padding(.horizontal, 20)
-                .padding(.bottom, 16)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.bottom, BuzzSpacing.md)
 
-            // Inline search bar (slides in from top)
-            if showSearchBar {
-                searchBarRow
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 16)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
+            // #BT-search — barre de recherche permanente en haut (au lieu d'un CTA caché en
+            // bas) : découvrable immédiatement, les catégories en dessous sont des raccourcis.
+            searchBarRow
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.bottom, BuzzSpacing.lg)
 
             // Content area
             if blindTestVM.isFetching {
@@ -77,14 +76,6 @@ struct BlindTestSearchScreen: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .safeAreaInset(edge: .bottom) {
-            if !showSearchBar && blindTestVM.playlists.isEmpty && !blindTestVM.isFetching {
-                bottomSearchCTA
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 16)
-            }
-        }
-        .animation(.spring(duration: 0.3, bounce: 0.05), value: showSearchBar)
         .animation(.spring(duration: 0.3, bounce: 0.05), value: blindTestVM.playlists.isEmpty)
         .animation(.spring(duration: 0.3, bounce: 0.05), value: blindTestVM.isFetching)
     }
@@ -94,24 +85,23 @@ struct BlindTestSearchScreen: View {
     private var launchButton: some View {
         let invited = blindTestVM.hasInvitedPlayers
         return Button {
-            blindTestVM.hasInvitedPlayers = true
-            blindTestVM.gameVM.broadcastGameLaunch(.blindTest)
+            blindTestVM.invitePlayers()  // #invite-auto — ré-invite manuelle (joueur en retard)
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: BuzzSpacing.sm) {
                 Image(systemName: invited ? "checkmark.circle.fill" : "person.wave.2.fill")
-                    .font(.system(size: 13, weight: .bold))
+                    .textStyle(Typography.footnoteBold)
                 Text(invited ? "Joueurs invités" : "Inviter les joueurs")
                     .font(.nohemi(.subheadline, weight: .bold))
                 Spacer()
-                Text(invited ? "Prêts à buzzer" : "Obligatoire avant de jouer")
+                Text(invited ? "Appuyer pour ré-inviter" : "Auto — ou appuyer ici")
                     .font(.nohemi(.caption2, weight: .regular))
                     .foregroundStyle(.white.opacity(invited ? 0.5 : 0.65))
             }
             .foregroundStyle(.white)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.horizontal, BuzzSpacing.lg)
+            .padding(.vertical, BuzzSpacing.md)
             .background(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: BuzzRadius.md)
                     .fill(invited
                           ? AnyShapeStyle(Color.white.opacity(0.10))
                           : AnyShapeStyle(LinearGradient(colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
@@ -120,7 +110,7 @@ struct BlindTestSearchScreen: View {
             .shadow(color: invited ? .clear : Color.greenButtonLeading.opacity(0.35), radius: 10, y: 3)
         }
         .buttonStyle(.plain)
-        .animation(.easeInOut(duration: 0.25), value: invited)
+        .animation(.buzzFade, value: invited)
     }
 
     // MARK: Apple Music Banner
@@ -128,17 +118,17 @@ struct BlindTestSearchScreen: View {
     private var appleMusicBanner: some View {
         HStack(spacing: 10) {
             Image(systemName: blindTestVM.canPlayCatalogContent ? "music.note" : "music.note")
-                .font(.system(size: 13, weight: .semibold))
+                .textStyle(Typography.footnoteEM)
                 .foregroundStyle(blindTestVM.canPlayCatalogContent ? Color.greenButtonLeading : Color.mustardYellow)
 
             if blindTestVM.canPlayCatalogContent {
                 (Text("Titre entier · ").foregroundStyle(.white)
-                 + Text("Apple Music").foregroundStyle(.white.opacity(0.55)))
+                 + Text("Apple Music").foregroundStyle(Color.textSecondary))
                     .font(.nohemi(.caption, weight: .bold))
             } else {
-                (Text("Preview ").foregroundStyle(.white.opacity(0.55))
+                (Text("Preview ").foregroundStyle(Color.textSecondary)
                  + Text("15s").foregroundStyle(.white).bold()
-                 + Text(" · Titre entier avec ").foregroundStyle(.white.opacity(0.55))
+                 + Text(" · Titre entier avec ").foregroundStyle(Color.textSecondary)
                  + Text("Apple Music").foregroundStyle(.white).bold())
                     .font(.nohemi(.caption, weight: .regular))
             }
@@ -146,103 +136,118 @@ struct BlindTestSearchScreen: View {
             Spacer(minLength: 4)
 
             if !blindTestVM.canPlayCatalogContent {
-                Button(action: onSubscribeTap) {
-                    Text("S'abonner")
-                        .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(
-                            LinearGradient(colors: [.purpleLeading, .purpleTrailing],
-                                           startPoint: .leading, endPoint: .trailing),
-                            in: Capsule()
-                        )
+                Button {
+                    isSubscribing = true
+                    onSubscribeTap()
+                    // La sheet StoreKit/MusicKit met un instant à s'ouvrir → on relâche le
+                    // spinner après un court délai (le bouton disparaît si l'abonnement passe).
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { isSubscribing = false }
+                } label: {
+                    Group {
+                        if isSubscribing {
+                            ProgressView().controlSize(.mini).tint(.white)
+                        } else {
+                            Text("S'abonner")
+                                .font(.nohemi(.caption2, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
+                    }
+                    .frame(minWidth: 60)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(
+                        LinearGradient(colors: [.purpleLeading, .purpleTrailing],
+                                       startPoint: .leading, endPoint: .trailing),
+                        in: Capsule()
+                    )
                 }
                 .buttonStyle(.plain)
+                .disabled(isSubscribing)
             }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm).strokeBorder(.white.opacity(0.08), lineWidth: 1))
     }
 
     // MARK: Inline Search Bar
 
     private var searchBarRow: some View {
-        HStack(spacing: 10) {
-            HStack(spacing: 8) {
+        HStack(spacing: BuzzSpacing.sm) {
+            // #BT-search — loupe tappable = vraie action "Chercher" (en plus de la touche
+            // "Rechercher" du clavier via submitLabel). Plus besoin de deviner "retour".
+            Button { doSearch() } label: {
                 Image(systemName: "magnifyingglass")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.4))
-
-                TextField("", text: $searchText,
-                          prompt: Text("Nom d'une playlist…").foregroundStyle(.white.opacity(0.35)))
-                    .font(.nohemi(.body))
-                    .foregroundStyle(.white)
-                    .focused($searchFocused)
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-                    .onSubmit { doSearch() }
-
-                if !searchText.isEmpty {
-                    Button { searchText = "" } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.white.opacity(0.35))
-                    }
-                    .buttonStyle(.plain)
-                }
+                    .textStyle(Typography.footnoteMedium)
+                    .foregroundStyle(searchText.isEmpty ? Color.textMuted : Color.mustardYellow)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 11)
-            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 14))
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .strokeBorder(Color.mustardYellow.opacity(0.5), lineWidth: 1)
-            )
-
-            Button("Annuler") {
-                showSearchBar = false
-                searchText = ""
-                searchFocused = false
-            }
-            .font(.nohemi(.body, weight: .semiBold))
-            .foregroundStyle(.white.opacity(0.7))
             .buttonStyle(.plain)
+            .disabled(searchText.isEmpty)
+
+            TextField("", text: $searchText,
+                      prompt: Text("Rechercher une playlist…").foregroundStyle(Color.textDim))
+                .font(.nohemi(.body))
+                .foregroundStyle(.white)
+                .focused($searchFocused)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .submitLabel(.search)
+                .onSubmit { doSearch() }
+
+            if !searchText.isEmpty {
+                Button { searchText = ""; searchFocused = true } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(Color.textDim)
+                }
+                .buttonStyle(.plain)
+            }
         }
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { searchFocused = true }
-        }
+        .padding(.horizontal, BuzzSpacing.md)
+        .padding(.vertical, 11)
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+        .overlay(
+            RoundedRectangle(cornerRadius: BuzzRadius.md)
+                .strokeBorder(
+                    searchFocused ? Color.mustardYellow.opacity(0.5) : .white.opacity(0.12),
+                    lineWidth: 1
+                )
+        )
+        .animation(.easeInOut(duration: 0.15), value: searchFocused)
     }
 
     // MARK: Categories
 
     private var categoriesSection: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 24) {
+        ScrollView {
+            VStack(alignment: .leading, spacing: BuzzSpacing.xxl) {
                 categoryRow(label: "GÉNÉRATION", items: generations)
                 categoryRow(label: "GENRE", items: genres)
             }
-            .padding(.bottom, 80)
+            .padding(.bottom, BuzzSpacing.xl)
         }
+        .scrollIndicators(.hidden)
     }
 
     private func categoryRow(label: String, items: [CategoryItem]) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.md) {
             Text(label)
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.white.opacity(0.4))
+                .foregroundStyle(Color.textMuted)
                 .tracking(0.8)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, BuzzSpacing.xl)
 
-            ScrollView(.horizontal, showsIndicators: false) {
+            ScrollView(.horizontal) {
                 HStack(spacing: 10) {
                     ForEach(items) { item in
                         CategoryCard(item: item) { doSearch(query: item.query) }
                     }
                 }
-                .padding(.horizontal, 20)
             }
+            // #BT-search/#13 — insets propres via contentMargins (au lieu de padder le
+            // HStack, qui rognait la 1re card) + scroll indicators masqués.
+            .contentMargins(.horizontal, BuzzSpacing.xl, for: .scrollContent)
+            .scrollIndicators(.hidden)
         }
     }
 
@@ -254,37 +259,36 @@ struct BlindTestSearchScreen: View {
                 let n = blindTestVM.playlists.count
                 Text("\(n) PLAYLIST\(n > 1 ? "S" : "") TROUVÉE\(n > 1 ? "S" : "")")
                     .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(Color.textMuted)
                     .tracking(0.8)
 
                 Spacer()
 
                 Button {
                     withAnimation { blindTestVM.playlists = [] }
-                    showSearchBar = false
                     searchText = ""
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.5))
+                        .textStyle(Typography.captionEM)
+                        .foregroundStyle(Color.textSecondary)
                         .frame(width: 28, height: 28)
                         .background(.white.opacity(0.1), in: Circle())
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 12)
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.bottom, BuzzSpacing.md)
 
             ScrollView {
-                LazyVStack(spacing: 8) {
+                LazyVStack(spacing: BuzzSpacing.sm) {
                     ForEach(blindTestVM.playlists) { playlist in
                         BlindTestPlaylistRow(playlist: playlist) {
                             Task { await blindTestVM.selectPlaylist(playlist) }
                         }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 20)
+                .padding(.horizontal, BuzzSpacing.lg)
+                .padding(.bottom, BuzzSpacing.xl)
             }
         }
     }
@@ -292,36 +296,13 @@ struct BlindTestSearchScreen: View {
     // MARK: Loading
 
     private var loadingView: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: BuzzSpacing.md) {
             ProgressView().scaleEffect(1.2).tint(.white)
             Text("Recherche en cours…")
                 .font(.nohemi(.subheadline, weight: .regular))
-                .foregroundStyle(.white.opacity(0.4))
+                .foregroundStyle(Color.textMuted)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    // MARK: Bottom CTA
-
-    private var bottomSearchCTA: some View {
-        Button {
-            withAnimation { showSearchBar = true }
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.45))
-                Text("Chercher une playlist précise…")
-                    .font(.nohemi(.body, weight: .semiBold))
-                    .foregroundStyle(.white.opacity(0.65))
-                Spacer()
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.1), lineWidth: 1))
-        }
-        .buttonStyle(.plain)
     }
 
     // MARK: Helpers
@@ -330,7 +311,6 @@ struct BlindTestSearchScreen: View {
         let q = query ?? searchText
         guard !q.isEmpty else { return }
         searchFocused = false
-        withAnimation { showSearchBar = false }
         withAnimation { blindTestVM.playlists = [] }
         Task { await blindTestVM.search(query: q) }
     }
@@ -349,10 +329,10 @@ private struct CategoryCard: View {
                     LinearGradient(colors: item.colors,
                                    startPoint: .topLeading,
                                    endPoint: .bottomTrailing)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.md))
 
                     Image(systemName: item.icon)
-                        .font(.system(size: 28, weight: .semibold))
+                        .textStyle(Typography.screenTitle)
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.2), radius: 4)
                 }
@@ -383,12 +363,12 @@ struct BlindTestPlaylistRow: View {
                                    startPoint: .topLeading, endPoint: .bottomTrailing)
                         .overlay(
                             Image(systemName: "music.note.list")
-                                .font(.system(size: 18))
+                                .textStyle(Typography.cardTitle)
                                 .foregroundStyle(.white.opacity(0.8))
                         )
                 }
                 .frame(width: 60, height: 60)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.xs))
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(playlist.name)
@@ -398,7 +378,7 @@ struct BlindTestPlaylistRow: View {
                     if let curator = playlist.curator {
                         Text(curator)
                             .font(.nohemi(.caption, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.4))
+                            .foregroundStyle(Color.textMuted)
                     }
                 }
 
@@ -407,16 +387,16 @@ struct BlindTestPlaylistRow: View {
                 if let count = playlist.trackCount {
                     Text("\(count) titres")
                         .font(.nohemi(.caption, weight: .semiBold))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(Color.textMuted)
                 }
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.25))
+                    .textStyle(Typography.footnoteEM)
+                    .foregroundStyle(Color.textFaint)
             }
-            .padding(8)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.08), lineWidth: 1.5))
+            .padding(BuzzSpacing.sm)
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+            .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg).strokeBorder(.white.opacity(0.08), lineWidth: 1.5))
         }
         .buttonStyle(.plain)
     }

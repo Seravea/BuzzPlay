@@ -57,6 +57,12 @@ protocol BuzzDrivenGame: AnyObject {
 
     // Apply single-use gift effects to the game
     func applyGiftEffect(_ gift: CoinsViewModel.Gift, to player: Player)
+
+    // #pause-reco — met le jeu en pause quand TOUS les joueurs sont déconnectés (timer +
+    // média), et le reprend à la reconnexion. Chaque jeu garde son propre état pour ne PAS
+    // toucher une manche déjà en attente de validation (buzz) ni un état idle.
+    func pauseForDisconnect()
+    func resumeFromDisconnect()
 }
 
 // Default gift effect implementation (no-op, games can override)
@@ -64,30 +70,35 @@ extension BuzzDrivenGame {
     func applyGiftEffect(_ gift: CoinsViewModel.Gift, to player: Player) {
         // Games override this to implement specific gift effects
     }
+
+    // Défaut sûr : pause/reprise du timer uniquement. Les jeux qui ont un média (musique)
+    // ou un état de manche surchargent pour gérer le cas proprement.
+    func pauseForDisconnect() { pauseReactionTimer() }
+    func resumeFromDisconnect() { startReactionTimer() }
 }
 
 // Timer functions
 extension BuzzDrivenGame {
     var formattedTime: String {
-        let centiseconds = reactionTimeMs / 10
-        let seconds = centiseconds / 100
-        let cs = centiseconds % 100
-        return String(format: "%02d:%02d", seconds, cs)
+        String(format: "%02d", reactionTimeMs / 1000)
     }
     
     // Resume-or-start timer without resetting reactionTimeMs.
     // Use this in "rejectAnswer" to continue from the paused time.
+    // #perf — tick à 1s : l'affichage (formattedTime) ne montre que les secondes et aucun
+    // consommateur n'utilise la résolution 100ms. À 0.1s, chaque tick mutait une propriété
+    // @Observable → ~10 re-renders/s de toute la hiérarchie pour un texte qui change 1×/s.
     func startReactionTimer() {
         // Do NOT reset reactionTimeMs here; we want resume semantics.
         // Just ensure any previous timer is invalidated.
         timer?.invalidate()
         timer = nil
-        
-        // Create the timer on the main run loop.
-        let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            Task { @MainActor in
-                self.reactionTimeMs += 100
+
+        // Create the timer on the main run loop (fires on main → assumeIsolated est sûr).
+        let newTimer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.reactionTimeMs += 1000
             }
         }
         RunLoop.main.add(newTimer, forMode: .common)

@@ -14,9 +14,9 @@ enum RoleButtonUI: CaseIterable {
     var linearGradient: LinearGradient {
         switch self {
         case .teams:
-            return LinearGradient(colors: [Color(hex: "AD46FF"), Color(hex: "F6339A")], startPoint: .topLeading, endPoint: .bottomTrailing)
+            return LinearGradient(colors: [Color.purpleLeading, Color.purpleTrailing], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .master:
-            return LinearGradient(colors: [Color(hex: "2B7FFF"), Color(hex: "00B8DB")], startPoint: .topLeading, endPoint: .bottomTrailing)
+            return LinearGradient(colors: [Color.blueLeading, Color.blueTrailing], startPoint: .topLeading, endPoint: .bottomTrailing)
         }
     }
 

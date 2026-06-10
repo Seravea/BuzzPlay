@@ -21,6 +21,7 @@ struct Player: Identifiable, Hashable, Codable, Equatable {
     var customBuzzSound: String? = nil
     var hasScoreDoubled: Bool = false
     var blockedFromBuzzing: Bool = false
+    var blockedByPlayerName: String? = nil   // pseudo de l'adversaire qui a bloqué
     var hasShieldSingle: Bool = false
     var hasShieldAll: Bool = false
 
@@ -41,6 +42,7 @@ extension Player {
         customBuzzSound    = try c.decodeIfPresent(String.self,     forKey: .customBuzzSound)
         hasScoreDoubled    = try c.decodeIfPresent(Bool.self,       forKey: .hasScoreDoubled)    ?? false
         blockedFromBuzzing = try c.decodeIfPresent(Bool.self,       forKey: .blockedFromBuzzing) ?? false
+        blockedByPlayerName = try c.decodeIfPresent(String.self,   forKey: .blockedByPlayerName)
         hasShieldSingle    = try c.decodeIfPresent(Bool.self,       forKey: .hasShieldSingle)    ?? false
         hasShieldAll       = try c.decodeIfPresent(Bool.self,       forKey: .hasShieldAll)       ?? false
     }

@@ -41,9 +41,9 @@ struct SongCard: View {
                 }
             }
             .frame(height: 80)
-            .padding(12)
+            .padding(BuzzSpacing.md)
             .background {
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: BuzzRadius.sm)
                     .foregroundStyle(selectedSong == song ? .green.opacity(0.4) : .white.opacity(0.1))
             }
             .foregroundStyle(.white)
@@ -67,9 +67,9 @@ struct SongCard: View {
                 }
             }
             .frame(height: 80)
-            .padding(12)
+            .padding(BuzzSpacing.md)
             .background {
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: BuzzRadius.sm)
                     .foregroundStyle(.gray.opacity(0.2))
             }
         }

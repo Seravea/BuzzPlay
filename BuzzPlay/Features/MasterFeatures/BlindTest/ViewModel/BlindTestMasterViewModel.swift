@@ -12,6 +12,7 @@ import AVFoundation
 import Observation
 import MusicKit
 
+@MainActor
 @Observable
 class BlindTestMasterViewModel: BuzzDrivenGame {
     
@@ -41,10 +42,20 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var roundCountdownPhase: RoundCountdownPhase = .hidden
     // Task du countdown en cours — annulable via cancelRound()
     private var countdownTask: Task<Void, Never>?
+    // #leak — task du stream d'abonnement MusicKit. Avant : Task non stockée avec for-await
+    // infini et capture forte de self → le VM ne se désallouait JAMAIS, et setupMusicOnAppear
+    // (appelé à chaque onAppear) en empilait une de plus à chaque passage sur l'écran.
+    private var subscriptionObserverTask: Task<Void, Never>?
 
     // true quand le preview/titre s'est terminé naturellement (timer expiré)
     // → rejectAnswer doit relancer la musique depuis le début au lieu de resume()
     private var musicHasEnded = false
+
+    // true si on joue un extrait AVPlayer (preview URL, ~30s) — false = MusicKit catalogue
+    private var isPreviewMode: Bool = false
+
+    // Durée de la manche en ms : 30s pour preview, 30s aussi pour catalogue (limite raisonnable)
+    private let roundDurationMs = 30_000
 
     //MARK: Timer's datas
     var reactionTimeMs: Int = 0
@@ -76,13 +87,29 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     }
     
     private var doubledScorePlayers: Set<UUID> = []
-
+    // Joueurs ayant acheté showIndicies entre deux morceaux — livrés au début de la prochaine manche
+    private var pendingHintPlayers: [UUID: Player] = [:]
+    private let feedbackGenerator = UINotificationFeedbackGenerator()
 
     //MARK: données de jeu
     init(gameVM: MasterFlowViewModel) {
         self.gameVM = gameVM
+        feedbackGenerator.prepare()
     }
-    
+
+    deinit {
+        // Hygiène soirée longue : sans ça, le stream d'abonnement, le timer (RunLoop.main)
+        // et l'observer de fin de preview survivent au VM. assumeIsolated : le VM est
+        // possédé par SwiftUI → désalloué sur le main thread.
+        MainActor.assumeIsolated {
+            subscriptionObserverTask?.cancel()
+            countdownTask?.cancel()
+            timer?.invalidate()
+            if let obs = previewEndObserver { NotificationCenter.default.removeObserver(obs) }
+            player?.pause()
+        }
+    }
+
     var player: AVPlayer?
     // Lecteur MusicKit pour le catalogue
     let musicPlayer = ApplicationMusicPlayer.shared
@@ -90,6 +117,18 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
 
 //MARK: func and data use in the View
 extension BlindTestMasterViewModel {
+
+    // #invite-auto — l'invite des joueurs (envoi sur leur buzzer) part automatiquement à
+    // l'entrée du Blind Test ; le bouton reste actionnable pour ré-inviter un joueur en retard.
+    func invitePlayers() {
+        hasInvitedPlayers = true
+        gameVM.broadcastGameLaunch(.blindTest)
+    }
+
+    func autoInvitePlayersIfNeeded() {
+        guard !hasInvitedPlayers else { return }
+        invitePlayers()
+    }
 
     var totalNumberOfSongs: Int {
         allSongs.count
@@ -100,9 +139,9 @@ extension BlindTestMasterViewModel {
         return total > 0 ? total : allSongs.count
     }
     
-    @MainActor func validateAnswer(points: Int) {
+    func validateAnswer(points: Int) {
         guard let playerAnswers = playerHasBuzz else { return }
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        feedbackGenerator.notificationOccurred(.success)
         if let song = selectedMusic, !playedSongs.contains(song) {
             playedSongs.append(song)
         }
@@ -116,8 +155,14 @@ extension BlindTestMasterViewModel {
             shouldAutoFinish = true
         }
 
-        let finalPoints = doubledScorePlayers.remove(playerAnswers.id) != nil ? points * 2 : points
-        gameVM.addPointToPlayer(playerAnswers, points: finalPoints)
+        let wasDoubled = doubledScorePlayers.remove(playerAnswers.id) != nil
+        let finalPoints = wasDoubled ? points * 2 : points
+
+        // .answerResult envoyé EN PREMIER → Player snapshote knownPlayers avant la mise à jour du score
+        let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: nil)
+        gameVM.mpcService.sendMessage(.answerResult(resultPayload))
+
+        gameVM.addPointToPlayer(playerAnswers, points: finalPoints, consumeScoreDouble: wasDoubled)
 
         // on fige définitivement la manche
         stopReactionTimer()
@@ -127,18 +172,14 @@ extension BlindTestMasterViewModel {
         // ✅ update public display (answer revealed)
         gameVM.broadcastPublicStateFromCurrentGame()
 
-        // ✅ Envoyer le résultat aux Players
-        let resultPayload = AnswerResultPayload(isCorrect: true, points: finalPoints, correctAnswer: nil)
-        gameVM.mpcService.sendMessage(.answerResult(resultPayload))
-
         // (optionnel) on nettoie ensuite la sélection
         selectedMusic = nil
         isGameActive = false
     }
     
-    @MainActor func rejectAnswer() {
+    func rejectAnswer() {
         guard case .buzzed = state else { return }
-        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+        feedbackGenerator.notificationOccurred(.warning)
 
         isCorrect = false
         playerHasBuzz = nil
@@ -151,10 +192,13 @@ extension BlindTestMasterViewModel {
 
         countdownTask = Task { @MainActor [weak self] in
             guard let self else { return }
+            // #countdown-sync — décompte de reprise calculé localement par chaque Player.
+            self.gameVM.mpcService.sendMessage(.countdownStarted(
+                CountdownStartPayload(masterTimestamp: Date().timeIntervalSince1970, startCount: 3)
+            ))
             await runCountdown(
                 onPhaseChange: { [weak self] phase in
                     self?.roundCountdownPhase = phase
-                    self?.gameVM.broadcastPublicStateFromCurrentGame()
                 },
                 onComplete: { [weak self] in
                     guard let self else { return }
@@ -197,12 +241,17 @@ extension BlindTestMasterViewModel {
             musicHasEnded = false
             state = .playing
             isGameActive = true
+            gameVM.clearGiftBlocks()   // #20 — nouveau morceau : reset des blocages-cadeaux
 
-            // Countdown (5.8 s) ET chargement musique en parallèle
+            // #countdown-sync — UN message timestampé ; chaque Player calcule 3-2-1-GO
+            // sur son horloge locale (plus de N broadcasts par phase).
+            gameVM.mpcService.sendMessage(.countdownStarted(
+                CountdownStartPayload(masterTimestamp: Date().timeIntervalSince1970, startCount: 3)
+            ))
+            // Countdown (3.8s : 3×1s + 0.8s GO) ET chargement musique en parallèle
             async let countdown: Void = runCountdown(
                 onPhaseChange: { [weak self] phase in
                     self?.roundCountdownPhase = phase
-                    self?.gameVM.broadcastPublicStateFromCurrentGame()
                 },
                 onComplete: {}
             )
@@ -213,10 +262,12 @@ extension BlindTestMasterViewModel {
 
             gameVM.unlockBuzz()
             playPreparedMusicNow()
+            // Livrer les indices achetés entre deux morceaux
+            flushPendingHints(for: selectedMusic)
         }
     }
 
-    @MainActor func cancelRound() {
+    func cancelRound() {
         countdownTask?.cancel()
         countdownTask = nil
         roundCountdownPhase = .hidden
@@ -231,10 +282,10 @@ extension BlindTestMasterViewModel {
         gameVM.broadcastPublicStateFromCurrentGame()
     }
 
-    @MainActor func handlePreviewEnd() {
+    func handlePreviewEnd() {
         switch state {
         case .playing:
-            // Musique terminée → reboucle depuis le début, timer continue
+            // Preview terminée → reboucle depuis le début, timer continue à compter
             restartMusicFromBeginning()
             gameVM.broadcastPublicStateFromCurrentGame()
         case .buzzed:
@@ -249,20 +300,34 @@ extension BlindTestMasterViewModel {
 
 //MARK: Gift effects
 extension BlindTestMasterViewModel {
-    @MainActor
     func applyGiftEffect(_ gift: CoinsViewModel.Gift, to player: Player) {
         switch gift {
         case .scoreDoubled:
             doubledScorePlayers.insert(player.id)
 
         case .showIndicies:
-            guard let song = selectedMusic else { return }
+            guard let song = selectedMusic, case .playing = state else {
+                // Aucun morceau actif — stocker pour la prochaine manche
+                pendingHintPlayers[player.id] = player
+                gameVM.mpcService.sendMessagetoOnePlayer(message: .hintPending, player: player)   // #22
+                return
+            }
             let hint = buildBlindTestHint(song: song)
             gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(hint), player: player)
 
         default:
             break
         }
+    }
+
+    private func flushPendingHints(for song: BlindTestSong) {
+        guard !pendingHintPlayers.isEmpty else { return }
+        let hint = buildBlindTestHint(song: song)
+        for player in pendingHintPlayers.values {
+            let live = gameVM.players.first(where: { $0.id == player.id }) ?? player
+            gameVM.mpcService.sendMessagetoOnePlayer(message: .hintRevealedToPlayer(hint), player: live)
+        }
+        pendingHintPlayers.removeAll()
     }
 
     private func buildBlindTestHint(song: BlindTestSong) -> String {
@@ -282,35 +347,24 @@ extension BlindTestMasterViewModel {
 //MARK: BuzzDrivenGame conformance
 extension BlindTestMasterViewModel {
 
-    // Shadows the protocol extension's startReactionTimer() to add 15s expiry loop (Option B).
-    // When the reaction window expires, music restarts from the beginning and the timer resets.
-    @MainActor func startReactionTimer() {
+    // Timer BlindTest : compte en continu sans limite — ne se remet jamais à 0.
+    // La musique gère son propre cycle (preview reboucle via handlePreviewEnd,
+    // catalogue joue jusqu'à la fin). Le timer est une montre indépendante.
+    func startReactionTimer() {
         timer?.invalidate()
         timer = nil
 
-        let newTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            Task { @MainActor in
-                self.reactionTimeMs += 100
-                if self.reactionTimeMs >= 15_000 {
-                    self.handleTimerExpiry()
-                }
+        // #perf — 1s/tick + mutation directe (voir BuzzDrivenGame.startReactionTimer).
+        let newTimer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.reactionTimeMs += 1000
             }
         }
         RunLoop.main.add(newTimer, forMode: .common)
         timer = newTimer
     }
 
-    @MainActor private func handleTimerExpiry() {
-        stopReactionTimer()
-        restartMusicFromBeginning()
-        let timestamp = Date().timeIntervalSince1970
-        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-        startReactionTimer()
-        gameVM.broadcastPublicStateFromCurrentGame()
-    }
-
-    @MainActor
     func handleBuzz(from player: Player) {
         // Ignorer les buzz si la manche n'est pas en cours
         guard case .playing = state else { return }
@@ -376,7 +430,10 @@ extension BlindTestMasterViewModel {
                        isAnswerRevealed: true,
                        isPlaying: false,
                        hintIndex: currentHintIndex,
-                       countdownPhase: roundCountdownPhase
+                       countdownPhase: roundCountdownPhase,
+                       // #11/#C8/#B2 — dernière manche DU JEU (pas de la partie) : l'inter-manche
+                       // se tait, l'inter-jeu (.score) ou le podium final prend le relais.
+                       isLastRound: !gameVM.isBlindTestAvailable
                    )
                )
            }
@@ -389,15 +446,11 @@ extension BlindTestMasterViewModel {
         do {
             isFetching = true
             let results = try await appleMusicService.searchPlaylists(query: query)
-            await MainActor.run {
-                isFetching = false
-                self.playlists = results
-            }
+            isFetching = false
+            self.playlists = results
         } catch {
-            await MainActor.run {
-                isFetching = false
-                fetchError = "Impossible de chercher les playlists. Vérifie ta connexion."
-            }
+            isFetching = false
+            fetchError = "Impossible de chercher les playlists. Vérifie ta connexion."
         }
     }
     
@@ -405,15 +458,11 @@ extension BlindTestMasterViewModel {
         do {
             isFetching = true
             let songs = try await appleMusicService.loadSongs(from: playlist)
-            await MainActor.run {
-                isFetching = false
-                self.allSongs = songs
-            }
+            isFetching = false
+            self.allSongs = songs
         } catch {
-            await MainActor.run {
-                isFetching = false
-                fetchError = "Impossible de charger cette playlist. Réessaie."
-            }
+            isFetching = false
+            fetchError = "Impossible de charger cette playlist. Réessaie."
         }
     }
     
@@ -433,7 +482,6 @@ extension BlindTestMasterViewModel {
 
     // Appelé à l'onAppear : autorise + vérifie abonnement en un seul aller-retour réseau.
     // Lance aussi le stream de mises à jour pour les changements futurs.
-    @MainActor
     func setupMusicOnAppear() async {
         observeSubscriptionUpdates()
         let status = await MusicAuthorization.request()
@@ -446,19 +494,19 @@ extension BlindTestMasterViewModel {
         }
     }
 
-    // Écoute les changements d'abonnement en temps réel
+    // Écoute les changements d'abonnement en temps réel.
+    // #leak — task stockée + [weak self] + annulation de la précédente (idempotent à l'onAppear).
     private func observeSubscriptionUpdates() {
-        Task {
+        subscriptionObserverTask?.cancel()
+        subscriptionObserverTask = Task { [weak self] in
             for await subscription in MusicSubscription.subscriptionUpdates {
-                await MainActor.run {
-                    self.canPlayCatalogContent = subscription.canPlayCatalogContent
-                }
+                guard let self else { return }
+                self.canPlayCatalogContent = subscription.canPlayCatalogContent
             }
         }
     }
 
     // Recheck après fermeture de l'offre d'abonnement
-    @MainActor
     func updateCatalogPlaybackCapability() async {
         let can = await canPlayFullCatalog()
         canPlayCatalogContent = can
@@ -466,7 +514,7 @@ extension BlindTestMasterViewModel {
     
     // Prépare la musique SANS jouer — appelé en parallèle avec runCountdownAsync().
     // Détecte catalogue vs preview, charge, prépositionne. Zéro latence au play().
-    @MainActor private func prepareMusicForPlayback(song: BlindTestSong) async {
+    private func prepareMusicForPlayback(song: BlindTestSong) async {
         player?.pause()
         player = nil
         if let obs = previewEndObserver {
@@ -497,23 +545,23 @@ extension BlindTestMasterViewModel {
         }
     }
 
-    // Prépare le catalogue Apple Music (fetchSong + prepareToPlay + position à 5s).
-    @MainActor private func prepareFullTrack(song: BlindTestSong) async throws {
+    // Prépare le catalogue Apple Music (fetchSong + prepareToPlay + position à 0s).
+    private func prepareFullTrack(song: BlindTestSong) async throws {
         let catalogSong = try await appleMusicService.fetchSong(by: song.appleMusicID)
         musicPlayer.queue = .init(for: [catalogSong])
         try await musicPlayer.prepareToPlay()
-        musicPlayer.playbackTime = 5
+        musicPlayer.playbackTime = 0
+        isPreviewMode = false
         // Prêt : il suffira d'appeler musicPlayer.play() dans playPreparedMusicNow()
     }
 
-    // Prépare un AVPlayer preview (crée, seek position aléatoire, observe fin).
-    @MainActor private func preparePreviewPlayer(song: BlindTestSong) async throws {
+    // Prépare un AVPlayer preview (crée, seek à 0, observe fin).
+    private func preparePreviewPlayer(song: BlindTestSong) async throws {
         guard let url = song.previewURL else { return }
         let item = AVPlayerItem(url: url)
         let newPlayer = AVPlayer(playerItem: item)
-        // Le clip preview Apple est déjà un extrait curated (refrain/hook) → on démarre à 0
-        // Seek à 0 = pas de buffering réseau avant play(), latence nulle
         newPlayer.seek(to: .zero, completionHandler: { _ in })
+        isPreviewMode = true
         // Pas de play() ici — juste positionnement et buffering
         previewEndObserver = NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
@@ -527,35 +575,40 @@ extension BlindTestMasterViewModel {
 
     // Joue immédiatement la musique préparée, envoie timerStarted, démarre le timer.
     // Appelé juste après que countdown + prep soient tous les deux terminés.
-    @MainActor private func playPreparedMusicNow() {
-        let timestamp = Date().timeIntervalSince1970
-        gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
-        startReactionTimer()
-        isPlaying = true
+    // #audio-go — le timestamp est pris APRÈS le démarrage réel de la lecture : avant, en
+    // mode catalogue, musicPlayer.play() partait dans une Task non attendue → le chrono
+    // courait ~100-200ms avant que la musique soit audible.
+    private func playPreparedMusicNow() {
         isFetching = false
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            if let player = self.player {
+                // Mode preview : play synchrone → latence nulle
+                player.play()
+            } else {
+                // Mode catalogue : déjà préparé, on attend le vrai démarrage
+                try? await self.musicPlayer.play()
+            }
 
-        if let player = player {
-            // Mode preview : play synchrone → latence nulle
-            player.play()
-        } else {
-            // Mode catalogue : déjà préparé, play quasi-instantané
-            Task { try? await musicPlayer.play() }
+            let timestamp = Date().timeIntervalSince1970
+            self.gameVM.mpcService.sendMessage(.timerStarted(TimerStartPayload(masterTimestamp: timestamp)))
+            self.startReactionTimer()
+            self.isPlaying = true
+            self.gameVM.broadcastPublicStateFromCurrentGame()
         }
-
-        gameVM.broadcastPublicStateFromCurrentGame()
     }
     
     /// Relance la musique depuis le début (preview AVPlayer → seek to .zero / MusicKit → playbackTime = 5s)
     /// Appelé par rejectAnswer() quand le preview s'était terminé avant le buzz.
-    @MainActor func restartMusicFromBeginning() {
+    func restartMusicFromBeginning() {
         if let player = player {
             // Mode preview (AVPlayer) : rembobine au début de l'extrait
             player.seek(to: .zero)
             player.play()
         } else {
-            // Mode catalogue Apple Music (MusicKit) : repositionne à 5s
+            // Mode catalogue Apple Music (MusicKit) : repositionne à 0s
             Task {
-                musicPlayer.playbackTime = 5
+                musicPlayer.playbackTime = 0
                 try? await musicPlayer.play()
             }
         }
@@ -574,6 +627,19 @@ extension BlindTestMasterViewModel {
         } else {
             Task { try? await musicPlayer.play() }
         }
+    }
+
+    // #pause-reco — uniquement si une manche est réellement en cours (.playing) : on ne
+    // touche pas un état .buzzed (validation en attente, musique déjà en pause) ni .idle.
+    func pauseForDisconnect() {
+        guard case .playing = state else { return }
+        pause()                 // pauseReactionTimer + pause musique
+    }
+
+    func resumeFromDisconnect() {
+        guard case .playing = state else { return }
+        startReactionTimer()    // reprend le timer (sans reset)
+        resume()                // reprend la musique
     }
     
     func stop() {

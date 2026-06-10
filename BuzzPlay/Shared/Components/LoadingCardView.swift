@@ -10,7 +10,7 @@ struct LoadingCardView: View {
     @State private var isAnimating = false
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: BuzzSpacing.lg) {
             ZStack {
                 Circle()
                     .fill(Color.mustardYellow.opacity(0.1))
@@ -31,12 +31,12 @@ struct LoadingCardView: View {
 
             Text("Cela ne devrait prendre que quelques secondes")
                 .font(.nohemi(.caption))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)
-        .padding(32)
-        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 20))
-        .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+        .padding(BuzzSpacing.xxxl)
+        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(.white.opacity(0.08), lineWidth: 1))
         .onAppear {
             withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
                 isAnimating = true
@@ -67,18 +67,18 @@ struct EmptyStateView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: BuzzSpacing.lg) {
             Image(systemName: icon)
                 .font(.system(size: 48, weight: .semibold))
                 .foregroundStyle(.white.opacity(0.3))
 
             Text(title)
-                .font(.nohemi(.title2, weight: .bold))
+                .font(.nohemi(.title2, weight: .bold)).titleTracking()
                 .foregroundStyle(.white)
 
             Text(message)
                 .font(.nohemi(.subheadline))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(Color.textSecondary)
                 .multilineTextAlignment(.center)
 
             if let action = action, let label = actionLabel {
@@ -87,29 +87,29 @@ struct EmptyStateView: View {
                         .font(.nohemi(.body, weight: .semiBold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, BuzzSpacing.md)
                         .background(
                             LinearGradient(
                                 colors: [Color.purpleLeading, Color.purpleTrailing],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             ),
-                            in: RoundedRectangle(cornerRadius: 12)
+                            in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
                         )
                 }
                 .buttonStyle(.plain)
-                .padding(.top, 8)
+                .padding(.top, BuzzSpacing.sm)
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(32)
-        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 20))
-        .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.08), lineWidth: 1))
+        .padding(BuzzSpacing.xxxl)
+        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(.white.opacity(0.08), lineWidth: 1))
     }
 }
 
 #Preview {
-    VStack(spacing: 32) {
+    VStack(spacing: BuzzSpacing.xxxl) {
         LoadingCardView(message: "Chargement de la playlist…")
 
         EmptyStateView(

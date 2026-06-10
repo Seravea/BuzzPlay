@@ -8,6 +8,7 @@
 import Foundation
 import Observation
 
+@MainActor
 @Observable
 class PlayerFlowViewModel {
     //MARK: - Persistence
@@ -116,10 +117,18 @@ class PlayerFlowViewModel {
         return createTeamVM
     }
 
+    // #A1/#R1 — déclenche la permission réseau local au plus tôt SANS créer de peer.
+    // (L'ancienne version créait un MPCService "warmup" qui rejoignait réellement la
+    //  session → faux joueur fantôme côté Master. Corrigé : browser éphémère sans session.)
+    func prewarmMPC() {
+        MPCService.primeLocalNetworkPermission()
+    }
+
 
     func makeBuzzerViewModel(for mode: BuzzerGameMode) -> BuzzerViewModel {
         guard let playerVM = playerGameVM else {
-            fatalError("Pas de player défini")
+            assertionFailure("makeBuzzerViewModel appelé sans playerGameVM défini")
+            return BuzzerViewModel(player: Player(name: "?", teamColor: .purpleGame), mode: mode)
         }
 
         let vm = BuzzerViewModel(player: playerVM.player, mode: mode)

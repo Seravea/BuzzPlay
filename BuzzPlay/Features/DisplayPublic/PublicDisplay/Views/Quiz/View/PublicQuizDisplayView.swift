@@ -10,79 +10,74 @@ import SwiftUI
 struct PublicQuizDisplayView: View {
     var state: PublicQuizState
     var timer: String
+    var timerReady: Bool = true
 
     var body: some View {
         VStack(spacing: 14) {
+            // Timer badge — masqué avant réception du 1er timerStarted (#A4)
+            TimerBadge(time: timerReady ? timer : "—")
+                .frame(maxWidth: .infinity, alignment: .trailing)
+
             // Question Card — masquée jusqu'à la fin du premier countdown
             if state.isQuestionRevealed {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
                     Text("QUESTION")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(Color.textMuted)
                         .tracking(0.8)
 
                     Text(state.question.title)
-                        .font(.nohemi(.title3, weight: .bold))
+                        .font(.nohemi(.title3, weight: .bold)).titleTracking()
                         .foregroundStyle(.white)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(18)
-                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
-                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.1), lineWidth: 1))
+                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+                .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(.white.opacity(0.1), lineWidth: 1))
                 .transition(.opacity)
             } else {
-                VStack(spacing: 8) {
+                VStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "hourglass")
-                        .font(.system(size: 24, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.35))
+                        .textStyle(Typography.sectionTitleSoft)
+                        .foregroundStyle(Color.textDim)
                     Text("Préparez-vous…")
-                        .font(.nohemi(.title3, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.5))
+                        .font(.nohemi(.title3, weight: .bold)).titleTracking()
+                        .foregroundStyle(Color.textSecondary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(18)
-                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 20))
-                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.06), lineWidth: 1))
+                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+                .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(.white.opacity(0.06), lineWidth: 1))
                 .transition(.opacity)
             }
 
             // Answers Section (only if revealed)
             if state.isAnswerRevealed {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
                     Text("RÉPONSE")
                         .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.4))
+                        .foregroundStyle(Color.textMuted)
                         .tracking(0.8)
 
                     Text(state.question.answers.first ?? "N/A")
-                        .font(.nohemi(.title3, weight: .bold))
+                        .font(.nohemi(.title3, weight: .bold)).titleTracking()
                         .foregroundStyle(Color.mustardYellow)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(18)
-                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
-                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(Color.mustardYellow.opacity(0.3), lineWidth: 1))
+                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+                .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(Color.mustardYellow.opacity(0.3), lineWidth: 1))
                 .transition(.scale.combined(with: .opacity))
             }
 
-            // Buzzing team
-            if let player = state.buzzingPlayer {
-                VStack(spacing: 8) {
-                    Text("A BUZZÉ")
-                        .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.5))
-                        .tracking(0.8)
-
-                    TeamCardView(player: player, buzzTime: state.formattedTime, showPoints: false)
-                }
-                .frame(maxWidth: .infinity)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-
+            // #header-bt — card "A BUZZÉ" retirée (harmonisé avec le BlindTest) : le label
+            // "X a buzzé" sous le buzzer suffit, la zone ne saute plus au buzz.
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(.horizontal, 20)
+        .padding(.horizontal, BuzzSpacing.xl)
         .padding(.top, 0)
         .animation(.spring(duration: 0.4), value: state)
     }

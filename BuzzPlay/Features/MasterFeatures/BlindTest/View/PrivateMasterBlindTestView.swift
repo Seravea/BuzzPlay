@@ -83,7 +83,7 @@ struct PrivateMasterBlindTestView: View {
             blindTestVM.validateAnswer(points: points)
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
-            withAnimation(.easeOut(duration: 0.3)) { showValidationOverlay = false }
+            withAnimation(.buzzSlide) { showValidationOverlay = false }
         }
     }
 }

@@ -9,6 +9,7 @@ struct HomeView: View {
     @EnvironmentObject private var router: Router
     @State var playerFlowVM = PlayerFlowViewModel()
     @State var masterFlowVM = MasterFlowViewModel()
+    @State private var showMasterConfirmation = false
 
     var body: some View {
         NavigationStack(path: $router.path) {
@@ -18,8 +19,8 @@ struct HomeView: View {
                     Text("BUZZ · QUIZ · BLIND TEST")
                         .font(.nohemi(.caption2, weight: .bold))
                         .tracking(0.8)
-                        .foregroundStyle(.white.opacity(0.55))
-                        .padding(.bottom, 12)
+                        .foregroundStyle(Color.textSecondary)
+                        .padding(.bottom, BuzzSpacing.md)
 
                     BPWordmarkView(size: 64)
 
@@ -36,37 +37,36 @@ struct HomeView: View {
                 Spacer()
 
                 // CTA cards
-                VStack(spacing: 12) {
-                    Button { router.push(Route.createTeamView) } label: {
+                VStack(spacing: 10) {
+                    // Rejoindre — bouton principal
+                    Button {
+                        // #A1 — démarre MPC dès le tap pour déclencher la permission réseau local
+                        // avant que le joueur arrive sur CreateTeamView
+                        playerFlowVM.prewarmMPC()
+                        router.push(Route.createTeamView)
+                    } label: {
                         HomeRoleCard(
                             title: "Rejoindre",
-                            subtitle: "Avec un code à 4 chiffres",
+                            subtitle: "Rejoins la partie d'un hôte",
                             iconName: "bolt.fill",
                             gradient: LinearGradient(
                                 colors: [Color.purpleLeading, Color.purpleTrailing],
                                 startPoint: .topLeading, endPoint: .bottomTrailing
                             ),
-                            shadowColor: Color.purpleLeading.opacity(0.30)
+                            isPrimary: true,
+                            shadowColor: Color.purpleLeading.opacity(0.35)
                         )
                     }
                     .buttonStyle(.plain)
 
-                    Button { router.push(Route.masterLobbyView) } label: {
-                        HomeRoleCard(
-                            title: "Animer",
-                            subtitle: "Hôte de la partie",
-                            iconName: "gamecontroller.fill",
-                            gradient: LinearGradient(
-                                colors: [Color.blueLeading, Color.blueTrailing],
-                                startPoint: .topLeading, endPoint: .bottomTrailing
-                            ),
-                            shadowColor: nil
-                        )
+                    // Animer — bouton secondaire
+                    Button { showMasterConfirmation = true } label: {
+                        HomeSecondaryCard(title: "Animer", subtitle: "Hôte de la partie", iconName: "gamecontroller.fill")
                     }
                     .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 18)
-                .padding(.bottom, 32)
+                .padding(.bottom, BuzzSpacing.xxxl)
             }
             .background(BackgroundAppView())
             .foregroundStyle(.white)
@@ -113,57 +113,196 @@ struct HomeView: View {
                     }
                 }
             }
-            .alert(
-                "Joueur déconnecté",
-                isPresented: Binding(
-                    get: { masterFlowVM.disconnectedPlayerName != nil },
-                    set: { if !$0 { masterFlowVM.disconnectedPlayerName = nil } }
-                )
-            ) {
-                Button("OK") { masterFlowVM.disconnectedPlayerName = nil }
-            } message: {
-                if let name = masterFlowVM.disconnectedPlayerName {
-                    Text("Le joueur « \(name) » s'est déconnecté.")
+        }
+        // #alert — attaché au NavigationStack (pas à son contenu) : évite le warning
+        // "Presenting from detached view controller" quand le Master a navigué en profondeur.
+        .alert(
+            "Joueur déconnecté",
+            isPresented: Binding(
+                get: { masterFlowVM.disconnectedPlayerName != nil && !masterFlowVM.isGamePaused },
+                set: { if !$0 { masterFlowVM.disconnectedPlayerName = nil } }
+            )
+        ) {
+            Button("Attendre", role: .cancel) { masterFlowVM.disconnectedPlayerName = nil }
+            // #E1 — échappatoire : si le joueur a quitté pour de bon, le retirer
+            // débloque le garde-fou et permet de relancer une manche sans lui.
+            if let name = masterFlowVM.disconnectedPlayerName {
+                Button("Retirer le joueur", role: .destructive) {
+                    masterFlowVM.forgetDisconnectedPlayer(name)
                 }
             }
+        } message: {
+            if let name = masterFlowVM.disconnectedPlayerName {
+                Text("Le joueur « \(name) » s'est déconnecté. Tu peux l'attendre (la prochaine manche ne se lancera pas sans lui) ou le retirer de la partie.")
+            }
+        }
+        .overlay {
+            if masterFlowVM.isGamePaused {
+                GamePausedOverlay(playerName: masterFlowVM.disconnectedPlayerName)
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.35), value: masterFlowVM.isGamePaused)
+        .overlay {
+            if showMasterConfirmation {
+                MasterConfirmOverlay(
+                    onConfirm: {
+                        // Démarre MPC immédiatement → alerte réseau local dès le tap (#A1)
+                        masterFlowVM.setupMPC()
+                        showMasterConfirmation = false
+                        router.push(Route.masterLobbyView)
+                    },
+                    onCancel: { showMasterConfirmation = false }
+                )
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
+            }
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: showMasterConfirmation)
+    }
+}
+
+// MARK: - Overlay confirmation Master
+
+private struct MasterConfirmOverlay: View {
+    let onConfirm: () -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.55)
+                .ignoresSafeArea()
+
+            VStack(spacing: BuzzSpacing.xxl) {
+                VStack(spacing: 10) {
+                    Image(systemName: "gamecontroller.fill")
+                        .textStyle(Typography.largeTitle)
+                        .foregroundStyle(LinearGradient(
+                            colors: [Color.blueLeading, Color.blueTrailing],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
+                        ))
+
+                    Text("Prêt à mener la danse ?")
+                        .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+
+                    Text("Tu vas animer la partie en tant qu'hôte. Les joueurs pourront te rejoindre depuis leur iPhone.")
+                        .font(.nohemi(.subheadline, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.65))
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(3)
+                }
+
+                HStack(spacing: BuzzSpacing.md) {
+                    Button(action: onCancel) {
+                        Text("Annuler")
+                            .font(.nohemi(.body, weight: .semiBold))
+                            .foregroundStyle(.white.opacity(0.75))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+                    }
+
+                    Button(action: onConfirm) {
+                        Text("C'est parti !")
+                            .font(.nohemi(.body, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color.greenButtonLeading, Color.greenTrailing],
+                                    startPoint: .topLeading, endPoint: .bottomTrailing
+                                ),
+                                in: RoundedRectangle(cornerRadius: BuzzRadius.md)
+                            )
+                    }
+                }
+            }
+            .padding(28)
+            .background(
+                Color.sheetBg,
+                in: RoundedRectangle(cornerRadius: BuzzRadius.sheet)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: BuzzRadius.sheet)
+                    .strokeBorder(.white.opacity(0.10), lineWidth: 1)
+            )
+            .padding(.horizontal, BuzzSpacing.xxl)
         }
     }
 }
 
-// MARK: - Role card (HomeA style)
+// MARK: - Role cards
 
 private struct HomeRoleCard: View {
     let title: String
     let subtitle: String
     let iconName: String
     let gradient: LinearGradient
+    var isPrimary: Bool = false
     let shadowColor: Color?
 
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: iconName)
-                .font(.system(size: 24, weight: .semibold))
-                .frame(width: 52, height: 52)
-                .background(.white.opacity(0.18), in: RoundedRectangle(cornerRadius: 16))
+                .font(.system(size: isPrimary ? 28 : 24, weight: .semibold))
+                .frame(width: isPrimary ? 60 : 52, height: isPrimary ? 60 : 52)
+                .background(.white.opacity(0.18), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.nohemi(.title2, weight: .extraBold))
+                    .font(.nohemi(isPrimary ? .title : .title2, weight: .extraBold))
                 Text(subtitle)
-                    .font(.nohemi(.subheadline))
+                    .font(.nohemi(isPrimary ? .subheadline : .callout))
                     .foregroundStyle(.white.opacity(0.85))
             }
 
             Spacer()
 
             Image(systemName: "arrow.right")
-                .font(.system(size: 20, weight: .semibold))
+                .font(.system(size: isPrimary ? 22 : 20, weight: .semibold))
                 .foregroundStyle(.white.opacity(0.90))
         }
         .foregroundStyle(.white)
-        .padding(18)
+        .padding(isPrimary ? 22 : 18)
         .background(gradient, in: RoundedRectangle(cornerRadius: 22))
-        .shadow(color: shadowColor ?? .clear, radius: 16, y: 6)
+        .shadow(color: shadowColor ?? .clear, radius: isPrimary ? 20 : 10, y: isPrimary ? 8 : 4)
+    }
+}
+
+private struct HomeSecondaryCard: View {
+    let title: String
+    let subtitle: String
+    let iconName: String
+
+    var body: some View {
+        HStack(spacing: BuzzSpacing.md) {
+            Image(systemName: iconName)
+                .textStyle(Typography.cardTitle)
+                .foregroundStyle(.white.opacity(0.80))
+                .frame(width: 40, height: 40)
+                .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(.nohemi(.subheadline, weight: .bold))
+                    .foregroundStyle(.white)
+                Text(subtitle)
+                    .font(.nohemi(.caption, weight: .regular))
+                    .foregroundStyle(.white.opacity(0.60))
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .textStyle(Typography.footnoteEM)
+                .foregroundStyle(.white.opacity(0.50))
+        }
+        .padding(.horizontal, BuzzSpacing.lg)
+        .padding(.vertical, BuzzSpacing.md)
+        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg).strokeBorder(.white.opacity(0.18), lineWidth: 1))
     }
 }
 

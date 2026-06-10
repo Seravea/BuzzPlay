@@ -9,6 +9,10 @@ import UIKit
 struct BuzzerButtonView: View {
     @State private var isTapped: Bool = false
     @Bindable var buzzerVM: BuzzerViewModel
+    // #R3 — countdown inline (sous le buzzer) UNIQUEMENT au refus Quiz (question révélée).
+    // Au démarrage de manche (Quiz + BlindTest), c'est le CountdownOverlay plein écran qui gère
+    // → évite le double countdown.
+    var showInlineCountdown: Bool = false
 
     private var ourTeamBuzzed: Bool { buzzerVM.playerNameHasBuzz == buzzerVM.player.name }
     private var hasBuzzed: Bool { buzzerVM.playerNameHasBuzz != nil }
@@ -19,7 +23,7 @@ struct BuzzerButtonView: View {
     }
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: BuzzSpacing.xl) {
             ZStack {
                 // Pulse rings — uniquement quand actif et pas encore buzzé
                 if buzzerVM.isEnabled && !hasBuzzed {
@@ -46,13 +50,16 @@ struct BuzzerButtonView: View {
 
                 // Bouton principal
                 ZStack {
+                    let isBlocked = buzzerVM.player.blockedFromBuzzing
+                    let circleColor: Color = isBlocked ? Color.redLeading : playerColor
+
                     Circle()
                         .fill(
                             RadialGradient(
                                 stops: [
-                                    .init(color: playerColor.opacity(0.95), location: 0),
-                                    .init(color: playerColor, location: 0.50),
-                                    .init(color: playerColor.opacity(0.72), location: 1),
+                                    .init(color: circleColor.opacity(0.95), location: 0),
+                                    .init(color: circleColor, location: 0.50),
+                                    .init(color: circleColor.opacity(0.72), location: 1),
                                 ],
                                 center: .init(x: 0.5, y: 0.35),
                                 startRadius: 0,
@@ -60,15 +67,15 @@ struct BuzzerButtonView: View {
                             )
                         )
                         .frame(width: 220, height: 220)
-                        .shadow(color: playerColor.opacity(0.18), radius: 0)
-                        .shadow(color: playerColor.opacity(0.08), radius: 8)
-                        .shadow(color: playerColor.opacity(0.40), radius: 30, y: 15)
-                        .opacity(buzzerVM.isEnabled ? 1 : (ourTeamBuzzed ? 0.65 : 0.30))
+                        .shadow(color: circleColor.opacity(0.18), radius: 0)
+                        .shadow(color: circleColor.opacity(0.08), radius: 8)
+                        .shadow(color: circleColor.opacity(0.40), radius: 30, y: 15)
+                        .opacity(buzzerVM.isEnabled ? 1 : (ourTeamBuzzed ? 0.65 : (isBlocked ? 0.55 : 0.30)))
 
-                    VStack(spacing: 4) {
-                        Image(systemName: "bolt.fill")
+                    VStack(spacing: BuzzSpacing.xs) {
+                        Image(systemName: isBlocked ? "lock.fill" : "bolt.fill")
                             .font(.system(size: 52, weight: .bold))
-                        Text(ourTeamBuzzed ? "BUZZÉ" : "BUZZ")
+                        Text(ourTeamBuzzed ? "BUZZÉ" : (isBlocked ? "BLOQUÉ" : "BUZZ"))
                             .font(.custom("Nohemi-Black", size: 18))
                             .tracking(2)
                     }
@@ -94,13 +101,26 @@ struct BuzzerButtonView: View {
 
             stateLabel
         }
+        .animation(.buzzSmooth, value: buzzerVM.player.blockedFromBuzzing)
         .appDefaultTextStyle(Typography.body)
     }
 
     @ViewBuilder
     private var stateLabel: some View {
-        VStack(spacing: 4) {
-            if let teamName = buzzerVM.playerNameHasBuzz {
+        VStack(spacing: BuzzSpacing.xs) {
+            // #E3/#R3 — countdown inline seulement au refus Quiz (showInlineCountdown)
+            if showInlineCountdown, case .counting(let n) = buzzerVM.countdownPhase {
+                Text("Prochain buzz dans…")
+                    .font(.nohemi(.headline, weight: .bold))
+                    .foregroundStyle(.white)
+                Text("\(n)")
+                    .font(.custom("Nohemi-Black", size: 28))
+                    .foregroundStyle(playerColor)
+            } else if showInlineCountdown, case .go = buzzerVM.countdownPhase {
+                Text("À toi de buzzer !")
+                    .font(.nohemi(.headline, weight: .bold))
+                    .foregroundStyle(playerColor)
+            } else if let teamName = buzzerVM.playerNameHasBuzz, !teamName.isEmpty {
                 if teamName == buzzerVM.player.name {
                     Text("Tu as buzzé !")
                         .font(.nohemi(.headline, weight: .bold))
@@ -108,22 +128,29 @@ struct BuzzerButtonView: View {
                 } else {
                     Text("\(teamName) a buzzé")
                         .font(.nohemi(.headline, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.40))
+                        .foregroundStyle(Color.textMuted)
                 }
-            } else if case .counting(let n) = buzzerVM.countdownPhase {
-                Text("Prochain buzz dans…")
-                    .font(.nohemi(.headline, weight: .bold))
-                    .foregroundStyle(.white)
-                Text("\(n)")
-                    .font(.custom("Nohemi-Black", size: 28))
-                    .foregroundStyle(playerColor)
             } else if buzzerVM.isEnabled {
                 Text("Appuie pour buzzer !")
                     .font(.nohemi(.headline, weight: .bold))
                     .foregroundStyle(.white)
                 Text("Le plus rapide gagne le droit de répondre")
                     .font(.nohemi(.caption))
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(Color.textTertiary)
+                    .multilineTextAlignment(.center)
+            } else if buzzerVM.player.blockedFromBuzzing {
+                if let blocker = buzzerVM.player.blockedByPlayerName {
+                    Text("\(blocker) t'a bloqué !")
+                        .font(.nohemi(.headline, weight: .bold))
+                        .foregroundStyle(Color.redLeading)
+                } else {
+                    Text("Ton buzzer est bloqué !")
+                        .font(.nohemi(.headline, weight: .bold))
+                        .foregroundStyle(Color.redLeading)
+                }
+                Text("Tu ne peux pas buzzer cette manche")
+                    .font(.nohemi(.caption))
+                    .foregroundStyle(Color.textTertiary)
                     .multilineTextAlignment(.center)
             } else {
                 Text("En attente d'une question…")
@@ -131,8 +158,10 @@ struct BuzzerButtonView: View {
                     .foregroundStyle(.white.opacity(0.30))
             }
         }
-        .padding(.horizontal, 32)
+        .padding(.horizontal, BuzzSpacing.xxxl)
         .multilineTextAlignment(.center)
+        // #R2 — hauteur fixe : les états à 1 ou 2 lignes ne font plus bouger le buzzer
+        .frame(height: 72, alignment: .top)
     }
 }
 

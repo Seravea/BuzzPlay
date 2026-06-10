@@ -10,11 +10,18 @@ struct BuzzerPlayerView: View {
     var gameType: GameType
     @State private var coinsVM: CoinsViewModel
     @State private var isGiftSheetOpen = false
+    @Environment(\.scenePhase) private var scenePhase
 
     init(playerGameVM: PlayerGameViewModel, gameType: GameType) {
         self._playerGameVM = Bindable(playerGameVM)
         self.gameType = gameType
         self._coinsVM = State(initialValue: CoinsViewModel(playerGameVM: playerGameVM))
+    }
+
+    // #E3 — vrai si une question Quiz est actuellement révélée (utilisé pour le countdown de reprise)
+    private var isQuizQuestionRevealed: Bool {
+        if case .quiz(let state) = playerGameVM.publicState { return state.isQuestionRevealed }
+        return false
     }
 
     var body: some View {
@@ -30,7 +37,9 @@ struct BuzzerPlayerView: View {
                         .zIndex(100)
                 }
 
-                if buzzerVM.countdownPhase != .hidden {
+                // #E3 — overlay plein écran uniquement au démarrage de manche (question pas encore révélée).
+                // Au refus (question déjà révélée), le décompte s'affiche discrètement sous le buzzer.
+                if buzzerVM.countdownPhase != .hidden && buzzerVM.answerResult == nil && !isQuizQuestionRevealed {
                     CountdownOverlay(phase: buzzerVM.countdownPhase)
                         .transition(.opacity)
                         .zIndex(99)
@@ -44,31 +53,77 @@ struct BuzzerPlayerView: View {
             }
 
             if !playerGameVM.isConnectedToMaster {
-                ConnectionLostOverlay()
-                    .transition(.opacity)
+                if playerGameVM.hasEverConnectedToMaster {
+                    ConnectionLostOverlay()
+                        .transition(.opacity)
+                } else {
+                    WaitingForMasterOverlay()
+                        .transition(.opacity)
+                }
+            }
+
+            if playerGameVM.showNewGameNotification {
+                NewGameNotificationOverlay()
+                    .transition(.scale(scale: 0.85).combined(with: .opacity))
+                    .zIndex(200)
             }
         }
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: playerGameVM.showNewGameNotification)
         .animation(.spring(response: 0.45, dampingFraction: 0.65), value: playerGameVM.currentBuzzerVM?.answerResult != nil)
         .animation(.spring(response: 0.5, dampingFraction: 0.75), value: playerGameVM.currentBuzzerVM?.activeHint)
-        .animation(.easeInOut(duration: 0.3), value: playerGameVM.isConnectedToMaster)
+        .animation(.buzzEase, value: playerGameVM.isConnectedToMaster)
+        // #15 — classement inter-manche en demi-sheet : la révélation de la réponse reste
+        // visible en haut (PublicDisplayView), le classement animé monte par-dessous.
+        .sheet(isPresented: $playerGameVM.showPostRoundLeaderboard) {
+            PostRoundLeaderboardView(
+                previousRanking: playerGameVM.previousRanking,
+                currentRanking: playerGameVM.knownPlayers
+            )
+            .presentationDetents([.fraction(0.55)])
+            .presentationDragIndicator(.hidden)
+            .presentationBackground(Color.sheetBg)
+            .interactiveDismissDisabled()
+        }
         .navigationBarBackButtonHidden()
+        // #D11/#C3 — empêcher la mise en veille pendant la partie (cause de déconnexion MPC)
+        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
+        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
         .overlay(alignment: .top) {
             if let notes = playerGameVM.pendingNotesToast {
                 NotesToastView(amount: notes)
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                            withAnimation(.easeOut(duration: 0.3)) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + GameRhythm.notesToast) {
+                            withAnimation(.buzzSlide) {
                                 playerGameVM.pendingNotesToast = nil
                             }
                         }
                     }
             }
         }
-        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: playerGameVM.pendingNotesToast != nil)
-        .onAppear { playerGameVM.syncBuzzerWithCurrentPublicState() }
+        .animation(.buzzSmooth, value: playerGameVM.pendingNotesToast != nil)
+        .task {
+            // Délai pour laisser la transition de navigation se terminer
+            // avant d'envoyer playerReady (#A5)
+            try? await Task.sleep(for: GameRhythm.playerReadyFirst)
+            playerGameVM.syncBuzzerWithCurrentPublicState()
+            playerGameVM.sendPlayerReady()
+        }
+        .onChange(of: playerGameVM.player.accountAmount) { _, _ in
+            coinsVM.onPlayerUpdated(playerGameVM.player)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            switch phase {
+            case .background, .inactive:
+                playerGameVM.handleSceneDidBackground()
+            case .active:
+                playerGameVM.handleSceneWillForeground()
+            @unknown default:
+                break
+            }
+        }
         .sheet(isPresented: $isGiftSheetOpen) {
             GiftShopSheet(coinsVM: coinsVM, isPresented: $isGiftSheetOpen)
                 .presentationDetents([.fraction(0.90)])
@@ -81,24 +136,29 @@ struct BuzzerPlayerView: View {
 
     private func iphoneLayout(buzzerVM: BuzzerViewModel) -> some View {
         VStack(spacing: 0) {
-            compactHeader
+            compactHeader(buzzerVM: buzzerVM)
 
+            // #14/#17/#D5 — zone de contenu à hauteur réservée = UN SEUL élément greedy.
+            // Avant : ce conteneur ET un Spacer() étaient tous deux maxHeight:.infinity → ils se
+            // battaient pour l'espace et le partage 50/50 se recalculait à chaque changement de
+            // contenu (question révélée, buzz), faisant bouger le buzzer et pousser le header.
+            // Le contenu variable (question/titre/buzz) bouge maintenant À L'INTÉRIEUR de cette
+            // zone fixe, top-aligné : le buzzer reste ancré et le header reste figé en haut.
             PublicDisplayView(playerGameVM: playerGameVM, gameType: gameType)
-                .padding(.horizontal, 12)
-                .padding(.top, 12)
+                .padding(.horizontal, BuzzSpacing.md)
+                .padding(.top, BuzzSpacing.md)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
-            Spacer()
+            BuzzerButtonView(buzzerVM: buzzerVM, showInlineCountdown: isQuizQuestionRevealed)
+                .padding(.bottom, BuzzSpacing.xl)
 
-            BuzzerButtonView(buzzerVM: buzzerVM)
-                .padding(.bottom, 20)
-
-            GiftBottomBar(coinsVM: coinsVM, isSheetOpen: $isGiftSheetOpen)
-                .padding(.bottom, 24)
+            GiftBottomBar(coinsVM: coinsVM, isSheetOpen: $isGiftSheetOpen, isWaiting: playerGameVM.publicState == .waiting)
+                .padding(.bottom, BuzzSpacing.xxl)
         }
     }
 
-    private var compactHeader: some View {
-        HStack(spacing: 12) {
+    private func compactHeader(buzzerVM: BuzzerViewModel) -> some View {
+        HStack(spacing: BuzzSpacing.md) {
             Text(gameType.gameTitle)
                 .font(.nohemi(.subheadline, weight: .bold))
                 .foregroundStyle(.white)
@@ -110,40 +170,33 @@ struct BuzzerPlayerView: View {
             if hasAnyShield {
                 HStack(spacing: 3) {
                     Image(systemName: playerGameVM.player.hasShieldAll ? "shield.lefthalf.filled" : "shield.fill")
-                        .font(.system(size: 12, weight: .semibold))
+                        .textStyle(Typography.captionEM)
                     Text(playerGameVM.player.hasShieldAll ? "×Tous" : "×1")
                         .font(.nohemi(.caption2, weight: .bold))
                 }
-                .foregroundStyle(Color(hex: "2B7FFF"))
-                .padding(.horizontal, 8)
+                .foregroundStyle(Color.blueLeading)
+                .padding(.horizontal, BuzzSpacing.sm)
                 .padding(.vertical, 4)
-                .background(Color(hex: "2B7FFF").opacity(0.18), in: Capsule())
-                .overlay(Capsule().strokeBorder(Color(hex: "2B7FFF").opacity(0.4), lineWidth: 1))
+                .background(Color.blueLeading.opacity(0.18), in: Capsule())
+                .overlay(Capsule().strokeBorder(Color.blueLeading.opacity(0.4), lineWidth: 1))
                 .transition(.scale.combined(with: .opacity))
             }
 
-            // Solde coins — compact, sans le bouton Cadeaux (déplacé en bottom bar)
-            HStack(spacing: 4) {
-                Text("\(playerGameVM.player.accountAmount)")
-                    .font(.nohemi(.callout, weight: .extraBold))
-                    .foregroundStyle(.white)
-                    .monospacedDigit()
-                Image(systemName: "dollarsign.bank.building.fill")
-                    .font(.system(size: 13))
-                    .foregroundStyle(Color.mustardYellow)
+            // Bouton mute son buzzer
+            Button {
+                withAnimation(.buzzSnappy) {
+                    buzzerVM.isBuzzMuted.toggle()
+                }
+            } label: {
+                Image(systemName: buzzerVM.isBuzzMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                    .textStyle(Typography.cardTitle)
+                    .foregroundStyle(buzzerVM.isBuzzMuted ? Color.textDim : .white.opacity(0.85))
+                    .frame(width: 44, height: 44)
             }
-
-            Text(playerGameVM.formattedTime)
-                .font(.nohemi(.callout, weight: .extraBold))
-                .foregroundStyle(Color.mustardYellow)
-                .tracking(2)
-                .monospacedDigit()
-                .contentTransition(.numericText())
-                .animation(.default, value: playerGameVM.formattedTime)
-                .frame(minWidth: 52, alignment: .trailing)
+            .accessibilityLabel(buzzerVM.isBuzzMuted ? "Activer le son du buzzer" : "Couper le son du buzzer")
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.horizontal, BuzzSpacing.lg)
+        .padding(.vertical, BuzzSpacing.sm)
         .background(Color.black.opacity(0.25))
     }
 
@@ -165,15 +218,15 @@ private struct HintBadgeView: View {
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, BuzzSpacing.lg)
             .padding(.vertical, 10)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: BuzzRadius.md))
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: BuzzRadius.md)
                     .strokeBorder(Color.mustardYellow.opacity(0.4), lineWidth: 1)
             )
-            .padding(.horizontal, 20)
-            .padding(.bottom, 12)
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.bottom, BuzzSpacing.md)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
     }
@@ -185,86 +238,166 @@ private struct NotesToastView: View {
     let amount: Int
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: BuzzSpacing.sm) {
             Image(systemName: "dollarsign.bank.building.fill")
-                .font(.system(size: 15, weight: .bold))
+                .textStyle(Typography.labelSMBold)
                 .foregroundStyle(Color.mustardYellow)
             Text("+\(amount) Notes reçues !")
                 .font(.nohemi(.subheadline, weight: .bold))
                 .foregroundStyle(.white)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
+        .padding(.horizontal, BuzzSpacing.xl)
+        .padding(.vertical, BuzzSpacing.md)
         .background(Color.darkPurple, in: Capsule())
         .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.4), lineWidth: 1.5))
         .shadow(color: Color.mustardYellow.opacity(0.25), radius: 12, y: 4)
-        .padding(.top, 8)
+        .padding(.top, BuzzSpacing.sm)
     }
 }
 
-// MARK: - Answer Feedback Overlay
+// MARK: - Answer Feedback Overlay (#B5 — Neon Gradient Blast)
 
 private struct AnswerFeedbackOverlay: View {
     let result: AnswerResult
 
-    private var isCorrect: Bool {
-        if case .correct = result { return true }
-        return false
+    @State private var glowPulse = false
+
+    private var gradientColors: [Color] {
+        switch result {
+        case .correct:      [Color.greenButtonLeading, Color.greenTrailing]
+        case .incorrect:    [Color.redLeading, Color.purpleTrailing]
+        case .otherCorrect: [Color.yellowLeading, Color.yellowTrailing]
+        }
     }
 
-    private var accentColor: Color { isCorrect ? Color(hex: "#00C875") : Color(hex: "#FF4D4D") }
-    private var iconName: String { isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill" }
-    private var label: String { isCorrect ? "BONNE RÉPONSE" : "MAUVAISE RÉPONSE" }
+    private var label: String {
+        switch result {
+        case .correct:      "BONNE RÉPONSE"
+        case .incorrect:    "MAUVAISE RÉPONSE"
+        case .otherCorrect: ""
+        }
+    }
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.55)
+            Color.black.opacity(0.65)
                 .ignoresSafeArea()
 
-            VStack(spacing: 20) {
-                ZStack {
-                    Circle()
-                        .fill(accentColor.opacity(0.18))
-                        .frame(width: 130, height: 130)
+            VStack(spacing: 0) {
+                // Gradient card
+                VStack(spacing: 18) {
+                    switch result {
+                    case .correct(let points, let answer):
+                        Text(label)
+                            .font(.custom("Nohemi-Black", size: 28))
+                            .tracking(4)
+                            .foregroundStyle(.white)
+                            .shadow(color: gradientColors[0].opacity(glowPulse ? 0.9 : 0.4), radius: glowPulse ? 20 : 8)
+                            .multilineTextAlignment(.center)
 
-                    Image(systemName: iconName)
-                        .font(.system(size: 72, weight: .bold))
-                        .foregroundStyle(accentColor)
-                }
-
-                VStack(spacing: 10) {
-                    Text(label)
-                        .font(.custom("Nohemi-Black", size: 30))
-                        .tracking(2)
-                        .foregroundStyle(.white)
-
-                    if case .correct(let points, let answer) = result {
                         if let answer {
                             Text(answer)
-                                .font(.custom("Nohemi-SemiBold", size: 22))
-                                .foregroundStyle(.white.opacity(0.9))
+                                .font(.custom("Nohemi-SemiBold", size: 20))
+                                .foregroundStyle(.white.opacity(0.90))
                                 .multilineTextAlignment(.center)
                         }
-                        Text("+\(points) point\(points > 1 ? "s" : "")")
+
+                        // Score badge
+                        Text("+\(points) POINT\(points > 1 ? "S" : "")")
+                            .font(.custom("Nohemi-Black", size: 22))
+                            .tracking(2)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, BuzzSpacing.xl)
+                            .padding(.vertical, 10)
+                            .background(Color.black.opacity(0.30), in: Capsule())
+                            .overlay(Capsule().strokeBorder(Color.textDim, lineWidth: 1))
+
+                    case .incorrect:
+                        Text(label)
+                            .font(.custom("Nohemi-Black", size: 28))
+                            .tracking(4)
+                            .foregroundStyle(.white)
+                            .shadow(color: gradientColors[0].opacity(glowPulse ? 0.9 : 0.4), radius: glowPulse ? 20 : 8)
+                            .multilineTextAlignment(.center)
+
+                    case .otherCorrect(let name, let points, let answer):
+                        Text("\(name) A TROUVÉ !")
                             .font(.custom("Nohemi-Black", size: 26))
-                            .foregroundStyle(accentColor)
-                    } else {
-                        Text("+0 point")
-                            .font(.custom("Nohemi-SemiBold", size: 22))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .tracking(3)
+                            .foregroundStyle(.white)
+                            .shadow(color: gradientColors[0].opacity(glowPulse ? 0.9 : 0.4), radius: glowPulse ? 20 : 8)
+                            .multilineTextAlignment(.center)
+
+                        if let answer {
+                            Text(answer)
+                                .font(.custom("Nohemi-SemiBold", size: 19))
+                                .foregroundStyle(.white.opacity(0.90))
+                                .multilineTextAlignment(.center)
+                        }
+
+                        Text("+\(points) PT\(points > 1 ? "S" : "") POUR \(name.uppercased())")
+                            .font(.custom("Nohemi-Black", size: 16))
+                            .tracking(2)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, BuzzSpacing.xl)
+                            .padding(.vertical, 10)
+                            .background(Color.black.opacity(0.30), in: Capsule())
+                            .overlay(Capsule().strokeBorder(Color.textDim, lineWidth: 1))
                     }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 36)
+                .padding(.horizontal, BuzzSpacing.xxxl)
+                .background(
+                    LinearGradient(
+                        colors: gradientColors,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.sheet)
+                )
+                .shadow(color: gradientColors[0].opacity(glowPulse ? 0.55 : 0.25), radius: glowPulse ? 32 : 14)
+            }
+            .padding(.horizontal, BuzzSpacing.xxxl)
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                glowPulse = true
+            }
+        }
+    }
+}
+
+// MARK: - New Game Notification Overlay (#B6)
+
+private struct NewGameNotificationOverlay: View {
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.60).ignoresSafeArea()
+
+            VStack(spacing: BuzzSpacing.lg) {
+                Image(systemName: "arrow.counterclockwise.circle.fill")
+                    .font(.system(size: 56, weight: .bold))
+                    .foregroundStyle(Color.purpleLeading)
+
+                VStack(spacing: 6) {
+                    Text("Nouvelle partie !")
+                        .font(.custom("Nohemi-Black", size: 26))
+                        .tracking(1)
+                        .foregroundStyle(.white)
+                    Text("Le Master relance une partie")
+                        .font(.nohemi(.subheadline, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.60))
                 }
             }
             .padding(40)
             .background(
-                RoundedRectangle(cornerRadius: 32)
+                RoundedRectangle(cornerRadius: BuzzRadius.sheet)
                     .fill(.ultraThinMaterial.opacity(0.9))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 32)
-                            .strokeBorder(accentColor.opacity(0.35), lineWidth: 1.5)
-                    )
+                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sheet)
+                        .strokeBorder(Color.purpleLeading.opacity(0.35), lineWidth: 1.5))
             )
-            .padding(.horizontal, 36)
+            .padding(.horizontal, 40)
         }
     }
 }

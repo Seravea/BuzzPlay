@@ -15,11 +15,11 @@ struct ChooseRoleCardsView: View {
                 .font(.largeTitle)
                 .frame(width: 90, height: 90)
                 .background(
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: BuzzRadius.lg)
                         .foregroundStyle(roleButtonUI.linearGradient)
                 )
             Text(roleButtonUI.displayNameText)
-                .font(.nohemi(.title, weight: .bold))
+                .font(.nohemi(.title, weight: .bold)).titleTracking()
             Text(roleButtonUI.displayDescText)
                 .multilineTextAlignment(.center)
                 .font(.nohemi(.body))
@@ -28,7 +28,7 @@ struct ChooseRoleCardsView: View {
         .foregroundStyle(.white)
         .frame(width: 338, height: 272)
         .background(
-            RoundedRectangle(cornerRadius: 24)
+            RoundedRectangle(cornerRadius: BuzzRadius.xxl)
                 .foregroundStyle(.white.opacity(0.1))
         )
     }

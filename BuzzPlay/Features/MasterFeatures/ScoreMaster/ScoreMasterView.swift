@@ -24,8 +24,8 @@ struct ScoreMasterView: View {
                     if sorted.count > 3 { othersSection }
                     Spacer(minLength: 100)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
+                .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.top, BuzzSpacing.sm)
             }
 
             VStack {
@@ -35,29 +35,41 @@ struct ScoreMasterView: View {
         }
         .navigationBarBackButtonHidden()
         .appDefaultTextStyle(Typography.body)
+        .onAppear { masterFlowVM.collectUnspentNotes() }
     }
 
     // MARK: - Header
 
     private var header: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: BuzzSpacing.xs) {
             Text("PARTIE TERMINÉE")
                 .font(.nohemi(.caption2, weight: .bold))
                 .tracking(0.8)
                 .foregroundStyle(Color.mustardYellow)
 
             Text("Classement final")
-                .font(.nohemi(.title, weight: .black))
+                .font(.nohemi(.title, weight: .black)).titleTracking()
                 .foregroundStyle(.white)
+
+            if masterFlowVM.notesRecoveredThisSession > 0 {
+                HStack(spacing: 5) {
+                    Image(systemName: "arrow.uturn.left.circle.fill")
+                        .textStyle(Typography.caption2)
+                    Text("+\(masterFlowVM.notesRecoveredThisSession) Notes récupérées")
+                        .font(.nohemi(.caption2, weight: .semiBold))
+                }
+                .foregroundStyle(Color.mustardYellow.opacity(0.75))
+                .padding(.top, 4)
+            }
         }
-        .padding(.top, 12)
+        .padding(.top, BuzzSpacing.md)
         .padding(.bottom, 28)
     }
 
     // MARK: - Podium
 
     private var podiumSection: some View {
-        HStack(alignment: .bottom, spacing: 8) {
+        HStack(alignment: .bottom, spacing: BuzzSpacing.sm) {
             if sorted.count >= 2 { podiumSlot(rank: 2, player: sorted[1]) }
             if sorted.count >= 1 { podiumSlot(rank: 1, player: sorted[0]) }
             if sorted.count >= 3 { podiumSlot(rank: 3, player: sorted[2]) }
@@ -69,14 +81,14 @@ struct ScoreMasterView: View {
         let avatarSize: CGFloat = rank == 1 ? 72 : rank == 2 ? 56 : 48
         let blockHeight: CGFloat = rank == 1 ? 120 : rank == 2 ? 80 : 56
         let blockGradient: AnyShapeStyle = rank == 1
-            ? AnyShapeStyle(LinearGradient(colors: [Color.mustardYellow, Color(hex: "FF6900")], startPoint: .top, endPoint: .bottom))
+            ? AnyShapeStyle(LinearGradient(colors: [Color.mustardYellow, Color.yellowTrailing], startPoint: .top, endPoint: .bottom))
             : AnyShapeStyle(.white.opacity(rank == 2 ? 0.12 : 0.08))
         let blockRadius: CGFloat = rank == 1 ? 14 : 10
 
         return VStack(spacing: 0) {
             if rank == 1 {
                 Text("👑")
-                    .font(.system(size: 22))
+                    .textStyle(Typography.sectionTitle)
                     .padding(.bottom, 4)
             }
 
@@ -97,7 +109,7 @@ struct ScoreMasterView: View {
                 .font(.nohemi(rank == 1 ? .subheadline : .caption, weight: .bold))
                 .foregroundStyle(rank == 1 ? Color.mustardYellow : .white)
                 .lineLimit(1)
-                .padding(.top, 8)
+                .padding(.top, BuzzSpacing.sm)
 
             Text("\(player.score) pts")
                 .font(.nohemi(.caption2, weight: .medium))
@@ -114,7 +126,7 @@ struct ScoreMasterView: View {
 
                 Text("\(rank)")
                     .font(.custom("Nohemi-Black", size: rank == 1 ? 44 : rank == 2 ? 32 : 26))
-                    .foregroundStyle(rank == 1 ? Color(hex: "1A0535") : .white.opacity(0.55))
+                    .foregroundStyle(rank == 1 ? Color.sheetBg : Color.textSecondary)
             }
             .frame(maxWidth: .infinity)
             .frame(height: blockHeight)
@@ -127,16 +139,16 @@ struct ScoreMasterView: View {
     // MARK: - Others
 
     private var othersSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
             HStack {
                 Text("ET LES AUTRES…")
                     .font(.nohemi(.caption2, weight: .bold))
                     .tracking(0.8)
-                    .foregroundStyle(.white.opacity(0.40))
+                    .foregroundStyle(Color.textMuted)
                 Spacer()
                 Text("\(sorted.count - 3)")
                     .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.40))
+                    .foregroundStyle(Color.textMuted)
             }
 
             VStack(spacing: 6) {
@@ -145,14 +157,14 @@ struct ScoreMasterView: View {
                 }
             }
         }
-        .padding(.bottom, 24)
+        .padding(.bottom, BuzzSpacing.xxl)
     }
 
     private func othersRow(rank: Int, player: Player) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: BuzzSpacing.md) {
             Text("\(rank)")
                 .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(Color.textSecondary)
                 .frame(width: 18, alignment: .center)
 
             Circle()
@@ -175,11 +187,11 @@ struct ScoreMasterView: View {
                 .foregroundStyle(.white)
                 .monospacedDigit()
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal, BuzzSpacing.md)
+        .padding(.vertical, BuzzSpacing.sm)
+        .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: BuzzRadius.sm)
                 .strokeBorder(.white.opacity(0.06), lineWidth: 1)
         )
     }
@@ -189,6 +201,8 @@ struct ScoreMasterView: View {
     private var footerButtons: some View {
         HStack(spacing: 10) {
             Button {
+                // #quit-teardown — prévient les Players, coupe heartbeat + session, reset l'état.
+                masterFlowVM.leaveSessionAsMaster()
                 router.popToRoot()
             } label: {
                 Text("Quitter")
@@ -196,18 +210,20 @@ struct ScoreMasterView: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
-                    .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
+                    .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: BuzzRadius.lg)
                             .strokeBorder(.white.opacity(0.12), lineWidth: 1)
                     )
             }
             .buttonStyle(.plain)
 
             Button {
+                masterFlowVM.resetForNewGame()
                 router.popToRoot()
+                router.push(.masterLobbyView)
             } label: {
-                Text("Rejouer")
+                Text("Nouvelle partie")
                     .font(.nohemi(.subheadline, weight: .bold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -217,18 +233,18 @@ struct ScoreMasterView: View {
                             colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
                             startPoint: .leading, endPoint: .trailing
                         ),
-                        in: RoundedRectangle(cornerRadius: 16)
+                        in: RoundedRectangle(cornerRadius: BuzzRadius.lg)
                     )
                     .shadow(color: Color.greenButtonLeading.opacity(0.32), radius: 12, y: 4)
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 32)
-        .padding(.top, 12)
+        .padding(.horizontal, BuzzSpacing.xl)
+        .padding(.bottom, BuzzSpacing.xxxl)
+        .padding(.top, BuzzSpacing.md)
         .background(
             LinearGradient(
-                colors: [Color(hex: "1A0535").opacity(0), Color(hex: "1A0535")],
+                colors: [Color.sheetBg.opacity(0), Color.sheetBg],
                 startPoint: .top, endPoint: .bottom
             )
             .ignoresSafeArea()
