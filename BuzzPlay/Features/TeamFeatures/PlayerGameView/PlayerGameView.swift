@@ -87,11 +87,11 @@ struct PlayerGameView: View {
     // MARK: - Waiting overlay
 
     private var waitingOverlay: some View {
-        VStack {
-            Spacer()
-            PlayerPulsingPill(text: "En attente du prochain jeu…")
-                .padding(.bottom, 48)
-        }
+        WaitingLobbyView(playerGameVM: playerGameVM, hint: "En attente du prochain jeu…")
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.top, BuzzSpacing.xxxl)
+            .padding(.bottom, 48)
+            .transition(.opacity)
     }
 
     // MARK: - Game invite handling
