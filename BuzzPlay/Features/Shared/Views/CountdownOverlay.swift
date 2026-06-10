@@ -19,8 +19,12 @@ struct CountdownOverlay: View {
                 switch phase {
                 case .counting(let n):
                     Text(label)
-                        .font(.nohemi(.title3, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.65))
+                        .font(.nohemi(.title2, weight: .semiBold))
+                        .tracking(0.5)
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, BuzzSpacing.xl)
+                        .shadow(color: .black.opacity(0.4), radius: 6, y: 2)
 
                     ZStack {
                         Circle()

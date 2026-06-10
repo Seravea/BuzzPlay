@@ -44,6 +44,8 @@ struct BlindTestSearchScreen: View {
 
     @FocusState private var searchFocused: Bool
     @State private var searchText = ""
+    // #12 — feedback pendant la latence d'ouverture de la sheet d'abonnement Apple Music
+    @State private var isSubscribing = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -135,19 +137,33 @@ struct BlindTestSearchScreen: View {
             Spacer(minLength: 4)
 
             if !blindTestVM.canPlayCatalogContent {
-                Button(action: onSubscribeTap) {
-                    Text("S'abonner")
-                        .font(.nohemi(.caption2, weight: .bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(
-                            LinearGradient(colors: [.purpleLeading, .purpleTrailing],
-                                           startPoint: .leading, endPoint: .trailing),
-                            in: Capsule()
-                        )
+                Button {
+                    isSubscribing = true
+                    onSubscribeTap()
+                    // La sheet StoreKit/MusicKit met un instant à s'ouvrir → on relâche le
+                    // spinner après un court délai (le bouton disparaît si l'abonnement passe).
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { isSubscribing = false }
+                } label: {
+                    Group {
+                        if isSubscribing {
+                            ProgressView().controlSize(.mini).tint(.white)
+                        } else {
+                            Text("S'abonner")
+                                .font(.nohemi(.caption2, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
+                    }
+                    .frame(minWidth: 60)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(
+                        LinearGradient(colors: [.purpleLeading, .purpleTrailing],
+                                       startPoint: .leading, endPoint: .trailing),
+                        in: Capsule()
+                    )
                 }
                 .buttonStyle(.plain)
+                .disabled(isSubscribing)
             }
         }
         .padding(.horizontal, 14)
