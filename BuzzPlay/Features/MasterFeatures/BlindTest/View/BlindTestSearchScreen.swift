@@ -126,8 +126,10 @@ struct BlindTestSearchScreen: View {
                  + Text("Apple Music").foregroundStyle(Color.textSecondary))
                     .font(.nohemi(.caption, weight: .bold))
             } else {
-                (Text("Preview ").foregroundStyle(Color.textSecondary)
-                 + Text("15s").foregroundStyle(.white).bold()
+                // #v1-review — les previews jouent jusqu'au bout (~30s, pas de coupe) :
+                // le Blind Test est 100 % jouable SANS abonnement (important pour App Review).
+                (Text("Extraits ").foregroundStyle(Color.textSecondary)
+                 + Text("30s inclus").foregroundStyle(.white).bold()
                  + Text(" · Titre entier avec ").foregroundStyle(Color.textSecondary)
                  + Text("Apple Music").foregroundStyle(.white).bold())
                     .font(.nohemi(.caption, weight: .regular))
