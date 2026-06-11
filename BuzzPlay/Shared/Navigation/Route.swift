@@ -22,4 +22,5 @@ enum Route: Hashable, Codable {
     case scoreMaster
     case scorePlayer
     case playerGameView
+    case masterShop   // #v1-packs A4 — boutique de packs (poussée depuis le hub Master)
 }

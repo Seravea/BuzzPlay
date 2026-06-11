@@ -202,11 +202,10 @@ struct QuizThemeSelectionView: View {
                         ThemeLockedPackCard(theme: theme, pack: pack, onTap: { packToBuy = pack })
                             .padding(.horizontal, BuzzSpacing.lg)
                     } else {
+                        // #v1-packs — IA = bouton dédié (header), plus de « thème vide → IA ».
+                        // Un thème non premium sans contenu ne s'affiche simplement pas.
                         let sets = viewModel.sets(for: theme)
-                        if sets.isEmpty {
-                            ThemeAIOnlyCard(theme: theme, onTap: { showAIGeneratorSheet = true })
-                                .padding(.horizontal, BuzzSpacing.lg)
-                        } else {
+                        if !sets.isEmpty {
                             ThemeSection(theme: theme, sets: sets) { set in
                                 viewModel.selectSet(set)
                                 router.push(.quizMaster)
@@ -257,49 +256,6 @@ private struct ThemeSection: View {
             }
             .padding(.horizontal, BuzzSpacing.lg)
         }
-    }
-}
-
-// MARK: - Theme AI-Only Card (sans set curatés)
-
-private struct ThemeAIOnlyCard: View {
-    let theme: QuizTheme
-    let onTap: () -> Void
-
-    var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: BuzzSpacing.md) {
-                Image(systemName: theme.iconName)
-                    .textStyle(Typography.label)
-                    .foregroundStyle(theme.color)
-                    .frame(width: 36, height: 36)
-                    .background(theme.color.opacity(0.14), in: RoundedRectangle(cornerRadius: BuzzRadius.sm2))
-                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm2).strokeBorder(theme.color.opacity(0.25), lineWidth: 1))
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(theme.title)
-                        .font(.nohemi(.subheadline, weight: .bold))
-                        .foregroundStyle(.white)
-                    Text("Générer avec l'IA ✦")
-                        .font(.nohemi(.caption, weight: .medium))
-                        .foregroundStyle(Color.purpleLeading.opacity(0.8))
-                }
-
-                Spacer()
-
-                Image(systemName: "sparkles")
-                    .textStyle(Typography.footnoteEM)
-                    .foregroundStyle(Color.purpleLeading)
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, BuzzSpacing.md)
-            .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
-            .overlay(
-                RoundedRectangle(cornerRadius: BuzzRadius.lg)
-                    .strokeBorder(Color.purpleLeading.opacity(0.20), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
     }
 }
 

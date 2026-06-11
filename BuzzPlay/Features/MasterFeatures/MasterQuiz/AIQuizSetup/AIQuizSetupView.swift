@@ -21,11 +21,17 @@ struct AIQuizSetupView: View {
     let onDismiss: () -> Void
 
     private var selectedThemes: [QuizTheme] {
-        QuizThemes.all.filter { selectedThemeIDs.contains($0.id) }
+        QuizCatalog.groupedThemes.flatMap(\.themes).filter { selectedThemeIDs.contains($0.id) }
+    }
+
+    // #v1-packs — sélectionnables = catégories NON verrouillées. Les premium non achetées
+    // s'affichent avec un cadenas et ne sont pas sélectionnables pour la génération IA.
+    private var selectableThemes: [QuizTheme] {
+        QuizCatalog.groupedThemes.flatMap(\.themes).filter { !QuizCatalog.isLocked($0) }
     }
 
     private var allSelected: Bool {
-        selectedThemeIDs.count == QuizThemes.all.count
+        !selectableThemes.isEmpty && selectedThemeIDs.count == selectableThemes.count
     }
 
     private var canGenerate: Bool {
@@ -59,24 +65,18 @@ struct AIQuizSetupView: View {
                 ScrollView {
                     VStack(spacing: BuzzSpacing.xxl) {
 
-                        // THÈMES — Par décennie
-                        themeGroup(
-                            label: "Par décennie",
-                            themes: QuizThemes.eras
-                        )
-
-                        // THÈMES — Par genre
-                        themeGroup(
-                            label: "Par genre",
-                            themes: QuizThemes.genres
-                        )
+                        // THÈMES — liste unifiée (in-app + packs distants), identique à
+                        // l'écran de sélection (#v1-packs « les packs = les catégories »).
+                        ForEach(QuizCatalog.groupedThemes, id: \.label) { group in
+                            themeGroup(label: group.label, themes: group.themes)
+                        }
 
                         // Sélection tout / rien
                         Button {
                             if allSelected {
                                 selectedThemeIDs = []
                             } else {
-                                selectedThemeIDs = Set(QuizThemes.all.map(\.id))
+                                selectedThemeIDs = Set(selectableThemes.map(\.id))
                             }
                         } label: {
                             HStack(spacing: 6) {
@@ -224,8 +224,10 @@ struct AIQuizSetupView: View {
                 spacing: 10
             ) {
                 ForEach(themes) { theme in
+                    let locked = QuizCatalog.isLocked(theme)
                     let isSelected = selectedThemeIDs.contains(theme.id)
-                    ThemeCardAI(theme: theme, isSelected: isSelected) {
+                    ThemeCardAI(theme: theme, isSelected: isSelected, isLocked: locked) {
+                        guard !locked else { return }   // premium non acheté → achat depuis l'écran thèmes
                         if isSelected {
                             selectedThemeIDs.remove(theme.id)
                         } else {
@@ -275,6 +277,7 @@ struct AIQuizSetupView: View {
 private struct ThemeCardAI: View {
     let theme: QuizTheme
     let isSelected: Bool
+    var isLocked: Bool = false
     let action: () -> Void
 
     var body: some View {
@@ -290,7 +293,13 @@ private struct ThemeCardAI: View {
                             in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
                         )
 
-                    if isSelected {
+                    if isLocked {
+                        Image(systemName: "lock.fill")
+                            .textStyle(Typography.caption2)
+                            .foregroundStyle(Color.mustardYellow)
+                            .background(Color.sheetBg, in: Circle())
+                            .offset(x: 6, y: -6)
+                    } else if isSelected {
                         Image(systemName: "checkmark.circle.fill")
                             .textStyle(Typography.footnoteBold)
                             .foregroundStyle(theme.color)
@@ -319,6 +328,7 @@ private struct ThemeCardAI: View {
                         lineWidth: isSelected ? 1.5 : 1
                     )
             )
+            .opacity(isLocked ? 0.5 : 1)
             .animation(.buzzSnappy, value: isSelected)
         }
         .buttonStyle(.plain)

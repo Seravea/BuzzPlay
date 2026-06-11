@@ -20,32 +20,16 @@ final class QuizThemeSelectionViewModel {
         self.gameVM = gameVM
     }
 
-    var groupedThemes: [(label: String, themes: [QuizTheme])] {
-        var groups: [(label: String, themes: [QuizTheme])] = [
-            ("Par décennie", QuizThemes.eras),
-            ("Par genre", QuizThemes.genres)
-        ]
-        // #v1-packs — packs distants (gratuits ou premium) dans leur propre section.
-        let remotePacks = RemoteQuizPackCatalog.shared.packs
-        if !remotePacks.isEmpty {
-            groups.append(("Packs bonus", remotePacks.map(\.theme)))
-        }
-        return groups
-    }
+    // #v1-packs — catalogue unifié (in-app + packs distants) centralisé dans QuizCatalog
+    // (« les packs = les catégories »), partagé tel quel avec le sélecteur de l'IA.
+    var groupedThemes: [(label: String, themes: [QuizTheme])] { QuizCatalog.groupedThemes }
 
-    func sets(for theme: QuizTheme) -> [QuizSet] {
-        QuizSamples.sets(for: theme) + RemoteQuizPackCatalog.shared.sets(for: theme)
-    }
+    func sets(for theme: QuizTheme) -> [QuizSet] { QuizCatalog.sets(for: theme) }
 
-    // #v1-packs — infos premium pour l'UI (cadenas + sheet d'achat)
-    func remotePack(for theme: QuizTheme) -> RemoteQuizPack? {
-        RemoteQuizPackCatalog.shared.pack(for: theme)
-    }
+    // Infos premium pour l'UI (cadenas + sheet d'achat)
+    func remotePack(for theme: QuizTheme) -> RemoteQuizPack? { QuizCatalog.pack(for: theme) }
 
-    func isLocked(_ theme: QuizTheme) -> Bool {
-        guard let pack = remotePack(for: theme) else { return false }
-        return !QuizPackStore.shared.isUnlocked(pack)
-    }
+    func isLocked(_ theme: QuizTheme) -> Bool { QuizCatalog.isLocked(theme) }
 
     func selectSet(_ set: QuizSet) {
         let limit = gameVM.quizRoundsTotal

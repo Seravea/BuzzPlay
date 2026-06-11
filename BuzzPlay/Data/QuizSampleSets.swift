@@ -47,12 +47,6 @@ enum QuizThemes {
         color: Color.purpleTrailing,
         category: .genre
     )
-    static let popIntl = QuizTheme(
-        title: "Pop Internationale",
-        iconName: "globe",
-        color: Color.yellowTrailing,
-        category: .genre
-    )
     static let rock = QuizTheme(
         title: "Rock",
         iconName: "guitars",
@@ -65,33 +59,17 @@ enum QuizThemes {
         color: Color.yellowLeading,
         category: .genre
     )
-    static let rapUS = QuizTheme(
-        title: "Rap / Hip-Hop US",
-        iconName: "mic.fill",
-        color: Color.blueTrailing,
-        category: .genre
-    )
     static let electro = QuizTheme(
         title: "Électro / Dance",
         iconName: "headphones",
         color: Color.greenButtonLeading,
         category: .genre
     )
-    static let rnbSoul = QuizTheme(
-        title: "R&B / Soul",
-        iconName: "music.quarternote.3",
-        color: Color.peach,
-        category: .genre
-    )
-    static let kpop = QuizTheme(
-        title: "K-Pop",
-        iconName: "sparkles",
-        color: Color.purpleTrailing,
-        category: .genre
-    )
-
     static let eras: [QuizTheme] = [annees80, annees90, annees2000, annees2010]
-    static let genres: [QuizTheme] = [popFR, popIntl, rock, rapFR, rapUS, electro, rnbSoul, kpop]
+    // #v1-packs — DÉCISION Romain « les packs = les catégories » : les genres SANS
+    // contenu curaté in-app (Pop Intl, Rap US, R&B/Soul, K-Pop) sont retirés. Leur
+    // contenu prêt-à-jouer vit dans les packs distants, qui apparaissent comme catégories.
+    static let genres: [QuizTheme] = [popFR, rock, rapFR, electro]
     static let all: [QuizTheme] = eras + genres
 }
 

@@ -34,6 +34,7 @@ struct MasterChooseGameView: View {
             ScrollView {
                 VStack(spacing: BuzzSpacing.xl) {
                     launchSection
+                    shopSection
                     if hasScores { rankingSection }
                 }
                 .padding(.horizontal, BuzzSpacing.xl)
@@ -164,6 +165,42 @@ struct MasterChooseGameView: View {
                 .strokeBorder(.white.opacity(isAvailable ? 0.10 : 0.04), lineWidth: 1)
         )
         .opacity(isAvailable ? 1 : 0.55)
+    }
+
+    // MARK: - Shop Section (#v1-packs / A4 — M1 : boutique dans le hub Master)
+
+    private var shopSection: some View {
+        Button { router.push(.masterShop) } label: {
+            HStack(spacing: BuzzSpacing.md) {
+                Image(systemName: "bag.fill")
+                    .textStyle(Typography.sectionTitle)
+                    .foregroundStyle(Color.mustardYellow)
+                    .frame(width: 48, height: 48)
+                    .background(Color.mustardYellow.opacity(0.15), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Boutique")
+                        .font(.nohemi(.headline, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text("Packs de quiz à débloquer")
+                        .font(.nohemi(.caption, weight: .medium))
+                        .foregroundStyle(Color.textSecondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .textStyle(Typography.footnoteEM)
+                    .foregroundStyle(Color.textFaint)
+            }
+            .padding(BuzzSpacing.md)
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+            .overlay(
+                RoundedRectangle(cornerRadius: BuzzRadius.xl)
+                    .strokeBorder(.white.opacity(0.10), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Ranking Section
