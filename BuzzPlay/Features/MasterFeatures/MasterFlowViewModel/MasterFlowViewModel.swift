@@ -54,6 +54,12 @@ final class MasterFlowViewModel {
     /// Tous les joueurs qui ont rejoint la session (ne diminue jamais, sert au statut de connexion)
     private(set) var allRegisteredPlayers: [Player] = []
 
+    /// #keep-removed-score — joueurs « Retirés » pendant une partie : on les sort de
+    /// allRegisteredPlayers (pour débloquer le garde-fou #E1) MAIS on garde leur record
+    /// (score + pouvoirs achetés) ici, au cas où ils se reconnectent avant la fin de la
+    /// partie → addPlayer les restaure. Vidé à la nouvelle partie (resetForNewGame).
+    private var removedDuringGame: [Player] = []
+
     var connectedPlayersCount: Int { players.filter { $0.name != "Écran Publique" }.count }
     var totalPlayersCount: Int { allRegisteredPlayers.filter { $0.name != "Écran Publique" }.count }
 
@@ -80,9 +86,16 @@ final class MasterFlowViewModel {
         }.count
     }
 
-    /// Retire définitivement un joueur déconnecté (a quitté pour de bon) pour
-    /// débloquer le garde-fou #E1 et permettre de relancer une manche.
+    /// Retire un joueur déconnecté du roster ACTIF (débloque le garde-fou #E1 et permet
+    /// de relancer une manche sans lui). #keep-removed-score — tant que la partie n'est
+    /// pas terminée, on conserve son record (score + pouvoirs) dans removedDuringGame :
+    /// s'il se reconnecte avant la fin, addPlayer le restaure au lieu de repartir à 0.
     func forgetDisconnectedPlayer(_ name: String) {
+        if !isGameComplete, name != "Écran Publique",
+           let saved = allRegisteredPlayers.first(where: { $0.name == name }) {
+            removedDuringGame.removeAll { $0.name == name }
+            removedDuringGame.append(saved)
+        }
         allRegisteredPlayers.removeAll { $0.name == name }
         players.removeAll { $0.name == name }
         readyPlayers.remove(name)
@@ -247,6 +260,8 @@ final class MasterFlowViewModel {
         // Reset scores dans les deux tableaux
         for i in players.indices { players[i].score = 0 }
         for i in allRegisteredPlayers.indices { allRegisteredPlayers[i].score = 0 }
+        // #keep-removed-score — nouvelle partie : on oublie pour de bon les joueurs retirés.
+        removedDuringGame.removeAll()
         selectedQuizSet = nil
         gameDuration = .normale
         gameMode = .quiz
@@ -277,6 +292,14 @@ final class MasterFlowViewModel {
         lastRejoinRequest.removeValue(forKey: player.name)
         // Reprend le jeu (timer + musique) seulement s'il était en pause pour déconnexion.
         if wasPaused { currentBuzzGame?.resumeFromDisconnect() }
+
+        // #keep-removed-score — un joueur « Retiré » pendant la partie qui se reconnecte :
+        // on le réinjecte dans allRegisteredPlayers (avec son score/pouvoirs sauvegardés) →
+        // la branche reconnexion ci-dessous le restaure normalement, plus de remise à 0.
+        if !allRegisteredPlayers.contains(where: { $0.name == player.name }),
+           let stashedIndex = removedDuringGame.firstIndex(where: { $0.name == player.name }) {
+            allRegisteredPlayers.append(removedDuringGame.remove(at: stashedIndex))
+        }
 
         if let savedIndex = allRegisteredPlayers.firstIndex(where: { $0.name == player.name }) {
             // Reconnexion : restaurer l'état sauvegardé (le nom est la clé — l'UUID peut changer)
