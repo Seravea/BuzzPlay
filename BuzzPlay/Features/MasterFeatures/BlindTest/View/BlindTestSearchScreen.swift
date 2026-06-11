@@ -55,15 +55,16 @@ struct BlindTestSearchScreen: View {
                 .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.bottom, BuzzSpacing.md)
 
-            // Lancer le Blind Test — invite les players sur leur buzzer
-            launchButton
-                .padding(.horizontal, BuzzSpacing.xl)
-                .padding(.bottom, BuzzSpacing.md)
-
-            // #invite-progress (G2) — avancement « X/Y prêts sur le buzzer »
-            if blindTestVM.hasInvitedPlayers && blindTestVM.gameVM.totalPlayersCount > 0 {
-                MasterReadinessBar(ready: blindTestVM.gameVM.readyAndConnectedCount,
-                                   total: blindTestVM.gameVM.totalPlayersCount)
+            // #invite-progress — avant l'invite : CTA de lancement ; une fois invité :
+            // barre « X/Y prêts » + bouton « Réinviter » (actif si des joueurs manquent).
+            if !blindTestVM.hasInvitedPlayers {
+                launchButton
+                    .padding(.horizontal, BuzzSpacing.xl)
+                    .padding(.bottom, BuzzSpacing.md)
+            } else if blindTestVM.gameVM.totalPlayersCount > 0 {
+                InviteProgressRow(ready: blindTestVM.gameVM.readyAndConnectedCount,
+                                  total: blindTestVM.gameVM.totalPlayersCount,
+                                  onReinvite: { blindTestVM.invitePlayers() })
                     .padding(.horizontal, BuzzSpacing.xl)
                     .padding(.bottom, BuzzSpacing.md)
             }

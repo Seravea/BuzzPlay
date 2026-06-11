@@ -198,6 +198,11 @@ extension PlayerGameViewModel {
             roster.forEach { applyPlayerUpdate($0) }
 
         case .countdownStarted(let payload):
+            // #countdown-jeu2 — fermer le classement inter-manche dès qu'un décompte démarre,
+            // pour que le joueur voie le 3-2-1 sur son buzzer (sinon il restait sur la sheet
+            // de classement et arrivait direct au buzzer une fois le décompte terminé).
+            leaderboardTask?.cancel()
+            showPostRoundLeaderboard = false
             startLocalCountdown(masterTimestamp: payload.masterTimestamp,
                                 startCount: payload.startCount)
 

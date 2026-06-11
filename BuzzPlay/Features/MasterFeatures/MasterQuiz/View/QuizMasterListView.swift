@@ -149,15 +149,15 @@ private struct QuizQuestionListScreen: View {
 
     private var listHeader: some View {
         VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
-            // Bouton "Inviter les joueurs" — obligatoire avant de pouvoir sélectionner une question
-            inviteButton
-                .padding(.bottom, 4)
-
-            // #invite-progress (G2) — avancement « X/Y prêts sur le buzzer »
-            if quizMasterVM.hasInvitedPlayers && !quizMasterVM.isPlaying
-                && quizMasterVM.gameVM.totalPlayersCount > 0 {
-                MasterReadinessBar(ready: quizMasterVM.gameVM.readyAndConnectedCount,
-                                   total: quizMasterVM.gameVM.totalPlayersCount)
+            // #invite-progress — avant l'invite : bouton vert (rare avec l'auto-invite) ;
+            // une fois invité : barre « X/Y prêts » + bouton « Réinviter » (actif si manquants).
+            if !quizMasterVM.hasInvitedPlayers {
+                inviteButton
+                    .padding(.bottom, 4)
+            } else if !quizMasterVM.isPlaying && quizMasterVM.gameVM.totalPlayersCount > 0 {
+                InviteProgressRow(ready: quizMasterVM.gameVM.readyAndConnectedCount,
+                                  total: quizMasterVM.gameVM.totalPlayersCount,
+                                  onReinvite: { quizMasterVM.invitePlayers() })
                     .padding(.bottom, 4)
             }
 

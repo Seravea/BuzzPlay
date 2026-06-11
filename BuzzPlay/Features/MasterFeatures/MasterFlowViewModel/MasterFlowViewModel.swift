@@ -392,6 +392,13 @@ extension MasterFlowViewModel {
             addPlayer(player)
         case .playerReady:
             let name = peer.displayName
+            // #ready-clamp — un pair zombie qui re-ping après son timeout heartbeat renvoyait
+            // un playerReady → faux « (2/1) » (prêt mais absent du roster). On ne marque prêt
+            // que s'il est réellement connecté ; sinon on demande une vraie ré-intégration.
+            guard players.contains(where: { $0.name == name }) else {
+                requestRejoinIfMissing(from: peer)
+                break
+            }
             readyPlayers.insert(name)
             print("MASTER: \(name) est prêt sur son buzzer (\(readyPlayers.count)/\(connectedPlayersCount))")
         case .buzz(let payload):
