@@ -16,7 +16,7 @@ struct PlayerJoinStepper: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            chip("Connecté", icon: "antenna.bars", state: connected ? .done : .current)
+            chip("Connecté", icon: "antenna.radiowaves.left.and.right", state: connected ? .done : .current)
             separator
             chip("En attente", icon: "hourglass", state: connected ? .current : .pending)
             separator
