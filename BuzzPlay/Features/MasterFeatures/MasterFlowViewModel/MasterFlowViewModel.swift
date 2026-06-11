@@ -118,7 +118,10 @@ final class MasterFlowViewModel {
     private var heartbeatTimer: Timer?
     private var lastSeen: [String: Date] = [:]
     private static let heartbeatInterval: TimeInterval = 2   // fréquence des pings
-    private static let heartbeatTimeout: TimeInterval = 6    // sans réponse → déconnecté
+    // #reco-tolerance — 10s (était 6s) : le lien P2P iPhone↔iPad a des hoquets ~6s qui se
+    // résolvent seuls (vu device : silence ~6s puis re-join). À 6s ça déclenchait une fausse
+    // déco/pause à chaque hoquet ; 10s les absorbe. Le pong reste à 2s → 5 chances avant timeout.
+    private static let heartbeatTimeout: TimeInterval = 10   // sans réponse → déconnecté
 
     //MARK: Datas for games
     var currentBuzzPlayer: Player?
