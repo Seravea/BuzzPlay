@@ -149,6 +149,7 @@ extension BlindTestMasterViewModel {
         isCorrect = true
         state = .finished
         gameVM.blindTestRoundsPlayed += 1
+        gameVM.persistActiveParty()   // #resume — snapshot à jour à chaque manche (survit au kill)
 
         let configuredTotal = gameVM.blindTestRoundsTotal
         if configuredTotal > 0 && playedSongs.count >= configuredTotal {

@@ -213,6 +213,7 @@ extension QuizMasterViewModel {
             questionsPassed.append(currentQuestion)
             // #BugQ1 — toute question terminée (validée OU skippée) consomme une manche
             gameVM.quizRoundsPlayed += 1
+            gameVM.persistActiveParty()   // #resume — snapshot à jour à chaque manche (survit au kill)
         }
         currentQuestion = nil
         stopReactionTimer()
