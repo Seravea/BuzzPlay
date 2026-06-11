@@ -64,6 +64,9 @@ final class PlayerGameViewModel {
     private var lastMasterFormattedTime: String = "00:00"
     // Masque le timer jusqu'au 1er .timerStarted pour éviter le drift sur la 1re question (#A4)
     var hasReceivedFirstTimer: Bool = false
+    // #reco-resync — type de jeu actuellement joué (dérivé du publicUpdate). Distingue un VRAI
+    // nouveau jeu (reset .waiting) d'une RECONNEXION au jeu en cours (ne pas effacer l'état).
+    private var activeGameType: GameType? = nil
 
     // MARK: - Reconnect auto
     private var reconnectTimer: Timer?
@@ -209,15 +212,17 @@ extension PlayerGameViewModel {
         case .masterLaunchedGame(let game):
             pendingGameInvite = game
             hasPartyStarted = true  // reconnexion après kill app : la partie est déjà lancée
-            hasReceivedFirstTimer = false  // reset pour chaque nouveau jeu (#A4)
             // Tout nouveau jeu (ou le score) annule un classement inter-manche encore en file.
             leaderboardTask?.cancel()
             showPostRoundLeaderboard = false
-            if game != .score {
-                // #waiting-invite-jeu2 — au lancement du jeu suivant, l'ancien état du jeu
-                // précédent (réponse révélée, MusicCard, overlay « Bravo ») persistait jusqu'au
-                // premier publicUpdate, car le currentBuzzerVM est RÉUTILISÉ entre 2 jeux (#C7).
-                // On repart d'un état propre, comme le fait `.masterResetGame`.
+            // #reco-resync — à la RECONNEXION, le Master renvoie publicUpdate(jeu en cours) PUIS
+            // masterLaunchedGame(MÊME jeu) pour re-router → il ne faut SURTOUT pas repartir de
+            // .waiting (sinon on efface le quizState reçu juste avant + on verrouille le buzzer
+            // → « comme s'il attendait la partie suivante »). On ne nettoie (#waiting-invite-jeu2)
+            // QUE pour un VRAI nouveau jeu = un game DIFFÉRENT de celui actuellement joué.
+            let isNewGame = game != .score && game != activeGameType
+            if isNewGame {
+                hasReceivedFirstTimer = false  // reset timer pour le nouveau jeu (#A4)
                 lastAnswerWasCorrect = false
                 publicState = .waiting
                 formattedTime = "00:00"
@@ -241,6 +246,7 @@ extension PlayerGameViewModel {
             isGameComplete = false
             hasPartyStarted = false
             pendingGameInvite = nil
+            activeGameType = nil   // #reco-resync — nouvelle partie : plus de jeu actif
             publicState = .waiting
             currentBuzzerVM = nil
             // #C9 — remet les scores à 0 localement (le Master a reset sa source de vérité).
@@ -335,6 +341,7 @@ extension PlayerGameViewModel {
                 currentBuzzerVM?.clearBuzzState()
             }
         case .quiz(let quizState):
+            activeGameType = .quiz   // #reco-resync — on joue le Quiz (cf masterLaunchedGame)
             lastMasterFormattedTime = quizState.formattedTime
             formattedTime = quizState.formattedTime
             // #countdown-sync — pendant un décompte local (countdownStarted reçu), ne pas
@@ -370,6 +377,7 @@ extension PlayerGameViewModel {
                                 autoResumeTimer: false)
             }
         case .blindTest(let blindTestState):
+            activeGameType = .blindTest   // #reco-resync — on joue le Blind Test
             lastMasterFormattedTime = blindTestState.formattedTime
             // Timer piloté par .timerStarted — on ne force la valeur master que si le timer local est inactif
             // (resync à la reconnexion ou à l'onAppear), évitant les sauts visuels pendant le jeu
