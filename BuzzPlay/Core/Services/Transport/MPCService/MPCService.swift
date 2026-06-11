@@ -13,6 +13,15 @@ enum MPCRole {
     case team
 }
 
+/// #conn-phase — phase de connexion observée côté Player, pour un feedback honnête dans
+/// l'overlay d'attente : on cherche l'hôte, puis on négocie, puis c'est bon.
+enum MPCConnectionPhase {
+    case idle
+    case searching    // browsing : aucun hôte trouvé pour l'instant
+    case connecting   // hôte trouvé / invitation / négociation (reste stable pendant les retries)
+    case connected
+}
+
 
 final class MPCService: NSObject {
     //MARK: MPC Session datas
@@ -41,6 +50,8 @@ final class MPCService: NSObject {
     var onPeerConnected: ((MCPeerID) -> Void)?
     var onPeerDisconnected: ((MCPeerID) -> Void)?
     var onMessage: ((Data, MCPeerID) -> Void)?
+    /// #conn-phase — notifie la phase de connexion (Player) pour l'overlay d'attente.
+    var onConnectionPhase: ((MPCConnectionPhase) -> Void)?
     
     //MARK: class init()
     init(peerName: String, role: MPCRole) {
@@ -59,6 +70,18 @@ final class MPCService: NSObject {
         session.delegate = self
     }
 
+}
+
+//MARK: État de connexion (dérivé de la session)
+extension MPCService {
+    /// Vrai si un pair nommé « Master » est encore présent dans la session.
+    /// #reco-master — l'identité applicative du Master est son NOM (son MCPeerID est régénéré
+    /// à chaque lancement, #reco-fix). On dérive donc « connecté au Master » de la session
+    /// ENTIÈRE, pas d'un MCPeerID figé → l'état survit à la chute d'un ancien pair zombie
+    /// quand un Master frais (relaunch) est déjà connecté sous le même nom.
+    var isMasterConnected: Bool {
+        session.connectedPeers.contains { $0.displayName == Self.masterPeerName }
+    }
 }
 
 //MARK: Local network permission priming (#R1 / #A1)
@@ -169,6 +192,7 @@ extension MPCService {
         browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
         browser?.delegate = self
         browser?.startBrowsingForPeers()
+        onConnectionPhase?(.searching)
         print("OK MPC: browsing(TEAM) started as \(myPeerID.displayName)")
     }
 
@@ -180,6 +204,7 @@ extension MPCService {
         browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
         browser?.delegate = self
         browser?.startBrowsingForPeers()
+        onConnectionPhase?(.searching)   // lissé côté VM : ignoré si déjà en .connecting
         print("🔄 MPC: browsing restarted for \(myPeerID.displayName)")
     }
     
@@ -223,12 +248,14 @@ extension MPCService: MCSessionDelegate {
         switch state {
         case .connected:
             print("OK MPC: connected to : \(peerID.displayName)")
+            if peerID.displayName == Self.masterPeerName { onConnectionPhase?(.connected) }
             onPeerConnected?(peerID)
         case .notConnected:
             print("PAS OK MPC: disconnected from \(peerID.displayName)")
             onPeerDisconnected?(peerID)
         case .connecting:
             print("LOAD MPC: is connecting to \(peerID.displayName)")
+            if peerID.displayName == Self.masterPeerName { onConnectionPhase?(.connecting) }
         @unknown default:
             break
         }
@@ -284,9 +311,13 @@ extension MPCService: MCNearbyServiceBrowserDelegate {
             return
         }
 
-        // Si déjà connecté, ignorer
-        if session.connectedPeers.contains(where: { $0.displayName == name }) {
-            print("⚠️ MPC: \(name) already connected, ignoring")
+        // Si CE pair précis (même MCPeerID) est déjà connecté, ignorer.
+        // #reco-master — comparaison par IDENTITÉ (MCPeerID), PAS par nom : un Master qui
+        // revient après un kill a un MCPeerID FRAIS (même nom « Master »). Le filtre par nom
+        // le confondait avec l'ancien pair zombie encore listé dans connectedPeers → on
+        // n'invitait jamais le Master frais → Player bloqué sur « connexion perdue ».
+        if session.connectedPeers.contains(peerID) {
+            print("⚠️ MPC: \(name) (même pair) déjà connecté, ignoring")
             return
         }
 
@@ -297,6 +328,7 @@ extension MPCService: MCNearbyServiceBrowserDelegate {
         }
 
         invitedPeers.insert(name)
+        onConnectionPhase?(.connecting)
         print("👀 MPC: found master \(name), inviting…")
         // #C1 — timeout allongé à 30s pour les environnements Wi-Fi lents ou encombrés
         browser.invitePeer(peerID, to: session, withContext: nil, timeout: 30)

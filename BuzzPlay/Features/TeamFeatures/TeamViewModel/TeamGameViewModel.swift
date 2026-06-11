@@ -24,6 +24,8 @@ final class PlayerGameViewModel {
     var isConnectedToMaster = false
     /// true dès qu'on s'est connecté au moins une fois — distingue "jamais connecté" de "déconnecté"
     var hasEverConnectedToMaster = false
+    /// #conn-phase — phase de connexion affichée dans l'overlay d'attente (recherche → connexion → connecté)
+    var connectionPhase: MPCConnectionPhase = .idle
 
     var receivedMessage: String = ""
     var publicState: PublicState = .waiting
@@ -116,6 +118,7 @@ extension PlayerGameViewModel {
                 let isReconnect = self.hasEverConnectedToMaster
                 self.isConnectedToMaster = true
                 self.hasEverConnectedToMaster = true
+                self.connectionPhase = .connected
                 self.stopReconnectTimer()
                 guard !self.didSentPlayer else { return }
                 self.didSentPlayer = true
@@ -135,7 +138,16 @@ extension PlayerGameViewModel {
                 guard let self else { return }
                 // #7b — ignorer la déconnexion d'un autre Player ; seul le Master compte.
                 guard peer.displayName == MPCService.masterPeerName else { return }
+                // #reco-master — un pair « Master » est tombé. S'il reste un AUTRE « Master »
+                // connecté (cas relaunch : le frais est déjà là, c'est l'ancien zombie qui
+                // tombe), on est toujours connecté → ne PAS flipper l'état ni relancer le
+                // watchdog. Sinon (plus aucun Master) → déconnexion réelle.
+                if self.mpc.isMasterConnected {
+                    print("ℹ️ Reco: ancien pair Master tombé, Master frais toujours connecté — ignore")
+                    return
+                }
                 self.isConnectedToMaster = false
+                self.connectionPhase = .searching   // #conn-phase — vraie perte → on recherche à nouveau
                 self.didSentPlayer = false
                 // #quit-teardown — si le Master a quitté volontairement, ne pas relancer le
                 // watchdog de reconnexion (sinon le Player tente de rejoindre un Master parti).
@@ -156,6 +168,20 @@ extension PlayerGameViewModel {
             }
         }
 
+        // #conn-phase — phase de connexion → overlay d'attente, lissée (cf. applyConnectionPhase).
+        mpc.onConnectionPhase = { [weak self] phase in
+            Task { @MainActor [weak self] in self?.applyConnectionPhase(phase) }
+        }
+    }
+
+    /// Lisse la phase : on NE régresse PAS connecting/connected → searching (les retries
+    /// d'invitation ne doivent pas faire clignoter l'overlay). Le retour à « recherche » est
+    /// piloté explicitement par une vraie perte du Master (onPeerDisconnected).
+    private func applyConnectionPhase(_ phase: MPCConnectionPhase) {
+        if phase == .searching, connectionPhase == .connecting || connectionPhase == .connected {
+            return
+        }
+        connectionPhase = phase
     }
 
 

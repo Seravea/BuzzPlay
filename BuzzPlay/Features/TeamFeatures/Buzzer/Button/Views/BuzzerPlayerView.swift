@@ -57,7 +57,7 @@ struct BuzzerPlayerView: View {
                     ConnectionLostOverlay()
                         .transition(.opacity)
                 } else {
-                    WaitingForMasterOverlay()
+                    WaitingForMasterOverlay(phase: playerGameVM.connectionPhase)
                         .transition(.opacity)
                 }
             }

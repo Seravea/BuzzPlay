@@ -44,7 +44,7 @@ struct PlayerChooseGameView: View {
                 if playerGameVM.hasEverConnectedToMaster {
                     ConnectionLostOverlay()
                 } else {
-                    WaitingForMasterOverlay()
+                    WaitingForMasterOverlay(phase: playerGameVM.connectionPhase)
                 }
             }
         }

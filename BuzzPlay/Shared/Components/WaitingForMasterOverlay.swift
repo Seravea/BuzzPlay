@@ -6,6 +6,9 @@
 import SwiftUI
 
 struct WaitingForMasterOverlay: View {
+    // #conn-phase — phase réelle de connexion MPC (recherche → connexion). On NE montre
+    // jamais les erreurs/retries bruts (« Unable to connect ») : juste une progression calme.
+    var phase: MPCConnectionPhase = .searching
     @State private var pulseScale: CGFloat = 1.0
     @State private var pulseOpacity: Double = 0.5
 
@@ -40,14 +43,17 @@ struct WaitingForMasterOverlay: View {
                 }
 
                 VStack(spacing: BuzzSpacing.sm) {
-                    Text("En attente du Maître")
+                    Text(phase == .connecting ? "Connexion à l'hôte…" : "Recherche de l'hôte…")
                         .font(.nohemi(.title2, weight: .bold)).titleTracking()
                         .foregroundStyle(.white)
 
-                    Text("Le Maître doit lancer la partie\ndepuis son appareil")
+                    Text(phase == .connecting
+                         ? "On établit la connexion, ça arrive…"
+                         : "Vérifie que le Maître a bien lancé une partie à proximité.")
                         .font(.nohemi(.subheadline, weight: .regular))
                         .foregroundStyle(Color.textSecondary)
                         .multilineTextAlignment(.center)
+                        .animation(.buzzFade, value: phase)
                 }
 
                 // Dots animés
