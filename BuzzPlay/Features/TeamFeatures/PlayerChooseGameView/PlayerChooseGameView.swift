@@ -22,9 +22,10 @@ struct PlayerChooseGameView: View {
             ScrollView {
                 VStack(spacing: BuzzSpacing.xl) {
                     headerSection
-                    selfCard
-                    // #invite-progress (G2 v2) — parcours du joueur : connecté → en attente → c'est parti
+                    // #invite-progress (G2 v2) — parcours du joueur, remonté en haut pour être
+                    // visible dès le début du lobby (avant : noyé sous selfCard dans le scroll).
                     PlayerJoinStepper(connected: playerGameVM.isConnectedToMaster)
+                    selfCard
                     buzzerHintCard
                     if !otherPlayers.isEmpty { othersSection }
                     Spacer(minLength: 80)
