@@ -45,30 +45,18 @@ final class MPCService: NSObject {
     //MARK: class init()
     init(peerName: String, role: MPCRole) {
         self.role = role
-        // Réutilise un MCPeerID persisté par nom (recommandé Apple). Après un kill+relaunch,
-        // le device revient avec le MÊME MCPeerID → MPC le reconnaît comme le même peer au
-        // lieu de créer un doublon → supprime le flapping de reconnexion (#flapping).
-        self.myPeerID = MPCService.persistedPeerID(for: peerName)
+        // #reco-fix — MCPeerID FRAIS à chaque lancement (revert du #118 « MCPeerID persisté »).
+        // Diagnostic device : réutiliser le même MCPeerID après un kill EMPÊCHE la reconnexion.
+        // La MCSession du Master garde l'ancien pair en zombie (le timeout heartbeat est
+        // appli-only, le framework n'a pas vu la déco) → quand le Player réinvite avec LE MÊME
+        // MCPeerID, le framework refuse de rebrancher (« invitation reçue + acceptée mais jamais
+        // connectée », remoteServiceName is nil). Un MCPeerID neuf = nouveau pair pour le Master
+        // → acceptation propre. L'identité applicative reste le NOM (clé stable côté Master, #10).
+        self.myPeerID = MCPeerID(displayName: peerName)
         self.session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
 
         super.init()
         session.delegate = self
-    }
-
-    /// Charge (ou crée puis persiste) un MCPeerID stable pour un nom donné.
-    /// Garantit qu'un même device/nom réutilise le même MCPeerID entre deux lancements.
-    private static func persistedPeerID(for name: String) -> MCPeerID {
-        let key = "buzzplay.mpc.peerid.\(name)"
-        let ud = UserDefaults.standard
-        if let data = ud.data(forKey: key),
-           let peer = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MCPeerID.self, from: data) {
-            return peer
-        }
-        let peer = MCPeerID(displayName: name)
-        if let data = try? NSKeyedArchiver.archivedData(withRootObject: peer, requiringSecureCoding: true) {
-            ud.set(data, forKey: key)
-        }
-        return peer
     }
 
 }
