@@ -23,10 +23,13 @@ struct PlayerChooseGameView: View {
                 VStack(spacing: BuzzSpacing.xl) {
                     headerSection
                     selfCard
+                    // #invite-progress (G2 v2) — parcours du joueur : connecté → en attente → c'est parti
+                    PlayerJoinStepper(connected: playerGameVM.isConnectedToMaster)
                     buzzerHintCard
                     if !otherPlayers.isEmpty { othersSection }
                     Spacer(minLength: 80)
                 }
+                .animation(.buzzFade, value: playerGameVM.isConnectedToMaster)
                 .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.top, BuzzSpacing.lg)
             }
