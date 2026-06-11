@@ -14,7 +14,7 @@ import AVFoundation
 
 // MARK: - Game Config Enums
 
-enum GameDuration: CaseIterable {
+enum GameDuration: String, CaseIterable, Codable {
     case rapide, normale, longue
 
     var rounds: Int {
@@ -29,7 +29,7 @@ enum GameDuration: CaseIterable {
     var subtitle: String { "\(rounds) manches" }
 }
 
-enum GameMode: CaseIterable {
+enum GameMode: String, CaseIterable, Codable {
     case quiz, blindTest, mix
 
     var label: String {
@@ -37,6 +37,76 @@ enum GameMode: CaseIterable {
     }
     var iconName: String {
         switch self { case .quiz: "brain"; case .blindTest: "music.note"; case .mix: "shuffle" }
+    }
+}
+
+// MARK: - Reprise de partie (#resume — survit à un kill de l'app Master)
+
+/// Instantané minimal d'une partie en cours, persisté en UserDefaults pour reprendre après
+/// un kill. v1 : manches + scores/roster + config. PAS le quiz sélectionné, PAS l'état live
+/// d'une manche en cours → reprise AU HUB entre les manches.
+private struct MasterPartySnapshot: Codable {
+    var quizRoundsPlayed: Int
+    var blindTestRoundsPlayed: Int
+    var gameMode: GameMode
+    var gameDuration: GameDuration
+    var activeGameType: GameType?
+    var roster: [Player]            // = allRegisteredPlayers (scores + pouvoirs)
+    var hasPartyStarted: Bool
+    var savedAt: Date
+}
+
+extension MasterFlowViewModel {
+    private static let partySnapshotKey = "buzzplay.master.activeParty"
+    /// Au-delà, le snapshot est considéré périmé (pas de proposition de reprise).
+    private static let partyResumeWindow: TimeInterval = 2 * 60 * 60   // 2h
+
+    /// Sauvegarde l'état de la partie (manches/scores/config). Appelé au lancement, à la fin
+    /// d'une section, et au passage en arrière-plan (juste avant un éventuel kill).
+    func persistActiveParty() {
+        guard hasPartyStarted else { return }   // rien à sauvegarder hors partie
+        let snapshot = MasterPartySnapshot(
+            quizRoundsPlayed: quizRoundsPlayed,
+            blindTestRoundsPlayed: blindTestRoundsPlayed,
+            gameMode: gameMode,
+            gameDuration: gameDuration,
+            activeGameType: activeGameType,
+            roster: allRegisteredPlayers,
+            hasPartyStarted: hasPartyStarted,
+            savedAt: Date()
+        )
+        if let data = try? JSONEncoder().encode(snapshot) {
+            UserDefaults.standard.set(data, forKey: Self.partySnapshotKey)
+        }
+    }
+
+    /// Un snapshot récent existe → on peut proposer « Reprendre la partie ? ».
+    var hasResumableParty: Bool {
+        guard let s = loadPartySnapshot() else { return false }
+        return s.hasPartyStarted && Date().timeIntervalSince(s.savedAt) < Self.partyResumeWindow
+    }
+
+    private func loadPartySnapshot() -> MasterPartySnapshot? {
+        guard let data = UserDefaults.standard.data(forKey: Self.partySnapshotKey) else { return nil }
+        return try? JSONDecoder().decode(MasterPartySnapshot.self, from: data)
+    }
+
+    /// Restaure la partie dans le VM (reprise AU HUB ; les Players se reconnectent et
+    /// récupèrent leur score par nom via addPlayer).
+    func restoreActiveParty() {
+        guard let s = loadPartySnapshot() else { return }
+        quizRoundsPlayed      = s.quizRoundsPlayed
+        blindTestRoundsPlayed = s.blindTestRoundsPlayed
+        gameMode              = s.gameMode
+        gameDuration          = s.gameDuration
+        activeGameType        = s.activeGameType
+        allRegisteredPlayers  = s.roster
+        hasPartyStarted       = s.hasPartyStarted
+    }
+
+    /// Oublie la partie sauvegardée (nouvelle partie / quitter / partie terminée).
+    func clearActiveParty() {
+        UserDefaults.standard.removeObject(forKey: Self.partySnapshotKey)
     }
 }
 
@@ -180,8 +250,10 @@ final class MasterFlowViewModel {
         default: break
         }
         mpcService.sendMessage(.masterLaunchedGame(.score))
+        persistActiveParty()   // #resume — sauvegarde les manches jouées
         if isGameComplete {
             mpcService.sendMessage(.masterGameComplete)
+            clearActiveParty()  // #resume — partie terminée : plus rien à reprendre
         }
     }
 
@@ -192,6 +264,7 @@ final class MasterFlowViewModel {
     func startParty() {
         hasPartyStarted = true
         mpcService.sendMessage(.masterStartedParty)
+        persistActiveParty()   // #resume — instantané initial dès l'entrée dans le hub
     }
 
     /// Jeu courant qui réagit aux buzz (BlindTest, Quiz, etc.)
@@ -278,6 +351,7 @@ final class MasterFlowViewModel {
         // sa propre ligne (avant : 1 updatedPlayer perso → les autres restaient périmés).
         broadcastFullRoster()
         mpcService.sendMessage(.masterResetGame)
+        clearActiveParty()   // #resume — nouvelle partie : oublie l'ancienne
     }
     
     
@@ -576,6 +650,7 @@ extension MasterFlowViewModel {
         gameState = .lobby
         resetGameVMs()            // caches + rounds + currentBuzzGame + activeGameType
         hasStartedHosting = false // permet à setupMPC de réinitialiser une future partie
+        clearActiveParty()        // #resume — quitter : oublie la partie sauvegardée
     }
 
     /// Déclare déconnecté tout joueur qui n'a pas donné signe de vie depuis le timeout,
