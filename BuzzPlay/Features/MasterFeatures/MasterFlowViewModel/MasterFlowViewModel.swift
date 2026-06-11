@@ -447,14 +447,6 @@ extension MasterFlowViewModel {
                 let task = Task { @MainActor [weak self] in
                     try? await Task.sleep(for: GameRhythm.disconnectDebounce)
                     guard let self, !Task.isCancelled else { return }
-                    // #anti-zombie-flap — avec un MCPeerID frais à la reco (revert #118), l'ANCIEN
-                    // pair zombie finit par tomber APRÈS que le joueur soit revenu. Si un autre
-                    // MCPeerID du même nom est encore connecté, c'est ce zombie qui tombe : on
-                    // ne retire SURTOUT pas le joueur qui vient de se reconnecter.
-                    if self.connectedPeers.contains(where: { $0.displayName == name }) {
-                        print("MASTER: ancien pair zombie « \(name) » tombé — ignoré (déjà reconnecté)")
-                        return
-                    }
                     self.handlePlayerDisconnect(name: name)
                 }
                 self.disconnectDebounce[name] = task
