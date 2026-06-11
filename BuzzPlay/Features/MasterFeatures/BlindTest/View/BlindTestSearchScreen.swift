@@ -60,6 +60,14 @@ struct BlindTestSearchScreen: View {
                 .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.bottom, BuzzSpacing.md)
 
+            // #invite-progress (G2) — avancement « X/Y prêts sur le buzzer »
+            if blindTestVM.hasInvitedPlayers && blindTestVM.gameVM.totalPlayersCount > 0 {
+                MasterReadinessBar(ready: blindTestVM.gameVM.readyAndConnectedCount,
+                                   total: blindTestVM.gameVM.totalPlayersCount)
+                    .padding(.horizontal, BuzzSpacing.xl)
+                    .padding(.bottom, BuzzSpacing.md)
+            }
+
             // #BT-search — barre de recherche permanente en haut (au lieu d'un CTA caché en
             // bas) : découvrable immédiatement, les catégories en dessous sont des raccourcis.
             searchBarRow

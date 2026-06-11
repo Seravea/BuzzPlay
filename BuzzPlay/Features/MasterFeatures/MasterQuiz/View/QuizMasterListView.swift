@@ -153,6 +153,14 @@ private struct QuizQuestionListScreen: View {
             inviteButton
                 .padding(.bottom, 4)
 
+            // #invite-progress (G2) — avancement « X/Y prêts sur le buzzer »
+            if quizMasterVM.hasInvitedPlayers && !quizMasterVM.isPlaying
+                && quizMasterVM.gameVM.totalPlayersCount > 0 {
+                MasterReadinessBar(ready: quizMasterVM.gameVM.readyAndConnectedCount,
+                                   total: quizMasterVM.gameVM.totalPlayersCount)
+                    .padding(.bottom, 4)
+            }
+
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(quizMasterVM.quizSet.title)
