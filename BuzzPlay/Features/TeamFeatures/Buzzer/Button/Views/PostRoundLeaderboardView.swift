@@ -174,7 +174,10 @@ private struct PostRoundRow: View {
                     .font(.nohemi(.caption, weight: .extraBold))
                     .foregroundStyle(Color.greenButtonLeading)
                     .padding(.horizontal, BuzzSpacing.sm)
-                    .padding(.vertical, 3)
+                    // #R2 — Nohemi sied haut dans sa boîte de glyphe → padding vertical
+                    // asymétrique pour recentrer optiquement le « +XX » (tune à l'œil device).
+                    .padding(.top, 4)
+                    .padding(.bottom, 2)
                     .background(Color.greenButtonLeading.opacity(0.15), in: Capsule())
                     .overlay(Capsule().strokeBorder(Color.greenButtonLeading.opacity(0.35), lineWidth: 1))
                     .transition(.scale(scale: 0.6).combined(with: .opacity))
