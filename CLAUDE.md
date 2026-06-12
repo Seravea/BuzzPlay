@@ -99,8 +99,8 @@ LinearGradient(colors: [Color(hex: "#AD46FF"), Color(hex: "#F6339A")], ...)
 
 ```swift
 // ✅ Couleurs — tokens depuis Colors.swift (extension Color)
-Color.buzzPurple       // #AD46FF
-Color.buzzDark         // #1A0535
+Color.purpleLeading    // #AD46FF — accent violet principal
+Color.sheetBg          // #1A0535 — fond de sheet
 Color.greenButtonLeading
 Color.redLeading
 // → Voir Shared/Styles/Colors.swift pour la liste complète
@@ -124,7 +124,7 @@ LinearGradient.buzzPrimary    // purple → pink
 LinearGradient.buzzSuccess    // green CTA
 LinearGradient.buzzDanger     // red → pink
 LinearGradient.buzzAmber      // yellow → orange
-LinearGradient.buzzBlue       // blue Master
+LinearGradient.buzzMaster     // blue Master
 // → Voir Shared/Styles/Colors.swift
 
 // ✅ Animations — tokens depuis BuzzLayout.swift
@@ -139,18 +139,23 @@ LinearGradient.buzzBlue       // blue Master
 
 ### Couleurs disponibles (Colors.swift)
 ```swift
-// Fond global — dégradé diagonal via BackgroundAppView
-// darkestPurple (#1A0535) → darkPurple (#2A0944) → darkPink (#A12568)
+// ⚠️ Noms RÉELS depuis Colors.swift — cette liste DOIT y correspondre.
+//    En cas de doute, ouvrir Shared/Styles/Colors.swift — ne PAS inventer de token.
 
-// Primaires
-Color.buzzPurple        // #AD46FF — accent principal
-Color.buzzDark          // #1A0535 — fond sheet
-Color.buzzPink          // #F6339A — accent secondaire
+// Fond global — dégradé diagonal via BackgroundAppView
+// darkestPurple (#2A0944) → darkPurple (#3B185F) → darkPink (#A12568)
+
+// Accents principaux
+Color.purpleLeading     // #AD46FF — accent violet principal   (⚠️ PAS "buzzPurple")
+Color.purpleTrailing    // #F6339A — accent secondaire (rose)
 Color.buzzHotPink       // #FF2D78
-Color.buzzAmber         // #F0B100
-Color.buzzOrange        // #FF6900
-Color.buzzCyan          // #00B8DB
-Color.successGlow       // #7DFFA0
+Color.mustardYellow     // #FEC260 — Notes / jaune chaud
+Color.greenGlow         // #7DFFA0 — glow positif               (⚠️ PAS "successGlow")
+Color.sheetBg           // #1A0535 — fond de sheet              (⚠️ PAS "buzzDark")
+
+// Jaune/orange & bleu : voir les paires leading/trailing ci-dessous (yellowLeading
+// #F0B100, yellowTrailing #FF6900, blueTrailing #00B8DB) — il n'existe PAS de
+// buzzAmber / buzzOrange / buzzCyan en tant que Color.
 
 // Gradients (déjà dans Colors.swift)
 Color.greenButtonLeading / greenButtonTrailing   // CTA principal
