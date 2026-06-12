@@ -843,27 +843,35 @@ extension MasterFlowViewModel {
                 players[targetIndex].hasShieldSingle = false
                 players[targetIndex].blockedByPlayerName = nil
                 print("MASTER: \(players[targetIndex].name) bouclier shieldSingle activé — blocage annulé")
+                sendPowerFeedback(blocker: buyer, blockedNames: [], parriedNames: [players[targetIndex].name])
             } else {
                 players[targetIndex].blockedFromBuzzing = true
                 players[targetIndex].blockedByPlayerName = buyer.name
+                sendPowerFeedback(blocker: buyer, blockedNames: [players[targetIndex].name], parriedNames: [])
             }
             mpcService.sendMessage(.updatedPlayer(players[targetIndex]))
             syncRegistered(players[targetIndex])   // #19 — blocage/bouclier persistés pour la reco
 
         case .allEnemiesCanNotBuzz:
+            var blockedNames: [String] = []
+            var parriedNames: [String] = []
             for i in players.indices where players[i].id != buyer.id {
+                let isPublicScreen = players[i].name == "Écran Publique"
                 // Bouclier shieldAll : ce joueur est exempté du blocage
                 if players[i].hasShieldAll {
                     players[i].hasShieldAll = false
                     players[i].blockedByPlayerName = nil
                     print("MASTER: \(players[i].name) bouclier shieldAll activé — blocage annulé")
+                    if !isPublicScreen { parriedNames.append(players[i].name) }
                 } else {
                     players[i].blockedFromBuzzing = true
                     players[i].blockedByPlayerName = buyer.name
+                    if !isPublicScreen { blockedNames.append(players[i].name) }
                 }
                 mpcService.sendMessage(.updatedPlayer(players[i]))
                 syncRegistered(players[i])   // #19 — blocage/bouclier persistés pour la reco
             }
+            sendPowerFeedback(blocker: buyer, blockedNames: blockedNames, parriedNames: parriedNames)
 
         case .shieldSingle:
             guard let idx = players.firstIndex(where: { $0.id == buyer.id }) else { return }
@@ -893,6 +901,28 @@ extension MasterFlowViewModel {
             guard let chosenSound = payload.selectedSound else { return }
             players[idx].customBuzzSound = chosenSound
             mpcService.sendMessage(.updatedPlayer(players[idx]))
+        }
+    }
+
+    /// S2 — envoie le feedback bouclier/blocage. Au bloqueur : récap (bloqués + parés). À chaque
+    /// protégé : message scopé "ton bouclier t'a sauvé". Envoi ciblé par nom ; les victimes
+    /// simplement bloquées ne reçoivent rien (leur buzzer désactivé via updatedPlayer suffit).
+    private func sendPowerFeedback(blocker: Player, blockedNames: [String], parriedNames: [String]) {
+        guard !blockedNames.isEmpty || !parriedNames.isEmpty else { return }
+        // Au bloqueur : récap complet de son action.
+        if let buyerPlayer = players.first(where: { $0.id == blocker.id }) {
+            let payload = PowerFeedbackPayload(blockerName: blocker.name,
+                                               blockedNames: blockedNames,
+                                               parriedNames: parriedNames)
+            mpcService.sendMessagetoOnePlayer(message: .powerFeedback(payload), player: buyerPlayer)
+        }
+        // À chaque protégé : message scopé à lui seul.
+        for name in parriedNames {
+            guard let protectedPlayer = players.first(where: { $0.name == name }) else { continue }
+            let payload = PowerFeedbackPayload(blockerName: blocker.name,
+                                               blockedNames: [],
+                                               parriedNames: [name])
+            mpcService.sendMessagetoOnePlayer(message: .powerFeedback(payload), player: protectedPlayer)
         }
     }
 }

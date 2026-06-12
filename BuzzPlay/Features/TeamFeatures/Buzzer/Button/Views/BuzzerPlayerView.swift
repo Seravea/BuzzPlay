@@ -52,6 +52,13 @@ struct BuzzerPlayerView: View {
                     .zIndex(50)
             }
 
+            // S2 — toast feedback blocage/bouclier
+            if let powerFeedback = playerGameVM.currentBuzzerVM?.powerFeedback {
+                PowerFeedbackToast(feedback: powerFeedback)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .zIndex(60)
+            }
+
             if !playerGameVM.isConnectedToMaster {
                 if playerGameVM.hasEverConnectedToMaster {
                     ConnectionLostOverlay()
@@ -73,6 +80,7 @@ struct BuzzerPlayerView: View {
         .animation(.spring(response: 0.5, dampingFraction: 0.7), value: playerGameVM.showNewGameNotification)
         .animation(.spring(response: 0.45, dampingFraction: 0.65), value: playerGameVM.currentBuzzerVM?.answerResult != nil)
         .animation(.spring(response: 0.5, dampingFraction: 0.75), value: playerGameVM.currentBuzzerVM?.activeHint)
+        .animation(.buzzSmooth, value: playerGameVM.currentBuzzerVM?.powerFeedback)
         .animation(.buzzEase, value: playerGameVM.isConnectedToMaster)
         // #15 — classement inter-manche en demi-sheet : la révélation de la réponse reste
         // visible en haut (PublicDisplayView), le classement animé monte par-dessous.
@@ -255,6 +263,39 @@ private struct NotesToastView: View {
         .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.4), lineWidth: 1.5))
         .shadow(color: Color.mustardYellow.opacity(0.25), radius: 12, y: 4)
         .padding(.top, BuzzSpacing.sm)
+    }
+}
+
+// MARK: - Power Feedback Toast (S2 — blocage / bouclier)
+
+private struct PowerFeedbackToast: View {
+    let feedback: PowerFeedback
+
+    private var color: Color {
+        switch feedback.tone {
+        case .offense: Color.redLeading
+        case .shield:  Color.blueLeading
+        }
+    }
+
+    var body: some View {
+        VStack {
+            HStack(spacing: BuzzSpacing.sm) {
+                Image(systemName: feedback.symbol)
+                    .textStyle(Typography.labelSMBold)
+                    .foregroundStyle(color)
+                Text(feedback.text)
+                    .font(.nohemi(.subheadline, weight: .bold))
+                    .foregroundStyle(.white)
+            }
+            .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.vertical, BuzzSpacing.md)
+            .background(Color.darkPurple, in: Capsule())
+            .overlay(Capsule().strokeBorder(color.opacity(0.45), lineWidth: 1.5))
+            .shadow(color: color.opacity(0.25), radius: 12, y: 4)
+            .padding(.top, BuzzSpacing.sm)
+            Spacer()
+        }
     }
 }
 

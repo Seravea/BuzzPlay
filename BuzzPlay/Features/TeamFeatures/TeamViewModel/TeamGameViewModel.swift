@@ -365,8 +365,42 @@ extension PlayerGameViewModel {
             didSentPlayer = true
             mpc.sendMessage(.playerJoin(player))
 
+        case .powerFeedback(let payload):
+            handlePowerFeedback(payload)
+
         default:
             break
+        }
+    }
+
+    // S2 — feedback bouclier/blocage. Le destinataire infère son rôle par son nom :
+    // bloqueur (blockerName == soi) → récap de son action ; sinon protégé → "ton bouclier".
+    private func handlePowerFeedback(_ payload: PowerFeedbackPayload) {
+        guard let vm = currentBuzzerVM else { return }
+        if payload.blockerName == player.name {
+            // Je suis le bloqueur → récap de mon action en UN toast.
+            let blocked = payload.blockedNames
+            let parried = payload.parriedNames
+            let feedback: PowerFeedback
+            if parried.isEmpty {
+                let txt = blocked.count <= 1 ? "Tu as bloqué \(blocked.first ?? "ton adversaire")"
+                                             : "Tu as bloqué tout le monde"
+                feedback = PowerFeedback(symbol: "nosign", text: txt, tone: .offense)
+            } else if blocked.isEmpty {
+                let txt = parried.count == 1 ? "Raté ! \(parried[0]) a un bouclier"
+                                             : "Raté ! \(parried.count) boucliers t'ont contré"
+                feedback = PowerFeedback(symbol: "shield.fill", text: txt, tone: .shield)
+            } else {
+                let txt = parried.count == 1 ? "Bloqué ! Mais \(parried[0]) avait un bouclier"
+                                             : "Bloqué ! Mais \(parried.count) joueurs avaient un bouclier"
+                feedback = PowerFeedback(symbol: "shield.fill", text: txt, tone: .shield)
+            }
+            vm.showPowerFeedback(feedback)
+        } else if payload.parriedNames.contains(player.name) {
+            // Je suis protégé → mon bouclier m'a sauvé.
+            vm.showPowerFeedback(PowerFeedback(symbol: "shield.fill",
+                                               text: "Ton bouclier t'a sauvé",
+                                               tone: .shield))
         }
     }
 }

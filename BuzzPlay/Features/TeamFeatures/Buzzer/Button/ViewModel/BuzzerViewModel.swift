@@ -19,6 +19,18 @@ enum AnswerResult {
     case otherCorrect(playerName: String, points: Int, answer: String?)
 }
 
+// S2 — feedback transitoire d'un pouvoir blocage/bouclier affiché en toast sur le buzzer.
+enum PowerFeedbackTone {
+    case offense   // blocage posé → rouge
+    case shield    // bouclier (parade ou sauvetage) → bleu
+}
+
+struct PowerFeedback: Equatable {
+    let symbol: String   // SF Symbol (pas d'emoji)
+    let text: String
+    let tone: PowerFeedbackTone
+}
+
 @MainActor
 @Observable
 class BuzzerViewModel {
@@ -42,6 +54,11 @@ class BuzzerViewModel {
 
     // MARK: - Retour visuel de réponse
     var answerResult: AnswerResult? = nil
+
+    // MARK: - Feedback pouvoir (blocage / bouclier — S2)
+    var powerFeedback: PowerFeedback? = nil
+    private var powerFeedbackTask: Task<Void, Never>?
+
     var countdownPhase: RoundCountdownPhase = .hidden
     private var countdownTimer: Timer?
 
@@ -71,6 +88,7 @@ class BuzzerViewModel {
         // → désalloué sur le main thread.
         MainActor.assumeIsolated {
             countdownTimer?.invalidate()
+            powerFeedbackTask?.cancel()
         }
     }
 
@@ -159,6 +177,17 @@ extension BuzzerViewModel {
             try? await Task.sleep(for: GameRhythm.answerOverlay)
             self?.answerResult = nil
             self?.lockBuzz(teamNameHasBuzz: "")
+        }
+    }
+
+    // S2 — toast transitoire de feedback pouvoir (blocage / bouclier), auto-dismiss.
+    func showPowerFeedback(_ feedback: PowerFeedback) {
+        powerFeedback = feedback
+        powerFeedbackTask?.cancel()
+        powerFeedbackTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: GameRhythm.powerFeedback)
+            guard !Task.isCancelled else { return }
+            self?.powerFeedback = nil
         }
     }
 

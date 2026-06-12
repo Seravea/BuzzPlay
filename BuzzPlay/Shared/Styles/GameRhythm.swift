@@ -17,6 +17,9 @@ enum GameRhythm {
     /// Pendant ce temps le joueur ne voit pas la suite → raccourcir = rythme plus arcade.
     static let answerOverlay: Duration = .seconds(1.5)
 
+    /// Durée du toast "pouvoir" (blocage posé / parade par bouclier) sur le buzzer (S2).
+    static let powerFeedback: Duration = .seconds(2.5)
+
     /// Délai entre la révélation de la réponse et la montée de la sheet de classement
     /// inter-manche (calé pour démarrer après la fin de l'overlay ci-dessus).
     static let leaderboardDelay: Duration = .seconds(2.7)

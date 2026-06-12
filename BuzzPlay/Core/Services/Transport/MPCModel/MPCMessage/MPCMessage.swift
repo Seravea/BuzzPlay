@@ -28,6 +28,15 @@ struct CountdownStartPayload: Codable {
     let startCount: Int                // 3 (début de manche) ou 2 (reprise après refus Quiz)
 }
 
+// S2 — feedback bouclier/blocage. Émis par le Master (source de vérité) vers le bloqueur
+// (récap de son action) ET vers chaque joueur dont le bouclier a paré. Le destinataire infère
+// son rôle : blockerName == soi → récap bloqueur ; sinon présent dans parriedNames → "sauvé".
+struct PowerFeedbackPayload: Codable {
+    let blockerName: String
+    let blockedNames: [String]   // bloqués avec succès (sans bouclier)
+    let parriedNames: [String]   // ont annulé le blocage via un bouclier
+}
+
 enum MPCMessage: Codable {
     // PLAYER -> MASTER
     case playerJoin(Player)
@@ -45,6 +54,9 @@ enum MPCMessage: Codable {
     case countdownStarted(CountdownStartPayload)
     case hintRevealedToPlayer(String)   // indice envoyé uniquement à l'acheteur
     case hintPending                    // #22 — indice acheté entre 2 manches (mis en file) : feedback "en attente" à l'acheteur
+
+    // S2 — feedback bouclier/blocage (vers le bloqueur et les protégés). Voir PowerFeedbackPayload.
+    case powerFeedback(PowerFeedbackPayload)
 
     case buzzLock(BuzzLockPayload)   // master dit "X a gagné, buzzer lock"
     case buzzUnlock                  // master dit "nouvelle manche, vous pouvez rebuzzer"
