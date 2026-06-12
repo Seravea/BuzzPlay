@@ -82,7 +82,7 @@ struct BlindTestActiveScreen: View {
             Image(systemName: "airplayaudio")
                 .font(.footnote)
                 .foregroundStyle(Color.mustardYellow)
-            Text("Branche une enceinte ou AirPlay pour l'ambiance 🔊")
+            Text("Branche une enceinte ou AirPlay pour l'ambiance")
                 .font(.nohemi(.caption, weight: .semiBold))
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)

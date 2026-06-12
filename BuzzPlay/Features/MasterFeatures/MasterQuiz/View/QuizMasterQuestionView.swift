@@ -92,7 +92,7 @@ struct QuizActiveQuestionScreen: View {
                     .foregroundStyle(Color.textMuted)
                     .tracking(0.8)
                 if isRebus {
-                    Text("🎭 RÉBUS")
+                    Label("RÉBUS", systemImage: "theatermasks.fill")
                         .font(.nohemi(.caption2, weight: .bold))
                         .foregroundStyle(Color.purpleLeading)
                         .padding(.horizontal, 6)
@@ -336,7 +336,7 @@ struct QuizBuzzSheet: View {
 
             // Reject button
             Button(action: onReject) {
-                Text("Refuser la réponse ✕")
+                Label("Refuser la réponse", systemImage: BuzzIcon.xmark)
                     .font(.nohemi(.body, weight: .bold))
                     .foregroundStyle(Color.redSoft)
                     .frame(maxWidth: .infinity)

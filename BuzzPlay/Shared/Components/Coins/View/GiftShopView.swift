@@ -476,7 +476,7 @@ struct SoundPickerSheet: View {
             } label: {
                 HStack(spacing: BuzzSpacing.sm) {
                     Image(systemName: "waveform")
-                    Text(selectedSound == nil ? "Choisir un son d'abord" : "Confirmer — 20 🎵")
+                    Text(selectedSound == nil ? "Choisir un son d'abord" : "Confirmer — 20 \(Image(systemName: BuzzIcon.music))")
                         .font(.nohemi(.body, weight: .bold))
                 }
                 .foregroundStyle(selectedSound == nil ? Color.textMuted : .white)

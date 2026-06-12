@@ -75,7 +75,7 @@ extension CoinsViewModel {
             case .enemyCanNotBuzz:      return "Bloquer un adversaire"
             case .allEnemiesCanNotBuzz: return "Bloquer TOUT le monde"
             case .showIndicies:         return "Afficher un indice"
-            case .changeBuzzColor:      return "Super Cadeau 🎁"
+            case .changeBuzzColor:      return "Super Cadeau"
             case .changeBuzzSound:      return "Changer le son du buzz"
             case .shieldSingle:         return "Bouclier individuel"
             case .shieldAll:            return "Bouclier global"
@@ -118,7 +118,7 @@ extension CoinsViewModel {
         // #v1-economy — le solde vit en LOCAL sur ce téléphone (PlayerNotesWallet) :
         // vérification + débit ici, le Master ne fait qu'appliquer l'effet du cadeau.
         guard PlayerNotesWallet.shared.balance >= gift.price else {
-            setError("Pas assez de Notes 🎵 — joue pour en gagner !")
+            setError("Pas assez de Notes — joue pour en gagner !")
             return
         }
 

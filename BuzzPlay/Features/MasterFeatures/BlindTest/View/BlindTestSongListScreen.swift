@@ -35,7 +35,10 @@ struct BlindTestSongListScreen: View {
 
                     Spacer()
 
-                    Text("\(blindTestVM.roundsDone)/\(blindTestVM.roundsTotal) ✓")
+                    HStack(spacing: 4) {
+                        Text("\(blindTestVM.roundsDone)/\(blindTestVM.roundsTotal)")
+                        Image(systemName: BuzzIcon.checkSimple)
+                    }
                         .font(.nohemi(.caption, weight: .semiBold))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)

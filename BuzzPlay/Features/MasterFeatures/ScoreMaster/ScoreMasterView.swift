@@ -75,8 +75,9 @@ struct ScoreMasterView: View {
 
         return VStack(spacing: 0) {
             if rank == 1 {
-                Text("👑")
+                Image(systemName: BuzzIcon.crown)
                     .textStyle(Typography.sectionTitle)
+                    .foregroundStyle(Color.mustardYellow)
                     .padding(.bottom, 4)
             }
 

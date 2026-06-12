@@ -327,7 +327,7 @@ private struct PlayerPodiumSheet: View {
 
     private func myRankCard(rank: Int, player: Player) -> some View {
         HStack(spacing: 14) {
-            Text(rankEmoji(rank))
+            rankBadge(rank)
                 .textStyle(Typography.screenTitle)
 
             VStack(alignment: .leading, spacing: 2) {
@@ -360,7 +360,7 @@ private struct PlayerPodiumSheet: View {
 
     private func podiumRow(rank: Int, player: Player, isSelf: Bool) -> some View {
         HStack(spacing: BuzzSpacing.md) {
-            Text(rankEmoji(rank))
+            rankBadge(rank)
                 .textStyle(Typography.title3)
                 .frame(width: 32)
 
@@ -399,12 +399,14 @@ private struct PlayerPodiumSheet: View {
         )
     }
 
-    private func rankEmoji(_ rank: Int) -> String {
+    // Médaille SF Symbol teintée (or/argent/bronze) pour le podium, sinon le rang en chiffre.
+    @ViewBuilder
+    private func rankBadge(_ rank: Int) -> some View {
         switch rank {
-        case 1: return "🥇"
-        case 2: return "🥈"
-        case 3: return "🥉"
-        default: return "#\(rank)"
+        case 1: Image(systemName: "medal.fill").foregroundStyle(Color.mustardYellow)
+        case 2: Image(systemName: "medal.fill").foregroundStyle(Color.textSoft)
+        case 3: Image(systemName: "medal.fill").foregroundStyle(Color.burnOrange)
+        default: Text("#\(rank)")
         }
     }
 

@@ -46,7 +46,7 @@ struct AIQuizSetupView: View {
             VStack(spacing: 0) {
                 // Header
                 HStack {
-                    Text("✨ Générer un Quiz")
+                    Label("Générer un Quiz", systemImage: BuzzIcon.sparkles)
                         .font(.nohemi(.title2, weight: .bold)).titleTracking()
                         .foregroundStyle(.white)
                     Spacer()
@@ -187,7 +187,8 @@ struct AIQuizSetupView: View {
                     .padding(.vertical, BuzzSpacing.md)
                 } else {
                     Button(action: generate) {
-                        Text(generator.error != nil ? "Réessayer" : "✨ Générer")
+                        Label(generator.error != nil ? "Réessayer" : "Générer",
+                              systemImage: generator.error != nil ? BuzzIcon.refresh : BuzzIcon.sparkles)
                             .font(.nohemi(.body, weight: .bold))
                             .foregroundStyle(canGenerate ? .white : .white.opacity(0.30))
                     }

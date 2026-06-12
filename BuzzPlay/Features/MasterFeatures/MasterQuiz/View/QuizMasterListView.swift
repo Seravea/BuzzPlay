@@ -171,7 +171,10 @@ private struct QuizQuestionListScreen: View {
                         .foregroundStyle(Color.textSecondary)
                 }
                 Spacer()
-                Text("\(quizMasterVM.questionsPassed.count)/\(quizMasterVM.questions.count) ✓")
+                HStack(spacing: 4) {
+                    Text("\(quizMasterVM.questionsPassed.count)/\(quizMasterVM.questions.count)")
+                    Image(systemName: BuzzIcon.checkSimple)
+                }
                     .font(.nohemi(.caption, weight: .semiBold))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
@@ -243,7 +246,7 @@ private struct QuizQuestionRow: View {
                         .multilineTextAlignment(.leading)
                     HStack(spacing: 6) {
                         if question.questionType == .rebus {
-                            Text("🎭 Rébus")
+                            Label("Rébus", systemImage: "theatermasks.fill")
                                 .font(.nohemi(.caption2, weight: .semiBold))
                                 .foregroundStyle(Color.purpleLeading.opacity(0.9))
                         } else if let theme = question.theme {
@@ -307,8 +310,9 @@ struct QuizValidationOverlay: View {
                         .blur(radius: 16)
 
                     VStack(spacing: BuzzSpacing.md) {
-                        Text("✅")
+                        Image(systemName: BuzzIcon.check)
                             .font(.system(size: 56))
+                            .foregroundStyle(Color.greenGlow)
                         Text("+\(points)")
                             .font(.nohemi(.largeTitle, weight: .black)).titleTracking()
                             .foregroundStyle(Color.greenGlow)

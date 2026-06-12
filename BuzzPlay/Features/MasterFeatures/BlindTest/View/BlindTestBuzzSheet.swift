@@ -80,7 +80,7 @@ struct BlindTestBuzzSheet: View {
             }
 
             Button(action: onReject) {
-                Text("Refuser la réponse ✕")
+                Label("Refuser la réponse", systemImage: BuzzIcon.xmark)
                     .font(.nohemi(.body, weight: .bold))
                     .foregroundStyle(Color.redSoft)
                     .frame(maxWidth: .infinity)
