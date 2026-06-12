@@ -82,6 +82,10 @@ struct BlindTestSongListScreen: View {
             // Bouton Lancer — visible dès qu'un titre est sélectionné
             if blindTestVM.selectedMusic != nil {
                 let notInvited = !blindTestVM.hasInvitedPlayers
+                // #gate-launch — invité mais pas TOUS prêts sur le buzzer : on bloque le lancement
+                // (sinon un joueur rate la manche). « Réinviter » relance un retardataire ; « Retirer » débloque.
+                let notReady = !notInvited && !blindTestVM.gameVM.allPlayersReady
+                let blocked = notInvited || notReady
                 Button {
                     blindTestVM.startRound()
                 } label: {
@@ -89,11 +93,12 @@ struct BlindTestSongListScreen: View {
                         if blindTestVM.isFetching {
                             ProgressView().tint(.white).scaleEffect(0.9)
                         } else {
-                            Image(systemName: notInvited ? "lock.fill" : "play.fill")
+                            Image(systemName: notInvited ? "lock.fill" : notReady ? "hourglass" : "play.fill")
                                 .textStyle(Typography.labelSM)
                         }
                         Text(blindTestVM.isFetching ? "Chargement…"
                              : notInvited ? "Invitez les joueurs d'abord"
+                             : notReady ? "En attente des joueurs…"
                              : "Lancer la manche")
                             .font(.nohemi(.body, weight: .bold))
                     }
@@ -101,16 +106,16 @@ struct BlindTestSongListScreen: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, BuzzSpacing.lg)
                     .background(
-                        LinearGradient(colors: notInvited ? [.white.opacity(0.08), .white.opacity(0.06)]
+                        LinearGradient(colors: blocked ? [.white.opacity(0.08), .white.opacity(0.06)]
                                                           : [.purpleLeading, .purpleTrailing],
                                        startPoint: .leading, endPoint: .trailing),
                         in: RoundedRectangle(cornerRadius: BuzzRadius.lg)
                     )
-                    .shadow(color: notInvited ? .clear : Color.purpleLeading.opacity(0.35), radius: 8)
+                    .shadow(color: blocked ? .clear : Color.purpleLeading.opacity(0.35), radius: 8)
                     .opacity(blindTestVM.isFetching ? 0.7 : 1)
                 }
                 .buttonStyle(.plain)
-                .disabled(blindTestVM.isFetching || notInvited)
+                .disabled(blindTestVM.isFetching || blocked)
                 .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.bottom, BuzzSpacing.xl)
                 .transition(.move(edge: .bottom).combined(with: .opacity))

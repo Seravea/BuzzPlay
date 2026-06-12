@@ -282,6 +282,12 @@ extension QuizMasterViewModel {
 
     func quizButtonDisabled(question: QuizQuestion) -> Bool {
         if !hasInvitedPlayers { return true }
+        // #gate-launch — pas de lancement de manche tant que TOUS les joueurs ne sont pas
+        // connectés ET prêts sur leur buzzer (sinon un retardataire rate la manche : entrer
+        // dans le jeu vide readyPlayers via broadcastGameLaunch, les joueurs re-confirment).
+        // La barre « X/Y prêts » + « Réinviter » explique l'attente ; « Retirer » débloque si
+        // un joueur a quitté pour de bon.
+        if !gameVM.allPlayersReady { return true }
         if isPlaying { return true }
         if questionsPassed.contains(question) { return true }
         return false
