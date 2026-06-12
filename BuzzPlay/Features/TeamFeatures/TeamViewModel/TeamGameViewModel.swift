@@ -73,6 +73,18 @@ final class PlayerGameViewModel {
     // MARK: - Reconnect auto
     private var reconnectTimer: Timer?
 
+    // MARK: - Watchdog half-open (#half-open-player)
+    /// Dernier instant où le Master a donné signe de vie (ping ~2s en régime sain, ou tout
+    /// autre message). Sert au watchdog de liveness ci-dessous.
+    private var lastMasterSeen = Date()
+    private var livenessTimer: Timer?
+    /// Cadence de vérification du watchdog (alignée sur le reconnectTimer).
+    private static let livenessCheckInterval: TimeInterval = 3
+    /// Au-delà de ce silence Master, on considère la session Player half-open → reco forcée.
+    /// Calé au-delà du timeout heartbeat Master (10s, on laisse la reco pilotée-Master jouer
+    /// d'abord) et très au-dessus de la cadence de ping (2s) → aucun false-fire en régime sain.
+    private static let masterSilenceTimeout: TimeInterval = 12
+
     // MARK: - Décompte 3-2-1-GO local (#countdown-sync)
     private var localCountdownTask: Task<Void, Never>?
     private var isLocalCountdownActive = false
@@ -92,6 +104,7 @@ final class PlayerGameViewModel {
         MainActor.assumeIsolated {
             timer?.invalidate()
             reconnectTimer?.invalidate()
+            livenessTimer?.invalidate()
             leaderboardTask?.cancel()
         }
     }
@@ -120,6 +133,9 @@ extension PlayerGameViewModel {
                 self.hasEverConnectedToMaster = true
                 self.connectionPhase = .connected
                 self.stopReconnectTimer()
+                // #half-open-player — armer le watchdog de liveness (avant le guard didSentPlayer
+                // pour qu'il tourne aussi sur une reconnexion où playerJoin a déjà été envoyé).
+                self.startLivenessWatchdog()
                 guard !self.didSentPlayer else { return }
                 self.didSentPlayer = true
                 self.mpc.sendMessage(.playerJoin(self.player))
@@ -149,6 +165,9 @@ extension PlayerGameViewModel {
                 self.isConnectedToMaster = false
                 self.connectionPhase = .searching   // #conn-phase — vraie perte → on recherche à nouveau
                 self.didSentPlayer = false
+                // #half-open-player — vraie déco signalée par MPC : le reconnectTimer prend le
+                // relais, le watchdog de liveness n'a plus lieu d'être (il sera réarmé à la reco).
+                self.stopLivenessWatchdog()
                 // #quit-teardown — si le Master a quitté volontairement, ne pas relancer le
                 // watchdog de reconnexion (sinon le Player tente de rejoindre un Master parti).
                 guard !self.masterDidLeave else { return }
@@ -159,6 +178,9 @@ extension PlayerGameViewModel {
         mpc.onMessage = { [weak self] data, peer in
             Task { @MainActor [weak self] in
                 guard let self else { return }
+                // #half-open-player — tout message du Master prouve qu'il est vivant (le ping
+                // heartbeat arrive ~2s) → réarme la fenêtre de grâce du watchdog de liveness.
+                if peer.displayName == MPCService.masterPeerName { self.lastMasterSeen = Date() }
                 do {
                     let message = try MPCService.jsonDecoder.decode(MPCMessage.self, from: data)
                     self.handleMessage(message)
@@ -574,6 +596,9 @@ extension PlayerGameViewModel {
     // Appelé depuis BuzzerPlayerView via .onChange(of: scenePhase)
     func handleSceneDidBackground() {
         stopUITimer()
+        // #half-open-player — MPC est suspendu en arrière-plan : on coupe le watchdog pour ne
+        // pas déclencher une fausse reco au retour (il sera réarmé dans handleSceneWillForeground).
+        stopLivenessWatchdog()
     }
 
     func sendPlayerReady() {
@@ -583,9 +608,13 @@ extension PlayerGameViewModel {
 
     func handleSceneWillForeground() {
         formattedTime = lastMasterFormattedTime
-        // Re-confirmer la présence si déjà sur le buzzer
-        if isConnectedToMaster && hasPartyStarted {
-            sendPlayerReady()
+        if isConnectedToMaster {
+            // #half-open-player — retour foreground : MPC était suspendu, on repart d'une fenêtre
+            // de grâce fraîche avant de réarmer le watchdog (sinon il tirerait sur le silence du
+            // background). Si la session est en fait morte, le silence reprendra et il fera son job.
+            startLivenessWatchdog()
+            // Re-confirmer la présence si déjà sur le buzzer
+            if hasPartyStarted { sendPlayerReady() }
         }
         guard !isConnectedToMaster else { return }
         // Retour foreground sans connexion → scan immédiat + timer de retry
@@ -597,6 +626,7 @@ extension PlayerGameViewModel {
     // qui est parti : on coupe le watchdog de reco et on se déconnecte proprement de la session.
     func leaveSession() {
         stopReconnectTimer()
+        stopLivenessWatchdog()   // #half-open-player
         mpc.leaveAsPlayer()
         isConnectedToMaster = false
         // Libère la session audio (jamais désactivée sinon → retient le hardware audio
@@ -626,6 +656,41 @@ extension PlayerGameViewModel {
     private func stopReconnectTimer() {
         reconnectTimer?.invalidate()
         reconnectTimer = nil
+    }
+
+    // MARK: - Watchdog half-open (#half-open-player)
+
+    /// Pendant Player du `checkHeartbeats()` côté Master. Armé à chaque connexion : tant qu'on
+    /// se croit connecté, il vérifie qu'un message du Master est arrivé récemment. Réarmé avec
+    /// une fenêtre de grâce fraîche (`lastMasterSeen = now`) pour ne pas tirer sur l'historique.
+    private func startLivenessWatchdog() {
+        stopLivenessWatchdog()
+        lastMasterSeen = Date()
+        livenessTimer = Timer.scheduledTimer(withTimeInterval: Self.livenessCheckInterval, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in self?.checkMasterLiveness() }
+        }
+    }
+
+    private func stopLivenessWatchdog() {
+        livenessTimer?.invalidate()
+        livenessTimer = nil
+    }
+
+    /// Si on se croit connecté mais que le Master se tait au-delà du timeout, la session est
+    /// half-open (le framework MPC n'a jamais émis le `.notConnected`) : on coupe la session
+    /// zombie et on relance la reco, comme l'aurait fait `onPeerDisconnected`. La boucle de
+    /// reco (restartBrowsing 3s) prend ensuite le relais jusqu'à la reconnexion effective.
+    private func checkMasterLiveness() {
+        // #quit-teardown — si le Master a quitté volontairement, on ne se reconnecte pas.
+        guard isConnectedToMaster, !masterDidLeave else { return }
+        guard Date().timeIntervalSince(lastMasterSeen) > Self.masterSilenceTimeout else { return }
+        print("⚠️ half-open : Master silencieux > \(Int(Self.masterSilenceTimeout))s → reconnexion forcée")
+        stopLivenessWatchdog()
+        isConnectedToMaster = false
+        connectionPhase = .searching
+        didSentPlayer = false
+        mpc.reconnectAsPlayer()
+        startReconnectTimer()
     }
 
     private func syncBuzzerState(buzzingPlayer: Player?, isRoundActive: Bool, autoResumeTimer: Bool = true) {

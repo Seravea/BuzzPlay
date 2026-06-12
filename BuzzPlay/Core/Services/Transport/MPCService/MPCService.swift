@@ -207,6 +207,25 @@ extension MPCService {
         onConnectionPhase?(.searching)   // lissé côté VM : ignoré si déjà en .connecting
         print("🔄 MPC: browsing restarted for \(myPeerID.displayName)")
     }
+
+    /// #half-open-player — abandonne une session Player devenue stale et relance un scan frais.
+    /// Cas half-open : MPC n'a JAMAIS signalé la déco (`onPeerDisconnected` muet) alors que le
+    /// Master ne ping plus. Un simple `restartBrowsing()` ne suffit pas : si l'ancien pair
+    /// Master (même MCPeerID) est encore listé dans `connectedPeers`, `foundPeer` l'ignore et
+    /// ne réinvite jamais. On coupe donc d'abord la session zombie (`session.disconnect()` →
+    /// déclenche le `.notConnected` que le framework n'avait pas émis), puis on rescanne pour
+    /// réinviter le Master. Symétrique du `checkHeartbeats()` côté Master.
+    func reconnectAsPlayer() {
+        guard role == .team else { return }
+        invitedPeers.removeAll()
+        session.disconnect()
+        browser?.stopBrowsingForPeers()
+        browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
+        browser?.delegate = self
+        browser?.startBrowsingForPeers()
+        onConnectionPhase?(.searching)
+        print("🔄 MPC: half-open détecté → session coupée, re-browsing en cours")
+    }
     
    //send player to Hosting
     func sendPlayer(_ player: Player) {
