@@ -48,7 +48,17 @@ class QuizMasterViewModel: BuzzDrivenGame {
         self.gameVM = gameVM
         self.quizSet = quizSet
         let limit = gameVM.quizRoundsTotal
-        self.questions = limit > 0 ? Array(quizSet.questions.prefix(limit)) : quizSet.questions
+        let loaded = limit > 0 ? Array(quizSet.questions.prefix(limit)) : quizSet.questions
+        self.questions = loaded
+        // #resume — reprise après kill : des manches Quiz ont déjà pu être jouées
+        // (gameVM.quizRoundsPlayed restauré du snapshot), mais ce VM est recréé À NEUF →
+        // questionsPassed repartait à 0 → écran « 0/N » ET rejouer le quiz recomptait les
+        // manches (quizRoundsPlayed dépassait quizRoundsTotal). On réamorce la progression
+        // depuis le compteur persistant : les N premières questions sont marquées jouées.
+        let alreadyPlayed = min(gameVM.quizRoundsPlayed, loaded.count)
+        if alreadyPlayed > 0 {
+            self.questionsPassed = Array(loaded.prefix(alreadyPlayed))
+        }
         feedbackGenerator.prepare()
     }
 
