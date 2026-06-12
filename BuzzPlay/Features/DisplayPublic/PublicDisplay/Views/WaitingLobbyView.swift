@@ -2,13 +2,17 @@
 //  WaitingLobbyView.swift
 //  BuzzPlay
 //
-//  Salon d'attente affiché sur l'écran du buzzer tant que le Master n'a pas
-//  lancé le premier jeu (PublicState == .waiting). Remplace l'ancien écran
-//  "grand violet vide" (sablier + texte) par un vrai salon : identité du
-//  joueur + son buzzer choisi en hero, roster animé qui se remplit, hint.
+//  Salon d'attente affiché sur l'écran du joueur tant qu'aucun jeu n'est lancé
+//  (avant le premier jeu ET entre deux jeux — PublicState == .waiting,
+//  currentBuzzerVM == nil côté PlayerGameView).
 //
-//  100% local — toutes les données arrivent déjà via MPC (player, knownPlayers).
-//  Aucun nouveau message réseau.
+//  LOT B — refonte salon : plus de grosse card « C'est toi ». La liste des joueurs
+//  présents (soi inclus, surligné) prend le dessus, + un mini-onboarding « Comment
+//  jouer » et un bandeau Notes EXPLIQUÉ (le joueur comprend le bonus de bienvenue
+//  qui s'affiche en toast — W1/W2).
+//
+//  100% local — tout arrive déjà via MPC (player, knownPlayers) ou du wallet local
+//  (Notes). Aucun nouveau message réseau.
 //
 
 import SwiftUI
@@ -20,82 +24,66 @@ struct WaitingLobbyView: View {
 
     private var me: Player { playerGameVM.player }
 
-    private var others: [Player] {
-        playerGameVM.knownPlayers.filter { $0.id != me.id }
+    /// Tous les joueurs du salon, MOI EN PREMIER, puis les autres dans l'ordre d'arrivée.
+    private var lobbyPlayers: [Player] {
+        let others = playerGameVM.knownPlayers.filter { $0.id != me.id }
+        return [me] + others
     }
 
-    /// Couleur du buzzer choisie en boutique, sinon couleur d'équipe.
-    private var buzzColor: GameColor { me.customBuzzColor ?? me.teamColor }
+    private var othersCount: Int { max(playerGameVM.knownPlayers.count - 1, 0) }
 
     var body: some View {
         VStack(spacing: BuzzSpacing.lg) {
-            selfCard
-            rosterSection
-            Spacer(minLength: 0)
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: BuzzSpacing.lg) {
+                    notesBanner
+                    rosterSection
+                    onboardingSection
+                }
+            }
             waitingPill
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .animation(.spring(response: 0.45, dampingFraction: 0.7), value: others.count)
+        .animation(.spring(response: 0.45, dampingFraction: 0.7), value: playerGameVM.knownPlayers.count)
     }
 
-    // MARK: - Self Card (identité + buzzer choisi)
+    // MARK: - Bandeau Notes (W1/W2 — le joueur comprend ses Notes)
 
-    private var selfCard: some View {
+    private var notesBanner: some View {
         HStack(spacing: 14) {
-            Circle()
-                .fill(buzzColor.gradient)
-                .frame(width: 56, height: 56)
-                .overlay(
-                    Text(String(me.name.prefix(1)).uppercased())
-                        .font(.nohemi(.title3, weight: .black)).titleTracking()
-                        .foregroundStyle(.white)
-                )
-                .shadow(color: buzzColor.color.opacity(0.5), radius: 10)
+            Image(systemName: "dollarsign.bank.building.fill")
+                .font(.nohemi(.title3, weight: .bold))
+                .foregroundStyle(Color.mustardYellow)
+                .frame(width: 48, height: 48)
+                .background(Color.mustardYellow.opacity(0.14), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(me.name)
-                    .font(.nohemi(.headline, weight: .bold))
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-
-                // Chip du son buzzer choisi (valorise l'achat boutique).
-                if let sound = me.customBuzzSound {
-                    HStack(spacing: 5) {
-                        Image(systemName: "speaker.wave.2.fill")
-                            .font(.nohemi(.caption2, weight: .bold))
-                        Text(buzzSoundLabel(for: sound))
-                            .font(.nohemi(.caption, weight: .semiBold))
-                            .lineLimit(1)
-                    }
-                    .foregroundStyle(buzzColor.color)
-                    .padding(.horizontal, BuzzSpacing.sm)
-                    .padding(.vertical, 4)
-                    .background(buzzColor.color.opacity(0.16), in: Capsule())
-                } else {
-                    Text("C'est toi")
-                        .font(.nohemi(.caption, weight: .medium))
-                        .foregroundStyle(Color.textSecondary)
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(alignment: .firstTextBaseline, spacing: 5) {
+                    Text("\(playerGameVM.notesWallet.balance)")
+                        .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
+                        .monospacedDigit()
+                        .foregroundStyle(Color.mustardYellow)
+                    Text("Notes")
+                        .font(.nohemi(.subheadline, weight: .bold))
+                        .foregroundStyle(Color.mustardYellow.opacity(0.9))
                 }
+                Text("Offertes pour jouer — dépense-les en pouvoirs pendant la partie.")
+                    .font(.nohemi(.caption, weight: .medium))
+                    .foregroundStyle(Color.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
-            Spacer()
-
-            Image(systemName: "checkmark.circle.fill")
-                .textStyle(Typography.sectionTitle)
-                .foregroundStyle(Color.greenGlow)
+            Spacer(minLength: 0)
         }
         .padding(14)
-        .background(
-            buzzColor.color.opacity(0.16),
-            in: RoundedRectangle(cornerRadius: BuzzRadius.lg2)
-        )
+        .background(Color.mustardYellow.opacity(0.10), in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
         .overlay(
             RoundedRectangle(cornerRadius: BuzzRadius.lg2)
-                .strokeBorder(buzzColor.color.opacity(0.45), lineWidth: 1.5)
+                .strokeBorder(Color.mustardYellow.opacity(0.30), lineWidth: 1)
         )
     }
 
-    // MARK: - Roster (qui est dans le salon)
+    // MARK: - Liste des joueurs (soi inclus, surligné)
 
     private var rosterSection: some View {
         VStack(alignment: .leading, spacing: BuzzSpacing.md) {
@@ -112,41 +100,104 @@ struct WaitingLobbyView: View {
                     .frame(height: 1)
             }
 
-            if others.isEmpty {
+            LazyVGrid(
+                columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5),
+                spacing: BuzzSpacing.md
+            ) {
+                ForEach(lobbyPlayers) { player in
+                    playerAvatar(player, isSelf: player.id == me.id)
+                        .transition(.scale(scale: 0.6).combined(with: .opacity))
+                }
+            }
+
+            if othersCount == 0 {
                 Text("En attente d'autres joueurs…")
                     .font(.nohemi(.caption, weight: .medium))
                     .foregroundStyle(Color.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, BuzzSpacing.md)
-            } else {
-                LazyVGrid(
-                    columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5),
-                    spacing: BuzzSpacing.md
-                ) {
-                    ForEach(others) { player in
-                        playerAvatar(player)
-                            .transition(.scale(scale: 0.6).combined(with: .opacity))
-                    }
-                }
+                    .padding(.top, BuzzSpacing.xs)
             }
         }
     }
 
-    private func playerAvatar(_ player: Player) -> some View {
-        VStack(spacing: 6) {
+    private func playerAvatar(_ player: Player, isSelf: Bool) -> some View {
+        let color = player.customBuzzColor ?? player.teamColor
+        return VStack(spacing: 6) {
             Circle()
-                .fill((player.customBuzzColor ?? player.teamColor).gradient)
+                .fill(color.gradient)
                 .frame(width: 44, height: 44)
                 .overlay(
                     Text(String(player.name.prefix(1)).uppercased())
                         .font(.nohemi(.subheadline, weight: .black))
                         .foregroundStyle(.white)
                 )
-            Text(player.name)
+                .overlay(
+                    Circle().strokeBorder(.white.opacity(isSelf ? 0.9 : 0), lineWidth: 2)
+                )
+                .shadow(color: isSelf ? color.color.opacity(0.5) : .clear, radius: 8)
+
+            Text(isSelf ? "toi" : player.name)
                 .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(.white.opacity(0.85))
+                .foregroundStyle(isSelf ? .white : .white.opacity(0.85))
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
+        }
+    }
+
+    // MARK: - Mini-onboarding « Comment jouer »
+
+    private var onboardingSection: some View {
+        VStack(alignment: .leading, spacing: BuzzSpacing.md) {
+            HStack(spacing: 6) {
+                Text("COMMENT JOUER")
+                    .font(.nohemi(.caption2, weight: .bold))
+                    .tracking(0.8)
+                    .foregroundStyle(Color.textMuted)
+                Rectangle()
+                    .fill(.white.opacity(0.08))
+                    .frame(height: 1)
+            }
+
+            onboardingRow(
+                icon: "hand.tap.fill",
+                tint: Color.buzzHotPink,
+                title: "Buzze en premier",
+                detail: "Le plus rapide à appuyer répond — tiens-toi prêt !"
+            )
+            onboardingRow(
+                icon: "gift.fill",
+                tint: Color.purpleLeading,
+                title: "Lance des pouvoirs",
+                detail: "Bloque un adversaire, double tes points, protège-toi avec un bouclier."
+            )
+            onboardingRow(
+                icon: "dollarsign.bank.building.fill",
+                tint: Color.mustardYellow,
+                title: "Tes Notes servent à ça",
+                detail: "Les pouvoirs coûtent des Notes. Tu en reçois en arrivant et tu en gagnes à chaque partie."
+            )
+        }
+    }
+
+    private func onboardingRow(icon: String, tint: Color, title: String, detail: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .font(.nohemi(.callout, weight: .bold))
+                .foregroundStyle(tint)
+                .frame(width: 34, height: 34)
+                .background(tint.opacity(0.14), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.nohemi(.subheadline, weight: .bold))
+                    .foregroundStyle(.white)
+                Text(detail)
+                    .font(.nohemi(.caption, weight: .regular))
+                    .foregroundStyle(Color.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
         }
     }
 
