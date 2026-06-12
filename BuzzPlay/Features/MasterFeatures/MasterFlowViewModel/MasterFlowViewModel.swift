@@ -77,6 +77,14 @@ extension MasterFlowViewModel {
         )
         if let data = try? JSONEncoder().encode(snapshot) {
             UserDefaults.standard.set(data, forKey: Self.partySnapshotKey)
+            // #resume — flush disque IMMÉDIAT. UserDefaults écrit en mémoire puis flush quand
+            // IL veut (typiquement à la suspension propre). Un kill abrupt (Xcode Stop /
+            // force-quit rapide) court-circuite ce flush : les manches jouées juste avant le
+            // kill n'atteignaient jamais le disque, et le snapshot périmé de startParty
+            // (manches=0) se rechargeait → compteur à 0 après Reprendre. synchronize() force
+            // l'écriture maintenant, pour qu'elle survive à un kill qui suit.
+            UserDefaults.standard.synchronize()
+            print("MASTER #resume: snapshot persisté — manches \(quizRoundsPlayed)+\(blindTestRoundsPlayed)=\(currentRound)")
         }
     }
 
@@ -102,6 +110,7 @@ extension MasterFlowViewModel {
         activeGameType        = s.activeGameType
         allRegisteredPlayers  = s.roster
         hasPartyStarted       = s.hasPartyStarted
+        print("MASTER #resume: snapshot restauré — manches \(quizRoundsPlayed)+\(blindTestRoundsPlayed)=\(currentRound) (sauvé à \(s.savedAt))")
     }
 
     /// Oublie la partie sauvegardée (nouvelle partie / quitter / partie terminée).

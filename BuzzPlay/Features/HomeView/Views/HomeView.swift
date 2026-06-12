@@ -187,7 +187,10 @@ struct HomeView: View {
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: showResumePrompt)
         // #resume — sauvegarde la partie Master juste avant un éventuel kill (passage background).
         .onChange(of: scenePhase) { _, phase in
-            if phase == .background { masterFlowVM.persistActiveParty() }
+            // #resume — on persiste sur .background ET .inactive : un force-quit rapide peut
+            // tuer l'app avant qu'elle atteigne .background. .inactive capte l'état plus tôt
+            // (le guard hasPartyStarted dans persistActiveParty filtre le bruit hors-partie).
+            if phase == .background || phase == .inactive { masterFlowVM.persistActiveParty() }
         }
     }
 }
