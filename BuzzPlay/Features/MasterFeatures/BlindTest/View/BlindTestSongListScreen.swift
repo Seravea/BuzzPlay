@@ -28,14 +28,14 @@ struct BlindTestSongListScreen: View {
                         Text("Choisir un titre")
                             .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                             .foregroundStyle(.white)
-                        Text("\(blindTestVM.allSongs.count) titres · \(blindTestVM.playedSongs.count) joués")
+                        Text("\(blindTestVM.allSongs.count) titres · \(blindTestVM.roundsDone) joués")
                             .font(.nohemi(.subheadline, weight: .regular))
                             .foregroundStyle(Color.textSecondary)
                     }
 
                     Spacer()
 
-                    Text("\(blindTestVM.playedSongs.count)/\(blindTestVM.roundsTotal) ✓")
+                    Text("\(blindTestVM.roundsDone)/\(blindTestVM.roundsTotal) ✓")
                         .font(.nohemi(.caption, weight: .semiBold))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
@@ -48,12 +48,12 @@ struct BlindTestSongListScreen: View {
                     ZStack(alignment: .leading) {
                         Capsule().fill(.white.opacity(0.1)).frame(height: 3)
                         let progress = blindTestVM.roundsTotal == 0 ? 0.0 :
-                            Double(blindTestVM.playedSongs.count) / Double(blindTestVM.roundsTotal)
+                            Double(blindTestVM.roundsDone) / Double(blindTestVM.roundsTotal)
                         Capsule()
                             .fill(LinearGradient(colors: [.greenButtonLeading, .greenButtonTrailing],
                                                   startPoint: .leading, endPoint: .trailing))
                             .frame(width: geo.size.width * progress, height: 3)
-                            .animation(.spring(), value: blindTestVM.playedSongs.count)
+                            .animation(.spring(), value: blindTestVM.roundsDone)
                     }
                 }
                 .frame(height: 3)

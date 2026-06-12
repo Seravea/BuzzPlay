@@ -138,6 +138,11 @@ extension BlindTestMasterViewModel {
         let total = gameVM.blindTestRoundsTotal
         return total > 0 ? total : allSongs.count
     }
+
+    /// #resume — manches Blind Test jouées = compteur PERSISTANT (gameVM.blindTestRoundsPlayed),
+    /// PAS `playedSongs` qui est local et repart à 0 après un kill (→ « 0/N » + recomptage à la
+    /// reprise). `playedSongs` reste l'anti-doublon des morceaux de la session en cours.
+    var roundsDone: Int { gameVM.blindTestRoundsPlayed }
     
     func validateAnswer(points: Int) {
         guard let playerAnswers = playerHasBuzz else { return }
@@ -152,7 +157,8 @@ extension BlindTestMasterViewModel {
         gameVM.persistActiveParty()   // #resume — snapshot à jour à chaque manche (survit au kill)
 
         let configuredTotal = gameVM.blindTestRoundsTotal
-        if configuredTotal > 0 && playedSongs.count >= configuredTotal {
+        // #resume — auto-finish sur le compteur PERSISTANT (survit au kill), pas playedSongs (local).
+        if configuredTotal > 0 && gameVM.blindTestRoundsPlayed >= configuredTotal {
             shouldAutoFinish = true
         }
 

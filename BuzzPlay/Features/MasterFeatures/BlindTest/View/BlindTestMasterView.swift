@@ -28,7 +28,7 @@ struct BlindTestMasterView: View {
             if showSectionComplete {
                 SectionCompleteOverlay(
                     gameTitle: "Blind Test",
-                    roundsDone: blindTestViewModel.playedSongs.count,
+                    roundsDone: blindTestViewModel.roundsDone,
                     roundsTotal: blindTestViewModel.roundsTotal
                 )
                 .transition(.opacity)
