@@ -246,7 +246,9 @@ private struct NotesToastView: View {
     let amount: Int
 
     var body: some View {
-        HStack(spacing: BuzzSpacing.sm) {
+        // .firstTextBaseline — garde l'accent coloré de l'icône tout en l'alignant sur la
+        // ligne de base du texte (Nohemi calée haut → un .center la ferait paraître basse).
+        HStack(alignment: .firstTextBaseline, spacing: BuzzSpacing.sm) {
             Image(systemName: "dollarsign.bank.building.fill")
                 .textStyle(Typography.labelSMBold)
                 .foregroundStyle(Color.mustardYellow)
@@ -277,7 +279,7 @@ private struct PowerFeedbackToast: View {
 
     var body: some View {
         VStack {
-            HStack(spacing: BuzzSpacing.sm) {
+            HStack(alignment: .firstTextBaseline, spacing: BuzzSpacing.sm) {
                 Image(systemName: feedback.symbol)
                     .textStyle(Typography.labelSMBold)
                     .foregroundStyle(color)

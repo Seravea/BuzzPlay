@@ -76,7 +76,7 @@ struct PostRoundLeaderboardView: View {
 
     private var header: some View {
         VStack(spacing: BuzzSpacing.xs) {
-            HStack(spacing: BuzzSpacing.sm) {
+            HStack(alignment: .firstTextBaseline, spacing: BuzzSpacing.sm) {
                 Image(systemName: "trophy.fill")
                     .textStyle(Typography.cardTitleBold)
                     .foregroundStyle(Color.mustardYellow)
