@@ -37,7 +37,7 @@ struct QuizThemeSelectionView: View {
                         .padding(.bottom, 28)
                 }
             }
-            .padding(.top, BuzzSpacing.sm)
+            .padding(.top, BuzzSpacing.lg)     // #header-air — ne pas coller à la nav bar
             .padding(.bottom, BuzzSpacing.xxxl)
         }
         .foregroundStyle(.white)

@@ -60,6 +60,7 @@ struct BlindTestSongListScreen: View {
                 .frame(height: 3)
             }
             .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.top, BuzzSpacing.lg)     // #header-air — ne pas coller à la nav bar
             .padding(.bottom, 14)
 
             // Liste des titres
