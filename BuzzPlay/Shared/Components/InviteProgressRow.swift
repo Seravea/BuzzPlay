@@ -16,9 +16,15 @@ struct InviteProgressRow: View {
 
     private var missing: Bool { total > 0 && ready < total }
 
+    /// Hauteur commune barre + bouton — @ScaledMetric : la valeur 50 sert de référence mais
+    /// se met à l'échelle avec la Dynamic Type (taille de texte d'accessibilité) → pas de
+    /// débordement quand le texte grandit, et deux hauteurs définies/égales (pas de .infinity).
+    @ScaledMetric private var rowHeight: CGFloat = 50
+    @ScaledMetric private var reinviteWidth: CGFloat = 78
+
     var body: some View {
         HStack(spacing: BuzzSpacing.sm) {
-            MasterReadinessBar(ready: ready, total: total)
+            MasterReadinessBar(ready: ready, total: total, height: rowHeight)
                 .frame(maxWidth: .infinity)
 
             Button(action: onReinvite) {
@@ -29,8 +35,7 @@ struct InviteProgressRow: View {
                         .font(.nohemi(.caption2, weight: .bold))
                 }
                 .foregroundStyle(missing ? .white : Color.textTertiary)
-                .frame(width: 78)
-                .padding(.vertical, BuzzSpacing.sm)
+                .frame(width: reinviteWidth, height: rowHeight)   // même hauteur que la barre
                 .background(
                     missing
                     ? AnyShapeStyle(LinearGradient(colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
