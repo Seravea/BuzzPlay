@@ -175,17 +175,14 @@ private struct PostRoundRow: View {
 
             if rankDelta != 0 {
                 let up = rankDelta > 0
-                HStack(spacing: 2) {
-                    Image(systemName: up ? "arrow.up" : "arrow.down")
-                        .textStyle(Typography.micro)
-                    Text("\(abs(rankDelta))")
-                        .font(.nohemi(.caption2, weight: .extraBold))
-                }
-                .foregroundStyle(up ? Color.greenButtonLeading : Color.redSoft)
-                .pillStyle(fill: (up ? Color.greenButtonLeading : Color.redSoft).opacity(0.12),
-                           stroke: nil,
-                           compact: true)
-                .transition(.scale(scale: 0.6).combined(with: .opacity))
+                // symbole interpolé dans le Text → flèche alignée sur le chiffre.
+                Text("\(Image(systemName: up ? "arrow.up" : "arrow.down")) \(abs(rankDelta))")
+                    .font(.nohemi(.caption2, weight: .extraBold))
+                    .foregroundStyle(up ? Color.greenButtonLeading : Color.redSoft)
+                    .pillStyle(fill: (up ? Color.greenButtonLeading : Color.redSoft).opacity(0.12),
+                               stroke: nil,
+                               compact: true)
+                    .transition(.scale(scale: 0.6).combined(with: .opacity))
             }
         }
     }
