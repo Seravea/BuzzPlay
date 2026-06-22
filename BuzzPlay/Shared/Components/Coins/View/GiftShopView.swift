@@ -43,15 +43,12 @@ struct GiftBottomBar: View {
 
                     Spacer()
 
-                    HStack(alignment: .firstTextBaseline, spacing: 5) {
-                        Text("\(balance)")
-                            .font(.nohemi(.callout, weight: .extraBold))
-                            .monospacedDigit()
-                            .foregroundStyle(Color.mustardYellow)
-                        Image(systemName: "dollarsign.bank.building.fill")
-                            .textStyle(Typography.footnote)
-                            .foregroundStyle(Color.mustardYellow)
-                    }
+                    // solde + banque même couleur (jaune) → icône interpolée dans le Text :
+                    // même taille + ligne de base alignées (un HStack laissait le chiffre plus haut).
+                    Text("\(balance) \(Image(systemName: "dollarsign.bank.building.fill"))")
+                        .font(.nohemi(.callout, weight: .extraBold))
+                        .monospacedDigit()
+                        .foregroundStyle(Color.mustardYellow)
 
                     Image(systemName: "chevron.up")
                         .textStyle(Typography.caption2Bold)
