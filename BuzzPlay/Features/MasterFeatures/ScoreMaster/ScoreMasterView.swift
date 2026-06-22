@@ -88,6 +88,7 @@ struct ScoreMasterView: View {
                     Text(String(player.name.prefix(1)).uppercased())
                         .font(.custom("Nohemi-Black", size: avatarSize * 0.42))
                         .foregroundStyle(.white)
+                        .nohemiBadgeNudge(fontSize: avatarSize * 0.42)
                 )
                 .overlay(
                     Circle()
@@ -113,9 +114,11 @@ struct ScoreMasterView: View {
                             .strokeBorder(.white.opacity(rank == 1 ? 0 : 0.08), lineWidth: 1)
                     )
 
+                let rankSize: CGFloat = rank == 1 ? 44 : rank == 2 ? 32 : 26
                 Text("\(rank)")
-                    .font(.custom("Nohemi-Black", size: rank == 1 ? 44 : rank == 2 ? 32 : 26))
+                    .font(.custom("Nohemi-Black", size: rankSize))
                     .foregroundStyle(rank == 1 ? Color.sheetBg : Color.textSecondary)
+                    .nohemiBadgeNudge(fontSize: rankSize)
             }
             .frame(maxWidth: .infinity)
             .frame(height: blockHeight)
@@ -156,14 +159,10 @@ struct ScoreMasterView: View {
                 .foregroundStyle(Color.textSecondary)
                 .frame(width: 18, alignment: .center)
 
-            Circle()
-                .fill(player.teamColor.gradient)
-                .frame(width: 32, height: 32)
-                .overlay(
-                    Text(String(player.name.prefix(1)).uppercased())
-                        .font(.nohemi(.caption, weight: .bold))
-                        .foregroundStyle(.white)
-                )
+            BuzzCountBadge(String(player.name.prefix(1)).uppercased(),
+                           diameter: 32, fontSize: 12, weight: .bold,
+                           fill: AnyShapeStyle(player.teamColor.gradient),
+                           textColor: .white)
 
             Text(player.name)
                 .font(.nohemi(.subheadline, weight: .bold))

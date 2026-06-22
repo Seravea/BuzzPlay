@@ -179,18 +179,15 @@ struct BuzzerPlayerView: View {
             // Bouclier actif
             let hasAnyShield = playerGameVM.player.hasShieldSingle || playerGameVM.player.hasShieldAll
             if hasAnyShield {
-                HStack(spacing: 3) {
-                    Image(systemName: playerGameVM.player.hasShieldAll ? "shield.lefthalf.filled" : "shield.fill")
-                        .textStyle(Typography.captionEM)
-                    Text(playerGameVM.player.hasShieldAll ? "×Tous" : "×1")
-                        .font(.nohemi(.caption2, weight: .bold))
-                }
-                .foregroundStyle(Color.blueLeading)
-                .padding(.horizontal, BuzzSpacing.sm)
-                .padding(.vertical, 4)
-                .background(Color.blueLeading.opacity(0.18), in: Capsule())
-                .overlay(Capsule().strokeBorder(Color.blueLeading.opacity(0.4), lineWidth: 1))
-                .transition(.scale.combined(with: .opacity))
+                let shieldIcon = playerGameVM.player.hasShieldAll ? "shield.lefthalf.filled" : "shield.fill"
+                let shieldLabel = playerGameVM.player.hasShieldAll ? "×Tous" : "×1"
+                Text("\(Image(systemName: shieldIcon)) \(shieldLabel)")
+                    .font(.nohemi(.caption2, weight: .bold))
+                    .foregroundStyle(Color.blueLeading)
+                    .pillStyle(fill: Color.blueLeading.opacity(0.18),
+                               stroke: Color.blueLeading.opacity(0.4),
+                               compact: true)
+                    .transition(.scale.combined(with: .opacity))
             }
 
             // Bouton mute son buzzer

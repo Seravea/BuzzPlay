@@ -20,18 +20,13 @@ struct GiftBottomBar: View {
     var body: some View {
         VStack(spacing: BuzzSpacing.sm) {
             if isWaiting && balance > 0 {
-                HStack(spacing: 5) {
-                    Image(systemName: "sparkles")
-                        .textStyle(Typography.caption2Bold)
-                    Text("C'est le moment d'utiliser tes Notes !")
-                        .font(.nohemi(.caption2, weight: .bold))
-                }
-                .foregroundStyle(Color.mustardYellow)
-                .padding(.horizontal, BuzzSpacing.md)
-                .padding(.vertical, 5)
-                .background(Color.mustardYellow.opacity(0.12), in: Capsule())
-                .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.35), lineWidth: 1))
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                Text("\(Image(systemName: "sparkles")) C'est le moment d'utiliser tes Notes !")
+                    .font(.nohemi(.caption2, weight: .bold))
+                    .foregroundStyle(Color.mustardYellow)
+                    .pillStyle(fill: Color.mustardYellow.opacity(0.12),
+                               stroke: Color.mustardYellow.opacity(0.35),
+                               compact: true)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
 
             Button { isSheetOpen = true } label: {
@@ -310,19 +305,13 @@ private struct GiftCardView: View {
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 3) {
-                Text("\(gift.price)")
-                    .font(.nohemi(.caption2, weight: .extraBold))
-                Image(systemName: "dollarsign.bank.building.fill")
-                    .textStyle(Typography.caption2)
-            }
-            .foregroundStyle(isActive ? Color.mustardYellow : .white.opacity(0.22))
-            .padding(.horizontal, 9)
-            .padding(.vertical, 4)
-            .background(
-                isActive ? Color.mustardYellow.opacity(0.12) : .white.opacity(0.05),
-                in: Capsule()
-            )
+            Text("\(gift.price) \(Image(systemName: "dollarsign.bank.building.fill"))")
+                .font(.nohemi(.caption2, weight: .extraBold))
+                .foregroundStyle(isActive ? Color.mustardYellow : .white.opacity(0.22))
+                .pillStyle(fill: isActive ? Color.mustardYellow.opacity(0.12) : .white.opacity(0.05),
+                           stroke: nil,
+                           compact: true,
+                           trailingIcon: true)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, BuzzSpacing.lg)

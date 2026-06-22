@@ -130,19 +130,15 @@ struct ScorePlayerView: View {
                 FlowLayout(spacing: BuzzSpacing.sm) {
 //                    ForEach(validPlayers) { player in
                         HStack(spacing: 6) {
-                            Text(String(currentPlayer.name.prefix(1).uppercased()))
-                                .font(.nohemi(.caption2, weight: .bold))
-                                .foregroundStyle(teamColor)
-                                .frame(width: 22, height: 22)
-                                .background(teamColor.opacity(0.15), in: Circle())
+                            BuzzCountBadge(String(currentPlayer.name.prefix(1).uppercased()),
+                                           diameter: 22, fontSize: 11, weight: .bold,
+                                           fill: AnyShapeStyle(teamColor.opacity(0.15)),
+                                           textColor: teamColor)
                             Text(currentPlayer.name)
                                 .font(.nohemi(.subheadline, weight: .semiBold))
                                 .foregroundStyle(.white)
                         }
-                        .padding(.horizontal, BuzzSpacing.md)
-                        .padding(.vertical, 7)
-                        .background(.white.opacity(0.06), in: Capsule())
-                        .overlay(Capsule().strokeBorder(.white.opacity(0.08), lineWidth: 1))
+                        .pillStyle(fill: .white.opacity(0.06), stroke: .white.opacity(0.08))
                     }
 //                }
 //            }

@@ -210,16 +210,9 @@ private struct PackShopCard: View {
     }
 
     private func badge(text: String, icon: String, color: Color) -> some View {
-        HStack(spacing: 5) {
-            Image(systemName: icon)
-                .textStyle(Typography.caption2)
-            Text(text)
-                .font(.nohemi(.caption, weight: .bold))
-        }
-        .foregroundStyle(color)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 5)
-        .background(color.opacity(0.12), in: Capsule())
-        .overlay(Capsule().strokeBorder(color.opacity(0.30), lineWidth: 1))
+        Text("\(Image(systemName: icon)) \(text)")
+            .font(.nohemi(.caption, weight: .bold))
+            .foregroundStyle(color)
+            .pillStyle(fill: color.opacity(0.12), stroke: color.opacity(0.30), compact: true)
     }
 }

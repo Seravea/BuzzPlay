@@ -73,6 +73,17 @@ extension View {
     }
 }
 
+// MARK: - Nudge d'un chiffre/initiale Nohemi dans un cercle
+
+extension View {
+    /// Décale un chiffre/initiale Nohemi vers le bas pour le centrer optiquement dans un
+    /// cercle/bloc. À utiliser quand BuzzCountBadge ne convient pas (avatar avec gradient +
+    /// bordure, gros numéro de podium…). `fontSize` = taille réelle de la police du glyphe.
+    func nohemiBadgeNudge(fontSize: CGFloat) -> some View {
+        offset(y: fontSize * Typography.badgeDigitNudgeRatio)
+    }
+}
+
 // MARK: - Badge chiffré (cercle)
 
 /// Chiffre/initiale centré dans un cercle (rang, position de file, compteur).
@@ -103,7 +114,7 @@ struct BuzzCountBadge: View {
         Text(text)
             .font(.custom(weight.baseName, size: fontSize))
             .foregroundStyle(textColor)
-            .offset(y: fontSize * Typography.badgeDigitNudgeRatio)   // Nohemi sied haut → nudge bas
+            .nohemiBadgeNudge(fontSize: fontSize)   // Nohemi sied haut → nudge bas
             .frame(width: diameter, height: diameter)
             .background(fill, in: Circle())
     }
