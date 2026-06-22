@@ -13,6 +13,9 @@ struct BlindTestBuzzSheet: View {
     let onValidate: (Int) -> Void
     let onReject: () -> Void
 
+    /// Passé les 5s : on accentue la COULEUR du bouton « Refuser » (aucun mouvement).
+    @State private var expired = false
+
     var body: some View {
         VStack(spacing: 14) {
             RoundedRectangle(cornerRadius: BuzzRadius.pill)
@@ -90,11 +93,11 @@ struct BlindTestBuzzSheet: View {
             Button(action: onReject) {
                 Label("Refuser la réponse", systemImage: BuzzIcon.xmark)
                     .font(.nohemi(.body, weight: .bold))
-                    .foregroundStyle(Color.redSoft)
+                    .foregroundStyle(expired ? .white : Color.redSoft)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 13)
-                    .background(Color.redLeading.opacity(0.1), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
-                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.md).strokeBorder(Color.redLeading.opacity(0.35), lineWidth: 1.5))
+                    .background(Color.redLeading.opacity(expired ? 0.85 : 0.1), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.md).strokeBorder(Color.redLeading.opacity(expired ? 0 : 0.35), lineWidth: 1.5))
             }
             .buttonStyle(.plain)
         }
@@ -103,12 +106,14 @@ struct BlindTestBuzzSheet: View {
         .padding(.bottom, 40)
         .background(Color.sheetBg, in: RoundedRectangle(cornerRadius: BuzzRadius.sheet))
         .ignoresSafeArea(edges: .bottom)
-        // #answer-window — fin des 5s : haptique discret (pas d'inversion de boutons).
+        .animation(.buzzFade, value: expired)   // crossfade couleur, aucun mouvement
+        // #answer-window — décompte LOCAL (5s depuis l'apparition) : haptique + couleur du refus.
         .task(id: buzzStartedAt) {
-            guard let started = buzzStartedAt else { return }
-            let remaining = GameRhythm.answerWindow - (Date().timeIntervalSince1970 - started)
-            if remaining > 0 { try? await Task.sleep(for: .seconds(remaining)) }
+            expired = false
+            guard buzzStartedAt != nil else { return }
+            try? await Task.sleep(for: .seconds(GameRhythm.answerWindow))
             guard !Task.isCancelled else { return }
+            expired = true
             UINotificationFeedbackGenerator().notificationOccurred(.warning)
         }
     }
