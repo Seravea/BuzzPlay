@@ -132,25 +132,17 @@ private struct PostRoundRow: View {
     }
 
     private var rankBadge: some View {
-        ZStack {
-            Circle()
-                .fill(rankCircleColor)
-                .frame(width: 34, height: 34)
-            Text("\(rank)")
-                .font(.nohemi(.subheadline, weight: .black))
-                .foregroundStyle(rank <= 3 ? Color.sheetBg : .white)
-        }
+        BuzzCountBadge("\(rank)",
+                       diameter: 34, fontSize: 15,
+                       fill: AnyShapeStyle(rankCircleColor),
+                       textColor: rank <= 3 ? Color.sheetBg : .white)
     }
 
     private var playerAvatar: some View {
-        Circle()
-            .fill(player.teamColor.gradient)
-            .frame(width: 34, height: 34)
-            .overlay(
-                Text(String(player.name.prefix(1)).uppercased())
-                    .font(.nohemi(.subheadline, weight: .black))
-                    .foregroundStyle(.white)
-            )
+        BuzzCountBadge(String(player.name.prefix(1)).uppercased(),
+                       diameter: 34, fontSize: 15,
+                       fill: AnyShapeStyle(player.teamColor.gradient),
+                       textColor: .white)
     }
 
     private var nameAndScore: some View {
@@ -170,16 +162,14 @@ private struct PostRoundRow: View {
     private var deltaBadges: some View {
         HStack(spacing: 6) {
             if scoreDelta > 0 {
+                // #R2 — norme pill : la capsule centre le texte mono-ligne par défaut
+                // (+ .fixedSize via pillStyle) → plus de padding asymétrique à régler.
                 Text("+\(scoreDelta)")
                     .font(.nohemi(.caption, weight: .extraBold))
                     .foregroundStyle(Color.greenButtonLeading)
-                    .padding(.horizontal, BuzzSpacing.sm)
-                    // #R2 — Nohemi sied haut dans sa boîte de glyphe → padding vertical
-                    // asymétrique pour recentrer optiquement le « +XX » (tune à l'œil device).
-                    .padding(.top, 4)
-                    .padding(.bottom, 2)
-                    .background(Color.greenButtonLeading.opacity(0.15), in: Capsule())
-                    .overlay(Capsule().strokeBorder(Color.greenButtonLeading.opacity(0.35), lineWidth: 1))
+                    .pillStyle(fill: Color.greenButtonLeading.opacity(0.15),
+                               stroke: Color.greenButtonLeading.opacity(0.35),
+                               compact: true)
                     .transition(.scale(scale: 0.6).combined(with: .opacity))
             }
 
@@ -192,12 +182,9 @@ private struct PostRoundRow: View {
                         .font(.nohemi(.caption2, weight: .extraBold))
                 }
                 .foregroundStyle(up ? Color.greenButtonLeading : Color.redSoft)
-                .padding(.horizontal, 7)
-                .padding(.vertical, 3)
-                .background(
-                    (up ? Color.greenButtonLeading : Color.redSoft).opacity(0.12),
-                    in: Capsule()
-                )
+                .pillStyle(fill: (up ? Color.greenButtonLeading : Color.redSoft).opacity(0.12),
+                           stroke: nil,
+                           compact: true)
                 .transition(.scale(scale: 0.6).combined(with: .opacity))
             }
         }

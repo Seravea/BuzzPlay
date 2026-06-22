@@ -37,15 +37,11 @@ struct BlindTestSongListScreen: View {
 
                     Spacer()
 
-                    HStack(spacing: 4) {
-                        Text("\(blindTestVM.roundsDone)/\(blindTestVM.roundsTotal)")
-                        Image(systemName: BuzzIcon.checkSimple)
-                    }
+                    // ✓ interpolé DANS le Text → posé sur la ligne de base, aligné aux chiffres.
+                    Text("\(blindTestVM.roundsDone)/\(blindTestVM.roundsTotal) \(Image(systemName: BuzzIcon.checkSimple))")
                         .font(.nohemi(.caption, weight: .semiBold))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(.white.opacity(0.1), in: Capsule())
                         .foregroundStyle(.white)
+                        .pillStyle(fill: .white.opacity(0.1), stroke: nil, compact: true, trailingIcon: true)
                 }
 
                 // Barre de progression
@@ -181,12 +177,8 @@ struct BlindTestSongRow: View {
                     .foregroundStyle(.white.opacity(0.3))
 
                 if let pos = queuePosition, !isPlayed {
-                    // Badge numéroté = ordre de passage dans la file.
-                    Text("\(pos)")
-                        .font(.nohemi(.footnote, weight: .black))
-                        .foregroundStyle(Color.sheetBg)
-                        .frame(width: 26, height: 26)
-                        .background(Color.mustardYellow, in: Circle())
+                    // Badge numéroté = ordre de passage dans la file (norme BuzzCountBadge).
+                    BuzzCountBadge("\(pos)")
                 } else if !isPlayed {
                     Image(systemName: "plus.circle")
                         .textStyle(Typography.footnoteEM)

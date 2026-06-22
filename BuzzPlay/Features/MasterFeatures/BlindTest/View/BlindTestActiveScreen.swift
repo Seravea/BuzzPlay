@@ -191,10 +191,9 @@ struct BlindTestActiveScreen: View {
             Spacer()
             Text(buzzedPlayer != nil ? "PAUSÉ" : (blindTestVM.isPlaying ? "EN COURS" : "TERMINÉ"))
                 .font(.nohemi(.caption, weight: .bold))
+                .tracking(0.5)   // majuscules : respirent mieux
                 .foregroundStyle(.white.opacity(0.6))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
-                .background(.white.opacity(0.08), in: Capsule())
+                .pillStyle(fill: .white.opacity(0.08), stroke: nil, compact: true)
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 14)
@@ -269,17 +268,14 @@ struct BlindTestActiveScreen: View {
                     }
                     Spacer()
                     Button(action: onSkip) {
-                        HStack(spacing: 5) {
-                            Text("Passer")
-                                .font(.nohemi(.caption, weight: .bold))
-                            Image(systemName: "forward.end.fill")
-                                .textStyle(Typography.caption2)
-                        }
-                        .foregroundStyle(Color.textSoft)
-                        .padding(.horizontal, BuzzSpacing.md)
-                        .padding(.vertical, 6)
-                        .background(.white.opacity(0.08), in: Capsule())
-                        .overlay(Capsule().strokeBorder(.white.opacity(0.12), lineWidth: 1))
+                        // Symbole interpolé dans le Text → aligné sur la ligne de base.
+                        Text("Passer \(Image(systemName: "forward.end.fill"))")
+                            .font(.nohemi(.caption, weight: .bold))
+                            .foregroundStyle(Color.textSoft)
+                            .pillStyle(fill: .white.opacity(0.08),
+                                       stroke: .white.opacity(0.12),
+                                       compact: true,
+                                       trailingIcon: true)
                     }
                     .buttonStyle(.plain)
                 }

@@ -91,13 +91,10 @@ struct MasterChooseGameView: View {
                 eyebrow("Lancer une manche")
                 Spacer()
                 if masterChooseGameVM.isUnlimited {
-                    HStack(spacing: 4) {
-                        Image(systemName: "infinity")
-                            .textStyle(Typography.caption2EM)
-                        Text("Mode libre")
-                            .font(.nohemi(.caption2, weight: .bold))
-                    }
-                    .foregroundStyle(Color.mustardYellow)
+                    // Symbole interpolé DANS le Text → aligné sur la ligne de base Nohemi.
+                    Text("\(Image(systemName: "infinity"))  Mode libre")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .foregroundStyle(Color.mustardYellow)
                 } else if masterChooseGameVM.currentRound >= 1 {
                     Text("Manche \(masterChooseGameVM.currentRound)/\(masterChooseGameVM.totalRounds)")
                         .font(.nohemi(.caption2, weight: .bold))
@@ -278,23 +275,15 @@ struct MasterChooseGameView: View {
 
     private func rankingRow(rank: Int, player: Player, maxScore: Int) -> some View {
         HStack(spacing: 10) {
-            ZStack {
-                Circle()
-                    .fill(rank == 1 ? Color.mustardYellow : .white.opacity(0.10))
-                    .frame(width: 24, height: 24)
-                Text("\(rank)")
-                    .font(.nohemi(.caption2, weight: .black))
-                    .foregroundStyle(rank == 1 ? Color.sheetBg : .white.opacity(0.6))
-            }
+            BuzzCountBadge("\(rank)",
+                           diameter: 24, fontSize: 11,
+                           fill: AnyShapeStyle(rank == 1 ? Color.mustardYellow : .white.opacity(0.10)),
+                           textColor: rank == 1 ? Color.sheetBg : .white.opacity(0.6))
 
-            Circle()
-                .fill(player.teamColor.gradient)
-                .frame(width: 36, height: 36)
-                .overlay(
-                    Text(String(player.name.prefix(1)).uppercased())
-                        .font(.nohemi(.callout, weight: .bold))
-                        .foregroundStyle(.white)
-                )
+            BuzzCountBadge(String(player.name.prefix(1)).uppercased(),
+                           diameter: 36, fontSize: 16, weight: .bold,
+                           fill: AnyShapeStyle(player.teamColor.gradient),
+                           textColor: .white)
 
             VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                 HStack {
