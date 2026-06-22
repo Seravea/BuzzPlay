@@ -9,6 +9,9 @@ struct MasterChooseGameView: View {
     @Bindable var masterChooseGameVM: MasterChooseGameViewModel
     @EnvironmentObject private var router: Router
 
+    // #terminer — confirmation avant de clôturer la partie (anti mis-tap).
+    @State private var showEndConfirm = false
+
     private var hasScores: Bool {
         masterChooseGameVM.players.map(\.score).max() ?? 0 > 0
     }
@@ -36,11 +39,21 @@ struct MasterChooseGameView: View {
                     launchSection
                     shopSection
                     if hasScores { rankingSection }
+                    endPartySection
                 }
                 .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.top, BuzzSpacing.lg)
                 .padding(.bottom, BuzzSpacing.xxxl)
             }
+        }
+        .alert("Terminer la partie ?", isPresented: $showEndConfirm) {
+            Button("Annuler", role: .cancel) { }
+            Button("Terminer", role: .destructive) {
+                masterChooseGameVM.endPartyEarly()
+                router.push(.scoreMaster)
+            }
+        } message: {
+            Text("La partie sera close et le classement final affiché à tous les joueurs.")
         }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -77,7 +90,15 @@ struct MasterChooseGameView: View {
             HStack {
                 eyebrow("Lancer une manche")
                 Spacer()
-                if masterChooseGameVM.currentRound >= 1 {
+                if masterChooseGameVM.isUnlimited {
+                    HStack(spacing: 4) {
+                        Image(systemName: "infinity")
+                            .textStyle(Typography.caption2EM)
+                        Text("Mode libre")
+                            .font(.nohemi(.caption2, weight: .bold))
+                    }
+                    .foregroundStyle(Color.mustardYellow)
+                } else if masterChooseGameVM.currentRound >= 1 {
                     Text("Manche \(masterChooseGameVM.currentRound)/\(masterChooseGameVM.totalRounds)")
                         .font(.nohemi(.caption2, weight: .bold))
                         .foregroundStyle(Color.textMuted)
@@ -201,6 +222,29 @@ struct MasterChooseGameView: View {
             )
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - End Party Section (#terminer)
+
+    private var endPartySection: some View {
+        Button { showEndConfirm = true } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "flag.checkered")
+                    .textStyle(Typography.footnoteEM)
+                Text("Terminer la partie")
+                    .font(.nohemi(.subheadline, weight: .bold))
+            }
+            .foregroundStyle(Color.redLeading)
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(Color.redLeading.opacity(0.10), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+            .overlay(
+                RoundedRectangle(cornerRadius: BuzzRadius.lg)
+                    .strokeBorder(Color.redLeading.opacity(0.35), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .padding(.top, BuzzSpacing.sm)
     }
 
     // MARK: - Ranking Section

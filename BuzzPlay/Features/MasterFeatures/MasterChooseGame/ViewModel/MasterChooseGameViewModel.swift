@@ -33,6 +33,11 @@ class MasterChooseGameViewModel {
     var totalRounds: Int { gameVM.totalRounds }
     var isQuizCardAvailable: Bool { gameVM.isQuizAvailable }
     var isBlindTestCardAvailable: Bool { gameVM.isBlindTestAvailable }
+    // #illimite — partie sans fin : pas de compteur de manches.
+    var isUnlimited: Bool { gameVM.isUnlimited }
+
+    /// #terminer — clôt la partie (toutes configs : départ d'un joueur, soirée écourtée, illimité).
+    func endPartyEarly() { gameVM.endPartyEarly() }
     // #v1-economy — plus de Notes côté Master (solde local sur chaque téléphone Player).
     
     

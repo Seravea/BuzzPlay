@@ -15,18 +15,25 @@ import AVFoundation
 // MARK: - Game Config Enums
 
 enum GameDuration: String, CaseIterable, Codable {
-    case rapide, normale, longue
+    case rapide, normale, longue, illimite
 
+    /// Nombre de manches (0 = illimité, la valeur n'est pas utilisée pour le gating).
     var rounds: Int {
-        switch self { case .rapide: 5; case .normale: 10; case .longue: 20 }
+        switch self { case .rapide: 5; case .normale: 10; case .longue: 20; case .illimite: 0 }
     }
+    /// true = partie sans fin (pas de compteur, se termine via « Terminer »).
+    var isUnlimited: Bool { self == .illimite }
     var label: String {
-        switch self { case .rapide: "Rapide"; case .normale: "Normale"; case .longue: "Longue" }
+        switch self {
+        case .rapide: "Rapide"; case .normale: "Normale"; case .longue: "Longue"; case .illimite: "Illimité"
+        }
     }
     var iconName: String {
-        switch self { case .rapide: "bolt.fill"; case .normale: "timer"; case .longue: "hourglass" }
+        switch self {
+        case .rapide: "bolt.fill"; case .normale: "timer"; case .longue: "hourglass"; case .illimite: "infinity"
+        }
     }
-    var subtitle: String { "\(rounds) manches" }
+    var subtitle: String { isUnlimited ? "Sans fin" : "\(rounds) manches" }
 }
 
 enum GameMode: String, CaseIterable, Codable {
@@ -110,6 +117,9 @@ extension MasterFlowViewModel {
         activeGameType        = s.activeGameType
         allRegisteredPlayers  = s.roster
         hasPartyStarted       = s.hasPartyStarted
+        // #config-explicite — la partie reprise avait déjà sa config validée.
+        durationChosen        = true
+        modeChosen            = true
         print("MASTER #resume: snapshot restauré — manches \(quizRoundsPlayed)+\(blindTestRoundsPlayed)=\(currentRound) (sauvé à \(s.savedAt))")
     }
 
@@ -231,6 +241,15 @@ final class MasterFlowViewModel {
     var quizRoundsPlayed: Int = 0
     var blindTestRoundsPlayed: Int = 0
 
+    /// #config-explicite — aucun réglage pré-sélectionné : le Master DOIT choisir.
+    /// Le bouton « Commencer » reste verrouillé tant que ces flags ne sont pas vrais.
+    /// En illimité, le mode est forcé (« libre ») → modeChosen passe true automatiquement.
+    var durationChosen: Bool = false
+    var modeChosen: Bool = false
+
+    /// Partie sans fin (durée illimitée) : pas de compteur, fin uniquement via « Terminer ».
+    var isUnlimited: Bool { gameDuration.isUnlimited }
+
     var totalRounds: Int { gameDuration.rounds }
     var currentRound: Int { quizRoundsPlayed + blindTestRoundsPlayed }
 
@@ -248,9 +267,13 @@ final class MasterFlowViewModel {
         case .mix: return totalRounds - quizRoundsTotal
         }
     }
-    var isQuizAvailable: Bool { quizRoundsPlayed < quizRoundsTotal }
-    var isBlindTestAvailable: Bool { blindTestRoundsPlayed < blindTestRoundsTotal }
-    var isGameComplete: Bool { quizRoundsPlayed >= quizRoundsTotal && blindTestRoundsPlayed >= blindTestRoundsTotal }
+    // #illimite — en illimité les deux jeux restent toujours dispo et la partie ne se termine
+    // jamais d'elle-même (seul « Terminer » la clôt).
+    var isQuizAvailable: Bool { isUnlimited || quizRoundsPlayed < quizRoundsTotal }
+    var isBlindTestAvailable: Bool { isUnlimited || blindTestRoundsPlayed < blindTestRoundsTotal }
+    var isGameComplete: Bool {
+        !isUnlimited && quizRoundsPlayed >= quizRoundsTotal && blindTestRoundsPlayed >= blindTestRoundsTotal
+    }
 
     func finishGameSection(_ gameType: GameType) {
         switch gameType {
@@ -264,6 +287,15 @@ final class MasterFlowViewModel {
             mpcService.sendMessage(.masterGameComplete)
             clearActiveParty()  // #resume — partie terminée : plus rien à reprendre
         }
+    }
+
+    /// #terminer — clôt la partie à la demande du Master (bouton « Terminer » du hub),
+    /// quel que soit le nombre de manches restantes (utile en illimité ou pour écourter).
+    /// Réutilise les messages existants : invite à l'écran de score puis notifie la fin.
+    func endPartyEarly() {
+        mpcService.sendMessage(.masterLaunchedGame(.score))
+        mpcService.sendMessage(.masterGameComplete)
+        clearActiveParty()  // #resume — partie close : plus rien à reprendre
     }
 
     /// Vrai dès que le Master a quitté le lobby pour le hub de jeux.
@@ -350,6 +382,9 @@ final class MasterFlowViewModel {
         selectedQuizSet = nil
         gameDuration = .normale
         gameMode = .quiz
+        // #config-explicite — re-forcer le choix de config à la prochaine partie.
+        durationChosen = false
+        modeChosen = false
         // #C4/#B7 — vider les ready pour que les Players re-confirment sur le prochain buzzer
         readyPlayers.removeAll()
         resetGameVMs()
@@ -657,6 +692,9 @@ extension MasterFlowViewModel {
         disconnectedPlayerName = nil
         hasPartyStarted = false
         gameState = .lobby
+        // #config-explicite — nouvelle partie après "Quitter" : reforcer le choix de config.
+        durationChosen = false
+        modeChosen = false
         resetGameVMs()            // caches + rounds + currentBuzzGame + activeGameType
         hasStartedHosting = false // permet à setupMPC de réinitialiser une future partie
         clearActiveParty()        // #resume — quitter : oublie la partie sauvegardée
