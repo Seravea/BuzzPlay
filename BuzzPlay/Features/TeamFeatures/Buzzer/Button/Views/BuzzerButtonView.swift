@@ -123,20 +123,20 @@ struct BuzzerButtonView: View {
                     .font(.nohemi(.headline, weight: .bold))
                     .foregroundStyle(playerColor)
             } else if let teamName = buzzerVM.playerNameHasBuzz, !teamName.isEmpty {
-                if teamName == buzzerVM.player.name {
-                    Text("Tu as buzzé !")
-                        .font(.nohemi(.headline, weight: .bold))
-                        .foregroundStyle(playerColor)
-                } else {
-                    Text("\(teamName) a buzzé")
-                        .font(.nohemi(.headline, weight: .regular))
-                        .foregroundStyle(Color.textMuted)
-                }
-                // #answer-window — barre de 5s sous le texte de buzz (même style que l'invite).
-                if let started = buzzStartedAt {
-                    BuzzAnswerWindowBar(startedAt: started)
-                        .frame(maxWidth: 200)
-                        .padding(.top, 4)
+                // #answer-window — anneau de décompte (5→0) à côté du texte de buzz.
+                HStack(spacing: 10) {
+                    if teamName == buzzerVM.player.name {
+                        Text("Tu as buzzé !")
+                            .font(.nohemi(.headline, weight: .bold))
+                            .foregroundStyle(playerColor)
+                    } else {
+                        Text("\(teamName) a buzzé")
+                            .font(.nohemi(.headline, weight: .regular))
+                            .foregroundStyle(Color.textMuted)
+                    }
+                    if let started = buzzStartedAt {
+                        BuzzCountdownRing(resetKey: started, size: 30)
+                    }
                 }
             } else if buzzerVM.isEnabled {
                 Text("Appuie pour buzzer !")
