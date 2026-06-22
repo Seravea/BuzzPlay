@@ -21,10 +21,14 @@ struct PublicBlindTestState: Codable, Equatable {
     /// true uniquement sur la dernière manche de la partie : le Player saute le classement
     /// inter-manche car le podium final enchaîne directement (#11/#C8).
     let isLastRound: Bool
+    /// #answer-window — timestamp Master du buzz (epoch). Chaque device en déduit localement
+    /// la barre de 5s. nil hors état buzzé.
+    let buzzStartedAt: TimeInterval?
 
     init(title: String?, artist: String?, postertURLString: String?, releaseYear: String?,
          formattedTime: String, buzzingPlayer: Player?, isAnswerRevealed: Bool, isPlaying: Bool,
-         hintIndex: Int, countdownPhase: RoundCountdownPhase, isLastRound: Bool = false) {
+         hintIndex: Int, countdownPhase: RoundCountdownPhase, isLastRound: Bool = false,
+         buzzStartedAt: TimeInterval? = nil) {
         self.title = title
         self.artist = artist
         self.postertURLString = postertURLString
@@ -36,5 +40,6 @@ struct PublicBlindTestState: Codable, Equatable {
         self.hintIndex = hintIndex
         self.countdownPhase = countdownPhase
         self.isLastRound = isLastRound
+        self.buzzStartedAt = buzzStartedAt
     }
 }

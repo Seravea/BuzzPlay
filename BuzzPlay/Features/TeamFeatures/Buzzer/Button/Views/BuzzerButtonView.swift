@@ -13,6 +13,8 @@ struct BuzzerButtonView: View {
     // Au démarrage de manche (Quiz + BlindTest), c'est le CountdownOverlay plein écran qui gère
     // → évite le double countdown.
     var showInlineCountdown: Bool = false
+    /// #answer-window — top du buzz (epoch) ; nil = pas de barre.
+    var buzzStartedAt: TimeInterval? = nil
 
     private var ourTeamBuzzed: Bool { buzzerVM.playerNameHasBuzz == buzzerVM.player.name }
     private var hasBuzzed: Bool { buzzerVM.playerNameHasBuzz != nil }
@@ -129,6 +131,12 @@ struct BuzzerButtonView: View {
                     Text("\(teamName) a buzzé")
                         .font(.nohemi(.headline, weight: .regular))
                         .foregroundStyle(Color.textMuted)
+                }
+                // #answer-window — barre de 5s sous le texte de buzz (même style que l'invite).
+                if let started = buzzStartedAt {
+                    BuzzAnswerWindowBar(startedAt: started)
+                        .frame(maxWidth: 200)
+                        .padding(.top, 4)
                 }
             } else if buzzerVM.isEnabled {
                 Text("Appuie pour buzzer !")

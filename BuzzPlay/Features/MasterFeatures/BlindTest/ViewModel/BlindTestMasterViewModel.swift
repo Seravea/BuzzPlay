@@ -36,6 +36,8 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var hasInvitedPlayers: Bool = false
 
     var playerHasBuzz: Player? = nil
+    /// #answer-window — timestamp du buzz courant (epoch), source de la barre de 5s. nil hors buzz.
+    var buzzStartedAt: TimeInterval? = nil
     var playedSongs: [BlindTestSong] = []
 
     // #bt-queue — mini-playlist : le Master sélectionne plusieurs titres puis « Démarrer ».
@@ -158,6 +160,7 @@ extension BlindTestMasterViewModel {
 
         isCorrect = true
         state = .finished
+        buzzStartedAt = nil   // #answer-window — fin de la fenêtre de réponse
         gameVM.blindTestRoundsPlayed += 1
         gameVM.persistActiveParty()   // #resume — snapshot à jour à chaque manche (survit au kill)
 
@@ -196,6 +199,7 @@ extension BlindTestMasterViewModel {
 
         isCorrect = false
         playerHasBuzz = nil
+        buzzStartedAt = nil   // #answer-window — refus : la fenêtre se ferme
         state = .playing
         // isPlaying reste false → makePublicState émet isPlaying:false → Player ne relance pas son timer
 
@@ -394,6 +398,7 @@ extension BlindTestMasterViewModel {
         queueIndex = 0
         selectedMusic = nil
         playerHasBuzz = nil
+        buzzStartedAt = nil
         isGameActive = false
         isPlaying = false
         state = .idle
@@ -475,7 +480,8 @@ extension BlindTestMasterViewModel {
 
         playerHasBuzz = player
         state = .buzzed(player)
-        
+        buzzStartedAt = Date().timeIntervalSince1970   // #answer-window — top de la barre 5s
+
         // Pause uniquement: timer + musique (ne pas reset, pour pouvoir reprendre)
         pause()
         isPlaying = false
@@ -518,7 +524,8 @@ extension BlindTestMasterViewModel {
                        isAnswerRevealed: false,
                        isPlaying: false,
                        hintIndex: currentHintIndex,
-                       countdownPhase: roundCountdownPhase
+                       countdownPhase: roundCountdownPhase,
+                       buzzStartedAt: buzzStartedAt   // #answer-window
                    )
                )
 

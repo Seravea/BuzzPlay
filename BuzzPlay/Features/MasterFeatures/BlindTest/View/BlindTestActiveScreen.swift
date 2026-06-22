@@ -48,6 +48,7 @@ struct BlindTestActiveScreen: View {
                 BlindTestBuzzSheet(
                     player: player,
                     reactionTime: blindTestVM.formattedTime,
+                    buzzStartedAt: blindTestVM.buzzStartedAt,
                     onValidate: onValidate,
                     onReject: onReject
                 )

@@ -37,6 +37,7 @@ struct QuizActiveQuestionScreen: View {
                 QuizBuzzSheet(
                     player: player,
                     reactionTime: quizMasterVM.formattedTime,
+                    buzzStartedAt: quizMasterVM.buzzStartedAt,
                     onValidate: onValidate,
                     onReject: onReject
                 )
@@ -261,6 +262,8 @@ struct QuizScoreRow: View {
 struct QuizBuzzSheet: View {
     let player: Player
     let reactionTime: String
+    /// #answer-window — top du buzz (epoch) ; nil = pas de barre.
+    var buzzStartedAt: TimeInterval? = nil
     let onValidate: (Int) -> Void
     let onReject: () -> Void
 
@@ -276,6 +279,12 @@ struct QuizBuzzSheet: View {
                 .font(.nohemi(.caption, weight: .bold))
                 .foregroundStyle(Color.textMuted)
                 .tracking(0.5)
+
+            // #answer-window — barre de 5s juste sous le titre « A BUZZÉ ! ».
+            if let started = buzzStartedAt {
+                BuzzAnswerWindowBar(startedAt: started)
+                    .padding(.horizontal, BuzzSpacing.xl)
+            }
 
             // Team card
             HStack(spacing: 14) {
@@ -351,6 +360,14 @@ struct QuizBuzzSheet: View {
         .padding(.bottom, 40)
         .background(Color.sheetBg, in: RoundedRectangle(cornerRadius: BuzzRadius.sheet))
         .ignoresSafeArea(edges: .bottom)
+        // #answer-window — fin des 5s : haptique discret (pas d'inversion de boutons).
+        .task(id: buzzStartedAt) {
+            guard let started = buzzStartedAt else { return }
+            let remaining = GameRhythm.answerWindow - (Date().timeIntervalSince1970 - started)
+            if remaining > 0 { try? await Task.sleep(for: .seconds(remaining)) }
+            guard !Task.isCancelled else { return }
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+        }
     }
 
     @ViewBuilder

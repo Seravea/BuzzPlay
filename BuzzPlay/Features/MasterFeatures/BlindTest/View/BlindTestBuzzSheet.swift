@@ -8,6 +8,8 @@ import SwiftUI
 struct BlindTestBuzzSheet: View {
     let player: Player
     let reactionTime: String
+    /// #answer-window — top du buzz (epoch) ; nil = pas de barre.
+    var buzzStartedAt: TimeInterval? = nil
     let onValidate: (Int) -> Void
     let onReject: () -> Void
 
@@ -22,6 +24,12 @@ struct BlindTestBuzzSheet: View {
                 .font(.nohemi(.caption, weight: .bold))
                 .foregroundStyle(Color.textMuted)
                 .tracking(0.5)
+
+            // #answer-window — barre de 5s juste sous le titre « A BUZZÉ ! ».
+            if let started = buzzStartedAt {
+                BuzzAnswerWindowBar(startedAt: started)
+                    .padding(.horizontal, BuzzSpacing.xl)
+            }
 
             HStack(spacing: 14) {
                 RoundedRectangle(cornerRadius: BuzzRadius.md)
@@ -95,6 +103,14 @@ struct BlindTestBuzzSheet: View {
         .padding(.bottom, 40)
         .background(Color.sheetBg, in: RoundedRectangle(cornerRadius: BuzzRadius.sheet))
         .ignoresSafeArea(edges: .bottom)
+        // #answer-window — fin des 5s : haptique discret (pas d'inversion de boutons).
+        .task(id: buzzStartedAt) {
+            guard let started = buzzStartedAt else { return }
+            let remaining = GameRhythm.answerWindow - (Date().timeIntervalSince1970 - started)
+            if remaining > 0 { try? await Task.sleep(for: .seconds(remaining)) }
+            guard !Task.isCancelled else { return }
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+        }
     }
 
     @ViewBuilder

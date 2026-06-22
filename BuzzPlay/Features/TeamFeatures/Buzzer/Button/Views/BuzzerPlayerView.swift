@@ -24,6 +24,15 @@ struct BuzzerPlayerView: View {
         return false
     }
 
+    // #answer-window — top du buzz courant (epoch) si quelqu'un a buzzé, pour la barre de 5s.
+    private var buzzWindowStart: TimeInterval? {
+        switch playerGameVM.publicState {
+        case .quiz(let s):      return s.buzzingPlayer != nil ? s.buzzStartedAt : nil
+        case .blindTest(let s): return s.buzzingPlayer != nil ? s.buzzStartedAt : nil
+        default:                return nil
+        }
+    }
+
     var body: some View {
         ZStack {
             BackgroundAppView().ignoresSafeArea()
@@ -160,7 +169,7 @@ struct BuzzerPlayerView: View {
                 .padding(.top, BuzzSpacing.md)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
-            BuzzerButtonView(buzzerVM: buzzerVM, showInlineCountdown: isQuizQuestionRevealed)
+            BuzzerButtonView(buzzerVM: buzzerVM, showInlineCountdown: isQuizQuestionRevealed, buzzStartedAt: buzzWindowStart)
                 .padding(.bottom, BuzzSpacing.xl)
 
             GiftBottomBar(coinsVM: coinsVM, isSheetOpen: $isGiftSheetOpen, isWaiting: playerGameVM.publicState == .waiting)
