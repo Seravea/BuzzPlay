@@ -340,8 +340,11 @@ extension CoinsViewModel.Gift {
         case .scoreDoubled:         return player.hasScoreDoubled
         case .shieldSingle:         return player.hasShieldSingle
         case .shieldAll:            return player.hasShieldAll
-        case .changeBuzzColor:      return player.customBuzzColor != nil
-        case .changeBuzzSound:      return player.customBuzzSound != nil
+        // #rebuy-cosmetics — couleur/son du buzzer = achats COSMÉTIQUES RÉPÉTABLES :
+        // ne jamais marquer « Actif » ni bloquer (avant : customX != nil → 1 seul achat
+        // possible → on ne pouvait plus changer de son/couleur). On les rachète à volonté.
+        case .changeBuzzColor:      return false
+        case .changeBuzzSound:      return false
         case .enemyCanNotBuzz, .allEnemiesCanNotBuzz, .showIndicies:
             return false  // effets ponctuels, pas de state persistant côté acheteur
         }
