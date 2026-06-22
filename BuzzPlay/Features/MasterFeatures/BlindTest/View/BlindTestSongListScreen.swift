@@ -25,12 +25,14 @@ struct BlindTestSongListScreen: View {
                     .buttonStyle(.plain)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Choisir un titre")
+                        Text("Composer la file")
                             .font(.nohemi(.title2, weight: .extraBold)).titleTracking()
                             .foregroundStyle(.white)
-                        Text("\(blindTestVM.allSongs.count) titres · \(blindTestVM.roundsDone) joués")
+                        Text(blindTestVM.isQueueEmpty
+                             ? "Sélectionne plusieurs titres à enchaîner"
+                             : "\(blindTestVM.queueCount) en file · \(blindTestVM.roundsDone) joués")
                             .font(.nohemi(.subheadline, weight: .regular))
-                            .foregroundStyle(Color.textSecondary)
+                            .foregroundStyle(blindTestVM.isQueueEmpty ? Color.textSecondary : Color.mustardYellow)
                     }
 
                     Spacer()
@@ -72,9 +74,9 @@ struct BlindTestSongListScreen: View {
                             number: index + 1,
                             song: song,
                             isPlayed: blindTestVM.playedSongs.contains(song),
-                            isSelected: blindTestVM.selectedMusic == song
+                            queuePosition: blindTestVM.queuePosition(of: song)
                         ) {
-                            withAnimation { blindTestVM.selectedMusic = song }
+                            withAnimation { blindTestVM.toggleInQueue(song) }
                         }
                     }
                 }
@@ -82,15 +84,16 @@ struct BlindTestSongListScreen: View {
                 .padding(.bottom, BuzzSpacing.xl)
             }
 
-            // Bouton Lancer — visible dès qu'un titre est sélectionné
-            if blindTestVM.selectedMusic != nil {
+            // Bouton Démarrer — visible dès qu'au moins un titre est dans la file
+            if !blindTestVM.isQueueEmpty {
                 let notInvited = !blindTestVM.hasInvitedPlayers
                 // #gate-launch — invité mais pas TOUS prêts sur le buzzer : on bloque le lancement
                 // (sinon un joueur rate la manche). « Réinviter » relance un retardataire ; « Retirer » débloque.
                 let notReady = !notInvited && !blindTestVM.gameVM.allPlayersReady
                 let blocked = notInvited || notReady
+                let count = blindTestVM.queueCount
                 Button {
-                    blindTestVM.startRound()
+                    blindTestVM.startQueue()
                 } label: {
                     HStack(spacing: BuzzSpacing.sm) {
                         if blindTestVM.isFetching {
@@ -102,7 +105,7 @@ struct BlindTestSongListScreen: View {
                         Text(blindTestVM.isFetching ? "Chargement…"
                              : notInvited ? "Invitez les joueurs d'abord"
                              : notReady ? "En attente des joueurs…"
-                             : "Lancer la manche")
+                             : "Démarrer · \(count) \(count > 1 ? "titres" : "titre")")
                             .font(.nohemi(.body, weight: .bold))
                     }
                     .foregroundStyle(.white)
@@ -124,7 +127,7 @@ struct BlindTestSongListScreen: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .animation(.spring(duration: 0.3), value: blindTestVM.selectedMusic != nil)
+        .animation(.spring(duration: 0.3), value: blindTestVM.isQueueEmpty)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }
@@ -133,8 +136,11 @@ struct BlindTestSongRow: View {
     let number: Int
     let song: BlindTestSong
     let isPlayed: Bool
-    let isSelected: Bool
+    /// Position 1-based dans la file (nil = pas en file).
+    let queuePosition: Int?
     let action: () -> Void
+
+    private var isQueued: Bool { queuePosition != nil }
 
     var body: some View {
         Button(action: action) {
@@ -174,18 +180,21 @@ struct BlindTestSongRow: View {
                     .font(.nohemi(.caption2, weight: .medium))
                     .foregroundStyle(.white.opacity(0.3))
 
-                if isSelected && !isPlayed {
-                    Image(systemName: "music.note")
-                        .textStyle(Typography.footnoteEM)
-                        .foregroundStyle(Color.mustardYellow)
+                if let pos = queuePosition, !isPlayed {
+                    // Badge numéroté = ordre de passage dans la file.
+                    Text("\(pos)")
+                        .font(.nohemi(.footnote, weight: .black))
+                        .foregroundStyle(Color.sheetBg)
+                        .frame(width: 26, height: 26)
+                        .background(Color.mustardYellow, in: Circle())
                 } else if !isPlayed {
-                    Image(systemName: "chevron.right")
+                    Image(systemName: "plus.circle")
                         .textStyle(Typography.footnoteEM)
                         .foregroundStyle(Color.textFaint)
                 }
             }
             .padding(BuzzSpacing.sm)
-            .background(.white.opacity(isSelected ? 0.1 : 0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+            .background(.white.opacity(isQueued ? 0.1 : 0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
             .overlay(
                 RoundedRectangle(cornerRadius: BuzzRadius.lg)
                     .strokeBorder(borderColor, lineWidth: 1.5)
@@ -198,12 +207,12 @@ struct BlindTestSongRow: View {
 
     private var badgeColor: Color {
         if isPlayed  { return Color.greenButtonLeading.opacity(0.25) }
-        if isSelected { return Color.mustardYellow.opacity(0.35) }
+        if isQueued { return Color.mustardYellow.opacity(0.35) }
         return .white.opacity(0.1)
     }
 
     private var borderColor: Color {
-        if isSelected { return Color.mustardYellow.opacity(0.4) }
+        if isQueued { return Color.mustardYellow.opacity(0.4) }
         if isPlayed   { return Color.greenButtonLeading.opacity(0.25) }
         return .white.opacity(0.08)
     }

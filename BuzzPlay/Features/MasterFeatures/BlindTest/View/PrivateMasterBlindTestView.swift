@@ -36,6 +36,8 @@ struct PrivateMasterBlindTestView: View {
                     blindTestVM.allSongs = []
                     blindTestVM.playlists = []
                     blindTestVM.selectedMusic = nil
+                    blindTestVM.songQueue = []
+                    blindTestVM.queueIndex = 0
                 }
             }
             .offset(x: currentScreen == .songList ? 0 : (currentScreen == .search ? screenWidth : -screenWidth))
@@ -45,7 +47,8 @@ struct PrivateMasterBlindTestView: View {
                 blindTestVM: blindTestVM,
                 onValidate: handleValidate,
                 onReject: { blindTestVM.rejectAnswer() },
-                onSkip: { withAnimation { blindTestVM.cancelRound() } }
+                onSkip: { withAnimation { blindTestVM.skipCurrentSong() } },
+                onNext: { withAnimation { blindTestVM.playNextInQueue() } }
             )
             .offset(x: currentScreen == .playing ? 0 : screenWidth)
             .opacity(currentScreen == .playing ? 1 : 0)

@@ -44,6 +44,9 @@ struct BlindTestMasterView: View {
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
                 blindTestViewModel.gameVM.finishGameSection(.blindTest)
+                // #bt-queue — nettoie l'état transitoire du VM (mis en cache et réutilisé)
+                // pour repartir proprement à la prochaine section / partie.
+                blindTestViewModel.resetRoundState()
                 router.path.removeLast()
                 if blindTestViewModel.gameVM.isGameComplete { router.push(.scoreMaster) }
             }
