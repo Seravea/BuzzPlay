@@ -30,7 +30,9 @@ struct GiftBottomBar: View {
             }
 
             Button { isSheetOpen = true } label: {
-                HStack(spacing: 10) {
+                // alignement .firstTextBaseline : les icônes (gift, banque, chevron) se posent
+                // sur la ligne de base du texte (Nohemi calée haut → .center les désalignait).
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
                     Image(systemName: "gift.fill")
                         .textStyle(Typography.labelSM)
                         .foregroundStyle(Color.mustardYellow)
@@ -41,7 +43,7 @@ struct GiftBottomBar: View {
 
                     Spacer()
 
-                    HStack(spacing: 5) {
+                    HStack(alignment: .firstTextBaseline, spacing: 5) {
                         Text("\(balance)")
                             .font(.nohemi(.callout, weight: .extraBold))
                             .monospacedDigit()

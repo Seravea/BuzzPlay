@@ -37,6 +37,7 @@ struct BuzzCountdownRing: View {
                     .font(.nohemi(.subheadline, weight: .bold))
                     .foregroundStyle(.white.opacity(0.9))
                     .monospacedDigit()
+                    .nohemiBadgeNudge(fontSize: 15)   // Nohemi calée haut → centre le chiffre
             }
             .frame(width: size, height: size)
         }
