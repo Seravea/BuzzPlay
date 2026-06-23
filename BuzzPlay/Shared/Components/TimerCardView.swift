@@ -46,9 +46,8 @@ struct TimerBadge: View {
                 .font(.nohemi(.subheadline, weight: .bold))
             Text(time)
                 .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
-                .monospacedDigit()
-                .contentTransition(.numericText())
-                .animation(.default, value: time)
+                .monospacedDigit()   // largeur de chiffre fixe → le chrono ne tremble pas
+                // pas de contentTransition/animation : mise à jour sans roulement, 0 mouvement
         }
         .foregroundStyle(Color.mustardYellow)
         .padding(.horizontal, BuzzSpacing.md)

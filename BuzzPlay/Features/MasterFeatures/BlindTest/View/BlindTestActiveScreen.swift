@@ -187,8 +187,8 @@ struct BlindTestActiveScreen: View {
                 .font(.nohemi(.largeTitle, weight: .extraBold)).titleTracking()
                 .foregroundStyle(buzzedPlayer != nil ? Color.purpleTrailing : .mustardYellow)
                 .tracking(3)
-                .contentTransition(.numericText())
-                .animation(.default, value: blindTestVM.formattedTime)
+                .monospacedDigit()   // largeur de chiffre fixe → le chrono ne tremble pas
+                // pas de contentTransition/animation : mise à jour sans roulement, 0 mouvement
             Spacer()
             Text(buzzedPlayer != nil ? "PAUSÉ" : (blindTestVM.isPlaying ? "EN COURS" : "TERMINÉ"))
                 .font(.nohemi(.caption, weight: .bold))

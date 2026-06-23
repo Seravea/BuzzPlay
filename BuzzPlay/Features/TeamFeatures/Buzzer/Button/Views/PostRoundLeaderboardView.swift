@@ -154,7 +154,8 @@ private struct PostRoundRow: View {
             Text("\(player.score) pts")
                 .font(.nohemi(.caption, weight: .medium))
                 .foregroundStyle(.white.opacity(0.50))
-                .contentTransition(.numericText())
+                .monospacedDigit()   // largeur de chiffre fixe → pas de tremblement
+                // pas de contentTransition : mise à jour sans roulement, 0 mouvement
         }
     }
 

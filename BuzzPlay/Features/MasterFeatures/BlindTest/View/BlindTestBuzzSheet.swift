@@ -23,14 +23,14 @@ struct BlindTestBuzzSheet: View {
                 .frame(width: 36, height: 4)
                 .padding(.bottom, 2)
 
-            // #answer-window — anneau de décompte (5→0) à côté du titre : rôle évident.
-            HStack(spacing: 10) {
-                Text("A BUZZÉ !")
+            // #answer-window — « A BUZZÉ DEPUIS X s » : « depuis » dans le label, secondes colorées à part.
+            HStack(alignment: .firstTextBaseline, spacing: 5) {
+                Text(buzzStartedAt != nil ? "A BUZZÉ DEPUIS" : "A BUZZÉ")
                     .font(.nohemi(.caption, weight: .bold))
                     .foregroundStyle(Color.textMuted)
                     .tracking(0.5)
                 if let started = buzzStartedAt {
-                    BuzzCountdownRing(resetKey: started, size: 30)
+                    BuzzCountdownRing(resetKey: started, font: .nohemi(.caption, weight: .bold))
                 }
             }
 
@@ -61,8 +61,8 @@ struct BlindTestBuzzSheet: View {
                     Text(reactionTime)
                         .font(.nohemi(.body, weight: .extraBold))
                         .foregroundStyle(Color.mustardYellow)
-                        .contentTransition(.numericText())
-                        .animation(.default, value: reactionTime)
+                        .monospacedDigit()   // largeur de chiffre fixe → pas de tremblement
+                        // pas de contentTransition/animation : 0 mouvement de roulement
                 }
                 .padding(.horizontal, BuzzSpacing.md)
                 .padding(.vertical, 6)

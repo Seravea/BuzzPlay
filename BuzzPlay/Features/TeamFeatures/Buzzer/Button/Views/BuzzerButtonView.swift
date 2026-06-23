@@ -123,19 +123,22 @@ struct BuzzerButtonView: View {
                     .font(.nohemi(.headline, weight: .bold))
                     .foregroundStyle(playerColor)
             } else if let teamName = buzzerVM.playerNameHasBuzz, !teamName.isEmpty {
-                // #answer-window — anneau de décompte (5→0) à côté du texte de buzz.
-                HStack(spacing: 10) {
-                    if teamName == buzzerVM.player.name {
-                        Text("Tu as buzzé !")
+                // #answer-window — « … a buzzé depuis X s » : « depuis » dans le label, secondes colorées à part.
+                let isSelf = teamName == buzzerVM.player.name
+                let hasTimer = buzzStartedAt != nil
+                HStack(alignment: .firstTextBaseline, spacing: 5) {
+                    if isSelf {
+                        Text(hasTimer ? "Tu as buzzé depuis" : "Tu as buzzé")
                             .font(.nohemi(.headline, weight: .bold))
                             .foregroundStyle(playerColor)
                     } else {
-                        Text("\(teamName) a buzzé")
+                        Text(hasTimer ? "\(teamName) a buzzé depuis" : "\(teamName) a buzzé")
                             .font(.nohemi(.headline, weight: .regular))
                             .foregroundStyle(Color.textMuted)
                     }
                     if let started = buzzStartedAt {
-                        BuzzCountdownRing(resetKey: started, size: 30)
+                        BuzzCountdownRing(resetKey: started,
+                                          font: .nohemi(.headline, weight: isSelf ? .bold : .regular))
                     }
                 }
             } else if buzzerVM.isEnabled {

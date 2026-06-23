@@ -2,60 +2,70 @@
 //  BuzzCountdownRing.swift
 //  BuzzPlay
 //
-//  #answer-window — petit anneau de décompte (5→0) affiché à côté du texte de buzz, chez le
-//  Master ET les joueurs. Le CHIFFRE rend le rôle évident : « temps pour répondre ». Ne
-//  refuse jamais tout seul ; c'est juste un repère visuel anti buzz-réflexe.
+//  #answer-window — affiche UNIQUEMENT les secondes « X s », posé juste après le texte de buzz
+//  (« A BUZZÉ DEPUIS » côté Master, « … a buzzé depuis » côté Player) qui porte déjà le mot
+//  « depuis ». Reçoit la MÊME police que ce texte voisin (param `font`) + alignement baseline au
+//  call site → se lit comme une seule phrase, seules les secondes changent de couleur.
+//  ⚠️ Ce n'est PAS un décompte couperet : le temps MONTE
+//  et continue au-delà de 5s → repère INDICATIF / anti buzz-réflexe, jamais de refus automatique.
+//  Le SIGNAL est la COULEUR, par paliers de `window` (5s) : vert < 5s → jaune 5–10s → rouge ≥ 10s.
+//  En texte (et non plus en pastille) le compteur peut grimper sans jamais déborder visuellement.
 //
-//  ⚠️ Timing LOCAL : chaque device lance son propre décompte à l'apparition (les horloges des
+//  ⚠️ Timing LOCAL : chaque device lance son propre compteur à l'apparition (les horloges des
 //  téléphones ne sont pas synchronisées). `resetKey` (timestamp Master du buzz) ne sert qu'à
-//  RÉINITIALISER l'anneau à chaque nouveau buzz.
+//  RÉINITIALISER le compteur à chaque nouveau buzz.
+//
+//  NB : le nom du fichier/struct dit encore « Ring » (anneau) par héritage — le composant ne
+//  dessine plus d'anneau. À renommer en BuzzAnswerCounter si l'approche est validée device.
 //
 
 import SwiftUI
 
 struct BuzzCountdownRing: View {
-    /// Clé de reset (timestamp Master). Change = nouveau buzz → anneau réinitialisé.
+    /// Clé de reset (timestamp Master). Change = nouveau buzz → compteur réinitialisé.
     let resetKey: TimeInterval
-    var duration: TimeInterval = GameRhythm.answerWindow
-    var size: CGFloat = 38
+    /// Unité de palier couleur : vert < window, jaune window–2×window, rouge ≥ 2×window.
+    var window: TimeInterval = GameRhythm.answerWindow
+    /// Police du libellé (override possible selon le texte voisin : caption Master / headline Player).
+    var font: Font = .nohemi(.subheadline, weight: .semiBold)
 
     @State private var begin = Date()
 
     var body: some View {
         TimelineView(.animation) { context in
-            let elapsed = context.date.timeIntervalSince(begin)
-            let remaining = max(0, duration - elapsed)
-            let fraction = max(0, min(1, CGFloat(remaining / duration)))
-            let seconds = max(0, Int(remaining.rounded(.up)))
-            ZStack {
-                Circle().stroke(.white.opacity(0.10), lineWidth: 3)
-                Circle()
-                    .trim(from: 0, to: fraction)
-                    .stroke(color(for: fraction), style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                Text("\(seconds)")
-                    .font(.nohemi(.subheadline, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.9))
-                    .monospacedDigit()
-                    .nohemiBadgeNudge(fontSize: 15)   // Nohemi calée haut → centre le chiffre
-            }
-            .frame(width: size, height: size)
+            let elapsed = max(0, context.date.timeIntervalSince(begin))
+            let seconds = Int(elapsed)                     // monte : 0,1,2,… sans plafond
+            let tint = color(forSeconds: elapsed)
+            Text("\(seconds) s")
+                .font(font)
+                .foregroundStyle(tint)
+                .monospacedDigit()                         // largeur de chiffre constante → 0 jitter horizontal
+                .lineLimit(1)
+                // Pas de contentTransition/animation sur le chiffre : il se met à jour INSTANTANÉMENT,
+                // sans « roulement » → aucun mouvement visuel. Seule la COULEUR s'anime (crossfade).
+                .animation(.buzzFade, value: tint)
         }
         .onAppear { begin = Date() }
         .onChange(of: resetKey) { begin = Date() }
     }
 
-    private func color(for fraction: CGFloat) -> Color {
-        if fraction > 0.5 { return Color.greenGlow }
-        if fraction > 0.2 { return Color.mustardYellow }
-        return Color.redLeading
+    private func color(forSeconds elapsed: Double) -> Color {
+        if elapsed < window     { return Color.greenGlow }      // 0–5s
+        if elapsed < window * 2 { return Color.mustardYellow }  // 5–10s
+        return Color.redLeading                                  // ≥ 10s
     }
 }
 
 #Preview {
-    HStack(spacing: 30) {
-        BuzzCountdownRing(resetKey: 0)
-        BuzzCountdownRing(resetKey: 1, size: 30)
+    VStack(spacing: 30) {
+        HStack(spacing: 10) {
+            Text("A BUZZÉ !").font(.nohemi(.caption, weight: .bold)).foregroundStyle(.white.opacity(0.5))
+            BuzzCountdownRing(resetKey: 0, font: .nohemi(.caption, weight: .bold))
+        }
+        HStack(spacing: 10) {
+            Text("Ju a buzzé").font(.nohemi(.headline, weight: .regular)).foregroundStyle(.white.opacity(0.6))
+            BuzzCountdownRing(resetKey: 1)
+        }
     }
     .padding(40)
     .background(Color.sheetBg)
