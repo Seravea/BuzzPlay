@@ -40,9 +40,17 @@ struct BlindTestActiveScreen: View {
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                if blindTestVM.isPlaying && buzzedPlayer == nil && !isFinished {
-                    waitingFooter
-                }
+                // Morceau en cours : carte musique (sans poster) à la place de l'ancienne pilule.
+                BlindTestSongCard(song: blindTestVM.selectedMusic, topLabel: "EN COURS",
+                                  showWaveform: blindTestVM.isPlaying)
+
+                // Hauteur réservée en PERMANENCE (on joue sur l'opacité, pas la présence) → le pied qui
+                // apparaît/disparaît ne fait plus reflower la scène : le soleil ne se déplace plus au buzz.
+                let showWaiting = blindTestVM.isPlaying && buzzedPlayer == nil && !isFinished
+                waitingFooter
+                    .opacity(showWaiting ? 1 : 0)
+                    .allowsHitTesting(showWaiting)
+                    .animation(.buzzFade, value: showWaiting)
             }
             .padding(.horizontal, BuzzSpacing.xl)
             .padding(.top, BuzzSpacing.sm)
