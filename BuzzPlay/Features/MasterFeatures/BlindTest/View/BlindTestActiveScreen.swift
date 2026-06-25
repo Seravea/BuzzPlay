@@ -29,26 +29,32 @@ struct BlindTestActiveScreen: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            VStack(spacing: 14) {
+            VStack(spacing: 12) {
                 timerHero
-                songCard
-                scoresSection
-                Spacer(minLength: 0)
+                BlindTestQueueStrip(queue: blindTestVM.songQueue, currentIndex: blindTestVM.queueIndex)
+                SolarSystemStageView(
+                    song: blindTestVM.selectedMusic,
+                    isPlaying: blindTestVM.isPlaying,
+                    players: blindTestVM.gameVM.players,
+                    buzzedPlayer: buzzedPlayer
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                if blindTestVM.isPlaying && buzzedPlayer == nil && !isFinished {
+                    waitingFooter
+                }
             }
             .padding(.horizontal, BuzzSpacing.xl)
+            .padding(.top, BuzzSpacing.sm)
 
-            if buzzedPlayer != nil && !isFinished {
-                Color.black.opacity(0.5)
-                    .ignoresSafeArea()
-                    .contentShape(Rectangle())
-                    .transition(.opacity)
-            }
-
+            // Buzz : pas de voile plein écran → le soleil + la planète qui brille restent visibles.
+            // La sheet de validation remonte en mode compact (la planète illuminée dit déjà qui a buzzé).
             if let player = buzzedPlayer, !isFinished {
                 BlindTestBuzzSheet(
                     player: player,
                     reactionTime: blindTestVM.formattedTime,
                     buzzStartedAt: blindTestVM.buzzStartedAt,
+                    compact: true,
                     onValidate: onValidate,
                     onReject: onReject
                 )
@@ -201,88 +207,29 @@ struct BlindTestActiveScreen: View {
         .background(Color.darkestPurple, in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
     }
 
-    private var songCard: some View {
-        HStack(spacing: 14) {
-            AsyncImage(url: blindTestVM.selectedMusic?.postertURL) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
-                LinearGradient(colors: [.purpleLeading, .purpleTrailing],
-                               startPoint: .topLeading, endPoint: .bottomTrailing)
-                    .overlay(
-                        Image(systemName: "music.note")
-                            .font(.title2)
-                            .foregroundStyle(Color.textSecondary)
-                    )
-            }
-            .frame(width: 56, height: 56)
-            .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.xs))
-
-            VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
-                Text("EN COURS")
-                    .font(.nohemi(.caption2, weight: .bold))
-                    .foregroundStyle(Color.textMuted)
-                    .tracking(0.8)
-                Text(blindTestVM.selectedMusic?.title ?? "—")
-                    .font(.nohemi(.body, weight: .bold))
-                    .foregroundStyle(.white)
-                Text(blindTestVM.selectedMusic?.artist ?? "—")
+    // Pied de scène : radar « en attente » + bouton Passer (le classement vit désormais sur les planètes).
+    private var waitingFooter: some View {
+        HStack {
+            HStack(spacing: 10) {
+                RadarPulseView()
+                Text("En attente d'un buzz…")
                     .font(.nohemi(.caption, weight: .medium))
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(Color.textMuted)
             }
-
             Spacer()
-
-            if blindTestVM.isPlaying {
-                Image(systemName: "waveform")
-                    .symbolEffect(.variableColor.iterative)
-                    .font(.title2)
-                    .foregroundStyle(Color.mustardYellow)
+            Button(action: onSkip) {
+                // Symbole interpolé dans le Text → aligné sur la ligne de base.
+                Text("Passer \(Image(systemName: "forward.end.fill"))")
+                    .font(.nohemi(.caption, weight: .bold))
+                    .foregroundStyle(Color.textSoft)
+                    .pillStyle(fill: .white.opacity(0.08),
+                               stroke: .white.opacity(0.12),
+                               compact: true,
+                               trailingIcon: true)
             }
+            .buttonStyle(.plain)
         }
-        .padding(BuzzSpacing.md)
-        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
-        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(.white.opacity(0.1), lineWidth: 1))
-    }
-
-    private var scoresSection: some View {
-        let players = blindTestVM.gameVM.players.sorted { $0.score > $1.score }
-        let maxScore = max(players.map(\.score).max() ?? 1, 1)
-
-        return VStack(alignment: .leading, spacing: BuzzSpacing.sm) {
-            Text("CLASSEMENT EN DIRECT")
-                .font(.nohemi(.caption2, weight: .bold))
-                .foregroundStyle(Color.textDim)
-                .tracking(0.8)
-                .padding(.leading, 2)
-
-            ForEach(players) { player in
-                QuizScoreRow(player: player, maxScore: maxScore)
-            }
-
-            if blindTestVM.isPlaying && buzzedPlayer == nil {
-                HStack {
-                    HStack(spacing: 10) {
-                        RadarPulseView()
-                        Text("En attente d'un buzz…")
-                            .font(.nohemi(.caption, weight: .medium))
-                            .foregroundStyle(Color.textMuted)
-                    }
-                    Spacer()
-                    Button(action: onSkip) {
-                        // Symbole interpolé dans le Text → aligné sur la ligne de base.
-                        Text("Passer \(Image(systemName: "forward.end.fill"))")
-                            .font(.nohemi(.caption, weight: .bold))
-                            .foregroundStyle(Color.textSoft)
-                            .pillStyle(fill: .white.opacity(0.08),
-                                       stroke: .white.opacity(0.12),
-                                       compact: true,
-                                       trailingIcon: true)
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.top, 4)
-            }
-        }
+        .padding(.bottom, BuzzSpacing.sm)
     }
 }
 
