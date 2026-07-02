@@ -219,6 +219,12 @@ final class MasterFlowViewModel {
     var isBuzzLocked: Bool = false
     var gameState: GameState = .lobby
 
+    // #chantier4 — blocages-cadeaux = charge consommée à l'usage. Clés = NOM des cibles
+    // (stable à la reco, cf. #10/#19) dont le blocage a DÉJÀ traversé une manche jouable
+    // complète. clearGiftBlocks() ne purge que ces blocages-là ; les fraîchement posés
+    // sont conservés pour la manche qui démarre (comme les boucliers, persistants).
+    private var blocksSurvivedARound: Set<String> = []
+
     /// Nom du dernier joueur déconnecté (nil = pas d'alerte à montrer)
     var disconnectedPlayerName: String? = nil
 
@@ -379,6 +385,8 @@ final class MasterFlowViewModel {
         for i in allRegisteredPlayers.indices { allRegisteredPlayers[i].score = 0 }
         // #keep-removed-score — nouvelle partie : on oublie pour de bon les joueurs retirés.
         removedDuringGame.removeAll()
+        // #chantier4 — nouvelle partie : on repart d'un suivi de blocages vierge.
+        blocksSurvivedARound.removeAll()
         selectedQuizSet = nil
         gameDuration = .normale
         gameMode = .quiz
@@ -757,15 +765,27 @@ extension MasterFlowViewModel {
         broadcastPublicStateFromCurrentGame()
     }
 
-    /// #20 — réinitialise les blocages-cadeaux (enemyCanNotBuzz / allEnemiesCanNotBuzz).
-    /// Appelé seulement au passage à une NOUVELLE question/morceau, pas sur une invalidation,
-    /// pour que le blocage vaille pour toute la question (distinct du buzz lock).
+    /// #20 / #chantier4 — blocages-cadeaux = CHARGE CONSOMMÉE À L'USAGE.
+    /// Appelé au début de chaque question/morceau. Un blocage acheté ne doit JAMAIS être
+    /// effacé avant d'avoir gaté au moins une manche jouable (bug : un blocage acheté entre
+    /// deux manches était wipé au démarrage suivant AVANT d'agir → 50 Notes perdues). Comme
+    /// les boucliers (persistants), il survit au reset de manche : on ne consomme que les
+    /// blocages qui ont DÉJÀ traversé une manche complète, on conserve les fraîchement posés
+    /// (ils s'appliqueront à la manche qui démarre) en les marquant « ayant vécu ».
     func clearGiftBlocks() {
         for i in players.indices where players[i].blockedFromBuzzing {
-            players[i].blockedFromBuzzing = false
-            players[i].blockedByPlayerName = nil
-            mpcService.sendMessage(.updatedPlayer(players[i]))
-            syncRegistered(players[i])   // #19 — le déblocage persiste pour la reco
+            let name = players[i].name
+            if blocksSurvivedARound.contains(name) {
+                // A déjà gaté une manche complète → charge consommée.
+                players[i].blockedFromBuzzing = false
+                players[i].blockedByPlayerName = nil
+                blocksSurvivedARound.remove(name)
+                mpcService.sendMessage(.updatedPlayer(players[i]))
+                syncRegistered(players[i])   // #19 — le déblocage persiste pour la reco
+            } else {
+                // Fraîchement posé : survit à ce reset, s'applique à la manche qui démarre.
+                blocksSurvivedARound.insert(name)
+            }
         }
     }
 
