@@ -32,9 +32,14 @@ struct BlindTestQueueStrip: View {
                             BlindTestSongCard(song: song, number: currentIndex + 2 + idx, width: 210)
                         }
                     }
-                    .padding(.horizontal, 2)
                 }
                 .scrollIndicators(.hidden)
+                // #queue-edge — la ScrollView déborde en PLEINE largeur (annule le padding
+                // horizontal du parent) → les cartes ne sont plus coupées aux bords. L'inset
+                // revient sur le CONTENU (pas la scrollview) : 1re carte alignée avec le reste,
+                // dernière carte qui respire, scroll bord à bord.
+                .padding(.horizontal, -BuzzSpacing.xl)
+                .contentMargins(.horizontal, BuzzSpacing.xl, for: .scrollContent)
             }
         }
     }

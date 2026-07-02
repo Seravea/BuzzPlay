@@ -342,9 +342,9 @@ struct QuizBuzzSheet: View {
 
             // Validation buttons — différenciés par taille
             HStack(spacing: BuzzSpacing.sm) {
-                validationButton(points: 10, scale: 0.88)
-                validationButton(points: 20, scale: 0.94)
-                validationButton(points: 30, scale: 1.0, highlighted: true)
+                validationButton(points: 10)
+                validationButton(points: 20)
+                validationButton(points: 30, highlighted: true)
             }
 
             // Reject button
@@ -367,9 +367,15 @@ struct QuizBuzzSheet: View {
         }
         .padding(.horizontal, BuzzSpacing.xl)
         .padding(.top, BuzzSpacing.md)
-        .padding(.bottom, 40)
-        .background(Color.sheetBg, in: RoundedRectangle(cornerRadius: BuzzRadius.sheet))
-        .ignoresSafeArea(edges: .bottom)
+        .padding(.bottom, BuzzSpacing.lg)
+        // #sheet-bottom — dans un NavigationStack, .ignoresSafeArea sur toute la sheet n'étend
+        // pas le fond sous le home indicator (iPad/iPhone) → gap visible en bas. On étend le
+        // FOND SEUL dans la safe area (le contenu reste au-dessus). Bas carré = collé à l'écran.
+        .background {
+            UnevenRoundedRectangle(topLeadingRadius: BuzzRadius.sheet, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: BuzzRadius.sheet)
+                .fill(Color.sheetBg)
+                .ignoresSafeArea(edges: .bottom)
+        }
         .animation(.buzzFade, value: expired)   // crossfade couleur, aucun mouvement
         // #answer-window — décompte LOCAL (5s depuis l'apparition) : haptique + couleur du refus.
         .task(id: buzzStartedAt) {
@@ -393,30 +399,34 @@ struct QuizBuzzSheet: View {
     }
 
     @ViewBuilder
-    private func validationButton(points: Int, scale: CGFloat, highlighted: Bool = false) -> some View {
+    private func validationButton(points: Int, highlighted: Bool = false) -> some View {
+        // #points-buttons — 3 boutons de MÊME taille, pleine largeur (comme « Refuser »).
+        // Différenciation par la TEINTE de vert (opacité du FOND seul), le texte reste plein
+        // → plus lisible que l'ancienne opacité sur tout le bouton. « +N points » explicite, centré.
+        let shade: Double = points >= 30 ? 1.0 : (points >= 20 ? 0.80 : 0.60)
         Button {
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             onValidate(points)
         } label: {
             VStack(spacing: 2) {
-                Text("+\(points)")
+                Text("+\(points) points")
                     .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
-                // #points-wording — sous-titre qualitatif (« N réponses » perdait les Masters).
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                 Text(Self.qualityLabel(points))
                     .font(.nohemi(.caption2, weight: .semiBold))
-                    .opacity(0.85)
             }
             .foregroundStyle(.white)
+            .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 13)
             .background(
                 LinearGradient(colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
-                               startPoint: .leading, endPoint: .trailing),
+                               startPoint: .leading, endPoint: .trailing)
+                    .opacity(shade),
                 in: RoundedRectangle(cornerRadius: BuzzRadius.md)
             )
-            .opacity(highlighted ? 1 : (scale < 0.9 ? 0.65 : 0.82))
-            .shadow(color: highlighted ? Color.greenButtonLeading.opacity(0.4) : Color.greenButtonLeading.opacity(0.15), radius: 12, y: 4)
-            .scaleEffect(scale)
+            .shadow(color: Color.greenButtonLeading.opacity(highlighted ? 0.4 : 0.15), radius: 12, y: 4)
         }
         .buttonStyle(.plain)
     }

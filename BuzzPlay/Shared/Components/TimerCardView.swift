@@ -44,10 +44,15 @@ struct TimerBadge: View {
         HStack(spacing: 6) {
             Image(systemName: "timer")
                 .font(.nohemi(.subheadline, weight: .bold))
-            Text(time)
-                .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
-                .monospacedDigit()   // largeur de chiffre fixe → le chrono ne tremble pas
-                // pas de contentTransition/animation : mise à jour sans roulement, 0 mouvement
+            // #timer-jitter — Nohemi n'a pas de chiffres à chasse fixe → `.monospacedDigit()` ne
+            // suffit pas. Gabarit caché « 00 » = plancher 2 chiffres ; le ZStack prend la taille du
+            // plus grand → à 3 chiffres (attente > 99 s, rare) ça grandit tout seul, jamais de « … ».
+            ZStack(alignment: .trailing) {
+                Text(verbatim: "00").hidden()
+                Text(time)
+            }
+            .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
+            .monospacedDigit()
         }
         .foregroundStyle(Color.mustardYellow)
         .padding(.horizontal, BuzzSpacing.md)

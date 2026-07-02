@@ -36,14 +36,28 @@ struct BuzzCountdownRing: View {
             let elapsed = max(0, context.date.timeIntervalSince(begin))
             let seconds = Int(elapsed)                     // monte : 0,1,2,… sans plafond
             let tint = color(forSeconds: elapsed)
-            Text("\(seconds) s")
-                .font(font)
-                .foregroundStyle(tint)
-                .monospacedDigit()                         // largeur de chiffre constante → 0 jitter horizontal
-                .lineLimit(1)
-                // Pas de contentTransition/animation sur le chiffre : il se met à jour INSTANTANÉMENT,
-                // sans « roulement » → aucun mouvement visuel. Seule la COULEUR s'anime (crossfade).
-                .animation(.buzzFade, value: tint)
+            // #timer-jitter — Nohemi (police custom) n'a PAS de vrais chiffres à chasse fixe :
+            // `.monospacedDigit()` seul ne suffit pas → le compteur bouge à chaque seconde.
+            // On RÉSERVE la largeur de 2 chiffres via un gabarit caché « 00 » et on aligne le
+            // chiffre à droite dedans → le « s » et la mise en page ne bougent plus (0→99s).
+            HStack(spacing: 3) {
+                // Le gabarit caché « 00 » impose un PLANCHER de 2 chiffres. Le ZStack prend la
+                // taille du plus grand enfant → à 3 chiffres+ (attente très longue), le vrai
+                // chiffre est plus large et le slot s'élargit tout seul, SANS troncature « … ».
+                // Même police que le gabarit → suit aussi l'agrandissement Dynamic Type.
+                ZStack(alignment: .trailing) {
+                    Text(verbatim: "00").hidden()
+                    Text(verbatim: "\(seconds)")
+                }
+                Text("s")
+            }
+            .font(font)
+            .foregroundStyle(tint)
+            .monospacedDigit()
+            .lineLimit(1)
+            // Pas de contentTransition/animation sur le chiffre : il se met à jour INSTANTANÉMENT,
+            // sans « roulement » → aucun mouvement visuel. Seule la COULEUR s'anime (crossfade).
+            .animation(.buzzFade, value: tint)
         }
         .onAppear { begin = Date() }
         .onChange(of: resetKey) { begin = Date() }
