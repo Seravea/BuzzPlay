@@ -164,6 +164,7 @@ struct GiftShopSheet: View {
                                 gift: gift,
                                 balance: balance,
                                 isPending: coinsVM.isPendingPurchase,
+                                hintAvailable: coinsVM.playerGameViewModel?.publicState.hintAvailable ?? false,
                                 otherPlayers: coinsVM.otherPlayers,
                                 player: coinsVM.playerGameViewModel?.player,
                                 onBuy: { target in
@@ -240,6 +241,9 @@ private struct GiftCardView: View {
     let gift: CoinsViewModel.Gift
     let balance: Int
     let isPending: Bool
+    /// #chantier-indice — false quand aucun indice n'existe pour la manche en cours
+    /// (questions IA / packs remote sans indice). Ne concerne que `.showIndicies`.
+    let hintAvailable: Bool
     let otherPlayers: [Player]
     let player: Player?
     let onBuy: (Player?) -> Void
@@ -247,10 +251,13 @@ private struct GiftCardView: View {
     private var canAfford: Bool { balance >= gift.price }
     private var notEnoughPlayers: Bool { otherPlayers.count < gift.minimumOtherPlayers }
     private var isOwned: Bool { gift.isActiveOnPlayer(player) }
+    /// #chantier-indice — « Voir un indice » sans indice dispo = achat inutile (50 Notes
+    /// perdues) → card grisée/non-interactive comme un blocage structurel.
+    private var hintUnavailable: Bool { gift == .showIndicies && !hintAvailable }
     /// Blocages structurels rendant la card non-interactive. Le solde insuffisant
     /// n'en fait PAS partie : la card reste tappable pour afficher l'alerte
     /// "pas assez de Notes" (#alerte-solde-bas).
-    private var isBlocked: Bool { notEnoughPlayers || isPending || isOwned }
+    private var isBlocked: Bool { notEnoughPlayers || isPending || isOwned || hintUnavailable }
     /// Abordable ET jouable — pilote le rendu (card grisée si false).
     private var isActive: Bool { canAfford && !isBlocked }
 

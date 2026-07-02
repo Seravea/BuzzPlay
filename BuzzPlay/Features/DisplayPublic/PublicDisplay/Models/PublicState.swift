@@ -23,6 +23,23 @@ enum PublicState: Codable, Equatable {
         }
     }
 
+    /// #chantier-indice — le cadeau « Voir un indice » ne doit être proposé que si un indice
+    /// existe RÉELLEMENT pour la manche EN COURS (sinon 50 Notes perdues : les questions IA et
+    /// les packs remote ont `indices` vide). La question complète est déjà embarquée dans l'état
+    /// → on dérive la dispo côté Player, sans message MPC dédié. BlindTest : indices génériques
+    /// (BlindTestHints) → toujours dispo tant que la réponse n'est pas révélée. Hors manche
+    /// active (waiting / réponse révélée) : pas d'indice à acheter.
+    var hintAvailable: Bool {
+        switch self {
+        case .quiz(let state):
+            return !state.isAnswerRevealed && !state.question.indices.isEmpty
+        case .blindTest(let state):
+            return !state.isAnswerRevealed
+        case .waiting:
+            return false
+        }
+    }
+
     var displaySubtitle: String? {
         switch self {
         case .quiz(let state):

@@ -140,7 +140,11 @@ extension BuzzerViewModel {
 
     func unLockBuzz() {
         playerNameHasBuzz = nil
-        activeHint = nil
+        // #chantier-indice — NE PAS effacer activeHint ici : le buzzer se rouvre plusieurs
+        // fois pendant UNE MÊME manche (refus de réponse → unlockBuzz, publicUpdate →
+        // syncBuzzerState). Un indice acheté était donc balayé dès que le Master refusait,
+        // alors que la question continue. L'indice est un effet payé : il persiste jusqu'à
+        // la vraie fin de manche (clearBuzzState : réponse révélée / waiting / nouveau jeu).
         guard !player.blockedFromBuzzing && !isGiftBlocked else { return }
         isEnabled = true
     }
