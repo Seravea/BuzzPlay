@@ -46,6 +46,10 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var queueIndex: Int = 0
 
     var state: RoundState = .idle
+    // #chantier6 — true pendant la révélation auto d'un morceau PASSÉ (skip) : on montre la
+    // MusicCard ~2,5s à tous puis on enchaîne seul. Distingue ce cas du finished « validé »
+    // (qui, lui, affiche le panneau manuel « Musique suivante »).
+    var isAutoRevealing: Bool = false
     var roundCountdownPhase: RoundCountdownPhase = .hidden
     // Task du countdown en cours — annulable via cancelRound()
     private var countdownTask: Task<Void, Never>?
@@ -370,7 +374,8 @@ extension BlindTestMasterViewModel {
         }
     }
 
-    /// « Passer » : abandonne le titre courant (sans points), le marque joué, enchaîne.
+    /// « Passer » : personne n'a trouvé → on RÉVÈLE la MusicCard à tous ~2,5s (avant, le titre
+    /// d'un morceau passé n'était jamais montré aux joueurs) puis on enchaîne automatiquement.
     func skipCurrentSong() {
         if let song = selectedMusic, !playedSongs.contains(song) {
             playedSongs.append(song)
@@ -381,10 +386,23 @@ extension BlindTestMasterViewModel {
         stop()
         stopReactionTimer()
         isPlaying = false
+        isCorrect = false
         playerHasBuzz = nil
         gameVM.currentBuzzPlayer = nil
         gameVM.isBuzzLocked = false
-        advanceQueue()
+
+        // #chantier6 — bascule en révélation : `.finished` fait émettre isAnswerRevealed:true
+        // (les joueurs voient la MusicCard) ; `isAutoRevealing` empêche le panneau manuel de
+        // s'afficher côté Maître. Après le délai, on avance seul dans la file.
+        isAutoRevealing = true
+        state = .finished
+        gameVM.broadcastPublicStateFromCurrentGame()
+        countdownTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: GameRhythm.blindTestSkipReveal)
+            guard let self, !Task.isCancelled else { return }
+            self.isAutoRevealing = false
+            self.advanceQueue()
+        }
     }
 
     /// Réinitialise l'état transitoire (fin de file / fin de section). Garde allSongs +

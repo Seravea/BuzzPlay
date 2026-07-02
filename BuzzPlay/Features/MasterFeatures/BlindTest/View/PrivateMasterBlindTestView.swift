@@ -48,7 +48,8 @@ struct PrivateMasterBlindTestView: View {
                 onValidate: handleValidate,
                 onReject: { blindTestVM.rejectAnswer() },
                 onSkip: { withAnimation { blindTestVM.skipCurrentSong() } },
-                onNext: { withAnimation { blindTestVM.playNextInQueue() } }
+                onNext: { withAnimation { blindTestVM.playNextInQueue() } },
+                onQuitQueue: { withAnimation { blindTestVM.resetRoundState() } }
             )
             .offset(x: currentScreen == .playing ? 0 : screenWidth)
             .opacity(currentScreen == .playing ? 1 : 0)

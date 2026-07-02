@@ -12,6 +12,8 @@ struct BlindTestActiveScreen: View {
     let onReject: () -> Void
     let onSkip: () -> Void
     let onNext: () -> Void
+    // #chantier6 — abandonner la file en cours et revenir composer d'autres titres.
+    let onQuitQueue: () -> Void
 
     var buzzedPlayer: Player? { blindTestVM.playerHasBuzz }
 
@@ -21,11 +23,24 @@ struct BlindTestActiveScreen: View {
         return false
     }
 
+    // #chantier6 — position dans la file : « EN COURS · 3/8 » (masqué si file d'un seul titre).
+    private var currentSongLabel: String {
+        blindTestVM.queueCount > 1
+            ? "EN COURS · \(blindTestVM.queueIndex + 1)/\(blindTestVM.queueCount)"
+            : "EN COURS"
+    }
+
     // #audio-bt-nudge — rappel « branche une enceinte » au lancement (la musique ne joue que
     // sur l'appareil Master). Pur UI : la sortie audio AirPlay/Bluetooth est gérée au système.
     @State private var showSpeakerNudge = false
     @State private var hasShownSpeakerNudge = false
     @State private var nudgeTask: Task<Void, Never>?
+
+    // #chantier6 — le Maître passait à la musique suivante AVANT que les joueurs aient vu le
+    // titre révélé ET l'animation du classement inter-manche. On verrouille « Musique suivante »
+    // le temps de tout l'inter-manche + 1s (GameRhythm.blindTestNextHold). Réarmé par song.
+    @State private var nextEnabled = false
+    @State private var nextCountdown = 0
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -42,7 +57,8 @@ struct BlindTestActiveScreen: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                 // Morceau en cours : carte musique (sans poster) à la place de l'ancienne pilule.
-                BlindTestSongCard(song: blindTestVM.selectedMusic, topLabel: "EN COURS",
+                // #chantier6 — compteur de titres : « EN COURS · 3/8 » quand la file a plusieurs titres.
+                BlindTestSongCard(song: blindTestVM.selectedMusic, topLabel: currentSongLabel,
                                   showWaveform: blindTestVM.isPlaying)
 
                 // Hauteur réservée en PERMANENCE (on joue sur l'opacité, pas la présence) → le pied qui
@@ -72,11 +88,25 @@ struct BlindTestActiveScreen: View {
             }
 
             // #bt-queue — manche validée : révélation + bouton « Musique suivante ».
-            // Masqué si le quota fini est atteint (shouldAutoFinish → l'overlay de section prend le relais).
-            if isFinished && !blindTestVM.shouldAutoFinish {
+            // Masqué si le quota fini est atteint (shouldAutoFinish → l'overlay de section prend le relais)
+            // ou pendant une révélation auto de morceau passé (#chantier6 — pas de bouton, on enchaîne seul).
+            if isFinished && !blindTestVM.shouldAutoFinish && !blindTestVM.isAutoRevealing {
                 finishedPanel
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .zIndex(120)
+                    // #chantier6 — verrou anti-avance-trop-rapide, réarmé à chaque morceau.
+                    .task(id: blindTestVM.queueIndex) {
+                        nextEnabled = false
+                        // Décompte 1s par 1s (arrondi au sup.) → le Maître voit le verrou fondre.
+                        let c = GameRhythm.blindTestNextHold.components
+                        let total = Int(c.seconds) + (c.attoseconds > 0 ? 1 : 0)
+                        for remaining in stride(from: total, through: 1, by: -1) {
+                            nextCountdown = remaining
+                            try? await Task.sleep(for: .seconds(1))
+                            if Task.isCancelled { return }
+                        }
+                        nextEnabled = true
+                    }
             }
 
             if blindTestVM.roundCountdownPhase != .hidden {
@@ -129,24 +159,47 @@ struct BlindTestActiveScreen: View {
 
             Button(action: onNext) {
                 HStack(spacing: BuzzSpacing.sm) {
-                    Image(systemName: blindTestVM.hasNextInQueue ? "forward.fill" : "music.note.list")
+                    Image(systemName: nextEnabled
+                          ? (blindTestVM.hasNextInQueue ? "forward.fill" : "music.note.list")
+                          : "hourglass")
                         .textStyle(Typography.labelSM)
-                    Text(blindTestVM.hasNextInQueue
-                         ? "Musique suivante (\(blindTestVM.queueIndex + 2)/\(blindTestVM.queueCount))"
-                         : "Choisir d'autres titres")
+                    Text(!nextEnabled
+                         ? "Résultats aux joueurs… \(nextCountdown)"
+                         : blindTestVM.hasNextInQueue
+                            ? "Musique suivante (\(blindTestVM.queueIndex + 2)/\(blindTestVM.queueCount))"
+                            : "Choisir d'autres titres")
                         .font(.nohemi(.body, weight: .bold))
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, BuzzSpacing.lg)
                 .background(
-                    LinearGradient(colors: [.purpleLeading, .purpleTrailing],
+                    LinearGradient(colors: nextEnabled ? [.purpleLeading, .purpleTrailing]
+                                                        : [.white.opacity(0.10), .white.opacity(0.08)],
                                    startPoint: .leading, endPoint: .trailing),
                     in: RoundedRectangle(cornerRadius: BuzzRadius.lg)
                 )
-                .shadow(color: Color.purpleLeading.opacity(0.35), radius: 8)
+                .shadow(color: nextEnabled ? Color.purpleLeading.opacity(0.35) : .clear, radius: 8)
             }
             .buttonStyle(.plain)
+            .disabled(!nextEnabled)
+            .animation(.buzzDefault, value: nextEnabled)
+
+            // #chantier6 — sortie de file : quand il reste des titres, on n'est plus
+            // obligé d'aller au bout — « Changer de titres » ramène à la composition.
+            // (File épuisée : le bouton principal EST déjà « Choisir d'autres titres ».)
+            if blindTestVM.hasNextInQueue {
+                Button(action: onQuitQueue) {
+                    Text("Changer de titres \(Image(systemName: "music.note.list"))")
+                        .font(.nohemi(.caption, weight: .bold))
+                        .foregroundStyle(Color.textSoft)
+                        .pillStyle(fill: .white.opacity(0.08),
+                                   stroke: .white.opacity(0.12),
+                                   compact: true,
+                                   trailingIcon: true)
+                }
+                .buttonStyle(.plain)
+            }
         }
         .padding(BuzzSpacing.lg)
         .frame(maxWidth: .infinity)
@@ -252,7 +305,8 @@ struct BlindTestActiveScreen: View {
             onValidate: { _ in },
             onReject: {},
             onSkip: {},
-            onNext: {}
+            onNext: {},
+            onQuitQueue: {}
         )
     }
 }

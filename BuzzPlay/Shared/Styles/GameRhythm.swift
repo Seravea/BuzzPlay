@@ -24,6 +24,18 @@ enum GameRhythm {
     /// inter-manche (calé pour démarrer après la fin de l'overlay ci-dessus).
     static let leaderboardDelay: Duration = .seconds(2.7)
 
+    /// #chantier6 — verrou du bouton « Musique suivante » (Blind Test) après une bonne réponse.
+    /// Le titre est révélé IMMÉDIATEMENT ; ce verrou garantit juste que la sheet de classement
+    /// inter-manche a le temps de MONTER (leaderboardDelay) et d'être vue (+1s) avant que le
+    /// Maître enchaîne (sinon un nouveau countdown l'annule). Pas la peine d'attendre toute
+    /// l'animation interne → ~3,7s (5,6s jugé trop long au test).
+    static let blindTestNextHold: Duration = leaderboardDelay + .seconds(1)
+
+    /// #chantier6 — durée de révélation de la MusicCard quand le Maître PASSE un morceau que
+    /// personne n'a trouvé (pas de classement à ce moment) : les joueurs voient le titre ~2,5s
+    /// puis on enchaîne tout seul. Plus court que blindTestNextHold (rien à attendre côté sheet).
+    static let blindTestSkipReveal: Duration = .seconds(2.5)
+
     // MARK: - Fenêtre de réponse après un buzz (#answer-window)
 
     /// Durée (s) de la barre qui se vide après un buzz : passé ce délai, le Master est

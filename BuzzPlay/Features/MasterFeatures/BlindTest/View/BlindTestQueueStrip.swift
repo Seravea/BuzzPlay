@@ -20,7 +20,8 @@ struct BlindTestQueueStrip: View {
     var body: some View {
         if !upcoming.isEmpty {
             VStack(alignment: .leading, spacing: 6) {
-                Text("À VENIR")
+                // #chantier6 — compteur : « À VENIR · 5 » (nombre de titres restants dans la file).
+                Text("À VENIR · \(upcoming.count)")
                     .font(.nohemi(.caption2, weight: .bold))
                     .foregroundStyle(Color.textDim)
                     .tracking(0.8)
