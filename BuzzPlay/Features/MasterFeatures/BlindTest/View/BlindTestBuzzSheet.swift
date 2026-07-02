@@ -12,6 +12,10 @@ struct BlindTestBuzzSheet: View {
     var buzzStartedAt: TimeInterval? = nil
     /// Mode compact : masque la grosse carte joueur (la planète illuminée du système solaire dit déjà qui a buzzé).
     var compact: Bool = false
+    /// #titre-buzz — morceau en cours = la réponse attendue. Affiché DANS la sheet car
+    /// celle-ci masque la MusicCard « EN COURS » : le Master doit garder le titre/artiste
+    /// sous les yeux pour juger la réponse au moment de valider.
+    var song: BlindTestSong? = nil
     let onValidate: (Int) -> Void
     let onReject: () -> Void
 
@@ -25,14 +29,29 @@ struct BlindTestBuzzSheet: View {
                 .frame(width: 36, height: 4)
                 .padding(.bottom, 2)
 
-            // #answer-window — « A BUZZÉ DEPUIS X s » : « depuis » dans le label, secondes colorées à part.
-            HStack(alignment: .firstTextBaseline, spacing: 5) {
-                Text(buzzStartedAt != nil ? "A BUZZÉ DEPUIS" : "A BUZZÉ")
-                    .font(.nohemi(.caption, weight: .bold))
-                    .foregroundStyle(Color.textMuted)
-                    .tracking(0.5)
-                if let started = buzzStartedAt {
-                    BuzzCountdownRing(resetKey: started, font: .nohemi(.caption, weight: .bold))
+            // #qui-buzz — NOM du joueur bien visible : en mode compact la carte joueur est masquée,
+            // et la planète qui s'illumine ne suffit pas à lire qui a buzzé (retour test 2026-07-02).
+            // La pastille reprend la couleur d'équipe → lien visuel avec sa planète du solar system.
+            VStack(spacing: 4) {
+                HStack(spacing: BuzzSpacing.sm) {
+                    Circle()
+                        .fill(player.teamColor.gradient)
+                        .frame(width: 12, height: 12)
+                    Text(player.name)
+                        .font(.nohemi(.title3, weight: .bold)).titleTracking()
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                }
+
+                // #answer-window — « A BUZZÉ DEPUIS X s » : « depuis » dans le label, secondes colorées à part.
+                HStack(alignment: .firstTextBaseline, spacing: 5) {
+                    Text(buzzStartedAt != nil ? "A BUZZÉ DEPUIS" : "A BUZZÉ")
+                        .font(.nohemi(.caption, weight: .bold))
+                        .foregroundStyle(Color.textMuted)
+                        .tracking(0.5)
+                    if let started = buzzStartedAt {
+                        BuzzCountdownRing(resetKey: started, font: .nohemi(.caption, weight: .bold))
+                    }
                 }
             }
 
@@ -88,6 +107,40 @@ struct BlindTestBuzzSheet: View {
                 }
             }
 
+            // #titre-buzz — réponse attendue (titre + artiste), pile au-dessus des boutons.
+            if let song {
+                HStack(spacing: BuzzSpacing.sm) {
+                    Image(systemName: "music.note")
+                        .font(.nohemi(.subheadline, weight: .bold))
+                        .foregroundStyle(Color.mustardYellow)
+                        .frame(width: 34, height: 34)
+                        .background(Color.mustardYellow.opacity(0.12), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
+
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(song.title)
+                            .font(.nohemi(.body, weight: .bold))
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                        Text(song.artist)
+                            .font(.nohemi(.caption, weight: .medium))
+                            .foregroundStyle(Color.textSecondary)
+                            .lineLimit(1)
+                    }
+
+                    Spacer(minLength: BuzzSpacing.sm)
+
+                    Text("RÉPONSE")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .foregroundStyle(Color.textMuted)
+                        .tracking(0.5)
+                }
+                .padding(.horizontal, BuzzSpacing.lg)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity)
+                .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg2))
+                .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg2).strokeBorder(.white.opacity(0.1), lineWidth: 1))
+            }
+
             HStack(spacing: BuzzSpacing.sm) {
                 validationButton(points: 10, scale: 0.88)
                 validationButton(points: 20, scale: 0.94)
@@ -128,9 +181,18 @@ struct BlindTestBuzzSheet: View {
         }
     }
 
+    /// #points-wording — libellé qualitatif de la validation (décision Romain 2026-07-02) :
+    /// remplace « N réponses » (incompris des Masters) par « à quel point c'est bon ».
+    private static func qualityLabel(_ points: Int) -> String {
+        switch points {
+        case 10: return "Pas bête"
+        case 20: return "Malin"
+        default: return "Génie"
+        }
+    }
+
     @ViewBuilder
     private func validationButton(points: Int, scale: CGFloat, highlighted: Bool = false) -> some View {
-        let responses = points / 10
         Button {
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             onValidate(points)
@@ -138,9 +200,10 @@ struct BlindTestBuzzSheet: View {
             VStack(spacing: 2) {
                 Text("+\(points)")
                     .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
-                Text("\(responses) réponse\(responses > 1 ? "s" : "")")
+                // #points-wording — sous-titre qualitatif (« N réponses » perdait les Masters).
+                Text(Self.qualityLabel(points))
                     .font(.nohemi(.caption2, weight: .semiBold))
-                    .opacity(0.7)
+                    .opacity(0.85)
             }
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)

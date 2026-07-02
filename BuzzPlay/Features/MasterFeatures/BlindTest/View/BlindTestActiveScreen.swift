@@ -32,6 +32,7 @@ struct BlindTestActiveScreen: View {
             VStack(spacing: 12) {
                 timerHero
                 BlindTestQueueStrip(queue: blindTestVM.songQueue, currentIndex: blindTestVM.queueIndex)
+                    .padding(.top, BuzzSpacing.md)   // air entre le bandeau chrono et « À venir »
                 SolarSystemStageView(
                     song: blindTestVM.selectedMusic,
                     isPlaying: blindTestVM.isPlaying,
@@ -63,6 +64,7 @@ struct BlindTestActiveScreen: View {
                     reactionTime: blindTestVM.formattedTime,
                     buzzStartedAt: blindTestVM.buzzStartedAt,
                     compact: true,
+                    song: blindTestVM.selectedMusic,
                     onValidate: onValidate,
                     onReject: onReject
                 )
@@ -202,6 +204,7 @@ struct BlindTestActiveScreen: View {
                 .foregroundStyle(buzzedPlayer != nil ? Color.purpleTrailing : .mustardYellow)
                 .tracking(3)
                 .monospacedDigit()   // largeur de chiffre fixe → le chrono ne tremble pas
+                .nohemiBadgeNudge(fontSize: 34)   // Nohemi sied haut → recentre le chrono dans la card
                 // pas de contentTransition/animation : mise à jour sans roulement, 0 mouvement
             Spacer()
             Text(buzzedPlayer != nil ? "PAUSÉ" : (blindTestVM.isPlaying ? "EN COURS" : "TERMINÉ"))

@@ -123,24 +123,10 @@ struct BuzzerButtonView: View {
                     .font(.nohemi(.headline, weight: .bold))
                     .foregroundStyle(playerColor)
             } else if let teamName = buzzerVM.playerNameHasBuzz, !teamName.isEmpty {
-                // #answer-window — « … a buzzé depuis X s » : « depuis » dans le label, secondes colorées à part.
-                let isSelf = teamName == buzzerVM.player.name
-                let hasTimer = buzzStartedAt != nil
-                HStack(alignment: .firstTextBaseline, spacing: 5) {
-                    if isSelf {
-                        Text(hasTimer ? "Tu as buzzé depuis" : "Tu as buzzé")
-                            .font(.nohemi(.headline, weight: .bold))
-                            .foregroundStyle(playerColor)
-                    } else {
-                        Text(hasTimer ? "\(teamName) a buzzé depuis" : "\(teamName) a buzzé")
-                            .font(.nohemi(.headline, weight: .regular))
-                            .foregroundStyle(Color.textMuted)
-                    }
-                    if let started = buzzStartedAt {
-                        BuzzCountdownRing(resetKey: started,
-                                          font: .nohemi(.headline, weight: isSelf ? .bold : .regular))
-                    }
-                }
+                // #qui-buzz-player — bandeau BIEN visible : avant, texte .headline discret en bas
+                // → les joueurs ne voyaient pas qui avait la main et répondaient à tort (retour test 2026-07-02).
+                buzzedBanner(name: teamName, isSelf: teamName == buzzerVM.player.name)
+                    .transition(.scale(scale: 0.85).combined(with: .opacity))
             } else if buzzerVM.isEnabled {
                 Text("Appuie pour buzzer !")
                     .font(.nohemi(.headline, weight: .bold))
@@ -173,6 +159,44 @@ struct BuzzerButtonView: View {
         .multilineTextAlignment(.center)
         // #R2 — hauteur fixe : les états à 1 ou 2 lignes ne font plus bouger le buzzer
         .frame(height: 72, alignment: .top)
+        // #qui-buzz-player — pop d'apparition du bandeau de buzz (accroche l'œil).
+        .animation(.buzzBouncy, value: buzzerVM.playerNameHasBuzz)
+    }
+
+    // #qui-buzz-player — bandeau de buzz. Distinction nette TOI (ta couleur, positif) vs
+    // UN AUTRE (jaune « attention, pas ton tour ») pour couper le « je croyais avoir buzzé ».
+    // L'anneau (temps depuis le buzz) est conservé : il révèle qui traîne (tenu par Romain).
+    @ViewBuilder
+    private func buzzedBanner(name: String, isSelf: Bool) -> some View {
+        let accent = isSelf ? playerColor : Color.mustardYellow
+        HStack(spacing: BuzzSpacing.sm) {
+            Image(systemName: isSelf ? "hand.tap.fill" : "hand.raised.fill")
+                .font(.nohemi(.title3, weight: .bold))
+                .foregroundStyle(accent)
+
+            VStack(alignment: .leading, spacing: 0) {
+                Text(isSelf ? "TU AS BUZZÉ" : "\(name.uppercased()) A BUZZÉ")
+                    .font(.nohemi(.title3, weight: .bold)).titleTracking()
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                if !isSelf {
+                    Text("attends, ce n'est pas ton tour")
+                        .font(.nohemi(.caption2, weight: .medium))
+                        .foregroundStyle(Color.textSecondary)
+                        .lineLimit(1)
+                }
+            }
+
+            if let started = buzzStartedAt {
+                Spacer(minLength: BuzzSpacing.sm)
+                BuzzCountdownRing(resetKey: started, font: .nohemi(.title3, weight: .bold))
+            }
+        }
+        .padding(.horizontal, BuzzSpacing.lg)
+        .padding(.vertical, 8)
+        .background(accent.opacity(0.15), in: Capsule())
+        .overlay(Capsule().strokeBorder(accent.opacity(0.5), lineWidth: 1.5))
     }
 }
 

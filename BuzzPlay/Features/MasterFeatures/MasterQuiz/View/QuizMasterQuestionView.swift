@@ -66,6 +66,7 @@ struct QuizActiveQuestionScreen: View {
                 .foregroundStyle(buzzedPlayer != nil ? Color.purpleTrailing : Color.mustardYellow)
                 .tracking(3)
                 .monospacedDigit()   // largeur de chiffre fixe → le chrono ne tremble pas
+                .nohemiBadgeNudge(fontSize: 34)   // Nohemi sied haut → recentre le chrono dans la card
                 // pas de contentTransition/animation : mise à jour sans roulement, 0 mouvement
             Spacer()
             Text(buzzedPlayer != nil ? "PAUSÉ" : "EN COURS")
@@ -381,9 +382,18 @@ struct QuizBuzzSheet: View {
         }
     }
 
+    /// #points-wording — libellé qualitatif de la validation (décision Romain 2026-07-02) :
+    /// remplace « N réponses » (incompris des Masters) par « à quel point c'est bon ».
+    private static func qualityLabel(_ points: Int) -> String {
+        switch points {
+        case 10: return "Pas bête"
+        case 20: return "Malin"
+        default: return "Génie"
+        }
+    }
+
     @ViewBuilder
     private func validationButton(points: Int, scale: CGFloat, highlighted: Bool = false) -> some View {
-        let responses = points / 10
         Button {
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             onValidate(points)
@@ -391,9 +401,10 @@ struct QuizBuzzSheet: View {
             VStack(spacing: 2) {
                 Text("+\(points)")
                     .font(.nohemi(.title3, weight: .extraBold)).titleTracking()
-                Text("\(responses) réponse\(responses > 1 ? "s" : "")")
+                // #points-wording — sous-titre qualitatif (« N réponses » perdait les Masters).
+                Text(Self.qualityLabel(points))
                     .font(.nohemi(.caption2, weight: .semiBold))
-                    .opacity(0.7)
+                    .opacity(0.85)
             }
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
