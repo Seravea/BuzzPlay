@@ -73,7 +73,9 @@ struct BuzzerPlayerView: View {
                     ConnectionLostOverlay()
                         .transition(.opacity)
                 } else {
-                    WaitingForMasterOverlay(phase: playerGameVM.connectionPhase)
+                    WaitingForMasterOverlay(phase: playerGameVM.connectionPhase,
+                                            showHelp: playerGameVM.showConnectionHelp,
+                                            onRetry: { playerGameVM.retryConnection() })
                         .transition(.opacity)
                 }
             }

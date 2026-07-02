@@ -52,6 +52,10 @@ final class MPCService: NSObject {
     var onMessage: ((Data, MCPeerID) -> Void)?
     /// #conn-phase — notifie la phase de connexion (Player) pour l'overlay d'attente.
     var onConnectionPhase: ((MPCConnectionPhase) -> Void)?
+    /// #conn-help — le browsing n'a PAS pu démarrer (permission « Réseau local » refusée,
+    /// service indisponible…). Sans ça l'échec est silencieux et le Player reste figé sur
+    /// « recherche de l'hôte ». Remonte au VM pour afficher l'aide diagnostic.
+    var onBrowseFailed: ((Error) -> Void)?
     
     //MARK: class init()
     init(peerName: String, role: MPCRole) {
@@ -312,6 +316,13 @@ extension MPCService: MCNearbyServiceAdvertiserDelegate {
         print("📨 MPC: invitation from \(peerID.displayName)")
         invitationHandler(true, session) // on accepte toujours pour l'instant
     }
+
+    /// #conn-help — l'advertising n'a pas pu démarrer côté Master (permission Réseau local
+    /// refusée, etc.). On log : sans advertiser, aucun Player ne peut trouver l'hôte.
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser,
+                    didNotStartAdvertisingPeer error: Error) {
+        print("❌ MPC: didNotStartAdvertisingPeer — \(error.localizedDescription)")
+    }
 }
 
 
@@ -358,6 +369,15 @@ extension MPCService: MCNearbyServiceBrowserDelegate {
             invitedPeers.remove(peerID.displayName)
             print("❌ MPC: lost peer \(peerID.displayName)")
         }
+
+    /// #conn-help — le browsing n'a pas pu démarrer (typiquement permission « Réseau local »
+    /// refusée au 1er lancement). Invisible jusqu'ici : le Player restait bloqué sur
+    /// « recherche de l'hôte » sans feedback. On remonte l'erreur au VM.
+    func browser(_ browser: MCNearbyServiceBrowser,
+                 didNotStartBrowsingForPeers error: Error) {
+        print("❌ MPC: didNotStartBrowsingForPeers — \(error.localizedDescription)")
+        onBrowseFailed?(error)
+    }
 }
 
 

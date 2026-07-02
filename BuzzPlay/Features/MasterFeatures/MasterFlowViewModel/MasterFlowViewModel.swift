@@ -610,6 +610,18 @@ extension MasterFlowViewModel {
         readyPlayers.remove(name)
         lastSeen.removeValue(forKey: name)
         guard name != "Écran Publique" else { return }
+
+        // #ghost-lobby — HORS partie (lobby / setup), un joueur déconnecté n'a ni score ni
+        // pouvoir à préserver : on le purge AUSSI de allRegisteredPlayers, sinon il gonfle le
+        // compteur « X/Y » à vie (cas test : un joueur quitte et relance avec un NOUVEAU pseudo
+        // → le Master affiche 2/3). La reprise de partie (garder l'entrée pour restaurer le
+        // score) ne vaut qu'EN partie ; pré-partie on nettoie silencieusement (pas d'alerte déco).
+        if !hasPartyStarted && activeGameType == nil {
+            allRegisteredPlayers.removeAll { $0.name == name }
+            broadcastFullRoster()
+            return
+        }
+
         disconnectedPlayerName = name
         if activeGameType != nil && connectedPlayersCount == 0 {
             isGamePaused = true

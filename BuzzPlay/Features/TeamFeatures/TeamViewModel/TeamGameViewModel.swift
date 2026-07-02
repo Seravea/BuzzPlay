@@ -26,6 +26,14 @@ final class PlayerGameViewModel {
     var hasEverConnectedToMaster = false
     /// #conn-phase — phase de connexion affichée dans l'overlay d'attente (recherche → connexion → connecté)
     var connectionPhase: MPCConnectionPhase = .idle
+    /// #conn-help — vrai quand on cherche l'hôte depuis trop longtemps SANS jamais s'être
+    /// connecté (permission « Réseau local » refusée, Wi-Fi/BT off, Maître pas lancé). Déclenche
+    /// l'aide diagnostic dans l'overlay d'attente. Cas observé en test : iPhone bloqué à l'infini.
+    var showConnectionHelp = false
+    /// Début de la recherche courante — sert au timeout d'aide ci-dessus.
+    private var searchStartedAt: Date?
+    /// Au-delà de ce délai de recherche infructueuse, on propose l'aide diagnostic.
+    private static let searchHelpTimeout: TimeInterval = 15
 
     var receivedMessage: String = ""
     var publicState: PublicState = .waiting
@@ -132,6 +140,9 @@ extension PlayerGameViewModel {
                 self.isConnectedToMaster = true
                 self.hasEverConnectedToMaster = true
                 self.connectionPhase = .connected
+                // #conn-help — connexion réussie : on retire l'aide diagnostic éventuelle.
+                self.showConnectionHelp = false
+                self.searchStartedAt = nil
                 self.stopReconnectTimer()
                 // #half-open-player — armer le watchdog de liveness (avant le guard didSentPlayer
                 // pour qu'il tourne aussi sur une reconnexion où playerJoin a déjà été envoyé).
@@ -194,6 +205,15 @@ extension PlayerGameViewModel {
         mpc.onConnectionPhase = { [weak self] phase in
             Task { @MainActor [weak self] in self?.applyConnectionPhase(phase) }
         }
+
+        // #conn-help — le browsing n'a pas pu démarrer (permission Réseau local refusée) :
+        // signal certain et immédiat → on propose l'aide sans attendre le timeout.
+        mpc.onBrowseFailed = { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, !self.hasEverConnectedToMaster else { return }
+                self.showConnectionHelp = true
+            }
+        }
     }
 
     /// Lisse la phase : on NE régresse PAS connecting/connected → searching (les retries
@@ -211,9 +231,22 @@ extension PlayerGameViewModel {
         guard !hasStartedBrowsing else { return }
         hasStartedBrowsing = true
         print("PLAYER Starting MPC browsing...")
+        searchStartedAt = Date()   // #conn-help — départ du chrono de recherche
         mpc.startBrowsingIfNeeded()
         // #C1 — watchdog : relance le scan toutes les 6s si connexion non établie
         // (couvre les invitations expirées sans callback onPeerConnected)
+        startReconnectTimer()
+    }
+
+    /// #conn-help — action « Réessayer » depuis l'aide diagnostic : relance un scan frais et
+    /// réarme la fenêtre avant de re-proposer l'aide. Utile si la cause était transitoire
+    /// (Wi-Fi/BT rallumé, permission changée dans les Réglages puis retour dans l'app).
+    func retryConnection() {
+        guard !isConnectedToMaster else { return }
+        showConnectionHelp = false
+        searchStartedAt = Date()
+        connectionPhase = .searching
+        mpc.restartBrowsing()
         startReconnectTimer()
     }
 
@@ -680,6 +713,13 @@ extension PlayerGameViewModel {
                 guard let self, !self.isConnectedToMaster else {
                     self?.stopReconnectTimer()
                     return
+                }
+                // #conn-help — jamais connecté et la recherche traîne au-delà du seuil :
+                // on propose l'aide diagnostic (permission Réseau local / Wi-Fi-BT / Maître pas lancé).
+                if !self.hasEverConnectedToMaster,
+                   let start = self.searchStartedAt,
+                   Date().timeIntervalSince(start) > Self.searchHelpTimeout {
+                    self.showConnectionHelp = true
                 }
                 print("🔄 PlayerGameVM: tentative de reconnexion auto")
                 self.mpc.restartBrowsing()

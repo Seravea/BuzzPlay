@@ -4,11 +4,17 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct WaitingForMasterOverlay: View {
     // #conn-phase — phase réelle de connexion MPC (recherche → connexion). On NE montre
     // jamais les erreurs/retries bruts (« Unable to connect ») : juste une progression calme.
     var phase: MPCConnectionPhase = .searching
+    // #conn-help — après un délai de recherche infructueuse (ou permission Réseau local
+    // refusée), on affiche une aide diagnostic actionnable au lieu de laisser l'écran figé.
+    var showHelp: Bool = false
+    var onRetry: () -> Void = {}
+    @Environment(\.openURL) private var openURL
     @State private var pulseScale: CGFloat = 1.0
     @State private var pulseOpacity: Double = 0.5
 
@@ -63,10 +69,14 @@ struct WaitingForMasterOverlay: View {
                     }
                 }
                 .padding(.top, 4)
+
+                // #conn-help — aide diagnostic après un délai de recherche infructueuse.
+                if showHelp { helpSection }
             }
             .padding(.horizontal, BuzzSpacing.xxxl)
             .padding(.vertical, 28)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+            .animation(.buzzFade, value: showHelp)
         }
         .onAppear {
             withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {
@@ -74,6 +84,48 @@ struct WaitingForMasterOverlay: View {
                 pulseOpacity = 0.0
             }
         }
+    }
+
+    // MARK: - Aide diagnostic (#conn-help)
+
+    private var helpSection: some View {
+        VStack(spacing: BuzzSpacing.md) {
+            Rectangle()
+                .fill(Color.textFaint.opacity(0.3))
+                .frame(height: 1)
+                .padding(.top, 4)
+
+            VStack(spacing: BuzzSpacing.xs) {
+                Text("Toujours rien ?")
+                    .font(.nohemi(.headline, weight: .bold))
+                    .foregroundStyle(.white)
+                Text("Vérifie que :\n•  le Maître a bien lancé une partie\n•  « Réseau local » est autorisé pour BuzzPlay\n•  le Wi-Fi et le Bluetooth sont activés")
+                    .font(.nohemi(.footnote, weight: .regular))
+                    .foregroundStyle(Color.textSecondary)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            VStack(spacing: BuzzSpacing.sm) {
+                Button(action: onRetry) {
+                    Text("Réessayer")
+                        .font(.nohemi(.headline, weight: .bold))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, BuzzSpacing.md)
+                        .background(LinearGradient.buzzPrimary, in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+                }
+                Button {
+                    if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                } label: {
+                    Text("Ouvrir les Réglages")
+                        .font(.nohemi(.subheadline, weight: .medium))
+                        .foregroundStyle(Color.textSecondary)
+                }
+            }
+        }
+        .transition(.opacity.combined(with: .move(edge: .bottom)))
     }
 }
 
