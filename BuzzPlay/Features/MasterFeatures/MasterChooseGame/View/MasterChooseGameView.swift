@@ -102,87 +102,16 @@ struct MasterChooseGameView: View {
                 }
             }
             HStack(spacing: BuzzSpacing.md) {
-                gameCard(.quiz, gradient: quizGradient)
-                gameCard(.blindTest, gradient: blindTestGradient)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func gameCard(_ game: GameType, gradient: LinearGradient) -> some View {
-        let isAvailable: Bool = game == .quiz
-            ? masterChooseGameVM.isQuizCardAvailable
-            : masterChooseGameVM.isBlindTestCardAvailable
-        let allReady = masterChooseGameVM.allPlayersReady
-        let readyCount = masterChooseGameVM.readyPlayersCount
-        // #E1 — dénominateur = total enregistrés (inclut un joueur déconnecté en reconnexion)
-        let totalCount = masterChooseGameVM.totalPlayersCount
-
-        VStack(spacing: 0) {
-            VStack(spacing: 10) {
-                Image(systemName: game.iconName)
-                    .textStyle(Typography.sectionTitle)
-                    .foregroundStyle(.white)
-                    .frame(width: 56, height: 56)
-                    .background(gradient.opacity(isAvailable ? 0.25 : 0.10), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
-
-                Text(game.gameTitle)
-                    .font(.nohemi(.headline, weight: .bold))
-                    .foregroundStyle(isAvailable ? .white : Color.textDim)
-                    .lineLimit(1)
-            }
-            .padding(.top, 18)
-            .padding(.bottom, 14)
-            .frame(maxWidth: .infinity)
-
-            Rectangle()
-                .fill(.white.opacity(0.06))
-                .frame(height: 1)
-
-            Button {
-                masterChooseGameVM.trackAndLaunch(game)
-                router.push(game.destinationMaster)
-            } label: {
-                HStack(spacing: 6) {
-                    if !isAvailable {
-                        Image(systemName: "checkmark")
-                            .textStyle(Typography.captionEM)
-                        Text("Terminé")
-                            .font(.nohemi(.subheadline, weight: .bold))
-                    } else if !allReady {
-                        ProgressView()
-                            .controlSize(.mini)
-                            .tint(.white.opacity(0.6))
-                        Text("\(readyCount)/\(totalCount) prêts…")
-                            .font(.nohemi(.subheadline, weight: .bold))
-                    } else {
-                        Image(systemName: game.iconName)
-                            .textStyle(Typography.captionEM)
-                        Text("Lancer")
-                            .font(.nohemi(.subheadline, weight: .bold))
-                    }
+                GameLaunchCard(game: .quiz, gradient: quizGradient, vm: masterChooseGameVM) {
+                    masterChooseGameVM.trackAndLaunch(.quiz)
+                    router.push(GameType.quiz.destinationMaster)
                 }
-                .foregroundStyle((isAvailable && allReady) ? .white : Color.textMuted)
-                .frame(maxWidth: .infinity)
-                .frame(height: 40)
-                .background(
-                    (isAvailable && allReady)
-                        ? AnyShapeStyle(gradient)
-                        : AnyShapeStyle(Color.white.opacity(0.06)),
-                    in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
-                )
+                GameLaunchCard(game: .blindTest, gradient: blindTestGradient, vm: masterChooseGameVM) {
+                    masterChooseGameVM.trackAndLaunch(.blindTest)
+                    router.push(GameType.blindTest.destinationMaster)
+                }
             }
-            .buttonStyle(.plain)
-            .disabled(!isAvailable || !allReady)
-            .padding(.horizontal, BuzzSpacing.md)
-            .padding(.vertical, 10)
         }
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
-        .overlay(
-            RoundedRectangle(cornerRadius: BuzzRadius.xl)
-                .strokeBorder(.white.opacity(isAvailable ? 0.10 : 0.04), lineWidth: 1)
-        )
-        .opacity(isAvailable ? 1 : 0.55)
     }
 
     // MARK: - Shop Section (#v1-packs / A4 — M1 : boutique dans le hub Master)
@@ -261,7 +190,7 @@ struct MasterChooseGameView: View {
 
             VStack(spacing: 6) {
                 ForEach(Array(sorted.enumerated()), id: \.element.id) { index, player in
-                    rankingRow(rank: index + 1, player: player, maxScore: maxScore)
+                    MasterRankingRow(rank: index + 1, player: player, maxScore: maxScore)
                 }
             }
         }
@@ -272,53 +201,7 @@ struct MasterChooseGameView: View {
                 .strokeBorder(.white.opacity(0.07), lineWidth: 1)
         )
     }
-
-    private func rankingRow(rank: Int, player: Player, maxScore: Int) -> some View {
-        HStack(spacing: 10) {
-            BuzzCountBadge("\(rank)",
-                           diameter: 24, fontSize: 11,
-                           fill: AnyShapeStyle(rank == 1 ? Color.mustardYellow : .white.opacity(0.10)),
-                           textColor: rank == 1 ? Color.sheetBg : .white.opacity(0.6))
-
-            BuzzCountBadge(String(player.name.prefix(1)).uppercased(),
-                           diameter: 36, fontSize: 16, weight: .bold,
-                           fill: AnyShapeStyle(player.teamColor.gradient),
-                           textColor: .white)
-
-            VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
-                HStack {
-                    Text(player.name)
-                        .font(.nohemi(.subheadline, weight: .bold))
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                    Spacer()
-                    Text("\(player.score)")
-                        .font(.nohemi(.subheadline, weight: .black))
-                        .foregroundStyle(.white)
-                        .monospacedDigit()
-                }
-
-                GeometryReader { geo in
-                    RoundedRectangle(cornerRadius: BuzzRadius.pill)
-                        .fill(.white.opacity(0.10))
-                        .overlay(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: BuzzRadius.pill)
-                                .fill(player.teamColor.gradient)
-                                .frame(width: geo.size.width * CGFloat(player.score) / CGFloat(maxScore))
-                        }
-                }
-                .frame(height: 4)
-            }
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, BuzzSpacing.sm)
-        .background(
-            rank == 1 ? Color.mustardYellow.opacity(0.08) : Color.clear,
-            in: RoundedRectangle(cornerRadius: BuzzRadius.sm)
-        )
-    }
-
-    }
+}
 
 
 #Preview {
