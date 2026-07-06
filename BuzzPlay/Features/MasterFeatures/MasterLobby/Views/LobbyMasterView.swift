@@ -31,7 +31,10 @@ struct LobbyMasterView: View {
                 .padding(.top, BuzzSpacing.lg)
             }
 
-            startButton
+            LobbyStartButton(masterGameVM: masterGameVM) {
+                masterGameVM.startParty()
+                router.push(.masterChooseGameView)
+            }
         }
         .foregroundStyle(.white)
         .appDefaultTextStyle(Typography.body)
@@ -328,66 +331,6 @@ struct LobbyMasterView: View {
         .frame(maxWidth: .infinity)
     }
 
-    // MARK: - Start Button
-
-    private var startButton: some View {
-        // #config-explicite — verrouillé tant que la config n'est pas complète (+ ≥ 1 joueur).
-        let enabled = masterGameVM.canStart
-        return VStack(spacing: BuzzSpacing.sm) {
-            if let hint = masterGameVM.startHint {
-                HStack(spacing: 6) {
-                    Image(systemName: "lock.fill")
-                        .textStyle(Typography.caption2EM)
-                    Text(hint)
-                        .font(.nohemi(.caption, weight: .semiBold))
-                }
-                .foregroundStyle(Color.textMuted)
-                .transition(.opacity)
-            }
-
-            Button {
-                masterGameVM.startParty()
-                router.push(.masterChooseGameView)
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: "play.fill")
-                        .textStyle(Typography.labelBold)
-                    Text("Commencer la partie")
-                        .font(.nohemi(.body, weight: .bold))
-                }
-                .foregroundStyle(enabled ? .white : Color.textMuted)
-                .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(
-                    enabled
-                        ? AnyShapeStyle(LinearGradient(
-                            colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
-                            startPoint: .leading, endPoint: .trailing
-                        ))
-                        : AnyShapeStyle(Color.white.opacity(0.10)),
-                    in: RoundedRectangle(cornerRadius: BuzzRadius.lg2)
-                )
-                .shadow(
-                    color: enabled ? Color.greenButtonLeading.opacity(0.32) : .clear,
-                    radius: 12, y: 4
-                )
-            }
-            .buttonStyle(.plain)
-            .disabled(!enabled)
-        }
-        .animation(.buzzDefault, value: enabled)
-        .padding(.horizontal, BuzzSpacing.xl)
-        .padding(.bottom, BuzzSpacing.xxxl)
-        .padding(.top, BuzzSpacing.md)
-        .background(
-            LinearGradient(
-                colors: [Color.sheetBg.opacity(0), Color.sheetBg],
-                startPoint: .top, endPoint: .bottom
-            )
-            .ignoresSafeArea()
-        )
-    }
-
     // MARK: - Helpers
 
     private func eyebrow(_ text: String) -> some View {
@@ -395,39 +338,6 @@ struct LobbyMasterView: View {
             .font(.nohemi(.caption2, weight: .bold))
             .tracking(0.8)
             .foregroundStyle(Color.textMuted)
-    }
-}
-
-// MARK: - Team Row
-
-private struct LobbyTeamRow: View {
-    let player: Player
-
-    var body: some View {
-        HStack(spacing: BuzzSpacing.md) {
-            RoundedRectangle(cornerRadius: BuzzRadius.sm)
-                .fill(player.teamColor.gradient)
-                .frame(width: 44, height: 44)
-                .overlay(
-                    Text(String(player.name.prefix(1)).uppercased())
-                        .font(.nohemi(.body, weight: .extraBold))
-                        .foregroundStyle(.white)
-                )
-
-            Text(player.name)
-                .font(.nohemi(.body, weight: .bold))
-                .foregroundStyle(.white)
-
-            Spacer()
-
-            Image(systemName: "checkmark.circle.fill")
-                .textStyle(Typography.cardTitle)
-                .foregroundStyle(Color.greenGlow)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, BuzzSpacing.md)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
-        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg).strokeBorder(.white.opacity(0.08), lineWidth: 1))
     }
 }
 

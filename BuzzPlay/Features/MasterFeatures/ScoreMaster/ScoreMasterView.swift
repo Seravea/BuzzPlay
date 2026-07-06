@@ -30,7 +30,18 @@ struct ScoreMasterView: View {
 
             VStack {
                 Spacer()
-                footerButtons
+                ScoreFooterButtons(
+                    onQuit: {
+                        // #quit-teardown — prévient les Players, coupe heartbeat + session, reset l'état.
+                        masterFlowVM.leaveSessionAsMaster()
+                        router.popToRoot()
+                    },
+                    onNewGame: {
+                        masterFlowVM.resetForNewGame()
+                        router.popToRoot()
+                        router.push(.masterLobbyView)
+                    }
+                )
             }
         }
         .navigationBarBackButtonHidden()
@@ -58,74 +69,11 @@ struct ScoreMasterView: View {
 
     private var podiumSection: some View {
         HStack(alignment: .bottom, spacing: BuzzSpacing.sm) {
-            if sorted.count >= 2 { podiumSlot(rank: 2, player: sorted[1]) }
-            if sorted.count >= 1 { podiumSlot(rank: 1, player: sorted[0]) }
-            if sorted.count >= 3 { podiumSlot(rank: 3, player: sorted[2]) }
+            if sorted.count >= 2 { PodiumSlot(rank: 2, player: sorted[1]) }
+            if sorted.count >= 1 { PodiumSlot(rank: 1, player: sorted[0]) }
+            if sorted.count >= 3 { PodiumSlot(rank: 3, player: sorted[2]) }
         }
         .padding(.bottom, 28)
-    }
-
-    private func podiumSlot(rank: Int, player: Player) -> some View {
-        let avatarSize: CGFloat = rank == 1 ? 72 : rank == 2 ? 56 : 48
-        let blockHeight: CGFloat = rank == 1 ? 120 : rank == 2 ? 80 : 56
-        let blockGradient: AnyShapeStyle = rank == 1
-            ? AnyShapeStyle(LinearGradient(colors: [Color.mustardYellow, Color.yellowTrailing], startPoint: .top, endPoint: .bottom))
-            : AnyShapeStyle(.white.opacity(rank == 2 ? 0.12 : 0.08))
-        let blockRadius: CGFloat = rank == 1 ? 14 : 10
-
-        return VStack(spacing: 0) {
-            if rank == 1 {
-                Image(systemName: BuzzIcon.crown)
-                    .textStyle(Typography.sectionTitle)
-                    .foregroundStyle(Color.mustardYellow)
-                    .padding(.bottom, 4)
-            }
-
-            Circle()
-                .fill(player.teamColor.gradient)
-                .frame(width: avatarSize, height: avatarSize)
-                .overlay(
-                    Text(String(player.name.prefix(1)).uppercased())
-                        .font(.custom("Nohemi-Black", size: avatarSize * 0.42))
-                        .foregroundStyle(.white)
-                        .nohemiBadgeNudge(fontSize: avatarSize * 0.42)
-                )
-                .overlay(
-                    Circle()
-                        .strokeBorder(rank == 1 ? Color.mustardYellow : .white.opacity(0.18), lineWidth: 2)
-                )
-
-            Text(player.name)
-                .font(.nohemi(rank == 1 ? .subheadline : .caption, weight: .bold))
-                .foregroundStyle(rank == 1 ? Color.mustardYellow : .white)
-                .lineLimit(1)
-                .padding(.top, BuzzSpacing.sm)
-
-            Text("\(player.score) pts")
-                .font(.nohemi(.caption2, weight: .medium))
-                .foregroundStyle(.white.opacity(rank == 1 ? 0.7 : 0.5))
-                .padding(.top, 1)
-
-            ZStack(alignment: .center) {
-                RoundedRectangle(cornerRadius: blockRadius)
-                    .fill(blockGradient)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: blockRadius)
-                            .strokeBorder(.white.opacity(rank == 1 ? 0 : 0.08), lineWidth: 1)
-                    )
-
-                let rankSize: CGFloat = rank == 1 ? 44 : rank == 2 ? 32 : 26
-                Text("\(rank)")
-                    .font(.custom("Nohemi-Black", size: rankSize))
-                    .foregroundStyle(rank == 1 ? Color.sheetBg : Color.textSecondary)
-                    .nohemiBadgeNudge(fontSize: rankSize)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: blockHeight)
-            .padding(.top, 10)
-        }
-        .frame(maxWidth: .infinity)
-        .shadow(color: rank == 1 ? Color.mustardYellow.opacity(0.35) : .clear, radius: 20, y: -6)
     }
 
     // MARK: - Others
@@ -181,61 +129,6 @@ struct ScoreMasterView: View {
         .overlay(
             RoundedRectangle(cornerRadius: BuzzRadius.sm)
                 .strokeBorder(.white.opacity(0.06), lineWidth: 1)
-        )
-    }
-
-    // MARK: - Footer
-
-    private var footerButtons: some View {
-        HStack(spacing: 10) {
-            Button {
-                // #quit-teardown — prévient les Players, coupe heartbeat + session, reset l'état.
-                masterFlowVM.leaveSessionAsMaster()
-                router.popToRoot()
-            } label: {
-                Text("Quitter")
-                    .font(.nohemi(.subheadline, weight: .bold))
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 52)
-                    .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: BuzzRadius.lg)
-                            .strokeBorder(.white.opacity(0.12), lineWidth: 1)
-                    )
-            }
-            .buttonStyle(.plain)
-
-            Button {
-                masterFlowVM.resetForNewGame()
-                router.popToRoot()
-                router.push(.masterLobbyView)
-            } label: {
-                Text("Nouvelle partie")
-                    .font(.nohemi(.subheadline, weight: .bold))
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 52)
-                    .background(
-                        LinearGradient(
-                            colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
-                            startPoint: .leading, endPoint: .trailing
-                        ),
-                        in: RoundedRectangle(cornerRadius: BuzzRadius.lg)
-                    )
-                    .shadow(color: Color.greenButtonLeading.opacity(0.32), radius: 12, y: 4)
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, BuzzSpacing.xl)
-        .padding(.bottom, BuzzSpacing.xxxl)
-        .padding(.top, BuzzSpacing.md)
-        .background(
-            LinearGradient(
-                colors: [Color.sheetBg.opacity(0), Color.sheetBg],
-                startPoint: .top, endPoint: .bottom
-            )
-            .ignoresSafeArea()
         )
     }
 }
