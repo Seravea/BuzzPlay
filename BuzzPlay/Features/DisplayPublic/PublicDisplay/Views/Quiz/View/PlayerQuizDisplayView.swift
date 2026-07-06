@@ -1,5 +1,5 @@
 //
-//  PublicQuizDisplayView.swift
+//  PlayerQuizDisplayView.swift
 //  BuzzPlay
 //
 //  Created by Apprenant 102 on 20/11/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PublicQuizDisplayView: View {
+struct PlayerQuizDisplayView: View {
     var state: PublicQuizState
     var timer: String
     var timerReady: Bool = true
@@ -88,7 +88,7 @@ struct PublicQuizDisplayView: View {
         Player(name: "Team 1", teamColor: .greenGame, score: 240),
         Player(name: "Team 2", teamColor: .blueGame, score: 240),
     ]
-    PublicQuizDisplayView(
+    PlayerQuizDisplayView(
         state: PublicQuizState(
             question: QuizSamples.music2000s.questions[3],
             setTitle: QuizSamples.music2000s.title,

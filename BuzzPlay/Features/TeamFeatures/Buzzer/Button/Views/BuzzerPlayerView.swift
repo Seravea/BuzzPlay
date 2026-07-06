@@ -94,7 +94,7 @@ struct BuzzerPlayerView: View {
         .animation(.buzzSmooth, value: playerGameVM.currentBuzzerVM?.powerFeedback)
         .animation(.buzzEase, value: playerGameVM.isConnectedToMaster)
         // #15 — classement inter-manche en demi-sheet : la révélation de la réponse reste
-        // visible en haut (PublicDisplayView), le classement animé monte par-dessous.
+        // visible en haut (PlayerGameDisplayView), le classement animé monte par-dessous.
         .sheet(isPresented: $playerGameVM.showPostRoundLeaderboard) {
             PostRoundLeaderboardView(
                 previousRanking: playerGameVM.previousRanking,
@@ -166,7 +166,7 @@ struct BuzzerPlayerView: View {
             // contenu (question révélée, buzz), faisant bouger le buzzer et pousser le header.
             // Le contenu variable (question/titre/buzz) bouge maintenant À L'INTÉRIEUR de cette
             // zone fixe, top-aligné : le buzzer reste ancré et le header reste figé en haut.
-            PublicDisplayView(playerGameVM: playerGameVM, gameType: gameType)
+            PlayerGameDisplayView(playerGameVM: playerGameVM, gameType: gameType)
                 .padding(.horizontal, BuzzSpacing.md)
                 .padding(.top, BuzzSpacing.md)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

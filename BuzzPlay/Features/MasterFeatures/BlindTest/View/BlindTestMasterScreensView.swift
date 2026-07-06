@@ -1,11 +1,11 @@
 //
-//  PrivateMasterBlindTestView.swift
+//  BlindTestMasterScreensView.swift
 //  BuzzPlay
 //
 
 import SwiftUI
 
-struct PrivateMasterBlindTestView: View {
+struct BlindTestMasterScreensView: View {
     @Bindable var blindTestVM: BlindTestMasterViewModel
     let onSubscribeTap: () -> Void
 
@@ -93,7 +93,7 @@ struct PrivateMasterBlindTestView: View {
 }
 
 #Preview {
-    PrivateMasterBlindTestView(
+    BlindTestMasterScreensView(
         blindTestVM: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()),
         onSubscribeTap: {}
     )

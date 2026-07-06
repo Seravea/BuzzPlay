@@ -1,5 +1,5 @@
 //
-//  PublicDisplayView.swift
+//  PlayerGameDisplayView.swift
 //  BuzzPlay
 //
 //  Created by Apprenant 102 on 20/11/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PublicDisplayView: View {
+struct PlayerGameDisplayView: View {
     
     @Bindable var playerGameVM: PlayerGameViewModel
     var gameType: GameType  
@@ -32,10 +32,10 @@ struct PublicDisplayView: View {
                 .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg2).strokeBorder(.white.opacity(0.08), lineWidth: 1))
 
                 case .quiz(let quizState):
-                    PublicQuizDisplayView(state: quizState, timer: playerGameVM.formattedTime, timerReady: playerGameVM.hasReceivedFirstTimer)
+                    PlayerQuizDisplayView(state: quizState, timer: playerGameVM.formattedTime, timerReady: playerGameVM.hasReceivedFirstTimer)
                     
                 case .blindTest(let blindTestState):
-                PublicBlindTestView(state: blindTestState, timer: playerGameVM.formattedTime)
+                PlayerBlindTestDisplayView(state: blindTestState, timer: playerGameVM.formattedTime)
             }
         }
         .onDisappear {
@@ -48,6 +48,6 @@ struct PublicDisplayView: View {
     // Minimal preview scaffolding
     let vm = PlayerGameViewModel(player: Player(name: "Preview Team"),
                                mpc: MPCService(peerName: "Preview", role: .team))
-    return PublicDisplayView(playerGameVM: vm, gameType: .blindTest)
+    return PlayerGameDisplayView(playerGameVM: vm, gameType: .blindTest)
 }
 

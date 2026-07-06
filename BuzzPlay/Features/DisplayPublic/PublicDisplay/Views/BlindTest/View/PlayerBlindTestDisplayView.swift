@@ -1,5 +1,5 @@
 //
-//  PublicBlindTestView.swift
+//  PlayerBlindTestDisplayView.swift
 //  BuzzPlay
 //
 //  Created by Apprenant 102 on 20/11/2025.
@@ -8,7 +8,7 @@
 import SwiftUI
 import MusicKit
 
-struct PublicBlindTestView: View {
+struct PlayerBlindTestDisplayView: View {
 
     let state: PublicBlindTestState
     let timer: String
@@ -91,7 +91,7 @@ struct PublicBlindTestView: View {
         hintIndex: 0,
         countdownPhase: .hidden
     )
-    PublicBlindTestView(state: sample, timer: "00:12")
+    PlayerBlindTestDisplayView(state: sample, timer: "00:12")
         .background(BackgroundAppView())
 }
 
@@ -108,6 +108,6 @@ struct PublicBlindTestView: View {
         hintIndex: 2,
         countdownPhase: .hidden
     )
-    PublicBlindTestView(state: sample, timer: "00:12")
+    PlayerBlindTestDisplayView(state: sample, timer: "00:12")
         .background(BackgroundAppView())
 }

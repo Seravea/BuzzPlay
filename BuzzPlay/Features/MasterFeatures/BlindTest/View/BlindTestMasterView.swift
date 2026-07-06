@@ -14,7 +14,7 @@ struct BlindTestMasterView: View {
 
     var body: some View {
         ZStack {
-            PrivateMasterBlindTestView(
+            BlindTestMasterScreensView(
                 blindTestVM: blindTestViewModel,
                 onSubscribeTap: { showSubscriptionOffer = true }
             )
