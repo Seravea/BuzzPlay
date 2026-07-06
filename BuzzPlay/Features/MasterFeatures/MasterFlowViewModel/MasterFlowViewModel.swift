@@ -217,7 +217,6 @@ final class MasterFlowViewModel {
     // #v1-economy — le Master ne gère plus AUCUNE Note : le solde vit en local sur
     // chaque téléphone Player (PlayerNotesWallet). Plus de boutique/distribution Master.
     var isBuzzLocked: Bool = false
-    var gameState: GameState = .lobby
 
     // #chantier4 — blocages-cadeaux = charge consommée à l'usage. Clés = NOM des cibles
     // (stable à la reco, cf. #10/#19) dont le blocage a DÉJÀ traversé une manche jouable
@@ -501,13 +500,6 @@ final class MasterFlowViewModel {
         mpcService.sendMessage(.rosterUpdate(roster))
     }
     
-    //MARK: Master's functions for gameSelection
-    
-    func selectGame(_ game: GameType) {
-        gameState = .inGame(game)
-    }
-    
-    
 }
 
 
@@ -711,7 +703,6 @@ extension MasterFlowViewModel {
         isGamePaused = false
         disconnectedPlayerName = nil
         hasPartyStarted = false
-        gameState = .lobby
         // #config-explicite — nouvelle partie après "Quitter" : reforcer le choix de config.
         durationChosen = false
         modeChosen = false
