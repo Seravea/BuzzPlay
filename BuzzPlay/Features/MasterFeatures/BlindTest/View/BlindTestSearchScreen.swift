@@ -6,36 +6,6 @@
 import SwiftUI
 import MusicKit
 
-// MARK: - Category data
-
-private struct CategoryItem: Identifiable {
-    let id = UUID()
-    let label: String
-    let query: String
-    let icon: String
-    let colors: [Color]
-}
-
-private let generations: [CategoryItem] = [
-    .init(label: "70s", query: "années 70",   icon: "waveform.circle.fill",  colors: [Color.coral, Color.crimson]),
-    .init(label: "80s", query: "années 80",   icon: "radio.fill",            colors: [Color.violet, Color.buzzIndigo]),
-    .init(label: "90s", query: "années 90",   icon: "opticaldisc",           colors: [Color.royalBlue, Color.skyBlue]),
-    .init(label: "00s", query: "années 2000", icon: "music.note.list",       colors: [Color.burnOrange, Color.amberWarm]),
-    .init(label: "10s", query: "années 2010", icon: "headphones",            colors: [Color.oceanBlue, Color.deepDark]),
-    .init(label: "20s", query: "années 2020", icon: "dot.radiowaves.left.and.right", colors: [Color.teal, Color.emerald]),
-]
-
-private let genres: [CategoryItem] = [
-    .init(label: "Pop",        query: "pop hits",           icon: "star.fill",   colors: [Color.vibrantPink, Color.fuchsia]),
-    .init(label: "Rock",       query: "rock",               icon: "bolt.fill",   colors: [Color.scarlet, Color.burnOrange]),
-    .init(label: "Hip-Hop",    query: "hip hop",            icon: "mic.fill",    colors: [Color.buzzIndigo, Color.softIndigo]),
-    .init(label: "Électro",    query: "electro dance",      icon: "waveform",    colors: [Color.skyBlue, Color.softIndigo]),
-    .init(label: "R&B · Soul", query: "r&b soul",           icon: "heart.fill",  colors: [Color.amberWarm, Color.errorLight]),
-    .init(label: "Variété FR", query: "variété française",  icon: "music.note",  colors: [Color.royalBlue, Color.buzzIndigo]),
-    .init(label: "K-Pop",      query: "k-pop",              icon: "crown.fill",  colors: [Color.vibrantPink, Color.buzzIndigo]),
-    .init(label: "Latino",     query: "latino hits",        icon: "flame.fill",  colors: [Color.tangerine, Color.errorLight]),
-]
-
 // MARK: - Main View
 
 struct BlindTestSearchScreen: View {
@@ -44,14 +14,12 @@ struct BlindTestSearchScreen: View {
 
     @FocusState private var searchFocused: Bool
     @State private var searchText = ""
-    // #12 — feedback pendant la latence d'ouverture de la sheet d'abonnement Apple Music
-    @State private var isSubscribing = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
 
             // Apple Music banner
-            appleMusicBanner
+            AppleMusicBanner(blindTestVM: blindTestVM, onSubscribeTap: onSubscribeTap)
                 .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.top, BuzzSpacing.lg)     // #header-air — ne pas coller à la nav bar
                 .padding(.bottom, BuzzSpacing.md)
@@ -121,66 +89,6 @@ struct BlindTestSearchScreen: View {
         }
         .buttonStyle(.plain)
         .animation(.buzzFade, value: invited)
-    }
-
-    // MARK: Apple Music Banner
-
-    private var appleMusicBanner: some View {
-        HStack(spacing: 10) {
-            Image(systemName: blindTestVM.canPlayCatalogContent ? "music.note" : "music.note")
-                .textStyle(Typography.footnoteEM)
-                .foregroundStyle(blindTestVM.canPlayCatalogContent ? Color.greenButtonLeading : Color.mustardYellow)
-
-            if blindTestVM.canPlayCatalogContent {
-                (Text("Titre entier · ").foregroundStyle(.white)
-                 + Text("Apple Music").foregroundStyle(Color.textSecondary))
-                    .font(.nohemi(.caption, weight: .bold))
-            } else {
-                // #v1-review — les previews jouent jusqu'au bout (~30s, pas de coupe) :
-                // le Blind Test est 100 % jouable SANS abonnement (important pour App Review).
-                (Text("Extraits ").foregroundStyle(Color.textSecondary)
-                 + Text("30s inclus").foregroundStyle(.white).bold()
-                 + Text(" · Titre entier avec ").foregroundStyle(Color.textSecondary)
-                 + Text("Apple Music").foregroundStyle(.white).bold())
-                    .font(.nohemi(.caption, weight: .regular))
-            }
-
-            Spacer(minLength: 4)
-
-            if !blindTestVM.canPlayCatalogContent {
-                Button {
-                    isSubscribing = true
-                    onSubscribeTap()
-                    // La sheet StoreKit/MusicKit met un instant à s'ouvrir → on relâche le
-                    // spinner après un court délai (le bouton disparaît si l'abonnement passe).
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { isSubscribing = false }
-                } label: {
-                    Group {
-                        if isSubscribing {
-                            ProgressView().controlSize(.mini).tint(.white)
-                        } else {
-                            Text("S'abonner")
-                                .font(.nohemi(.caption2, weight: .bold))
-                                .foregroundStyle(.white)
-                        }
-                    }
-                    .frame(minWidth: 60)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(
-                        LinearGradient(colors: [.purpleLeading, .purpleTrailing],
-                                       startPoint: .leading, endPoint: .trailing),
-                        in: Capsule()
-                    )
-                }
-                .buttonStyle(.plain)
-                .disabled(isSubscribing)
-            }
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.sm))
-        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.sm).strokeBorder(.white.opacity(0.08), lineWidth: 1))
     }
 
     // MARK: Inline Search Bar
@@ -325,92 +233,6 @@ struct BlindTestSearchScreen: View {
         searchFocused = false
         withAnimation { blindTestVM.playlists = [] }
         Task { await blindTestVM.search(query: q) }
-    }
-}
-
-// MARK: - Category Card
-
-private struct CategoryCard: View {
-    let item: CategoryItem
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 7) {
-                ZStack {
-                    LinearGradient(colors: item.colors,
-                                   startPoint: .topLeading,
-                                   endPoint: .bottomTrailing)
-                    .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.md))
-
-                    Image(systemName: item.icon)
-                        .textStyle(Typography.screenTitle)
-                        .foregroundStyle(.white)
-                        .shadow(color: .black.opacity(0.2), radius: 4)
-                }
-                .frame(width: 74, height: 74)
-
-                Text(item.label)
-                    .font(.nohemi(.caption, weight: .bold))
-                    .foregroundStyle(.white)
-            }
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-// MARK: - Playlist Row
-
-struct BlindTestPlaylistRow: View {
-    let playlist: BlindTestPlaylist
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 14) {
-                AsyncImage(url: playlist.artworkURL) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    LinearGradient(colors: [.purpleLeading, .purpleTrailing],
-                                   startPoint: .topLeading, endPoint: .bottomTrailing)
-                        .overlay(
-                            Image(systemName: "music.note.list")
-                                .textStyle(Typography.cardTitle)
-                                .foregroundStyle(.white.opacity(0.8))
-                        )
-                }
-                .frame(width: 60, height: 60)
-                .clipShape(RoundedRectangle(cornerRadius: BuzzRadius.xs))
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(playlist.name)
-                        .font(.nohemi(.body, weight: .semiBold))
-                        .foregroundStyle(.white)
-                        .multilineTextAlignment(.leading)
-                    if let curator = playlist.curator {
-                        Text(curator)
-                            .font(.nohemi(.caption, weight: .medium))
-                            .foregroundStyle(Color.textMuted)
-                    }
-                }
-
-                Spacer()
-
-                if let count = playlist.trackCount {
-                    Text("\(count) titres")
-                        .font(.nohemi(.caption, weight: .semiBold))
-                        .foregroundStyle(Color.textMuted)
-                }
-
-                Image(systemName: "chevron.right")
-                    .textStyle(Typography.footnoteEM)
-                    .foregroundStyle(Color.textFaint)
-            }
-            .padding(BuzzSpacing.sm)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
-            .overlay(RoundedRectangle(cornerRadius: BuzzRadius.lg).strokeBorder(.white.opacity(0.08), lineWidth: 1.5))
-        }
-        .buttonStyle(.plain)
     }
 }
 
