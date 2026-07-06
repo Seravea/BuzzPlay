@@ -108,14 +108,16 @@ Distinction que l'agent ne fait PAS spontanément — à expliciter :
 | Raison d'extraire | Critère | Destination |
 |---|---|---|
 | **Réutilisation** | utilisé par **≥ 2** features | `Features/Shared/Views/` |
-| **Lisibilité** | utilisé par **1 seule** feature mais **> seuil VIEW-2** | dossier **`Subviews/`** dans le `Views/` de la feature parent |
+| **Lisibilité** | utilisé par **1 seule** feature mais **> seuil VIEW-2** | **même dossier que son écran parent** (voir VIEW-5) |
 | (rien) | utilisé 1 fois **et** court | peut rester inline |
 
 **Règle VIEW-4 — Arbre de décision d'extraction.**
 1. Utilisé par plus d'une feature ? → **oui** : `Features/Shared/Views/`. **non** : étape 2.
-2. Dépasse le seuil VIEW-2 ? → **oui** : extraite dans le dossier `Subviews/` de la feature. **non** : peut rester inline.
+2. Dépasse le seuil VIEW-2 ? → **oui** : extraite et rangée **avec son écran parent** (VIEW-5). **non** : peut rester inline.
 
-> Erreur connue à corriger dans ce projet : les composants **réutilisés** ont bien été extraits vers `Features/Shared/Views/` (ex. `CountdownOverlay`), mais les sous-vues **mono-parent volumineuses** sont restées inline dans leur page au lieu d'aller dans un `Subviews/`. Le pattern `Subviews/` existe déjà dans `CreateTeamView` — la règle VIEW-4 consiste à le **généraliser** à toutes les features (ex. `Buzzer/Button/Views/Subviews/` à créer).
+**Règle VIEW-5 — Un dossier par écran (parent + ses sous-vues ensemble).** Quand une feature contient plusieurs écrans, chaque écran a **son propre dossier** contenant l'écran ET ses sous-vues mono-parent, pour qu'on retrouve toujours la vue parente à côté de ses enfants. On ne crée **PAS** de dossier `Subviews/` global à plat qui noierait les écrans parents (retour Romain 2026-07-06). Les vues de navigation/conteneur (ZStack racine, `…MasterView`, `Private…`/`Public…`) restent à la racine du `View/` de la feature. Modèle appliqué à `BlindTest/View/` : `Search/`, `SongList/`, `SolarSystem/`, `Active/`, `BuzzSheet/`, `AmbiantSounds/` (chacun = écran + ses sous-vues) ; `BlindTestMasterView`/`Private…`/`Public…` à la racine. Une feature mono-écran peut garder l'écran + ses sous-vues directement dans `View/` sans sous-dossier.
+
+> Erreur connue à corriger dans ce projet : les composants **réutilisés** ont bien été extraits vers `Features/Shared/Views/` (ex. `CountdownOverlay`), mais les sous-vues **mono-parent volumineuses** sont restées inline dans leur page. La règle VIEW-4+VIEW-5 consiste à les extraire **et à les ranger dans le dossier de leur écran parent**.
 
 ---
 
