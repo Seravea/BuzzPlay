@@ -36,7 +36,14 @@ class BlindTestMasterViewModel: BuzzDrivenGame {
     var hasInvitedPlayers: Bool = false
 
     var playerHasBuzz: Player? = nil
+    /// #answer-window — timestamp du buzz courant (epoch), source de la barre de 5s. nil hors buzz.
+    var buzzStartedAt: TimeInterval? = nil
     var playedSongs: [BlindTestSong] = []
+
+    // #bt-queue — mini-playlist : le Master sélectionne plusieurs titres puis « Démarrer ».
+    // On enchaîne les titres un à un (bouton « Musique suivante » après chaque validation).
+    var songQueue: [BlindTestSong] = []
+    var queueIndex: Int = 0
 
     var state: RoundState = .idle
     var roundCountdownPhase: RoundCountdownPhase = .hidden
@@ -153,6 +160,7 @@ extension BlindTestMasterViewModel {
 
         isCorrect = true
         state = .finished
+        buzzStartedAt = nil   // #answer-window — fin de la fenêtre de réponse
         gameVM.blindTestRoundsPlayed += 1
         gameVM.persistActiveParty()   // #resume — snapshot à jour à chaque manche (survit au kill)
 
@@ -179,9 +187,10 @@ extension BlindTestMasterViewModel {
         // ✅ update public display (answer revealed)
         gameVM.broadcastPublicStateFromCurrentGame()
 
-        // (optionnel) on nettoie ensuite la sélection
-        selectedMusic = nil
-        isGameActive = false
+        // #bt-queue — on NE quitte PLUS l'écran ici : on reste en `.finished` (révélation
+        // + bouton « Musique suivante »). selectedMusic est gardé pour afficher la réponse.
+        // L'avancée dans la file se fait via playNextInQueue() ; le quota fini déclenche
+        // shouldAutoFinish (géré par le wrapper) qui appellera resetRoundState().
     }
     
     func rejectAnswer() {
@@ -190,6 +199,7 @@ extension BlindTestMasterViewModel {
 
         isCorrect = false
         playerHasBuzz = nil
+        buzzStartedAt = nil   // #answer-window — refus : la fenêtre se ferme
         state = .playing
         // isPlaying reste false → makePublicState émet isPlaying:false → Player ne relance pas son timer
 
@@ -305,6 +315,98 @@ extension BlindTestMasterViewModel {
     }
 }
 
+//MARK: - Mini-playlist (file d'attente) #bt-queue
+extension BlindTestMasterViewModel {
+
+    var isQueueEmpty: Bool { songQueue.isEmpty }
+    var queueCount: Int { songQueue.count }
+
+    /// Position (1-based) d'un titre dans la file, nil s'il n'y est pas.
+    func queuePosition(of song: BlindTestSong) -> Int? {
+        songQueue.firstIndex(of: song).map { $0 + 1 }
+    }
+
+    /// Ajoute/retire un titre de la file (ignore les titres déjà joués).
+    func toggleInQueue(_ song: BlindTestSong) {
+        guard !playedSongs.contains(song) else { return }
+        if let idx = songQueue.firstIndex(of: song) {
+            songQueue.remove(at: idx)
+        } else {
+            songQueue.append(song)
+        }
+    }
+
+    /// Quota de manches Blind Test atteint (modes finis uniquement ; 0 = illimité → jamais).
+    private var blindTestQuotaReached: Bool {
+        let total = gameVM.blindTestRoundsTotal
+        return total > 0 && gameVM.blindTestRoundsPlayed >= total
+    }
+
+    /// Reste-t-il un titre à jouer dans la file (et le quota n'est pas atteint) ?
+    var hasNextInQueue: Bool {
+        !blindTestQuotaReached && (queueIndex + 1) < songQueue.count
+    }
+
+    /// Démarre la file au premier titre.
+    func startQueue() {
+        guard !songQueue.isEmpty else { return }
+        queueIndex = 0
+        selectedMusic = songQueue[queueIndex]
+        startRound()
+    }
+
+    /// Bouton « Musique suivante » : avance d'un titre (ou termine la file si épuisée).
+    func playNextInQueue() {
+        advanceQueue()
+    }
+
+    private func advanceQueue() {
+        queueIndex += 1
+        if queueIndex < songQueue.count {
+            selectedMusic = songQueue[queueIndex]
+            startRound()
+        } else {
+            resetRoundState()   // file épuisée → retour à la liste pour reconstruire
+        }
+    }
+
+    /// « Passer » : abandonne le titre courant (sans points), le marque joué, enchaîne.
+    func skipCurrentSong() {
+        if let song = selectedMusic, !playedSongs.contains(song) {
+            playedSongs.append(song)
+        }
+        countdownTask?.cancel()
+        countdownTask = nil
+        roundCountdownPhase = .hidden
+        stop()
+        stopReactionTimer()
+        isPlaying = false
+        playerHasBuzz = nil
+        gameVM.currentBuzzPlayer = nil
+        gameVM.isBuzzLocked = false
+        advanceQueue()
+    }
+
+    /// Réinitialise l'état transitoire (fin de file / fin de section). Garde allSongs +
+    /// playedSongs (continuité de playlist), reset le reste → écran liste.
+    func resetRoundState() {
+        countdownTask?.cancel()
+        countdownTask = nil
+        stop()
+        stopReactionTimer()
+        songQueue = []
+        queueIndex = 0
+        selectedMusic = nil
+        playerHasBuzz = nil
+        buzzStartedAt = nil
+        isGameActive = false
+        isPlaying = false
+        state = .idle
+        shouldAutoFinish = false
+        roundCountdownPhase = .hidden
+    }
+}
+
 //MARK: Gift effects
 extension BlindTestMasterViewModel {
     func applyGiftEffect(_ gift: CoinsViewModel.Gift, to player: Player) {
@@ -378,7 +480,8 @@ extension BlindTestMasterViewModel {
 
         playerHasBuzz = player
         state = .buzzed(player)
-        
+        buzzStartedAt = Date().timeIntervalSince1970   // #answer-window — top de la barre 5s
+
         // Pause uniquement: timer + musique (ne pas reset, pour pouvoir reprendre)
         pause()
         isPlaying = false
@@ -421,7 +524,8 @@ extension BlindTestMasterViewModel {
                        isAnswerRevealed: false,
                        isPlaying: false,
                        hintIndex: currentHintIndex,
-                       countdownPhase: roundCountdownPhase
+                       countdownPhase: roundCountdownPhase,
+                       buzzStartedAt: buzzStartedAt   // #answer-window
                    )
                )
 

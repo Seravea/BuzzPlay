@@ -79,17 +79,12 @@ struct AIQuizSetupView: View {
                                 selectedThemeIDs = Set(selectableThemes.map(\.id))
                             }
                         } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: allSelected ? "checkmark.circle.fill" : "circle.dotted")
-                                    .textStyle(Typography.footnote)
-                                Text(allSelected ? "Tout désélectionner" : "Tout sélectionner")
-                                    .font(.nohemi(.caption, weight: .bold))
-                            }
-                            .foregroundStyle(Color.textSecondary)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, BuzzSpacing.sm)
-                            .background(.white.opacity(0.06), in: Capsule())
-                            .overlay(Capsule().strokeBorder(.white.opacity(0.12), lineWidth: 1))
+                            let icon = allSelected ? "checkmark.circle.fill" : "circle.dotted"
+                            let label = allSelected ? "Tout désélectionner" : "Tout sélectionner"
+                            Text("\(Image(systemName: icon)) \(label)")
+                                .font(.nohemi(.caption, weight: .bold))
+                                .foregroundStyle(Color.textSecondary)
+                                .pillStyle(fill: .white.opacity(0.06), stroke: .white.opacity(0.12))
                         }
                         .buttonStyle(.plain)
                         .frame(maxWidth: .infinity, alignment: .center)

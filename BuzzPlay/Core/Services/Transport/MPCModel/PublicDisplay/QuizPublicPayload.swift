@@ -21,10 +21,13 @@ struct PublicQuizState: Codable, Equatable {
     /// true uniquement sur la dernière manche de la partie : le Player saute le classement
     /// inter-manche car le podium final enchaîne directement (#11/#C8).
     let isLastRound: Bool
+    /// #answer-window — timestamp Master du buzz (epoch). Chaque device en déduit localement
+    /// la barre de 5s. nil hors état buzzé.
+    let buzzStartedAt: TimeInterval?
 
     init(question: QuizQuestion, setTitle: String, formattedTime: String, buzzingPlayer: Player?,
          isAnswerRevealed: Bool, isHintVisible: Bool, countdownPhase: RoundCountdownPhase,
-         isQuestionRevealed: Bool, isLastRound: Bool = false) {
+         isQuestionRevealed: Bool, isLastRound: Bool = false, buzzStartedAt: TimeInterval? = nil) {
         self.question = question
         self.setTitle = setTitle
         self.formattedTime = formattedTime
@@ -34,6 +37,7 @@ struct PublicQuizState: Codable, Equatable {
         self.countdownPhase = countdownPhase
         self.isQuestionRevealed = isQuestionRevealed
         self.isLastRound = isLastRound
+        self.buzzStartedAt = buzzStartedAt
     }
 }
 

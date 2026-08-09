@@ -24,6 +24,15 @@ struct BuzzerPlayerView: View {
         return false
     }
 
+    // #answer-window — top du buzz courant (epoch) si quelqu'un a buzzé, pour la barre de 5s.
+    private var buzzWindowStart: TimeInterval? {
+        switch playerGameVM.publicState {
+        case .quiz(let s):      return s.buzzingPlayer != nil ? s.buzzStartedAt : nil
+        case .blindTest(let s): return s.buzzingPlayer != nil ? s.buzzStartedAt : nil
+        default:                return nil
+        }
+    }
+
     var body: some View {
         ZStack {
             BackgroundAppView().ignoresSafeArea()
@@ -160,7 +169,7 @@ struct BuzzerPlayerView: View {
                 .padding(.top, BuzzSpacing.md)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
-            BuzzerButtonView(buzzerVM: buzzerVM, showInlineCountdown: isQuizQuestionRevealed)
+            BuzzerButtonView(buzzerVM: buzzerVM, showInlineCountdown: isQuizQuestionRevealed, buzzStartedAt: buzzWindowStart)
                 .padding(.bottom, BuzzSpacing.xl)
 
             GiftBottomBar(coinsVM: coinsVM, isSheetOpen: $isGiftSheetOpen, isWaiting: playerGameVM.publicState == .waiting)
@@ -179,18 +188,15 @@ struct BuzzerPlayerView: View {
             // Bouclier actif
             let hasAnyShield = playerGameVM.player.hasShieldSingle || playerGameVM.player.hasShieldAll
             if hasAnyShield {
-                HStack(spacing: 3) {
-                    Image(systemName: playerGameVM.player.hasShieldAll ? "shield.lefthalf.filled" : "shield.fill")
-                        .textStyle(Typography.captionEM)
-                    Text(playerGameVM.player.hasShieldAll ? "×Tous" : "×1")
-                        .font(.nohemi(.caption2, weight: .bold))
-                }
-                .foregroundStyle(Color.blueLeading)
-                .padding(.horizontal, BuzzSpacing.sm)
-                .padding(.vertical, 4)
-                .background(Color.blueLeading.opacity(0.18), in: Capsule())
-                .overlay(Capsule().strokeBorder(Color.blueLeading.opacity(0.4), lineWidth: 1))
-                .transition(.scale.combined(with: .opacity))
+                let shieldIcon = playerGameVM.player.hasShieldAll ? "shield.lefthalf.filled" : "shield.fill"
+                let shieldLabel = playerGameVM.player.hasShieldAll ? "×Tous" : "×1"
+                Text("\(Image(systemName: shieldIcon)) \(shieldLabel)")
+                    .font(.nohemi(.caption2, weight: .bold))
+                    .foregroundStyle(Color.blueLeading)
+                    .pillStyle(fill: Color.blueLeading.opacity(0.18),
+                               stroke: Color.blueLeading.opacity(0.4),
+                               compact: true)
+                    .transition(.scale.combined(with: .opacity))
             }
 
             // Bouton mute son buzzer
@@ -249,7 +255,9 @@ private struct NotesToastView: View {
     let amount: Int
 
     var body: some View {
-        HStack(spacing: BuzzSpacing.sm) {
+        // .firstTextBaseline — garde l'accent coloré de l'icône tout en l'alignant sur la
+        // ligne de base du texte (Nohemi calée haut → un .center la ferait paraître basse).
+        HStack(alignment: .firstTextBaseline, spacing: BuzzSpacing.sm) {
             Image(systemName: "dollarsign.bank.building.fill")
                 .textStyle(Typography.labelSMBold)
                 .foregroundStyle(Color.mustardYellow)
@@ -280,7 +288,7 @@ private struct PowerFeedbackToast: View {
 
     var body: some View {
         VStack {
-            HStack(spacing: BuzzSpacing.sm) {
+            HStack(alignment: .firstTextBaseline, spacing: BuzzSpacing.sm) {
                 Image(systemName: feedback.symbol)
                     .textStyle(Typography.labelSMBold)
                     .foregroundStyle(color)

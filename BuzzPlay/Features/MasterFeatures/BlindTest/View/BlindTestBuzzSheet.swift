@@ -8,8 +8,13 @@ import SwiftUI
 struct BlindTestBuzzSheet: View {
     let player: Player
     let reactionTime: String
+    /// #answer-window — top du buzz (epoch) ; nil = pas de barre.
+    var buzzStartedAt: TimeInterval? = nil
     let onValidate: (Int) -> Void
     let onReject: () -> Void
+
+    /// Passé les 5s : on accentue la COULEUR du bouton « Refuser » (aucun mouvement).
+    @State private var expired = false
 
     var body: some View {
         VStack(spacing: 14) {
@@ -18,10 +23,16 @@ struct BlindTestBuzzSheet: View {
                 .frame(width: 36, height: 4)
                 .padding(.bottom, 2)
 
-            Text("A BUZZÉ !")
-                .font(.nohemi(.caption, weight: .bold))
-                .foregroundStyle(Color.textMuted)
-                .tracking(0.5)
+            // #answer-window — anneau de décompte (5→0) à côté du titre : rôle évident.
+            HStack(spacing: 10) {
+                Text("A BUZZÉ !")
+                    .font(.nohemi(.caption, weight: .bold))
+                    .foregroundStyle(Color.textMuted)
+                    .tracking(0.5)
+                if let started = buzzStartedAt {
+                    BuzzCountdownRing(resetKey: started, size: 30)
+                }
+            }
 
             HStack(spacing: 14) {
                 RoundedRectangle(cornerRadius: BuzzRadius.md)
@@ -82,11 +93,17 @@ struct BlindTestBuzzSheet: View {
             Button(action: onReject) {
                 Label("Refuser la réponse", systemImage: BuzzIcon.xmark)
                     .font(.nohemi(.body, weight: .bold))
-                    .foregroundStyle(Color.redSoft)
+                    .foregroundStyle(expired ? .white : Color.redSoft)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 13)
-                    .background(Color.redLeading.opacity(0.1), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
-                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.md).strokeBorder(Color.redLeading.opacity(0.35), lineWidth: 1.5))
+                    .background(
+                        expired
+                        ? AnyShapeStyle(LinearGradient(colors: [Color.redLeading, Color.redTrailing],
+                                                       startPoint: .leading, endPoint: .trailing))
+                        : AnyShapeStyle(Color.redLeading.opacity(0.1)),
+                        in: RoundedRectangle(cornerRadius: BuzzRadius.md)
+                    )
+                    .overlay(RoundedRectangle(cornerRadius: BuzzRadius.md).strokeBorder(Color.redLeading.opacity(expired ? 0 : 0.35), lineWidth: 1.5))
             }
             .buttonStyle(.plain)
         }
@@ -95,6 +112,16 @@ struct BlindTestBuzzSheet: View {
         .padding(.bottom, 40)
         .background(Color.sheetBg, in: RoundedRectangle(cornerRadius: BuzzRadius.sheet))
         .ignoresSafeArea(edges: .bottom)
+        .animation(.buzzFade, value: expired)   // crossfade couleur, aucun mouvement
+        // #answer-window — décompte LOCAL (5s depuis l'apparition) : haptique + couleur du refus.
+        .task(id: buzzStartedAt) {
+            expired = false
+            guard buzzStartedAt != nil else { return }
+            try? await Task.sleep(for: .seconds(GameRhythm.answerWindow))
+            guard !Task.isCancelled else { return }
+            expired = true
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+        }
     }
 
     @ViewBuilder

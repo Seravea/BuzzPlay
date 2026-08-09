@@ -171,15 +171,10 @@ private struct QuizQuestionListScreen: View {
                         .foregroundStyle(Color.textSecondary)
                 }
                 Spacer()
-                HStack(spacing: 4) {
-                    Text("\(quizMasterVM.questionsPassed.count)/\(quizMasterVM.questions.count)")
-                    Image(systemName: BuzzIcon.checkSimple)
-                }
+                Text("\(quizMasterVM.questionsPassed.count)/\(quizMasterVM.questions.count) \(Image(systemName: BuzzIcon.checkSimple))")
                     .font(.nohemi(.caption, weight: .semiBold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(.white.opacity(0.1), in: Capsule())
                     .foregroundStyle(.white)
+                    .pillStyle(fill: .white.opacity(0.1), stroke: nil, compact: true, trailingIcon: true)
             }
             // Progress bar
             GeometryReader { geo in
@@ -197,6 +192,7 @@ private struct QuizQuestionListScreen: View {
             .frame(height: 3)
         }
         .padding(.horizontal, BuzzSpacing.xl)
+        .padding(.top, BuzzSpacing.lg)     // #header-air — ne pas coller à la nav bar
         .padding(.bottom, 14)
     }
 

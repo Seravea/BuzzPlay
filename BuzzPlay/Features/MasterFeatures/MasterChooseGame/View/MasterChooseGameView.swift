@@ -9,6 +9,9 @@ struct MasterChooseGameView: View {
     @Bindable var masterChooseGameVM: MasterChooseGameViewModel
     @EnvironmentObject private var router: Router
 
+    // #terminer — confirmation avant de clôturer la partie (anti mis-tap).
+    @State private var showEndConfirm = false
+
     private var hasScores: Bool {
         masterChooseGameVM.players.map(\.score).max() ?? 0 > 0
     }
@@ -36,11 +39,21 @@ struct MasterChooseGameView: View {
                     launchSection
                     shopSection
                     if hasScores { rankingSection }
+                    endPartySection
                 }
                 .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.top, BuzzSpacing.lg)
                 .padding(.bottom, BuzzSpacing.xxxl)
             }
+        }
+        .alert("Terminer la partie ?", isPresented: $showEndConfirm) {
+            Button("Annuler", role: .cancel) { }
+            Button("Terminer", role: .destructive) {
+                masterChooseGameVM.endPartyEarly()
+                router.push(.scoreMaster)
+            }
+        } message: {
+            Text("La partie sera close et le classement final affiché à tous les joueurs.")
         }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -77,7 +90,12 @@ struct MasterChooseGameView: View {
             HStack {
                 eyebrow("Lancer une manche")
                 Spacer()
-                if masterChooseGameVM.currentRound >= 1 {
+                if masterChooseGameVM.isUnlimited {
+                    // Symbole interpolé DANS le Text → aligné sur la ligne de base Nohemi.
+                    Text("\(Image(systemName: "infinity"))  Mode libre")
+                        .font(.nohemi(.caption2, weight: .bold))
+                        .foregroundStyle(Color.mustardYellow)
+                } else if masterChooseGameVM.currentRound >= 1 {
                     Text("Manche \(masterChooseGameVM.currentRound)/\(masterChooseGameVM.totalRounds)")
                         .font(.nohemi(.caption2, weight: .bold))
                         .foregroundStyle(Color.textMuted)
@@ -203,6 +221,29 @@ struct MasterChooseGameView: View {
         .buttonStyle(.plain)
     }
 
+    // MARK: - End Party Section (#terminer)
+
+    private var endPartySection: some View {
+        Button { showEndConfirm = true } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "flag.checkered")
+                    .textStyle(Typography.footnoteEM)
+                Text("Terminer la partie")
+                    .font(.nohemi(.subheadline, weight: .bold))
+            }
+            .foregroundStyle(Color.redLeading)
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(Color.redLeading.opacity(0.10), in: RoundedRectangle(cornerRadius: BuzzRadius.lg))
+            .overlay(
+                RoundedRectangle(cornerRadius: BuzzRadius.lg)
+                    .strokeBorder(Color.redLeading.opacity(0.35), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .padding(.top, BuzzSpacing.sm)
+    }
+
     // MARK: - Ranking Section
 
     private var rankingSection: some View {
@@ -234,23 +275,15 @@ struct MasterChooseGameView: View {
 
     private func rankingRow(rank: Int, player: Player, maxScore: Int) -> some View {
         HStack(spacing: 10) {
-            ZStack {
-                Circle()
-                    .fill(rank == 1 ? Color.mustardYellow : .white.opacity(0.10))
-                    .frame(width: 24, height: 24)
-                Text("\(rank)")
-                    .font(.nohemi(.caption2, weight: .black))
-                    .foregroundStyle(rank == 1 ? Color.sheetBg : .white.opacity(0.6))
-            }
+            BuzzCountBadge("\(rank)",
+                           diameter: 24, fontSize: 11,
+                           fill: AnyShapeStyle(rank == 1 ? Color.mustardYellow : .white.opacity(0.10)),
+                           textColor: rank == 1 ? Color.sheetBg : .white.opacity(0.6))
 
-            Circle()
-                .fill(player.teamColor.gradient)
-                .frame(width: 36, height: 36)
-                .overlay(
-                    Text(String(player.name.prefix(1)).uppercased())
-                        .font(.nohemi(.callout, weight: .bold))
-                        .foregroundStyle(.white)
-                )
+            BuzzCountBadge(String(player.name.prefix(1)).uppercased(),
+                           diameter: 36, fontSize: 16, weight: .bold,
+                           fill: AnyShapeStyle(player.teamColor.gradient),
+                           textColor: .white)
 
             VStack(alignment: .leading, spacing: BuzzSpacing.xs) {
                 HStack {

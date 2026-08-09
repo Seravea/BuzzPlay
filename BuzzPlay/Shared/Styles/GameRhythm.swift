@@ -24,6 +24,12 @@ enum GameRhythm {
     /// inter-manche (calé pour démarrer après la fin de l'overlay ci-dessus).
     static let leaderboardDelay: Duration = .seconds(2.7)
 
+    // MARK: - Fenêtre de réponse après un buzz (#answer-window)
+
+    /// Durée (s) de la barre qui se vide après un buzz : passé ce délai, le Master est
+    /// incité (sans être forcé) à refuser — anti buzz-réflexe. Source de vérité unique.
+    static let answerWindow: TimeInterval = 5
+
     // MARK: - Countdown 3-2-1-GO
 
     /// Durée de chaque chiffre du décompte (3… 2… 1…).

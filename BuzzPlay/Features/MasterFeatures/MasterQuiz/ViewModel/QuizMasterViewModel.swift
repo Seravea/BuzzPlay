@@ -18,6 +18,8 @@ class QuizMasterViewModel: BuzzDrivenGame {
     var questions: [QuizQuestion]
     var currentQuestion: QuizQuestion?
     var playerHasBuzz: Player?
+    /// #answer-window — timestamp du buzz courant (epoch), source de la barre de 5s. nil hors buzz.
+    var buzzStartedAt: TimeInterval?
 
     // #15 — phase "réponse révélée" : après une bonne réponse validée, la question terminée
     // reste diffusée aux Players (card RÉPONSE visible en haut) jusqu'au lancement de la manche
@@ -129,10 +131,11 @@ extension QuizMasterViewModel {
             // #BugQ1 — l'incrément de manche + auto-finish est géré dans goToSelectNewQuestion
             goToSelectNewQuestion()
             playerHasBuzz = nil
+            buzzStartedAt = nil   // #answer-window — fin de la fenêtre de réponse
             gameVM.currentBuzzPlayer = nil
         }
     }
-    
+
     func rejectAnswer() {
         feedbackGenerator.notificationOccurred(.warning)
 
@@ -140,6 +143,7 @@ extension QuizMasterViewModel {
         gameVM.mpcService.sendMessage(.answerResult(resultPayload))
 
         playerHasBuzz = nil
+        buzzStartedAt = nil   // #answer-window — refus : la fenêtre se ferme
         gameVM.currentBuzzPlayer = nil
         let state = makePublicState()
         gameVM.sendPublicState(state)
@@ -196,6 +200,7 @@ extension QuizMasterViewModel {
     func handleBuzz(from player: Player) {
         gameVM.currentBuzzPlayer = player
         playerHasBuzz = player
+        buzzStartedAt = Date().timeIntervalSince1970   // #answer-window — top de la barre 5s
         pauseReactionTimer()
     }
 
@@ -369,7 +374,8 @@ extension QuizMasterViewModel {
                     isHintVisible: false,
                     countdownPhase: roundCountdownPhase,
                     isQuestionRevealed: isQuestionRevealed,
-                    isLastRound: false
+                    isLastRound: false,
+                    buzzStartedAt: buzzStartedAt   // #answer-window
                 )
             )
         }

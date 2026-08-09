@@ -20,22 +20,19 @@ struct GiftBottomBar: View {
     var body: some View {
         VStack(spacing: BuzzSpacing.sm) {
             if isWaiting && balance > 0 {
-                HStack(spacing: 5) {
-                    Image(systemName: "sparkles")
-                        .textStyle(Typography.caption2Bold)
-                    Text("C'est le moment d'utiliser tes Notes !")
-                        .font(.nohemi(.caption2, weight: .bold))
-                }
-                .foregroundStyle(Color.mustardYellow)
-                .padding(.horizontal, BuzzSpacing.md)
-                .padding(.vertical, 5)
-                .background(Color.mustardYellow.opacity(0.12), in: Capsule())
-                .overlay(Capsule().strokeBorder(Color.mustardYellow.opacity(0.35), lineWidth: 1))
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                Text("\(Image(systemName: "sparkles")) C'est le moment d'utiliser tes Notes !")
+                    .font(.nohemi(.caption2, weight: .bold))
+                    .foregroundStyle(Color.mustardYellow)
+                    .pillStyle(fill: Color.mustardYellow.opacity(0.12),
+                               stroke: Color.mustardYellow.opacity(0.35),
+                               compact: true)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
 
             Button { isSheetOpen = true } label: {
-                HStack(spacing: 10) {
+                // alignement .firstTextBaseline : les icônes (gift, banque, chevron) se posent
+                // sur la ligne de base du texte (Nohemi calée haut → .center les désalignait).
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
                     Image(systemName: "gift.fill")
                         .textStyle(Typography.labelSM)
                         .foregroundStyle(Color.mustardYellow)
@@ -46,15 +43,12 @@ struct GiftBottomBar: View {
 
                     Spacer()
 
-                    HStack(spacing: 5) {
-                        Text("\(balance)")
-                            .font(.nohemi(.callout, weight: .extraBold))
-                            .monospacedDigit()
-                            .foregroundStyle(Color.mustardYellow)
-                        Image(systemName: "dollarsign.bank.building.fill")
-                            .textStyle(Typography.footnote)
-                            .foregroundStyle(Color.mustardYellow)
-                    }
+                    // solde + banque même couleur (jaune) → icône interpolée dans le Text :
+                    // même taille + ligne de base alignées (un HStack laissait le chiffre plus haut).
+                    Text("\(balance) \(Image(systemName: "dollarsign.bank.building.fill"))")
+                        .font(.nohemi(.callout, weight: .extraBold))
+                        .monospacedDigit()
+                        .foregroundStyle(Color.mustardYellow)
 
                     Image(systemName: "chevron.up")
                         .textStyle(Typography.caption2Bold)
@@ -310,19 +304,13 @@ private struct GiftCardView: View {
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 3) {
-                Text("\(gift.price)")
-                    .font(.nohemi(.caption2, weight: .extraBold))
-                Image(systemName: "dollarsign.bank.building.fill")
-                    .textStyle(Typography.caption2)
-            }
-            .foregroundStyle(isActive ? Color.mustardYellow : .white.opacity(0.22))
-            .padding(.horizontal, 9)
-            .padding(.vertical, 4)
-            .background(
-                isActive ? Color.mustardYellow.opacity(0.12) : .white.opacity(0.05),
-                in: Capsule()
-            )
+            Text("\(gift.price) \(Image(systemName: "dollarsign.bank.building.fill"))")
+                .font(.nohemi(.caption2, weight: .extraBold))
+                .foregroundStyle(isActive ? Color.mustardYellow : .white.opacity(0.22))
+                .pillStyle(fill: isActive ? Color.mustardYellow.opacity(0.12) : .white.opacity(0.05),
+                           stroke: nil,
+                           compact: true,
+                           trailingIcon: true)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, BuzzSpacing.lg)
@@ -351,8 +339,11 @@ extension CoinsViewModel.Gift {
         case .scoreDoubled:         return player.hasScoreDoubled
         case .shieldSingle:         return player.hasShieldSingle
         case .shieldAll:            return player.hasShieldAll
-        case .changeBuzzColor:      return player.customBuzzColor != nil
-        case .changeBuzzSound:      return player.customBuzzSound != nil
+        // #rebuy-cosmetics — couleur/son du buzzer = achats COSMÉTIQUES RÉPÉTABLES :
+        // ne jamais marquer « Actif » ni bloquer (avant : customX != nil → 1 seul achat
+        // possible → on ne pouvait plus changer de son/couleur). On les rachète à volonté.
+        case .changeBuzzColor:      return false
+        case .changeBuzzSound:      return false
         case .enemyCanNotBuzz, .allEnemiesCanNotBuzz, .showIndicies:
             return false  // effets ponctuels, pas de state persistant côté acheteur
         }

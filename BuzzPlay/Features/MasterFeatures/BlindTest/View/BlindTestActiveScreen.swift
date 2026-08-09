@@ -11,8 +11,15 @@ struct BlindTestActiveScreen: View {
     let onValidate: (Int) -> Void
     let onReject: () -> Void
     let onSkip: () -> Void
+    let onNext: () -> Void
 
     var buzzedPlayer: Player? { blindTestVM.playerHasBuzz }
+
+    // #bt-queue — manche validée : on reste sur l'écran pour révéler la réponse + bouton suivant.
+    private var isFinished: Bool {
+        if case .finished = blindTestVM.state { return true }
+        return false
+    }
 
     // #audio-bt-nudge — rappel « branche une enceinte » au lancement (la musique ne joue que
     // sur l'appareil Master). Pur UI : la sortie audio AirPlay/Bluetooth est gérée au système.
@@ -30,21 +37,30 @@ struct BlindTestActiveScreen: View {
             }
             .padding(.horizontal, BuzzSpacing.xl)
 
-            if buzzedPlayer != nil {
+            if buzzedPlayer != nil && !isFinished {
                 Color.black.opacity(0.5)
                     .ignoresSafeArea()
                     .contentShape(Rectangle())
                     .transition(.opacity)
             }
 
-            if let player = buzzedPlayer {
+            if let player = buzzedPlayer, !isFinished {
                 BlindTestBuzzSheet(
                     player: player,
                     reactionTime: blindTestVM.formattedTime,
+                    buzzStartedAt: blindTestVM.buzzStartedAt,
                     onValidate: onValidate,
                     onReject: onReject
                 )
                 .transition(.move(edge: .bottom))
+            }
+
+            // #bt-queue — manche validée : révélation + bouton « Musique suivante ».
+            // Masqué si le quota fini est atteint (shouldAutoFinish → l'overlay de section prend le relais).
+            if isFinished && !blindTestVM.shouldAutoFinish {
+                finishedPanel
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .zIndex(120)
             }
 
             if blindTestVM.roundCountdownPhase != .hidden {
@@ -54,6 +70,7 @@ struct BlindTestActiveScreen: View {
             }
         }
         .animation(.spring(duration: 0.4, bounce: 0.05), value: buzzedPlayer != nil)
+        .animation(.spring(duration: 0.4, bounce: 0.05), value: isFinished)
         .animation(.buzzFade, value: blindTestVM.roundCountdownPhase)
         .overlay(alignment: .top) {
             if showSpeakerNudge {
@@ -73,6 +90,54 @@ struct BlindTestActiveScreen: View {
             UIApplication.shared.isIdleTimerDisabled = false
             nudgeTask?.cancel()
         }
+    }
+
+    // MARK: - Panneau fin de manche (#bt-queue)
+
+    private var finishedPanel: some View {
+        VStack(spacing: BuzzSpacing.md) {
+            if let winner = blindTestVM.playerHasBuzz {
+                HStack(spacing: BuzzSpacing.sm) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .textStyle(Typography.cardTitle)
+                        .foregroundStyle(Color.greenGlow)
+                    Text("\(winner.name) a trouvé")
+                        .font(.nohemi(.subheadline, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+            } else {
+                Text("Manche terminée")
+                    .font(.nohemi(.subheadline, weight: .bold))
+                    .foregroundStyle(.white)
+            }
+
+            Button(action: onNext) {
+                HStack(spacing: BuzzSpacing.sm) {
+                    Image(systemName: blindTestVM.hasNextInQueue ? "forward.fill" : "music.note.list")
+                        .textStyle(Typography.labelSM)
+                    Text(blindTestVM.hasNextInQueue
+                         ? "Musique suivante (\(blindTestVM.queueIndex + 2)/\(blindTestVM.queueCount))"
+                         : "Choisir d'autres titres")
+                        .font(.nohemi(.body, weight: .bold))
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, BuzzSpacing.lg)
+                .background(
+                    LinearGradient(colors: [.purpleLeading, .purpleTrailing],
+                                   startPoint: .leading, endPoint: .trailing),
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.lg)
+                )
+                .shadow(color: Color.purpleLeading.opacity(0.35), radius: 8)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(BuzzSpacing.lg)
+        .frame(maxWidth: .infinity)
+        .background(Color.darkestPurple, in: RoundedRectangle(cornerRadius: BuzzRadius.xl))
+        .overlay(RoundedRectangle(cornerRadius: BuzzRadius.xl).strokeBorder(.white.opacity(0.1), lineWidth: 1))
+        .padding(.horizontal, BuzzSpacing.xl)
+        .padding(.bottom, BuzzSpacing.xl)
     }
 
     // MARK: - Nudge enceinte (#audio-bt-nudge)
@@ -127,10 +192,9 @@ struct BlindTestActiveScreen: View {
             Spacer()
             Text(buzzedPlayer != nil ? "PAUSÉ" : (blindTestVM.isPlaying ? "EN COURS" : "TERMINÉ"))
                 .font(.nohemi(.caption, weight: .bold))
+                .tracking(0.5)   // majuscules : respirent mieux
                 .foregroundStyle(.white.opacity(0.6))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
-                .background(.white.opacity(0.08), in: Capsule())
+                .pillStyle(fill: .white.opacity(0.08), stroke: nil, compact: true)
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 14)
@@ -205,17 +269,14 @@ struct BlindTestActiveScreen: View {
                     }
                     Spacer()
                     Button(action: onSkip) {
-                        HStack(spacing: 5) {
-                            Text("Passer")
-                                .font(.nohemi(.caption, weight: .bold))
-                            Image(systemName: "forward.end.fill")
-                                .textStyle(Typography.caption2)
-                        }
-                        .foregroundStyle(Color.textSoft)
-                        .padding(.horizontal, BuzzSpacing.md)
-                        .padding(.vertical, 6)
-                        .background(.white.opacity(0.08), in: Capsule())
-                        .overlay(Capsule().strokeBorder(.white.opacity(0.12), lineWidth: 1))
+                        // Symbole interpolé dans le Text → aligné sur la ligne de base.
+                        Text("Passer \(Image(systemName: "forward.end.fill"))")
+                            .font(.nohemi(.caption, weight: .bold))
+                            .foregroundStyle(Color.textSoft)
+                            .pillStyle(fill: .white.opacity(0.08),
+                                       stroke: .white.opacity(0.12),
+                                       compact: true,
+                                       trailingIcon: true)
                     }
                     .buttonStyle(.plain)
                 }
@@ -232,7 +293,8 @@ struct BlindTestActiveScreen: View {
             blindTestVM: BlindTestMasterViewModel(gameVM: MasterFlowViewModel()),
             onValidate: { _ in },
             onReject: {},
-            onSkip: {}
+            onSkip: {},
+            onNext: {}
         )
     }
 }

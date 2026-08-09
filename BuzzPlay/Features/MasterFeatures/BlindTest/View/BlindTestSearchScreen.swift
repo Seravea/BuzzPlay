@@ -53,6 +53,7 @@ struct BlindTestSearchScreen: View {
             // Apple Music banner
             appleMusicBanner
                 .padding(.horizontal, BuzzSpacing.xl)
+                .padding(.top, BuzzSpacing.lg)     // #header-air — ne pas coller à la nav bar
                 .padding(.bottom, BuzzSpacing.md)
 
             // #invite-progress — avant l'invite : CTA de lancement ; une fois invité :

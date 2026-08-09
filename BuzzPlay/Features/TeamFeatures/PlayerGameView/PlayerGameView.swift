@@ -193,17 +193,17 @@ private struct GameAnnounceSheet: View {
 
                     ZStack {
                         Circle()
-                            .stroke(.white.opacity(0.1), lineWidth: 3)
+                            .stroke(.white.opacity(0.08), lineWidth: 2)
                         Circle()
                             .trim(from: 0, to: progress)
-                            .stroke(.white, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                            .stroke(.white.opacity(0.5), style: StrokeStyle(lineWidth: 2, lineCap: .round))
                             .rotationEffect(.degrees(-90))
                             .animation(.linear(duration: 1), value: progress)
                         Text("\(countdown)")
-                            .font(.nohemi(.body, weight: .extraBold))
-                            .foregroundStyle(.white)
+                            .font(.nohemi(.subheadline, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.85))
                     }
-                    .frame(width: 44, height: 44)
+                    .frame(width: 40, height: 40)
                 }
 
                 Text("Prépare-toi à buzzer !")

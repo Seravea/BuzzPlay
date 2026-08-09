@@ -16,13 +16,17 @@ struct LobbyMasterView: View {
             ScrollView {
                 VStack(spacing: BuzzSpacing.xl) {
                     configSection
-                    summaryPill
+                    if masterGameVM.configComplete {
+                        summaryPill
+                            .transition(.scale(scale: 0.95).combined(with: .opacity))
+                    }
                     Divider()
                         .overlay(Color.white.opacity(0.08))
                         .padding(.vertical, 4)
                     playersSection
                     Spacer(minLength: 80)
                 }
+                .animation(.spring(response: 0.35, dampingFraction: 0.8), value: masterGameVM.configComplete)
                 .padding(.horizontal, BuzzSpacing.xl)
                 .padding(.top, BuzzSpacing.lg)
             }
@@ -51,21 +55,37 @@ struct LobbyMasterView: View {
     private var configSection: some View {
         VStack(alignment: .leading, spacing: BuzzSpacing.lg) {
             durationSection
-            modeSection
+            // #config-explicite — Étape 2 cachée tant que la durée n'est pas choisie.
+            // En illimité, le mode est forcé (« libre ») → on montre un encart, pas un choix.
+            if masterGameVM.durationChosen {
+                if masterGameVM.isUnlimited {
+                    libreModeInfo
+                        .transition(.scale(scale: 0.95).combined(with: .opacity))
+                } else {
+                    modeSection
+                        .transition(.scale(scale: 0.95).combined(with: .opacity))
+                }
+            }
         }
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: masterGameVM.durationChosen)
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: masterGameVM.isUnlimited)
     }
 
-    // MARK: - Duration
+    // MARK: - Duration (Étape 1)
 
     private var durationSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            eyebrow("Durée")
-            HStack(spacing: 10) {
+            eyebrow("Étape 1 · Durée")
+            LazyVGrid(
+                columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
+                spacing: 10
+            ) {
                 ForEach(GameDuration.allCases, id: \.self) { duration in
-                    let isSelected = masterGameVM.gameDuration == duration
+                    // #config-explicite — aucun défaut surligné tant que rien n'est choisi.
+                    let isSelected = masterGameVM.durationChosen && masterGameVM.gameDuration == duration
                     Button {
                         withAnimation(.buzzDefault) {
-                            masterGameVM.gameDuration = duration
+                            masterGameVM.selectDuration(duration)
                         }
                     } label: {
                         VStack(spacing: 6) {
@@ -100,17 +120,47 @@ struct LobbyMasterView: View {
         }
     }
 
-    // MARK: - Mode
+    // MARK: - Mode libre (illimité)
+
+    private var libreModeInfo: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            eyebrow("Étape 2 · Mode")
+            HStack(spacing: BuzzSpacing.md) {
+                Image(systemName: "infinity")
+                    .textStyle(Typography.cardTitle)
+                    .foregroundStyle(Color.mustardYellow)
+                    .frame(width: 44, height: 44)
+                    .background(Color.mustardYellow.opacity(0.15), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Mode libre")
+                        .font(.nohemi(.subheadline, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text("Quiz + Blind Test à volonté, sans limite")
+                        .font(.nohemi(.caption, weight: .medium))
+                        .foregroundStyle(Color.textSecondary)
+                }
+                Spacer()
+            }
+            .padding(BuzzSpacing.md)
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: BuzzRadius.md))
+            .overlay(
+                RoundedRectangle(cornerRadius: BuzzRadius.md)
+                    .strokeBorder(.white.opacity(0.10), lineWidth: 1)
+            )
+        }
+    }
+
+    // MARK: - Mode (Étape 2)
 
     private var modeSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            eyebrow("Mode de jeu")
+            eyebrow("Étape 2 · Mode")
             HStack(spacing: 10) {
                 ForEach(GameMode.allCases, id: \.self) { mode in
-                    let isSelected = masterGameVM.gameMode == mode
+                    let isSelected = masterGameVM.modeChosen && masterGameVM.gameMode == mode
                     Button {
                         withAnimation(.buzzDefault) {
-                            masterGameVM.gameMode = mode
+                            masterGameVM.selectMode(mode)
                         }
                     } label: {
                         VStack(spacing: 6) {
@@ -208,8 +258,14 @@ struct LobbyMasterView: View {
 
     // MARK: - Summary Pill
 
+    private var summaryText: String {
+        masterGameVM.isUnlimited
+            ? "Illimité · Mode libre"
+            : "\(masterGameVM.totalRounds) manches · \(masterGameVM.gameMode.label)"
+    }
+
     private var summaryPill: some View {
-        Text("\(masterGameVM.totalRounds) manches · \(masterGameVM.gameMode.label)")
+        Text(summaryText)
             .font(.nohemi(.caption, weight: .bold))
             .foregroundStyle(.white.opacity(0.6))
             .padding(.horizontal, BuzzSpacing.lg)
@@ -275,35 +331,51 @@ struct LobbyMasterView: View {
     // MARK: - Start Button
 
     private var startButton: some View {
-        Button {
-            masterGameVM.startParty()
-            router.push(.masterChooseGameView)
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: "play.fill")
-                    .textStyle(Typography.labelBold)
-                Text("Commencer la partie")
-                    .font(.nohemi(.body, weight: .bold))
+        // #config-explicite — verrouillé tant que la config n'est pas complète (+ ≥ 1 joueur).
+        let enabled = masterGameVM.canStart
+        return VStack(spacing: BuzzSpacing.sm) {
+            if let hint = masterGameVM.startHint {
+                HStack(spacing: 6) {
+                    Image(systemName: "lock.fill")
+                        .textStyle(Typography.caption2EM)
+                    Text(hint)
+                        .font(.nohemi(.caption, weight: .semiBold))
+                }
+                .foregroundStyle(Color.textMuted)
+                .transition(.opacity)
             }
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .frame(height: 56)
-            .background(
-                masterGameVM.players.isEmpty
-                    ? AnyShapeStyle(Color.white.opacity(0.12))
-                    : AnyShapeStyle(LinearGradient(
-                        colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
-                        startPoint: .leading, endPoint: .trailing
-                    )),
-                in: RoundedRectangle(cornerRadius: BuzzRadius.lg2)
-            )
-            .shadow(
-                color: masterGameVM.players.isEmpty ? .clear : Color.greenButtonLeading.opacity(0.32),
-                radius: 12, y: 4
-            )
+
+            Button {
+                masterGameVM.startParty()
+                router.push(.masterChooseGameView)
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "play.fill")
+                        .textStyle(Typography.labelBold)
+                    Text("Commencer la partie")
+                        .font(.nohemi(.body, weight: .bold))
+                }
+                .foregroundStyle(enabled ? .white : Color.textMuted)
+                .frame(maxWidth: .infinity)
+                .frame(height: 56)
+                .background(
+                    enabled
+                        ? AnyShapeStyle(LinearGradient(
+                            colors: [Color.greenButtonLeading, Color.greenButtonTrailing],
+                            startPoint: .leading, endPoint: .trailing
+                        ))
+                        : AnyShapeStyle(Color.white.opacity(0.10)),
+                    in: RoundedRectangle(cornerRadius: BuzzRadius.lg2)
+                )
+                .shadow(
+                    color: enabled ? Color.greenButtonLeading.opacity(0.32) : .clear,
+                    radius: 12, y: 4
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(!enabled)
         }
-        .buttonStyle(.plain)
-        .disabled(masterGameVM.players.isEmpty)
+        .animation(.buzzDefault, value: enabled)
         .padding(.horizontal, BuzzSpacing.xl)
         .padding(.bottom, BuzzSpacing.xxxl)
         .padding(.top, BuzzSpacing.md)

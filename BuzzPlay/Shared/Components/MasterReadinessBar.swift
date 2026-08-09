@@ -13,6 +13,8 @@ import SwiftUI
 struct MasterReadinessBar: View {
     let ready: Int
     let total: Int
+    /// Hauteur fixe (alignée sur le bouton « Réinviter » dans InviteProgressRow).
+    var height: CGFloat = 50
 
     private var done: Bool { total > 0 && ready >= total }
     private var fraction: Double { total > 0 ? min(1, Double(ready) / Double(total)) : 0 }
@@ -47,7 +49,7 @@ struct MasterReadinessBar: View {
             .frame(height: 5)
         }
         .padding(.horizontal, BuzzSpacing.md)
-        .padding(.vertical, BuzzSpacing.sm)
+        .frame(maxWidth: .infinity, minHeight: height, alignment: .leading)
         .glassCard(radius: BuzzRadius.md)
         .animation(.buzzFade, value: done)
     }

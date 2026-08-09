@@ -51,13 +51,10 @@ struct CreateTeamView: View {
 
     private var backButton: some View {
         Button { router.path.removeLast() } label: {
-            HStack(spacing: 6) {
-                Image(systemName: "chevron.left")
-                    .textStyle(Typography.label)
-                Text("Retour")
-                    .font(.nohemi(.subheadline, weight: .semiBold))
-            }
-            .foregroundStyle(.white)
+            // symbole interpolé dans le Text → chevron aligné sur « Retour ».
+            Text("\(Image(systemName: "chevron.left")) Retour")
+                .font(.nohemi(.subheadline, weight: .semiBold))
+                .foregroundStyle(.white)
         }
     }
 
